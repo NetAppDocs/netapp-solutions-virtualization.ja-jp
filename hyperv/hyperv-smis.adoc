@@ -1,0 +1,174 @@
+---
+sidebar: sidebar 
+permalink: hyperv/hyperv-smis.html 
+keywords: hyperv, hyper-v, SMI-S, SCVMM, netapp, virtualization 
+summary: このホワイト ペーパーでは、NetApp SMI-S Providerをインストールして管理し、Microsoft SCVMM を使用してストレージをプロビジョニングする方法について説明します。 
+---
+= Microsoft Hyper-V 向けNetApp SMI-S Provider
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp SMI-S Providerは、 Hyper-V 仮想化環境におけるNetApp ONTAPストレージ システムと Microsoft System Center Virtual Machine Manager (SCVMM) 間のシームレスな統合を可能にします。
+
+この包括的なソリューションは、ストレージ管理用の標準化されたインターフェースを提供し、管理者が SCVMM から直接NetAppストレージ リソースを検出、プロビジョニング、監視できるようにします。  SMI-S プロバイダーは、iSCSI と SMB の両方のストレージ プロトコルをサポートしており、ストレージ管理を簡素化するとともに、Windows Server および Hyper-V を実行する仮想化データ センターに強力な監視およびレポート機能を提供します。
+
+
+
+== はじめに
+
+NetApp Storage Management Initiative Specification (SMI-S) は、ストレージ システムを管理および監視するための強力なツールです。  NetApp SMI-S は、Web ベースのエンタープライズ管理 (WBEM) プロトコルを活用して、LUN、ボリューム、CIMOM 構成設定、CIM サーバー ユーザーの処理など、さまざまな管理タスク用の統合インターフェイスを提供します。
+
+SCVMM は、仮想化データセンター向けの包括的な管理ソリューションです。  SCVMM は、Storage Management Initiative – Specification (SMI-S) を通じてさまざまなストレージ システムと統合する機能を備えています。
+
+
+
+=== SCVMMでNetApp SMI-S Providerを使用する利点
+
+NetApp SMI-S Providerを SCVMM と統合すると、組織はストレージ管理用の標準化されたインターフェイスを提供することで、仮想化データセンター内のストレージ リソースをより効率的に管理できるようになります。
+
+* ストレージ システムの検出と管理: ONTAPソフトウェアを実行しているストレージ システムを検出し、それらを効果的に管理するためのツールを提供します。
+* 簡素化された管理: 単一のコマンドベースのインターフェイスを提供することで、ストレージ システムの管理を簡素化します。
+* 監視とレポート: ストレージ要素とそのパフォーマンスを追跡するための強力な監視およびレポート機能を提供します。
+
+
+詳細は、link:https://docs.netapp.com/us-en/smis-provider["NetApp SMI-S Providerの製品ドキュメント。"]
+
+image:hyperv-smis-001.png["Hyper-V アーキテクチャを備えたNetApp SMI-S"]
+
+
+
+== SMI-Sプロバイダーの導入準備
+
+既存のストレージ システムとのシームレスな統合には、NetApp SMI-S Providerの適切なインストールと構成が必要です。
+
+* NetApp SMI-S Provider5.2.7 は、Windows Server SCVMM 2025、2022、2019、2016 および Windows Server 2025、2022、2019、2016 をサポートしています。このリリースは、Windows Server 2012 または System Center Virtual Machine Manager (SCVMM) 2012 と互換性がありません。
+* NetApp SMI-S Provider5.2.7 にはアップグレード パスはありません。  NetApp SMI-S Provider5.2.7 を新規インストールとして展開する必要があります。
+* NetApp SMI-S プロバイダーは、 ONTAP 9 以降のFASおよびAFFシステムをサポートします。
+* NetApp ONTAP ONE ライセンスは、すべての SMI-S プロバイダー ライセンス要件をカバーします。このライセンスがない場合、以下のライセンスが必要です。
++
+** ストレージ システム上に LUN を作成するには、FCP、iSCSI、または FCP と iSCSI の両方のライセンスが必要です。
+** サポートされているONTAPストレージ システムでファイル共有を作成するには、CIFS ライセンスが必要です。
+** サポートされているONTAPバージョンを実行しているクラスタ化されたストレージ システムで LUN クローンを作成するには、 FlexCloneライセンスが必要です。
+
+
+
+
+
+
+=== SMI-S仮想マシンのハードウェア要件
+
+以下の表は、 NetApp SMI-S プロバイダー VM のハードウェア要件を示しています。
+
+image:hyperv-smis-002.png["SMI-Sプロバイダーのハードウェア要件"]
+
+
+
+=== SMI-Sプロバイダーをインストールする
+
+SMI-S プロバイダーの展開を開始する前に、SCVMM とNetApp 9 以降のFASまたはAFFストレージ システムを搭載した Microsoft Hyper-V を展開する必要があります。さまざまな管理タスクを実行するには、コマンドベースのインターフェースを理解することが重要です。link:https://docs.netapp.com/us-en/smis-provider/concept-smi-s-provider-commands-overview.html["NetApp SMI-S Providerコマンド。"]
+
+[]
+====
+ベスト プラクティス: NetApp、NetApp SMI-S Providerのインストールには専用の Windows Server を使用することをお勧めします。干渉を防ぎ、パフォーマンスを最適化し、トラブルシューティングを簡素化するために、SCVMM サーバーにはインストールしないでください。
+
+====
+. SMI-SをサポートするWindows Server仮想マシンで、 NetApp SMI-S Providerバージョン5.2.7を以下のサイトからダウンロードします。link:https://mysupport.netapp.com/site/global/dashboard["NetAppソフトウェア ダウンロード サイト"]ファイルを smisprovider-5-2-7.msi として保存します。
+. NetApp SMI-S Providerソフトウェア パッケージが含まれているディレクトリに移動し、パッケージ smisprovider-5-2-7.msi をダブルクリックし、セットアップ ウィザードの手順に従ってインストールを完了します。
+. スタート メニューで、 NetApp SMI-S Providerに移動し、右クリックして「管理者として実行」を選択します。コマンド ライン プロンプトが開いたら、「smis cimserver status」コマンドを実行して、NetApp SMI-S Providerが実行中であることを確認します。image:hyperv-smis-003.png["SMI-Sサーバーが実行中であることを確認する"]
+. CIM サーバー ユーザーを追加します。この SMI-S ユーザーに Windows SMI-S サーバーの管理者権限が付与されている必要があり、このユーザーを使用して SCVMM に登録する必要があります。この SMI-S ユーザーは、ローカル ユーザーまたはドメイン ユーザーにすることができます。image:hyperv-smis-013.png["CIMuserを追加する"]
+. NetAppストレージ システムを追加するには、ストレージ仮想マシン (SVM) の管理 IP アドレスまたは DNS 解決可能なホスト名と、vsadmin ユーザーの資格情報を使用できます。image:hyperv-smis-004.png["SVMを登録する"]
+
+
+
+
+=== SMI-SプロバイダーをSCVMMに接続する
+
+SCVMM にリモート ストレージ デバイスを追加し、SMI-S プロバイダーに接続するには、次の前提条件と手順が満たされていることを確認する必要があります。
+
+* ネットワーク アクセス: SCVMM サーバーが IP アドレスまたは完全修飾ドメイン名 (FQDN) を介して SMI-S プロバイダーにネットワーク アクセスできることを確認します。
+* 通信ポート: SCVMM と SMI-S プロバイダーが適切なポートを使用してネットワーク経由で通信できることを確認します。
++
+** HTTPS（ポート5989）
+** HTTP（ポート5988）
+
+
+
+
+[]
+====
+SMI-S プロバイダーのインストール中に古い証明書が配置されます。その結果、System Center Virtual Machine Manager (SCVMM) のストレージ デバイスの追加から SMI-S プロバイダーへの SSL 接続が失敗します。解決策はlink:https://kb.netapp.com/data-mgmt/SMI-S/SMI-S_Issues/CSMIS-3["CIMサーバーの自己署名証明書を生成する"]その後、SMI-S サービスを再起動します。詳細については、KB記事をご覧ください。link:https://kb.netapp.com/data-mgmt/SMI-S/SMI-S_Issues/CSMIS-3["CSMIS-3: NetApp SMI-S Provider5.2.7 の cimom.cert はインストール時に期限切れです。"]
+
+====
+. SCVMM で、[ファブリック] > [ストレージ] > [プロバイダー] > [ストレージ デバイスの追加] をクリックします。  「SMI-S プロバイダーによって検出および管理される SAN および NAS デバイス」を選択します。image:hyperv-smis-005.png["ストレージデバイスを追加する"]
+. 検出スコープの指定で、プロトコルとして SMI-S CIMXML を選択し、SMI-S エージェントをインストールしたサーバーの IP アドレスまたは FQDN を入力し、必要に応じて SSL 接続オプションを選択し、SMI-S サーバーで作成された SMI-S アカウントを入力します。image:hyperv-smis-006.png["SMI-Sエージェントをインストールする"]
+. 情報収集では、SCVMM はストレージ デバイス情報を自動的に検出し、インポートします。前の手順で SSL 接続を選択した場合は、セキュリティ証明書をインポートする必要があります。image:hyperv-smis-015.png["証明書のインポート"]
+. ストレージ デバイス、分類、ホスト グループを選択し、概要を確認して [完了] をクリックします。image:hyperv-smis-007.png["分類を選択"]
+. SMI-S 接続を確認するには、[ファブリック] > [概要] をクリックし、ストレージの概要、分類の使用状況、アレイあたりの論理ユニット、およびホスト グループ ストレージを確認します。image:hyperv-smis-011.png["SVMの容量を確認する"]
+
+
+
+
+=== SMI-S プロバイダーを使用した SCVMM によるストレージのプロビジョニング
+
+SCVMM は SMI-S プロバイダーを使用してストレージ システムと対話し、SCVMM から直接ストレージ リソースを作成および管理できるようにします。
+
+
+
+==== iSCSIストレージ
+
+. SCVMM コンソールで、[ファブリック] > [ストレージ] を選択し、[分類とプール] を右クリックして [論理ユニットの作成] を選択します。ストレージ プールと分類を選択し、論理ユニットの名前、説明、サイズ、ホスト グループを入力します。image:hyperv-smis-009.png["ロジックユニットストレージを作成する"]
+
+
+
+
+==== SMBストレージ
+
+. [ファブリック] > [ストレージ] を選択し、[ファイル サーバー] を右クリックして [ファイル共有の作成] を選択し、[ファイル サーバー] を選択して、名前、ストレージの種類、ストレージ プール、分類を入力します。image:hyperv-smis-010.png["ファイル共有を作成する"]
+. Hyper-V で SMB ファイル共有を使用するには、Hyper-V ホスト クラスターに SMB ファイル共有を追加する必要があります。 SCVMM で、[サーバー] > [すべてのホスト] > [ホスト グループ] をクリックします。クラスター名を右クリックし、プロパティを選択します。  「ファイル共有ストレージ」タブで、追加をクリックし、SMB パスを入力します。image:hyperv-smis-014.png["Hyper-VホストクラスターにSMBファイル共有を追加する"]
+
+
+
+
+== ログとトレース
+
+ログに記録するメッセージのレベルやログを保存するディレクトリを指定するなど、SMI-S プロバイダーがログとトレース ファイルを管理する方法を構成できます。また、トレースするコンポーネント、トレース メッセージの書き込み先、トレース レベル、およびトレース ファイルの場所も指定します。
+
+
+
+=== ログ設定
+
+デフォルトでは、すべてのシステム メッセージがログに記録され、システム メッセージ ログはNetApp SMI-S Providerがインストールされているディレクトリの logs ディレクトリに保存されます。  CIM サーバー ログに書き込まれるシステム メッセージの場所とレベルを変更できます。
+
+* ログ レベルは、トレース、情報、警告、重大、致命的から選択できます。システム メッセージのログ レベルを変更するには、次のコマンドを使用します。
+
+
+[]
+====
+cimconfig -s ログレベル=新しいログレベル -p
+
+====
+* システムメッセージログディレクトリを変更する
+
+
+[]
+====
+cimconfig -s logdir=新しいログディレクトリ -p
+
+====
+
+
+==== トレース設定
+
+image:hyperv-smis-012.png["トレース設定"]
+
+
+
+== まとめ
+
+NetApp SMI-S Providerは、ストレージ管理者にとって不可欠なツールであり、ストレージ システムの管理と監視のための標準化された効率的で包括的なソリューションを提供します。業界標準のプロトコルとスキーマを利用することで、互換性が確保され、ストレージ ネットワーク管理に伴う複雑さが簡素化されます。

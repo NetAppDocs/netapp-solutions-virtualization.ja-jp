@@ -1,0 +1,348 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-nfs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
+summary:  
+---
+= vCenter Server インスタンスを VCF 管理ドメイン (NFS データストア) に変換する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAP NFS データストアを含む既存の vSphere 8 クラスタを VMware Cloud Foundation (VCF) 管理ドメインに変換します。この手順には、NFS ストレージのプロビジョニング、VMware 用のONTAPツールの導入、VCF インポート ツールを使用してクラスターを変換し、VCF 内での管理の合理化とリソース使用率の最適化を行うことが含まれます。
+
+
+
+== はじめに
+
+ONTAP上で実行されている既存の NFS データストアを使用してクラスターを変換するには、既存のインフラストラクチャを最新のプライベート クラウド アーキテクチャに統合する必要があります。このプロセスは、NFS ストレージの柔軟性を活用し、シームレスなデータ アクセスと管理を保証します。変換プロセスを通じて VCF 管理ドメインが確立されると、管理者は NFS データストアを使用するものも含め、追加の vSphere クラスターを VCF エコシステムに効率的にインポートできます。この統合により、リソースの使用率が向上するだけでなく、プライベート クラウド インフラストラクチャの管理が簡素化され、既存のワークロードの中断を最小限に抑えながらスムーズな移行が可能になります。
+
+このソリューションでは、クラスタが VCF 管理ドメインに変換されたときに、vSphere 8 の NFS データストアがどのようにプリンシパル ストレージになるかを説明します。
+
+
+
+== シナリオの概要
+
+このシナリオでは、次の大まかな手順について説明します。
+
+* ONTAP tools for VMware vSphereを導入します。
+* ONTAPツールを使用して NFS データストアをプロビジョニングします。
+* VCF インポート ツールを使用して、vSphere クラスターを検証します。
+* vSphere クラスタに SDDC Manager をデプロイします。
+* VCF 変換中に NSX を作成するための JSON ファイルを構成します。
+* VCF インポート ツールを使用して、vSphere 8 クラスタを VCF 5.2 に変換します。
+
+
+
+
+== 前提条件
+
+このシナリオには、次のコンポーネントと構成が必要です。
+
+* NFS トラフィックを許可するように構成されたストレージ仮想マシン (SVM) を備えたNetApp AFFストレージ システム。
+* NFS トラフィックを伝送し、SVM に関連付けられた IP ネットワーク上に論理インターフェイス (LIF) が作成されています。
+* 4 台の ESXi ホストと、クラスター上に共存する vCenter アプライアンスを備えた vSphere 8 クラスター。
+* この目的のために確立された VLAN またはネットワーク セグメント上の vMotion および NFS ストレージ トラフィック用に構成された分散ポート グループ。
+* VCF 変換に必要なソフトウェアをダウンロードします。
+
+
+ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれにもインストールできます。  ONTAPツールの前提条件の詳細については、以下を参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/prerequisites.html#system-requirements["ONTAP tools for VMware vSphereの前提条件"] 。
+
+vSphere を VCF 5.2 に変換またはインポートする際にサポートされるストレージおよびその他の考慮事項については、以下を参照してください。 https://techdocs.broadcom.com/fr/fr/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
+
+必要なソフトウェアについては、 https://support.broadcom.com/["Broadcom サポートポータル"] 。
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。
+
+
+
+== 展開手順
+
+このソリューションでは、ONTAP tools for VMware vSphereを使用して NFS データストアをプロビジョニングする方法と、既存の vSphere 8 クラスタを VCF 管理ドメインに変換するプロセスについて説明します。
+
+次の手順を実行します。
+
+* ONTAP tools for VMware vSphereを導入します。
+* ONTAPツールを使用して NFS データストアをプロビジョニングします。
+* VCF インポート ツールを vCenter アプライアンスにコピーします。
+* VCF インポート ツールを使用して、vCenter アプライアンスの事前チェックを実行します。
+* vCenter クラスタに SDDC マネージャ VM をデプロイします。
+* 変換プロセス中に展開する NSX クラスタの JSON ファイルを作成します。
+* 必要なソフトウェアを SDDC マネージャーにアップロードします。
+* vSphere クラスターを SDDC マネージャー インベントリに変換します。
+
+
+変換プロセスの概要については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["vSphere 環境を管理ドメインに変換するか、VMware Cloud Foundation で vSphere 環境を VI ワークロード ドメインとしてインポートする"] 。
+
+
+
+=== ONTAPツールを導入し、NFSデータストアをプロビジョニングする
+
+ONTAPツール 10 のアーキテクチャは、 ONTAPツール サービス、vSphere プラグイン、REST API を含むモジュール式のスケーラブルなフレームワークを活用して、VMware 環境とシームレスに統合し、効率的なストレージ管理、自動化、およびデータ保護を可能にするように設計されています。
+
+ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれにもインストールできます。
+
+image:vmware-vcf-import-nfs-010.png["ONTAPツールのアーキテクチャ"]
+
+.ONTAP tools for VMware vSphereを導入する
+[%collapsible%open]
+====
+このステップでは、 ONTAPツール 10 が非 HA 構成で導入されます。
+
+HA構成および非HA構成の詳細な展開については、以下を参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/ontap-tools-deployment.html["ONTAP tools for VMware vSphereを導入する"] 。
+
+. ONTAPツール10 OVAテンプレートを以下からダウンロードします。 https://mysupport.netapp.com/site/["NetAppサポートサイト"] 。
+. vSphere クライアントで、クラスタを右クリックし、[OVF テンプレートのデプロイ] をクリックします。
++
+image:vmware-vcf-import-nfs-001.png["OVFテンプレートのデプロイ"]
+
++
+{nbsp}
+
+. *OVF テンプレートのデプロイ*で、次の手順を実行します。
++
+** OVF テンプレートを選択します。
+** 名前とフォルダを選択します。
+** コンピューティング リソースを選択します。
+** レビューの詳細。
+** ライセンス契約に同意します。
+
+
+. テンプレートの *構成* ページで、 ONTAPツールを HA 構成で展開するかどうかを含む展開タイプを選択します。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-import-nfs-002.png["構成 - 展開タイプ"]
+
++
+{nbsp}
+
+. *ストレージの選択*ページで、VM をインストールするデータストアを選択し、*次へ*をクリックします。
+. ONTAPツール VM が通信するネットワークを選択します。続行するには、[次へ] をクリックします。
+. 「テンプレートのカスタマイズ」ウィンドウで、必要な情報をすべて入力します。
++
+** アプリケーションのユーザー名とパスワード
+** プロキシ URL を含む ASUP (自動サポート) を有効にするかどうかを選択します。
+** 管理者のユーザー名とパスワード。
+** NTP サーバー。
+** メンテナンスのユーザー名とパスワード (コンソールで使用されるメイン アカウント)。
+** デプロイメント構成に必要な IP アドレスを指定します。
+** ノード構成のすべてのネットワーク情報を提供します。
++
+image:vmware-vcf-import-nfs-003.png["Customize template"]
+
++
+{nbsp}
+
+
+
+. 最後に、[次へ] をクリックして続行し、[完了] をクリックして展開を開始します。
+
+
+====
+.ONTAP Toolsの設定
+[%collapsible%open]
+====
+ONTAPツール VM をインストールして電源を入れると、管理する vCenter サーバーやONTAPストレージ システムを追加するなど、いくつかの基本的な構成が必要になります。以下のドキュメントを参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/index.html["ONTAP tools for VMware vSphere"]詳細情報については。
+
+. 参照 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["vCenterインスタンスを追加する"]ONTAPツールを使用して管理されるように vCenter インスタンスを構成します。
+. ONTAPストレージ システムを追加するには、vSphere クライアントにログインし、左側のメイン メニューに移動します。  * NetApp ONTAPツール* をクリックして、ユーザー インターフェイスを起動します。
++
+image:vmware-vcf-import-nfs-004.png["オープンONTAPツール"]
+
++
+{nbsp}
+
+. 左側のメニューの *ストレージ バックエンド* に移動し、*追加* をクリックして *ストレージ バックエンドの追加* ウィンドウにアクセスします。
+. 管理するONTAPストレージ システムの IP アドレスと資格情報を入力します。  *追加*をクリックして終了します。
++
+image:vmware-vcf-import-nfs-005.png["ストレージバックエンドの追加"]
+
+
+
+
+NOTE: ここで、ストレージ バックエンドは、クラスター IP アドレスを使用して vSphere クライアント UI に追加されます。これにより、ストレージ システム内のすべての SVM を完全に管理できるようになります。あるいは、 ONTAPツールマネージャを使用してストレージバックエンドを追加し、vCenterインスタンスに関連付けることもできます。 `https://loadBalanceIP:8443/virtualization/ui/` 。この方法では、vSphere クライアント UI で SVM 資格情報のみを追加できるため、ストレージ アクセスをより細かく制御できます。
+
+====
+.ONTAPツールを使用して NFS データストアをプロビジョニングする
+[%collapsible%open]
+====
+ONTAPツールは、vSphere クライアント UI 全体に機能を統合します。このステップでは、ストレージ インベントリ ページから NFS データストアがプロビジョニングされます。
+
+. vSphere クライアントで、ストレージ インベントリに移動します。
+. *アクション > NetApp ONTAPツール > データストアの作成* に移動します。
++
+image:vmware-vcf-import-nfs-006.png["データストアを作成する"]
+
++
+{nbsp}
+
+. *データストアの作成*ウィザードで、作成するデータストアの種類を選択します。オプションは NFS または VMFS です。
+. *名前とプロトコル* ページで、データストアの名前、サイズ、使用する NFS プロトコルを入力します。
++
+image:vmware-vcf-import-nfs-007.png["名前とプロトコル"]
+
++
+{nbsp}
+
+. *ストレージ* ページで、 ONTAPストレージ プラットフォームとストレージ仮想マシン (SVM) を選択します。ここで、利用可能なカスタム エクスポート ポリシーを選択することもできます。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-import-nfs-008.png["ストレージページ"]
+
++
+{nbsp}
+
+. *ストレージ属性*ページで、使用するストレージ アグリゲートを選択します。続行するには、[次へ] をクリックします。
+. *概要*ページで情報を確認し、*完了*をクリックしてプロビジョニング プロセスを開始します。  ONTAPツールは、 ONTAPストレージ システムにボリュームを作成し、それをクラスタ内のすべての ESXi ホストに NFS データストアとしてマウントします。
++
+image:vmware-vcf-import-nfs-009.png["[サマリ]ページ"]
+
+
+
+====
+
+
+=== vSphere クラスタを VCF 5.2 に変換する
+
+次のセクションでは、SDDC マネージャをデプロイし、vSphere 8 クラスタを VCF 5.2 管理ドメインに変換する手順について説明します。必要に応じて、詳細については VMware のドキュメントが参照されます。
+
+VMware by Broadcom の VCF インポート ツールは、vCenter アプライアンスと SDDC マネージャの両方で使用されるユーティリティで、構成を検証し、vSphere および VCF 環境の変換およびインポート サービスを提供します。
+
+ https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/vcf-import-tool-options-and-parameters-admin.html["VCFインポートツールのオプションとパラメータ"] 。
+
+.VCFインポートツールのコピーと抽出
+[%collapsible%open]
+====
+VCF インポート ツールは、vCenter アプライアンスで使用され、vSphere クラスタが VCF 変換またはインポート プロセスに対して正常な状態にあることを検証します。
+
+次の手順を実行します。
+
+. 以下の手順に従ってください https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/copy-the-vcf-import-tool-to-the-target-vcenter-appliance.html["VCFインポートツールをターゲットのvCenterアプライアンスにコピーします"]VMware Docs を参照して、VCF インポート ツールを正しい場所にコピーします。
+. 次のコマンドを使用してバンドルを抽出します。
++
+....
+tar -xvf vcf-brownfield-import-<buildnumber>.tar.gz
+....
+
+
+====
+.vCenterアプライアンスを検証する
+[%collapsible%open]
+====
+変換前に、VCF インポート ツールを使用して vCenter アプライアンスを検証します。
+
+. 次の手順に従ってください https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/run-a-precheck-on-the-target-vcenter-before-conversion.html["変換前にターゲット vCenter で事前チェックを実行する"]検証を実行します。
+. 次の出力は、vCenter アプライアンスが事前チェックに合格したことを示しています。
++
+image:vmware-vcf-import-nfs-011.png["vcfインポートツールの事前チェック"]
+
+
+
+====
+.SDDC マネージャーを展開する
+[%collapsible%open]
+====
+SDDC マネージャーは、VCF 管理ドメインに変換される vSphere クラスター上に共存する必要があります。
+
+展開を完了するには、VMware Docs の展開手順に従ってください。
+
+参照 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/deploy-the-sddc-manager-appliance-on-the-target-vcenter.html["ターゲットvCenterにSDDC Managerアプライアンスを展開する"]。
+
+詳細については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-1/commission-hosts.html["委員会ホスト"] VCF 管理ガイドを参照してください。
+
+====
+.NSX 展開用の JSON ファイルを作成する
+[%collapsible%open]
+====
+vSphere 環境を VMware Cloud Foundation にインポートまたは変換しながら NSX Manager をデプロイするには、NSX デプロイ仕様を作成します。  NSX の展開には少なくとも 3 台のホストが必要です。
+
+
+NOTE: 変換またはインポート操作で NSX Manager クラスタを展開する場合、NSX-VLAN ネットワークが利用されます。  NSX-VLAN ネットワークの制限の詳細については、「既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前の考慮事項」セクションを参照してください。  NSX-VLANネットワークの制限については、以下を参照してください。 https://techdocs.broadcom.com/fr/fr/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
+
+以下は、NSX デプロイメント用の JSON ファイルの例です。
+
+....
+{
+  "license_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
+  "form_factor": "medium",
+  "admin_password": "NetApp!23456789",
+  "install_bundle_path": "/tmp/vcfimport/bundle-133764.zip",
+  "cluster_ip": "172.21.166.72",
+  "cluster_fqdn": "vcf-m02-nsx01.sddc.netapp.com",
+  "manager_specs": [{
+    "fqdn": "vcf-m02-nsx01a.sddc.netapp.com",
+    "name": "vcf-m02-nsx01a",
+    "ip_address": "172.21.166.73",
+    "gateway": "172.21.166.1",
+    "subnet_mask": "255.255.255.0"
+  },
+  {
+    "fqdn": "vcf-m02-nsx01b.sddc.netapp.com",
+    "name": "vcf-m02-nsx01b",
+    "ip_address": "172.21.166.74",
+    "gateway": "172.21.166.1",
+    "subnet_mask": "255.255.255.0"
+  },
+  {
+    "fqdn": "vcf-m02-nsx01c.sddc.netapp.com",
+    "name": "vcf-m02-nsx01c",
+    "ip_address": "172.21.166.75",
+    "gateway": "172.21.166.1",
+    "subnet_mask": "255.255.255.0"
+  }]
+}
+....
+JSON ファイルを SDDC マネージャー上のディレクトリにコピーします。
+
+====
+.SDDC マネージャーにソフトウェアをアップロードする
+[%collapsible%open]
+====
+VCF インポート ツールと NSX デプロイメント バンドルを SDDC マネージャの /home/vcf/vcfimport ディレクトリにコピーします。
+
+見る https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/seed-software-on-sddc-manager.html["必要なソフトウェアを SDDC Manager アプライアンスにアップロードする"]詳細な手順については、こちらをご覧ください。
+
+====
+.vSphere クラスタを VCF 管理ドメインに変換する
+[%collapsible%open]
+====
+変換プロセスを実行するには、VCF インポート ツールが使用されます。  /home/vcf/vcf-import-package/vcf-brownfield-import-<version>/vcf-brownfield-toolset ディレクトリから次のコマンドを実行して、VCF インポート ツール関数のプリントアウトを確認します。
+
+....
+python3 vcf_brownfield.py --help
+....
+次のコマンドを実行して、vSphere クラスタを VCF 管理ドメインに変換し、NSX クラスタをデプロイします。
+
+....
+python3 vcf_brownfield.py convert --vcenter '<vcenter-fqdn>' --sso-user '<sso-user>' --domain-name '<wld-domain-name>' --nsx-deployment-spec-path '<nsx-deployment-json-spec-path>'
+....
+詳しい手順については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/import-workload-domain-into-sddc-manager-inventory.html["vSphere 環境を SDDC Manager インベントリに変換またはインポートする"] 。
+
+====
+.VCFにライセンスを追加する
+[%collapsible%open]
+====
+変換が完了したら、環境にライセンスを追加する必要があります。
+
+. SDDC Manager UI にログインします。
+. ナビゲーション ペインで *管理 > ライセンス* に移動します。
+. *+ ライセンス キー* をクリックします。
+. ドロップダウンメニューから製品を選択します。
+. ライセンスキーを入力してください。
+. ライセンスの説明を入力します。
+. *[追加]*をクリックします。
+. ライセンスごとにこれらの手順を繰り返します。
+
+
+====
+
+
+== ONTAP tools for VMware vSphereのビデオ デモ
+
+.ONTAP tools for VMware vSphereを備えた NFS データストア
+video::1e4c3701-0bc2-41fa-ac93-b2680147f351[panopto,width=360]

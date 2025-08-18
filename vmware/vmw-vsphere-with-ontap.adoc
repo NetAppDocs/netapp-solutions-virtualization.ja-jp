@@ -1,0 +1,19 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vsphere-with-ontap.html 
+keywords:  
+summary:  
+---
+= ONTAPストレージでVMware vSphere 8を使用する方法について学習します
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAP は、ほぼ 20 年にわたって VMware vSphere 環境向けの主要なストレージ ソリューションであり、コストを削減しながら管理を簡素化する革新的な機能を継続的に追加しています。このドキュメントでは、導入の合理化、リスクの軽減、管理の簡素化を実現する最新の製品情報とベスト プラクティスを含む、vSphere 向けONTAPソリューションを紹介します。
+
+詳細については、link:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-overview.html["ONTAPを搭載した VMware vSphere"]

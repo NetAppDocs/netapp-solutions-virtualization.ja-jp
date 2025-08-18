@@ -1,0 +1,389 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
+summary:  
+---
+= ONTAP tools for VMware vSphereを使用して、VI ワークロード ドメインに NFS とvVols を補助ストレージとして追加します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このユースケースでは、 ONTAP Tools for VMware を使用して、VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインの補助ストレージとして NFS およびvVolsデータストアを追加する手順について説明します。この手順では、VMware vSphere 用のONTAPツールの導入、NFS 論理インターフェイスを使用したストレージ仮想マシン (SVM) の構成、NFS とvVols の両方のデータストアのプロビジョニングについてまとめています。
+
+*NFS* は、 vVolsデータストアのストレージ プロトコルとして使用されます。
+
+
+
+== NFSの利点
+
+*シンプルさと使いやすさ:* NFS はセットアップと管理が簡単なので、迅速かつ簡単なファイル共有を必要とする環境に最適です。
+
+*スケーラビリティ:* ONTAP のアーキテクチャにより、NFS は効率的に拡張でき、インフラストラクチャに大きな変更を加えることなく増大するデータ ニーズに対応できます。
+
+*柔軟性:* NFS は幅広いアプリケーションとワークロードをサポートしており、仮想化環境を含むさまざまなユースケースに幅広く対応できます。
+
+詳細については、 link:vmw-vvf-overview.html["vSphere 8 向け NFS v3 リファレンス ガイド"] 。
+
+
+
+== シナリオの概要
+
+このシナリオでは、次の大まかな手順について説明します。
+
+* NFS トラフィック用の論理インターフェイス (LIF) を備えたストレージ仮想マシン (SVM) を作成します。
+* VI ワークロード ドメイン上の NFS ネットワーク用の分散ポート グループを作成します。
+* VI ワークロード ドメインの ESXi ホスト上に NFS 用の vmkernel アダプタを作成します。
+* VI ワークロード ドメインにONTAPツールを導入します。
+* VI ワークロード ドメインに新しい NFS データストアを作成します。
+* VI ワークロード ドメインに新しいvVolsデータストアを作成します。
+
+
+
+
+== 前提条件
+
+このシナリオには、次のコンポーネントと構成が必要です。
+
+* ストレージ トラフィック専用のイーサネット スイッチ上に物理データ ポートを備えたONTAP AFFまたはFASストレージ システム。
+* VCF 管理ドメインの展開が完了し、vSphere クライアントにアクセスできるようになりました。
+* VI ワークロード ドメインは以前にデプロイされています。
+
+
+NetApp は、ストレージ システム、スイッチ、ネットワーク アダプタ、およびホスト システムにフォールト トレランスを提供する、NFS 用の冗長ネットワーク設計を推奨しています。アーキテクチャの要件に応じて、単一のサブネットまたは複数のサブネットで NFS を展開するのが一般的です。
+
+参照 https://www.vmware.com/docs/vmw-best-practices-running-nfs-vmware-vsphere["VMware vSphere で NFS を実行するためのベストプラクティス"]VMware vSphere に固有の詳細情報。
+
+ONTAPをVMware vSphereで使用する場合のネットワークガイダンスについては、 https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-network.html#nfs["ネットワーク構成 - NFS"] NetAppエンタープライズ アプリケーション ドキュメントのセクション。
+
+このドキュメントでは、新しい SVM を作成し、IP アドレス情報を指定して NFS トラフィック用の複数の LIF を作成するプロセスについて説明します。既存のSVMに新しいLIFを追加するには、link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["LIF（ネットワーク インターフェイス）の作成"] 。
+
+vSphereクラスタでNFSを使用する方法の詳細については、link:vmw-vvf-overview.html["vSphere 8 向け NFS v3 リファレンス ガイド"] 。
+
+{nbsp}image:vmware-vcf-aff-070.png["NFSアーキテクチャ図"] {nbsp}
+
+
+
+== 展開手順
+
+ONTAPツールを導入し、それを使用して VCF 管理ドメインにvVolsおよび NFS データストアを作成するには、次の手順を実行します。
+
+
+
+=== ONTAPストレージシステム上にSVMとLIFを作成する
+
+次の手順はONTAP System Manager で実行されます。
+
+.ストレージVMとLIFを作成する
+[%collapsible%open]
+====
+NFS トラフィック用の複数の LIF とともに SVM を作成するには、次の手順を実行します。
+
+. ONTAP System Manager から、左側のメニューの *Storage VMs* に移動し、*+ Add* をクリックして開始します。
++
+image:vmware-vcf-asa-001.png["+追加をクリックしてSVMの作成を開始します"]
+
++
+{nbsp}
+
+. *ストレージ VM の追加* ウィザードで、SVM の *名前* を入力し、*IP スペース* を選択して、*アクセス プロトコル* の下で *SMB/CIFS、NFS、S3* タブをクリックし、*NFS を有効にする* チェックボックスをオンにします。
++
+image:vmware-vcf-aff-035.png["ストレージVMの追加ウィザード - NFSの有効化"]
+
++
+
+TIP: Ontap Tools for VMware vSphere を使用してデータストアの展開プロセスを自動化するため、ここで *NFS クライアント アクセスを許可する* ボタンをチェックする必要はありません。これには、ESXi ホストへのクライアント アクセスの提供が含まれます。  ＆#160;
+
+. *ネットワーク インターフェイス* セクションで、最初の LIF の *IP アドレス*、*サブネット マスク*、および *ブロードキャスト ドメインとポート* を入力します。後続の LIF については、チェックボックスを有効にして、残りのすべての LIF で共通の設定を使用するか、個別の設定を使用するかを選択できます。
++
+image:vmware-vcf-aff-036.png["LIFのネットワーク情報を入力します"]
+
++
+{nbsp}
+
+. ストレージ VM 管理アカウント (マルチテナント環境の場合) を有効にするかどうかを選択し、[保存] をクリックして SVM を作成します。
++
+image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
+
+
+
+====
+
+
+==== ESXiホスト上のNFSネットワークを設定する
+
+次の手順は、vSphere クライアントを使用して VI ワークロード ドメイン クラスタで実行されます。この場合、vCenter Single Sign-On が使用されているため、vSphere クライアントは管理ドメインとワークロード ドメイン全体で共通になります。
+
+.NFSトラフィック用の分散ポートグループを作成する
+[%collapsible%open]
+====
+NFS トラフィックを伝送するネットワークの新しい分散ポート グループを作成するには、次の手順を実行します。
+
+. vSphere クライアントから、ワークロード ドメインの *インベントリ > ネットワーク* に移動します。既存の分散スイッチに移動し、*新しい分散ポート グループ...*を作成するアクションを選択します。
++
+image:vmware-vcf-asa-022.png["新しいポートグループの作成を選択"]
+
++
+{nbsp}
+
+. *新しい分散ポート グループ* ウィザードで、新しいポート グループの名前を入力し、*次へ* をクリックして続行します。
+. *設定の構成*ページですべての設定を入力します。 VLAN が使用されている場合は、正しい VLAN ID を必ず指定してください。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-asa-023.png["VLAN IDを入力してください"]
+
++
+{nbsp}
+
+. *完了準備完了*ページで変更を確認し、*完了*をクリックして新しい分散ポート グループを作成します。
+. ポート グループが作成されたら、ポート グループに移動し、[設定の編集...] アクションを選択します。
++
+image:vmware-vcf-aff-037.png["DPG - 設定の編集"]
+
++
+{nbsp}
+
+. *分散ポート グループ - 設定の編集* ページで、左側のメニューの *チーミングとフェールオーバー* に移動します。 NFS トラフィックに使用するアップリンクのチーミングを有効にするには、アップリンクが *アクティブ アップリンク* 領域にまとめられていることを確認します。使用されていないアップリンクを「*未使用のアップリンク*」に移動します。
++
+image:vmware-vcf-aff-038.png["DPG - チームアップリンク"]
+
++
+{nbsp}
+
+. クラスタ内の各 ESXi ホストに対してこのプロセスを繰り返します。
+
+
+====
+.各ESXiホストにVMkernelアダプタを作成する
+[%collapsible%open]
+====
+ワークロード ドメイン内の各 ESXi ホストでこのプロセスを繰り返します。
+
+. vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。  *構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
++
+image:vmware-vcf-asa-030.png["ネットワーク追加ウィザードを開始する"]
+
++
+{nbsp}
+
+. *接続タイプの選択* ウィンドウで *VMkernel ネットワーク アダプタ* を選択し、*次へ* をクリックして続行します。
++
+image:vmware-vcf-asa-008.png["VMkernelネットワークアダプタを選択"]
+
++
+{nbsp}
+
+. *ターゲット デバイスの選択* ページで、以前に作成した NFS の分散ポート グループの 1 つを選択します。
++
+image:vmware-vcf-aff-039.png["ターゲットポートグループを選択"]
+
++
+{nbsp}
+
+. *ポート プロパティ* ページでデフォルト (有効なサービスなし) を維持し、*次へ* をクリックして続行します。
+. *IPv4 設定* ページで、*IP アドレス*、*サブネット マスク* を入力し、新しいゲートウェイ IP アドレスを指定します (必要な場合のみ)。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-aff-040.png["VMkernel IPv4設定"]
+
++
+{nbsp}
+
+. *準備完了*ページで選択内容を確認し、*完了*をクリックして VMkernel アダプタを作成します。
++
+image:vmware-vcf-aff-041.png["VMkernelの選択を確認する"]
+
+
+
+====
+
+
+=== ONTAPツールを導入して使用し、ストレージを構成する
+
+次の手順は、vSphere クライアントを使用して VCF 管理ドメイン クラスタ上で実行され、OTV の展開、 vVols NFS データストアの作成、管理 VM の新しいデータストアへの移行が含まれます。
+
+VI ワークロード ドメインの場合、OTV は VCF 管理クラスタにインストールされますが、VI ワークロード ドメインに関連付けられた vCenter に登録されます。
+
+複数のvCenter環境でのONTAPツールの導入と使用に関する詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/configure/concept_requirements_for_registering_vsc_in_multiple_vcenter_servers_environment.html["複数のvCenter Server環境でONTAP Toolsを登録するための要件"] 。
+
+.ONTAP tools for VMware vSphereを導入する
+[%collapsible%open]
+====
+ONTAP tools for VMware vSphereは、 VM アプライアンスとして導入され、 ONTAPストレージを管理するための統合された vCenter UI を提供します。
+
+ONTAP tools for VMware vSphereをデプロイするには、次の手順を実行します。
+
+. ONTAPツールOVAイメージを以下から入手します。link:https://mysupport.netapp.com/site/products/all/details/otv/downloads-tab["NetApp サポート サイト"]ローカルフォルダーにダウンロードします。
+. VCF 管理ドメインの vCenter アプライアンスにログインします。
+. vCenter アプライアンス インターフェースから管理クラスタを右クリックし、[OVF テンプレートのデプロイ...] を選択します。
++
+image:vmware-vcf-aff-021.png["OVF テンプレートをデプロイします..."]
+
++
+{nbsp}
+
+. *OVF テンプレートのデプロイ*ウィザードで、*ローカル ファイル*ラジオ ボタンをクリックし、前の手順でダウンロードしたONTAPツール OVA ファイルを選択します。
++
+image:vmware-vcf-aff-022.png["OVAファイルを選択"]
+
++
+{nbsp}
+
+. ウィザードの手順 2 ～ 5 では、VM の名前とフォルダーを選択し、コンピューティング リソースを選択し、詳細を確認して、ライセンス契約に同意します。
+. 構成ファイルとディスク ファイルの保存場所として、VCF 管理ドメイン クラスタの vSAN データストアを選択します。
++
+image:vmware-vcf-aff-023.png["OVAファイルを選択"]
+
++
+{nbsp}
+
+. [ネットワークの選択] ページで、管理トラフィックに使用するネットワークを選択します。
++
+image:vmware-vcf-aff-024.png["ネットワークを選択"]
+
++
+{nbsp}
+
+. テンプレートのカスタマイズページで、必要な情報をすべて入力します。
++
+** OTV への管理アクセスに使用するパスワード。
+** NTPサーバのIPアドレスを指定します。
+** OTV メンテナンス アカウントのパスワード。
+** OTVダービーDBパスワード。
+** *VMware Cloud Foundation (VCF) を有効にする* チェックボックスをオンにしないでください。補助ストレージを展開する場合、VCF モードは必要ありません。
+** *VI ワークロード ドメイン* の vCenter アプライアンスの FQDN または IP アドレス
+** *VI ワークロード ドメイン* の vCenter アプライアンスの認証情報
+** 必要なネットワーク プロパティ フィールドを指定します。
++
+続行するには、[次へ] をクリックします。
+
++
+image:vmware-vcf-aff-025.png["OTV テンプレート 1 をカスタマイズする"]
+
++
+image:vmware-vcf-asa-035.png["OTVテンプレート2をカスタマイズする"]
+
++
+{nbsp}
+
+
+
+. [Ready to complete] ページですべての情報を確認し、[Finish] をクリックして OTV アプライアンスの展開を開始します。
+
+
+====
+.ONTAPツールにストレージ システムを追加します。
+[%collapsible%open]
+====
+. vSphere クライアントのメイン メニューから選択して、 NetApp ONTAPツールにアクセスします。
++
+image:vmware-asa-006.png["NetApp ONTAPツール"]
+
++
+{nbsp}
+
+. ONTAPツール インターフェイスの *INSTANCE* ドロップダウン メニューから、管理対象のワークロード ドメインに関連付けられている OTV インスタンスを選択します。
++
+image:vmware-vcf-asa-036.png["OTVインスタンスを選択"]
+
++
+{nbsp}
+
+. ONTAPツールで、左側のメニューから *ストレージ システム* を選択し、*追加* を押します。
++
+image:vmware-vcf-asa-037.png["ストレージ システムの追加"]
+
++
+{nbsp}
+
+. IP アドレス、ストレージ システムの資格情報、およびポート番号を入力します。検出プロセスを開始するには、[*追加*] をクリックします。
++
+image:vmware-vcf-asa-038.png["ストレージシステムの資格情報を提供する"]
+
+
+
+====
+.ONTAPツールでNFSデータストアを作成する
+[%collapsible%open]
+====
+ONTAPツールを使用して NFS 上で実行されるONTAPデータストアを展開するには、次の手順を実行します。
+
+. ONTAPツールで *概要* を選択し、*開始* タブから *プロビジョニング* をクリックしてウィザードを開始します。
++
+image:vmware-vcf-asa-041.png["データストアのプロビジョニング"]
+
++
+{nbsp}
+
+. 新しいデータストア ウィザードの *全般* ページで、vSphere データセンターまたはクラスターの宛先を選択します。データストアの種類として *NFS* を選択し、データストアの名前を入力して、プロトコルを選択します。 FlexGroupボリュームを使用するかどうか、およびプロビジョニングにストレージ機能ファイルを使用するかどうかを選択します。続行するには、[次へ] をクリックします。
++
+注意: *データストア データをクラスター全体に分散* を選択すると、基盤となるボリュームがFlexGroupボリュームとして作成され、ストレージ機能プロファイルの使用ができなくなります。参照 https://docs.netapp.com/us-en/ontap/flexgroup/supported-unsupported-config-concept.html["FlexGroupボリュームでサポートされる機能とサポートされない機能"]FlexGroupボリュームの使用に関する詳細については、こちらをご覧ください。
+
++
+image:vmware-vcf-aff-042.png["一般ページ"]
+
++
+{nbsp}
+
+. *ストレージ システム* ページで、ストレージ機能プロファイル、ストレージ システム、および SVM を選択します。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-aff-043.png["ストレージ システム"]
+
++
+{nbsp}
+
+. *ストレージ属性*ページで、使用するアグリゲートを選択し、*次へ*をクリックして続行します。
++
+image:vmware-vcf-aff-044.png["ストレージ属性"]
+
++
+{nbsp}
+
+. 最後に、*概要*を確認し、「完了」をクリックして NFS データストアの作成を開始します。
++
+image:vmware-vcf-aff-045.png["レビューの要約と終了"]
+
+
+
+====
+.ONTAPツールでvVolsデータストアを作成する
+[%collapsible%open]
+====
+ONTAPツールでvVolsデータストアを作成するには、次の手順を実行します。
+
+. ONTAPツールで *概要* を選択し、*開始* タブから *プロビジョニング* をクリックしてウィザードを開始します。
++
+image:vmware-vcf-asa-041.png["データストアのプロビジョニング"]
+
+. 新しいデータストア ウィザードの *全般* ページで、vSphere データセンターまたはクラスターの宛先を選択します。データストアの種類として * vVols* を選択し、データストアの名前を入力して、プロトコルとして * NFS * を選択します。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-aff-046.png["一般ページ"]
+
+. *ストレージ システム* ページで、ストレージ機能プロファイル、ストレージ システム、および SVM を選択します。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-aff-043.png["ストレージ システム"]
+
+. *ストレージ属性*ページで、データストアの新しいボリュームを作成することを選択し、作成するボリュームのストレージ属性を入力します。  *追加* をクリックしてボリュームを作成し、*次へ* をクリックして続行します。
++
+image:vmware-vcf-aff-047.png["ストレージ属性"]
+
++
+image:vmware-vcf-aff-048.png["ストレージ属性 - 次へ"]
+
+. 最後に、*概要*を確認し、*完了*をクリックして vVol データストアの作成プロセスを開始します。
++
+image:vmware-vcf-aff-049.png["[サマリ]ページ"]
+
+
+
+====
+
+
+== 追加情報
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。

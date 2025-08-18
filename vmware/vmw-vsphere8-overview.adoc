@@ -1,0 +1,58 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vsphere8-overview.html 
+keywords: vSphere, vSphere 8, vSphere 8u1, ONTAP 9.12, interoperability, VMware compatibility 
+summary:  
+---
+= VMware vSphere 8 の新機能
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware vSphere 8 およびONTAP 9.12 の新機能について説明します。  ONTAPの機能とサポートと VMware インフラストラクチャおよびソフトウェアとの互換性を確認します。
+
+NetAppと VMware のテクノロジーの統合には、20 年にわたる歴史と数千時間にも及ぶエンジニアリングの成果が蓄積されています。 vSphere 8 とONTAP 9.12 の登場により、両社は最も要求の厳しい顧客のワークロードを満たす製品を提供します。これらの製品をソリューションとして組み合わせると、オンプレミスでもパブリック クラウドでも、実際の顧客の課題が解決されます。これらの製品をソリューションとして組み合わせると、オンプレミスでもパブリック クラウドでも、実際の顧客の課題が解決されます。
+
+製品、プロトコル、オペレーティング システムなどのサポート能力を判断するには、以下のリソースを確認してください。
+
+* その https://mysupport.netapp.com/matrix/#welcome["NetApp Interoperability Matrix Tool"]（IMT）。  IMT は、FC/FCoE、iSCSI、NFS、CIFS 構成の構築に使用できる認定コンポーネントとバージョン、および追加のプラグインやソフトウェア製品との統合を定義します。
+* その https://compatibilityguide.broadcom.com/search?program=san&persona=live&column=partnerName&order=asc["VMware 互換性ガイド"]。  VMware 互換性ガイドには、VMware Infrastructure およびソフトウェア製品のシステム、I/O、ストレージ/SAN、バックアップの互換性などが記載されています。
+* https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/index.html["VMware 向けNetApp ONTAPツール"] 。ONTAP tools for VMware vSphereは、仮想ストレージ コンソール (VSC)、VASA プロバイダー、およびストレージ レプリケーション アダプタ (SRA) 拡張機能を含む単一の vCenter Server プラグインです。  OTV 9.12 は VMware vSphere 8 に完全に対応しており、顧客に日々の業務で真の価値を提供します。
+
+
+
+
+== NetApp ONTAPおよび VMware のサポート対象リリース
+
+
+NOTE: 下の表のリンクを選択するときは、ページが構築されるのをお待ちください。
+
+[cols="20%, 20%, 20%, 20%, 20%"]
+|===
+
+
+| *VMware vSphere リリース* | *サン* | *NFS* | *OTV* | *SnapCenter* 
+
+
+| *vSphere 8* | https://imt.netapp.com/matrix/imt.jsp?components=105985;&solution=1&isHWU&src=IMT["リンク"] | https://imt.netapp.com/matrix/imt.jsp?components=105985;&solution=976&isHWU&src=IMT["リンク"] | https://imt.netapp.com/matrix/imt.jsp?components=105986;&solution=1777&isHWU&src=IMT["リンク"] | https://imt.netapp.com/matrix/imt.jsp?components=105985;&solution=1517&isHWU&src=IMT["リンク"] 
+
+
+| *vSphere 8u1* | https://imt.netapp.com/matrix/imt.jsp?components=110521;&solution=1&isHWU&src=IMT["リンク"] | https://imt.netapp.com/matrix/imt.jsp?components=110521;&solution=976&isHWU&src=IMT["リンク"] | https://imt.netapp.com/matrix/imt.jsp?components=110521;&solution=1777&isHWU&src=IMT["リンク"] | https://imt.netapp.com/matrix/imt.jsp?components=110521;&solution=1517&isHWU&src=IMT["リンク"] 
+|===
+[cols="20%, 20%, 20%, 20%, 20%"]
+|===
+
+
+| *VMware vSphere リリース* | *ストレージシステム/プロトコル* | *OTV - SRA* | *OTV – VASAプロバイダー* | * SnapCenter Plug-in for VMware vSphere* 
+
+
+| *vSphere 8* | https://www.vmware.com/resources/compatibility/search.php?deviceCategory=san&details=1&partner=64&releases=589&FirmwareVersion=ONTAP%209.0,ONTAP%209.1,ONTAP%209.10.1,ONTAP%209.11.1,ONTAP%209.12.1,ONTAP%209.2,ONTAP%209.3,ONTAP%209.4,ONTAP%209.5,ONTAP%209.6,ONTAP%209.7,ONTAP%209.8,ONTAP%209.9,ONTAP%209.9.1%20P3,ONTAP%209.%6012.1&isSVA=0&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc["リンク"] | https://www.vmware.com/resources/compatibility/search.php?deviceCategory=sra&details=1&partner=64&sraName=587&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc["リンク"] | https://www.vmware.com/resources/compatibility/detail.php?deviceCategory=wcp&productid=55380&vcl=true["リンク"] | https://www.vmware.com/resources/compatibility/search.php?deviceCategory=vvols&details=1&partner=64&releases=589&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc["リンク"] 
+
+
+| *vSphere 8u1* | https://www.vmware.com/resources/compatibility/search.php?deviceCategory=san&details=1&partner=64&releases=652&FirmwareVersion=ONTAP%209.0,ONTAP%209.1,ONTAP%209.10.1,ONTAP%209.11.1,ONTAP%209.12.1,ONTAP%209.2,ONTAP%209.3,ONTAP%209.4,ONTAP%209.5,ONTAP%209.6,ONTAP%209.7,ONTAP%209.8,ONTAP%209.9,ONTAP%209.9.1%20P3,ONTAP%209.%6012.1&isSVA=0&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc["リンク"] | https://www.vmware.com/resources/compatibility/search.php?deviceCategory=sra&details=1&partner=64&sraName=587&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc["リンク"] | https://www.vmware.com/resources/compatibility/detail.php?deviceCategory=wcp&productid=55380&vcl=true["リンク"] | https://www.vmware.com/resources/compatibility/detail.php?deviceCategory=wcp&productid=55380&vcl=true["リンク"] 
+|===

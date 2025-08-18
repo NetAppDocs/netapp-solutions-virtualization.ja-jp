@@ -1,0 +1,69 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-workflow-vm-from-snapshot.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Red Hat OpenShift Virtualization を使用してスナップショット コピーから VM を作成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift Virtualization を使用してスナップショットから VM を作成します。この手順には、VolumeSnapshotClass の作成、VM の永続ボリューム要求 (PVC) のスナップショットの取得、スナップショットの新しい PVC への復元、復元された PVC をルート ディスクとして使用する新しい VM のデプロイが含まれます。
+
+
+
+== スナップショットからVMを作成する
+
+Tridentと Red Hat OpenShift を使用すると、ユーザーは、それによってプロビジョニングされたストレージ クラス上の永続ボリュームのスナップショットを取得できます。この機能を使用すると、ユーザーはボリュームのポイントインタイム コピーを取得し、それを使用して新しいボリュームを作成したり、同じボリュームを以前の状態に復元したりできます。これにより、ロールバックからクローン、データの復元まで、さまざまなユースケースが可能またはサポートされます。
+
+OpenShift でのスナップショット操作では、リソース VolumeSnapshotClass、VolumeSnapshot、および VolumeSnapshotContent を定義する必要があります。
+
+* VolumeSnapshotContent は、クラスター内のボリュームから取得された実際のスナップショットです。これは、ストレージ用の PersistentVolume に類似したクラスター全体のリソースです。
+* VolumeSnapshot は、ボリュームのスナップショットを作成するための要求です。これは PersistentVolumeClaim に類似しています。
+* VolumeSnapshotClass を使用すると、管理者は VolumeSnapshot にさまざまな属性を指定できます。同じボリュームから取得した異なるスナップショットに異なる属性を設定できます。
+
+
+image:redhat-openshift-060.png["スナップショットからのVMアーキテクチャ"]
+
+VM のスナップショットを作成するには、次の手順を実行します。
+
+. VolumeSnapshot の作成に使用できる VolumeSnapshotClass を作成します。  [ストレージ] > [VolumeSnapshotClasses] に移動し、[VolumeSnapshotClass の作成] をクリックします。
+. スナップショット クラスの名前を入力し、ドライバーとして csi.trident.netapp.io と入力して、[作成] をクリックします。
++
+image:redhat-openshift-061.png["スナップショットクラスを作成する"]
+
+. ソース VM に接続されている PVC を識別し、その PVC のスナップショットを作成します。移動先 `Storage > VolumeSnapshots`[ボリュームスナップショットの作成]をクリックします。
+. スナップショットを作成する PVC を選択し、スナップショットの名前を入力するかデフォルトを受け入れ、適切な VolumeSnapshotClass を選択します。次に、「作成」をクリックします。
++
+image:redhat-openshift-062.png["Snapshot を作成"]
+
+. これにより、その時点での PVC のスナップショットが作成されます。
+
+
+
+
+== スナップショットから新しいVMを作成する
+
+. まず、スナップショットを新しい PVC に復元します。  [ストレージ] > [VolumeSnapshots] に移動し、復元するスナップショットの横にある省略記号をクリックして、[新しい PVC として復元] をクリックします。
+. 新しい PVC の詳細を入力し、「復元」をクリックします。これにより、新しい PVC が作成されます。
++
+image:redhat-openshift-063.png["スナップショットを新しいPVCに復元する"]
+
+. 次に、この PVC から新しい VM を作成します。  [仮想化] > [仮想マシン] に移動し、[作成] > [YAML を使用] をクリックします。
+. spec > template > spec > volumes セクションで、コンテナー ディスクではなくスナップショットから作成された新しい PVC を指定します。要件に応じて、新しい VM のその他すべての詳細を指定します。
++
+[source, cli]
+----
+- name: rootdisk
+  persistentVolumeClaim:
+    claimName: rhel8-short-frog-rootdisk-28dvb-snapshot-restore
+----
+. [作成] をクリックして新しい VM を作成します。
+. VM が正常に作成されたら、アクセスして、新しい VM の状態が、スナップショットの作成時に使用された PVC を持つ VM の状態 (スナップショットの作成時) と同じであることを確認します。
+

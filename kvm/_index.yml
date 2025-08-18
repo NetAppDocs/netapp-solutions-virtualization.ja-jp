@@ -1,0 +1,22 @@
+---
+indexpage:
+  title: NetApp KVM仮想化ソリューション
+  summary: NetApp KVM ソリューションは、KVM と libvirt を使用して仮想化を行うNetAppストレージの機能を実証する戦略的および技術的な機能のセットです。
+  lead: NetApp KVM 仮想化ソリューションは、KVM と libvirt を使用して仮想化を行うNetAppストレージの機能を実証する、戦略的および技術的な機能のセットです。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: QEMU と Libvirt を使用した KVM 仮想化
+      url: kvm-overview.html
+    - title: KVM仮想化環境向けNetApp ONTAPストレージ
+      url: kvm-ontap.html
+  - title: その他のリソース
+    links:
+    - title: Rocky Linuxでlibvirtを設定する
+      url: https://docs.rockylinux.org/guides/virtualization/libvirt-rocky/
+    - title: Ubuntuでlibvirtを設定する
+      url: https://documentation.ubuntu.com/server/how-to/virtualisation/libvirt/index.html
+    - title: SUSE Linux 仮想化ガイド
+      url: https://documentation.suse.com/sles/15-SP6/html/SLES-all/book-virtualization.html
+    - title: Arch Linux での Libvirt
+      url: https://wiki.archlinux.org/title/Libvirt

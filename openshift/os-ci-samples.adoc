@@ -1,0 +1,63 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-ci-samples.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization, cloud Insights 
+summary: Red Hat OpenShift Virtualization における VM 向けCloud Insightsを使用した監視 
+---
+= Data Infrastructure Insightsを使用して Red Hat OpenShift Virtualization の VM を監視する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp Data Infrastructure Insights (旧称Cloud Insights) は、イベントベースの監視、アラートの作成、バックエンド ストレージのマッピングなど、OpenShift Virtualization の VM 向けの強力な監視機能を提供します。また、クラスターの変更を追跡し、トラブルシューティングを支援する変更分析も提供します。
+
+
+
+== **イベントに基づく監視とアラートの作成**
+
+以下は、OpenShift Virtualization 内の VM を含む名前空間をイベントに基づいて監視するサンプルです。この例では、クラスター内の指定された名前空間の **logs.kubernetes**.event に基づいてモニターが作成されます。
+
+image:redhat-openshift-ci-samples-001.png["Cloud Insightsサンプル"]
+
+このクエリは、名前空間内の仮想マシンのすべてのイベントを提供します。 (名前空間には仮想マシンが 1 つだけ存在します)。理由が「失敗」または「マウント失敗」であるイベントに基づいてフィルタリングする高度なクエリを作成することもできます。これらのイベントは通常、PV の作成または PV をポッドにマウントする際に問題が発生し、VM の永続ボリュームを作成するための動的プロビジョナーに問題があることを示す場合に作成されます。上記のようにアラート モニターを作成するときに、受信者への通知を構成することもできます。エラーを解決するのに役立つ修正アクションや追加情報を提供することもできます。上記の例では、問題を解決するために、追加情報としてTridentバックエンド構成とストレージ クラス定義を調べる必要がある場合があります。
+
+
+
+== **変更分析**
+
+Change Analytics を使用すると、クラスターの状態がどのように変化したか、誰がその変更を行ったかなどを把握できるため、問題のトラブルシューティングに役立ちます。
+
+image:redhat-openshift-ci-samples-002.png["Cloud Insightsサンプル"]
+
+上記の例では、OpenShift Virtualization VM を含む名前空間の OpenShift クラスターで変更分析が構成されています。ダッシュボードにはタイムラインに対する変更が表示されます。ドリルダウンして何が変更されたかを確認し、「すべての変更の差分」をクリックするとマニフェストの差分が表示されます。マニフェストから、永続ディスクの新しいバックアップが作成されたことがわかります。
+
+image:redhat-openshift-ci-samples-003.png["Cloud Insightsサンプル"]
+
+image:redhat-openshift-ci-samples-004.png["Cloud Insightsサンプル"]
+
+
+
+== **バックエンドストレージマッピング**
+
+Cloud Insightsを使用すると、VM ディスクのバックエンド ストレージと PVC に関するさまざまな統計を簡単に確認できます。
+
+image:redhat-openshift-ci-samples-005.png["Cloud Insightsサンプル"]
+
+バックエンド列の下のリンクをクリックすると、バックエンドのONTAPストレージから直接データが取得されます。
+
+image:redhat-openshift-ci-samples-006.png["Cloud Insightsサンプル"]
+
+すべてのポッドからストレージへのマッピングを確認する別の方法は、[Explore] の [Observability] メニューから [All Metrics] クエリを作成することです。
+
+image:redhat-openshift-ci-samples-007.png["Cloud Insightsサンプル"]
+
+いずれかのリンクをクリックすると、ONTP ストレージからの対応する詳細が表示されます。たとえば、storageVirtualMachine 列の SVM 名をクリックすると、 ONTAPから SVM の詳細が取得されます。内部ボリューム名をクリックすると、 ONTAP内のボリュームの詳細が表示されます。
+
+image:redhat-openshift-ci-samples-008.png["Cloud Insightsサンプル"]
+
+image:redhat-openshift-ci-samples-009.png["Cloud Insightsサンプル"]

@@ -1,0 +1,258 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-dii.html 
+keywords: vsphere, ontap, data infrastructure insights, asa, all-flash san array, 
+summary:  
+---
+= Data Infrastructure Insightsでオンプレミス ストレージを監視する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp Data Infrastructure Insights (旧称Cloud Insights) は、オンプレミスとクラウドの両方における IT インフラストラクチャのパフォーマンス、健全性、コストを監視および分析するために設計されたクラウドベースのプラットフォームです。データ コレクターを展開し、パフォーマンス メトリックを分析し、ダッシュボードを使用して問題を特定し、リソースを最適化する方法を学習します。
+
+
+
+== Data Infrastructure Insightsサイトによるオンプレミスストレージの監視
+
+Data Infrastructure Insights は、VMware vSphere やNetApp ONTAPストレージ システムなどの資産のデータ コレクターがセットアップされた Acquisition Unit ソフトウェアを通じて動作します。これらのコレクターはデータを収集し、それをData Infrastructure Insightsに送信します。次に、プラットフォームはさまざまなダッシュボード、ウィジェット、メトリック クエリを活用して、ユーザーが解釈しやすいようにデータを整理し、洞察に富んだ分析を作成します。
+
+Data Infrastructure Insightsのアーキテクチャ図:
+
+image:vmware-dii.png["Data Infrastructure Insights"]
+
+
+
+== ソリューション展開の概要
+
+このソリューションでは、Data Infrastructure Insightsを使用してオンプレミスの VMware vSphere およびONTAPストレージ システムを監視する方法を紹介します。
+
+このリストには、このソリューションでカバーされている大まかな手順が示されています。
+
+. vSphere クラスターのデータ コレクターを構成します。
+. ONTAPストレージ システム用にデータ コレクターを構成します。
+. 注釈ルールを使用してアセットにタグを付けます。
+. 資産を調査して相関させます。
+. Top VM Latency ダッシュボードを使用して、ノイズの多い近隣 VM を分離します。
+. VM のサイズを適正化する機会を特定します。
+. クエリを使用してメトリックを分離および並べ替えます。
+
+
+
+
+== 前提条件
+
+このソリューションでは、次のコンポーネントを使用します。
+
+. ONTAP 9.13 を搭載したNetApp All-Flash SAN アレイ A400。
+. VMware vSphere 8.0 クラスター。
+. NetApp BlueXPアカウント。
+. データ収集用の資産へのネットワーク接続を備えたローカル VM にインストールされたNetApp Data Infrastructure Insights Acquisition Unit ソフトウェア。
+
+
+
+
+== ソリューションの展開
+
+
+
+=== データコレクターを構成する
+
+VMware vSphere およびONTAPストレージ システムのデータ コレクターを構成するには、次の手順を実行します。
+
+.ONTAPストレージシステムのデータコレクターを追加する
+[%collapsible%open]
+====
+. Data Infrastructure Insightsにログインしたら、*Observability > Collectors > Data Collectors* に移動し、ボタンを押して新しい Data Collector をインストールします。
++
+image:vmware-asa-031.png["新しいデータ収集者"]
+
+. ここから * ONTAP* を検索し、 * ONTAP Data Management Software* をクリックします。
++
+image:vmware-asa-030.png["データコレクターを検索"]
+
+. *コレクターの設定*ページで、コレクターの名前を入力し、正しい*取得ユニット*を指定して、 ONTAPストレージ システムの資格情報を入力します。  *保存して続行*をクリックし、ページの下部にある*セットアップの完了*をクリックして設定を完了します。
++
+image:vmware-asa-032.png["コレクターを構成する"]
+
+
+
+====
+.VMware vSphere クラスタのデータコレクタを追加する
+[%collapsible%open]
+====
+. もう一度、*Observability > Collectors > Data Collectors* に移動し、ボタンを押して新しい Data Collector をインストールします。
++
+image:vmware-asa-031.png["新しいデータ収集者"]
+
+. ここから *vSphere* を検索し、*VMware vSphere* をクリックします。
++
+image:vmware-asa-033.png["データコレクターを検索"]
+
+. *コレクターの構成*ページで、コレクターの名前を入力し、正しい*取得ユニット*を指定して、vCenter サーバーの資格情報を入力します。  *保存して続行*をクリックし、ページの下部にある*セットアップの完了*をクリックして設定を完了します。
++
+image:vmware-asa-034.png["コレクターを構成する"]
+
+
+
+====
+
+
+=== アセットに注釈を追加する
+
+注釈は、アセットにタグを付け、 Cloud Insightsで利用できるさまざまなビューやメトリック クエリでフィルタリングしたり識別したりできるようにするための便利な方法です。
+
+このセクションでは、*データセンター*でフィルタリングするための注釈が仮想マシン アセットに追加されます。
+
+.注釈ルールを使用してアセットにタグを付ける
+[%collapsible%open]
+====
+. 左側のメニューで、*Observability > Enrich > Annotation Rules* に移動し、右上の *+ Rule* ボタンをクリックして新しいルールを追加します。
++
+image:vmware-asa-035.png["注釈ルールへのアクセス"]
+
+. [*ルールの追加*] ダイアログ ボックスで、ルールの名前を入力し、ルールが適用されるクエリ、影響を受ける注釈フィールド、および入力される値を検索します。
++
+image:vmware-asa-036.png["ルールを追加"]
+
+. 最後に、「*注釈ルール*」ページの右上隅にある「*すべてのルールを実行*」をクリックしてルールを実行し、アセットに注釈を適用します。
++
+image:vmware-asa-037.png["すべてのルールを実行する"]
+
+
+
+====
+
+
+=== 資産の調査と相関関係の分析
+
+Cloud Insights は、ストレージ システムと vSphere クラスター上で一緒に実行されている資産に関する論理的な結論を導き出します。
+
+このセクションでは、ダッシュボードを使用して資産を相関させる方法を説明します。
+
+.ストレージパフォーマンスダッシュボードから資産を相関させる
+[%collapsible%open]
+====
+. 左側のメニューで、*Observability > Explore > All Dashboards* に移動します。
++
+image:vmware-asa-038.png["すべてのダッシュボードにアクセスする"]
+
+. *+ ギャラリーから* ボタンをクリックすると、インポート可能な既製のダッシュボードのリストが表示されます。
++
+image:vmware-asa-039.png["ギャラリーダッシュボード"]
+
+. リストからFlexVolパフォーマンスのダッシュボードを選択し、ページの下部にある *ダッシュボードの追加* ボタンをクリックします。
++
+image:vmware-asa-040.png["FlexVolパフォーマンスダッシュボード"]
+
+. インポートしたら、ダッシュボードを開きます。ここから、詳細なパフォーマンス データを含むさまざまなウィジェットを表示できます。フィルターを追加して単一のストレージ システムを表示し、ストレージ ボリュームを選択して詳細を表示します。
++
+image:vmware-asa-041.png["ストレージボリュームをドリルダウン"]
+
+. このビューでは、このストレージ ボリュームに関連するさまざまなメトリックと、ボリューム上で実行されている最も使用率が高く相関関係にある仮想マシンを確認できます。
++
+image:vmware-asa-042.png["最も相関性の高いVM"]
+
+. 使用率が最も高い VM をクリックすると、その VM のメトリックが詳細に表示され、潜在的な問題が表示されます。
++
+image:vmware-asa-043.png["VMパフォーマンスメトリック"]
+
+
+
+====
+
+
+=== Cloud Insightsを使用して、騒がしい隣人を特定する
+
+Cloud Insights には、同じストレージ ボリューム上で実行されている他の VM に悪影響を与えているピア VM を簡単に分離できるダッシュボードが備わっています。
+
+.トップ VM レイテンシ ダッシュボードを使用して、ノイズの多い近隣 VM を分離します。
+[%collapsible%open]
+====
+. この例では、*ギャラリー* にある *VMware Admin - Where do I have VM Latency?* というダッシュボードにアクセスします。
++
+image:vmware-asa-044.png["VMレイテンシダッシュボード"]
+
+. 次に、前の手順で作成した *Data Center* アノテーションでフィルタリングして、アセットのサブセットを表示します。
++
+image:vmware-asa-045.png["データセンターの注釈"]
+
+. このダッシュボードには、平均レイテンシによる上位 10 個の VM のリストが表示されます。ここから、対象の VM をクリックして詳細を確認します。
++
+image:vmware-asa-046.png["トップ10のVM"]
+
+. ワークロードの競合を引き起こす可能性のある VM がリストされ、利用可能になります。これらの VM のパフォーマンス メトリックを詳しく調べて、潜在的な問題を調査します。
++
+image:vmware-asa-047.png["ワークロードの競合"]
+
+
+
+====
+
+
+=== Cloud Insightsで過剰利用されているリソースと利用されていないリソースを表示する
+
+VM リソースを実際のワークロード要件に一致させることで、リソース使用率を最適化し、インフラストラクチャとクラウド サービスのコストを削減できます。  Cloud Insightsのデータはカスタマイズ可能で、過剰に使用されている VM や十分に使用されていない VM を簡単に表示できます。
+
+.VM を適切なサイズにする機会を特定する
+[%collapsible%open]
+====
+. この例では、*ギャラリー* にある *VMware Admin - 適切なサイズにする機会はどこにありますか?* というダッシュボードにアクセスします。
++
+image:vmware-asa-048.png["適切なサイズのダッシュボード"]
+
+. まず、クラスター内のすべての ESXi ホストでフィルタリングします。次に、メモリと CPU 使用率による上位および下位の VM のランキングを確認できます。
++
+image:vmware-asa-049.png["適切なサイズのダッシュボード"]
+
+. テーブルを使用すると、並べ替えが可能になり、選択したデータの列に基づいて詳細が提供されます。
++
+image:vmware-asa-050.png["メトリックテーブル"]
+
+. *VMware Admin - 無駄を潜在的に回収できる場所はどこ?* という別のダッシュボードには、電源がオフになっている VM が容量使用量によって並べ替えられて表示されます。
++
+image:vmware-asa-051.png["電源オフのVM"]
+
+
+
+====
+
+
+=== クエリを使用してメトリックを分離および並べ替える
+
+Cloud Insightsによって収集されるデータの量は非常に包括的です。メトリック クエリは、大量のデータを便利な方法で並べ替え、整理するための強力な手段を提供します。
+
+.ONTAP Essentials で詳細な VMware クエリを表示する
+[%collapsible%open]
+====
+. 包括的な VMware メトリック クエリにアクセスするには、* ONTAP Essentials > VMware* に移動します。
++
+image:vmware-asa-052.png["ONTAPエッセンシャル - VMware"]
+
+. このビューでは、上部にデータをフィルタリングおよびグループ化するための複数のオプションが表示されます。すべてのデータ列はカスタマイズ可能で、追加の列も簡単に追加できます。
++
+image:vmware-asa-053.png["ONTAPエッセンシャル - VMware"]
+
+
+
+====
+
+
+== まとめ
+
+このソリューションは、 NetApp Cloud Insightsの使用を開始する方法と、この可観測性ソリューションが提供できる強力な機能の一部を紹介する入門書として設計されました。製品には何百ものダッシュボードとメトリック クエリが組み込まれているため、すぐに使い始めることができます。  Cloud Insightsのフル バージョンは 30 日間の試用版として提供されており、基本バージョンはNetApp の顧客に無料で提供されます。
+
+
+
+== 追加情報
+
+このソリューションで紹介されているテクノロジーの詳細については、次の追加情報を参照してください。
+
+* https://bluexp.netapp.com/cloud-insights["NetApp BlueXPとData Infrastructure Insightsのランディング ページ"]
+* https://docs.netapp.com/us-en/data-infrastructure-insights/index.html/["NetApp Data Infrastructure Insightsドキュメント"]
+

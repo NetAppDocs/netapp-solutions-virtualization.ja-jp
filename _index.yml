@@ -1,0 +1,70 @@
+---
+indexpage:
+  title: NetApp仮想化ソリューション
+  summary: NetApp は、組織が複数のハイパーバイザーとプラットフォームにわたって IT インフラストラクチャを最適化できるようにする包括的な仮想化ソリューションを提供します。  VMware
+    環境を最新化し、代替ハイパーバイザーに移行し、NetApp の高度なデータ管理およびクラウド統合機能を活用するための戦略をご確認ください。
+  lead: NetApp は、組織が複数のハイパーバイザーとプラットフォームにわたって IT インフラストラクチャを最適化できるようにする包括的な仮想化ソリューションを提供します。  VMware
+    環境を最新化し、代替ハイパーバイザーに移行し、NetApp の高度なデータ管理およびクラウド統合機能を活用するための戦略をご確認ください。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: 新機能
+      url: "/whats-new.html"
+    - title: NetAppによる仮想化について学ぶ
+      url: "/virtualization/virt-overview.html"
+    - title: あらゆる仮想化ソリューションにNetAppを活用
+      url: "/virtualization/virt-options-on-netapp.html"
+    - title: ブログ
+      url: "/blogs.html"
+    - title: ビデオとデモ
+      url: "/videos/index.html"
+  - title: 仮想化のためのNetAppソリューション
+    links:
+    - title: VMwareオンプレミスとクラウド
+      url: "/vmware/index.html"
+    - title: Microsoft Hyper-V
+      url: hyperv/index.html
+    - title: Red Hat OpenShift 仮想化
+      url: "/openshift/index.html"
+    - title: Proxmox仮想環境
+      url: "/proxmox/index.html"
+    - title: KVMとlibvirt
+      url: "/kvm/index.html"
+  - title: VMの移行と変換
+    links:
+    - title: Shift Toolkit を使用して VM を移行する
+      url: "/migration/shift-toolkit-migration.html"
+    - title: Shift Toolkit を使用して VM を変換する
+      url: "/migration/shift-toolkit-conversion.html"
+    - title: VMをONTAPデータストアに移行する
+      url: "/migration/migrate-vms-to-ontap-datastore.html"
+    - title: VMをAmazon EC2に移行する
+      url: "/migration/migrate-vms-to-ec2-fsxn-overview.html"
+  - title: 管理ツールと統合
+    links:
+    - title: ONTAP tools for VMware vSphere
+      url: "/vmware/vmw-getting-started-otv.html"
+    - title: 管理用のONTAPおよび VMware API
+      url: "/vmware/vmw-getting-started-automation.html"
+    - title: 監視のためのData Infrastructure Insights
+      url: "/vmware/vmw-getting-started-dii.html"
+    - title: VMワークロードの移行による効率性の向上
+      url: "/vmware/vmw-getting-started-migration.html"
+  - title: データ保護とディザスタ リカバリ
+    links:
+    - title: MetroClusterとSnapMirror Active Syncによる保護
+      url: "/vmware/vmw-getting-started-vmsc.html"
+    - title: ランサムウェアからデータを保護および回復する
+      url: "/vmware/vmw-getting-started-security.html"
+    - title: SnapCenter Plug-in for VMware vSphere
+      url: "/vmware/vmw-getting-started-snapcenter.html"
+    - title: BlueXP disaster recovery
+      url: "/vmware/vmw-dr-gs.html"
+  - title: ソリューションのリクエストとフィードバック
+    links:
+    - title: リクエストの自動化
+      url: https://github.com/NetAppDocs/netapp-solutions/issues/new?body=[Request%20Automation]%0d%0a%0d%0aSolution%20Name:%20%0d%0aRequest%20Title:%20%0d%0aDescription:%0d%0aSuggestions:&title=Request%20Automation%20-%20%3Crequest_title%3E
+    - title: 新しい解決策を提案する
+      url: https://github.com/NetAppDocs/netapp-solutions/issues/new?body=[Request%20Solution]%0d%0a%0d%0aSolution%20Use%20Case:%20%0d%0aSolution%20Description:%20%0d%0aAdditional%20Comments:&title=Request%20Solution%20-%20%3Csolution%3E
+    - title: ソリューションのフィードバックを提供する
+      url: https://github.com/NetAppDocs/netapp-solutions/issues/new?body=[Solution%20Feedback]%0d%0a%0d%0aSolution%20Name:%20%0d%0aSolution%20Feedback:%20%0d%0aAdditional%20Comments:&title=Solution%20Feedback%20-%20%3Csolution%3E

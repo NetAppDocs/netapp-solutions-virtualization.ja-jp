@@ -1,0 +1,142 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-scv-multiwkld-protection.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, scv, workload, domain, backup 
+summary:  
+---
+= VMware vSphere 用のSnapCenterプラグインを使用して VCF 管理ドメインとワークロード ドメインを保護する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+SnapCenter Plug-in for VMware vSphereを使用して、複数の VCF ドメインを保護します。この手順には、各ドメインのプラグインの設定、バックアップ ポリシーの構成、および復元操作の実行が含まれます。
+
+VMware Cloud Foundation (VCF) ワークロード ドメインを使用すると、組織はリソースを論理的に異なるドメインに分割して、さまざまなワークロードをグループ化し、セキュリティとフォールト トレランスを強化できます。
+
+
+
+== はじめに
+
+ドメインは独立して拡張でき、特定のコンプライアンスに準拠し、マルチテナント機能を提供できます。  VMware Cloud Foundation (VCF) のデータ保護は、管理ドメインとワークロード ドメイン全体のデータの可用性、整合性、および回復可能性を確保するための重要な要素です。  NetApp SnapCenter Plug-in for VMware vSphere (SCV) は、NetApp のデータ保護機能を VMware 環境に統合する強力なツールです。  NetAppストレージでホストされている VMware vSphere 仮想マシン (VM) のバックアップ、復元、クローン作成を簡素化します。
+
+このドキュメントでは、SCV を使用して VCF の複数のドメインを保護するための展開手順について説明します。
+
+
+
+== 観客
+
+VMware VCF ワークロード ドメインのデータ保護と災害復旧を保証するソリューション アーキテクトまたはストレージ管理者。
+
+
+
+== アーキテクチャの概要
+
+SCV は、OVA ファイルを使用して Linux 仮想アプライアンスとして導入され、VM、データストア、ファイル、フォルダーに対して、高速でスペース効率が高く、クラッシュ整合性があり、VM 整合性のあるバックアップおよび復元操作を提供します。  SCV はリモート プラグイン アーキテクチャを使用します。  VCF 管理ドメイン vCenter に複数の SCV が展開されホストされていました。  SCV と VCF ドメインは 1 対 1 の関係であるため、VCF 管理ドメインと各ワークロード ドメインには 1 つの SCV が必要です。
+
+ONTAP FAS、 AFF、または All SAN Array (ASA) プライマリ システム上にあり、 ONTAP FAS、 AFF、またはASAセカンダリ システムに複製されたデータ。 SCV はSnapCenter Server と連携して、 SnapCenterアプリケーション固有のプラグインの VMware 環境でのアプリケーションベースのバックアップおよび復元操作もサポートします。詳細については、link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/index.html["SnapCenter Plug-in for VMware vSphereのドキュメント。"]
+
+image:vmware-vcf-aff-050.png["SCV を使用した VCF マルチワークロード ドメイン"]
+
+3-2-1 バックアップ ルールは、データのコピーを 3 つ作成し、それらを 2 種類の異なるメディアに保存し、1 つのコピーをオフサイトに保管するというデータ保護戦略です。BlueXP backup and recoveryは、オンプレミスとクラウド環境の両方にわたる幅広いバックアップおよびリカバリ操作に対して単一のコントロール プレーンを提供する、クラウド ベースのデータ管理ツールです。 NetApp BlueXP backup and recoveryスイートの一部は、SCV (オンプレミス) と統合してデータのコピーをクラウド内のオブジェクト ストレージに拡張する機能です。これにより、プライマリまたはセカンダリ ストレージ バックアップから取得されたデータの 3 番目のコピーがオフサイトに作成されます。BlueXP backup and recoveryを使用すると、オンプレミスのこれら 2 つの場所のいずれかからデータのコピーを転送するストレージ ポリシーを簡単に設定できます。詳細については、link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"^] 。
+
+
+
+== 管理ドメインと複数のワークロードドメインを備えた VCF を展開する
+
+VCF ワークロード ドメインは、SDDC Manager によってプロビジョニングされ、アプリケーションの準備が整った、1 つ以上の vSphere クラスターを持つ ESXi ホストのグループです。以下の VCF の例では、1 つの管理ドメインと 2 つのワークロード ドメインがデプロイされています。  NetAppストレージでVCFを導入する方法の詳細については、以下を参照してください。link:vmw-vcf-overview.html["NetApp VCF 導入ドキュメント。"]
+
+image:vmware-vcf-aff-051.png["VCF 1つの管理ドメインと2つのワークロードドメイン"]
+
+
+
+== SCV の展開、構成、および復元手順
+
+ワークロード ドメインの数と管理ドメインに基づいて、複数の SCV を展開する必要があります。以下の例では、2 つのワークロード ドメインと 1 つの管理ドメインがあり、3 つの SCV が VCF 管理ドメイン vCenter にデプロイされています。image:vmware-vcf-aff-063.png["VCFドメインとSCV間の1対1"]
+
+.管理ドメインと各ワークロードドメインにSCVを展開する  
+[%collapsible%open]
+====
+. link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_download_the_ova_open_virtual_appliance.html["Open Virtual Appliance (OVA) をダウンロードします。"]
+. vSphere Clientで、vCenter Serverにログインします。[管理] > [証明書] > [証明書管理] に移動します。信頼されたルート証明書を追加し、各証明書を certs フォルダーにインストールします。証明書をインストールしたら、OVAを検証して導入できるようになります。
+. VCF ワークロード ドメイン vCenter にログインし、OVF テンプレートをデプロイして、VMware デプロイ ウィザードを起動します。image:vmware-vcf-aff-052.png["SCV OVFテンプレートのデプロイ"]
++
+{nbsp}
+
+. OVA の電源をオンにして SCV を起動し、[VMware ツールのインストール] をクリックします。
+. OVA コンソールのシステム構成メニューから MFA トークンを生成します。image:vmware-vcf-aff-053.png["SnapCenter管理 Web インターフェース ログイン用の MFA"]
++
+{nbsp}
+
+. 展開時に設定した管理者ユーザー名とパスワード、およびメンテナンス コンソールを使用して生成された MFA トークンを使用して、SCV 管理 GUI にログインします。
+`https://<appliance-IP-address>:8080`管理 GUI にアクセスします。
++
+image:vmware-vcf-aff-054.png["NetApp SnapCenter for VMware vSphere Web 構成"]
+
+
+
+====
+.SCVの設定
+[%collapsible%open]
+====
+VM をバックアップまたは復元するには、まずデータストアをホストするストレージ クラスターまたは VM を追加し、次に保持と頻度に関するバックアップ ポリシーを作成し、リソースを保護するためのリソース グループを設定します。image:vmware-vcf-aff-055.png["SCVを使い始める"]
+
+. vCenter Web クライアントにログインし、ツールバーのメニューをクリックして、 SnapCenter Plug-in for VMware vSphereとストレージの追加を選択します。  SCV プラグインの左側のナビゲータ ペインで、[ストレージ システム] をクリックし、[追加] オプションを選択します。  [ストレージ システムの追加] ダイアログ ボックスで、基本的な SVM またはクラスタ情報を入力し、[追加] を選択します。  NetAppストレージの IP アドレスを入力してログインします。
+. 新しいバックアップ ポリシーを作成するには、SCV プラグインの左側のナビゲータ ペインで [ポリシー] をクリックし、[新しいポリシー] を選択します。  [新しいバックアップ ポリシー] ページで、ポリシー構成情報を入力し、[追加] をクリックします。
++
+image:vmware-vcf-aff-056.png["バックアップポリシーの作成"]
+
+. SCV プラグインの左側のナビゲータ ペインで、[リソース グループ] をクリックし、[作成] を選択します。[Create Resource Group]ウィザードの各ページで必要な情報を入力し、リソース グループに含めるVMとデータストアを選択し、適用するバックアップ ポリシーを選択し、バックアップ スケジュールを指定します。
+
+
+image:vmware-vcf-aff-057.png["リソース グループを作成"]
+
+====
+.VMとファイルまたはフォルダのバックアップを復元する
+[%collapsible%open]
+====
+バックアップから VM、VMDK、ファイル、フォルダーを復元できます。 VM は、同じ vCenter Server 内の元のホストまたは代替ホスト、あるいは同じ vCenter によって管理される代替 ESXi ホストに復元できます。バックアップ内のファイルにアクセスする必要がある場合は、バックアップから従来のデータストアをマウントできます。バックアップは、バックアップが作成されたESXiホストにも、同じタイプのVMおよびホスト構成を使用する代替ESXiホストにもマウントできます。同じデータストアを1つのホストに複数回マウントできます。ゲスト ファイル復元セッションでは、仮想ディスクのバックアップ コピーを接続してから、選択したファイルまたはフォルダを復元することで、個々のファイルやフォルダを復元することもできます。ファイルやフォルダも復元できます。
+
+*VM 復元手順*
+
+. VMware vSphere クライアント GUI で、ツールバーの [メニュー] をクリックし、ドロップダウン リストから [VM とテンプレート] を選択し、VM を右クリックして、ドロップダウン リストから[SnapCenter Plug-in for VMware vSphere]を選択し、セカンダリ ドロップダウン リストから [復元] を選択してウィザードを起動します。
+. 復元ウィザードで、復元するバックアップ スナップショットを選択し、[復元範囲] フィールドで [仮想マシン全体] を選択し、復元場所を選択して、バックアップをマウントする宛先情報を入力します。 [場所の選択] ページで、復元されたデータストアの場所を選択します。概要ページを確認し、「完了」をクリックします。
++
+image:vmware-vcf-aff-059.png["VM Restore"]
+
+. 画面下部の「最近のタスク」をクリックして、操作の進行状況を監視します。
+
+
+*データストアの復元手順*
+
+. データストアを右クリックし、 [SnapCenter Plug-in for VMware vSphere] > [マウント バックアップ] を選択します。
+. [データストアのマウント] ページで、バックアップとバックアップの場所 (プライマリまたはセカンダリ) を選択し、[マウント] をクリックします。
+
+
+image:vmware-vcf-aff-062.png["データストアの復元"]
+
+*ファイルとフォルダの復元手順*
+
+. ゲスト ファイルまたはフォルダーの復元操作のために仮想接続ディスクを使用する場合、復元する前に、接続先の VM に資格情報が設定されている必要があります。プラグインの下にあるSnapCenter Plug-in for VMware vSphereから、[ゲスト ファイルのリストアと実行資格情報] セクションを選択し、ユーザー資格情報を入力します。ユーザー名には「Administrator」と入力する必要があります。
++
+image:vmware-vcf-aff-060.png["資格情報を復元する"]
+
+. vSphere クライアントから VM を右クリックし、 [SnapCenter Plug-in for VMware vSphere] > [Guest File Restore] を選択します。  [復元範囲] ページで、バックアップ名、VMDK 仮想ディスク、および場所 (プライマリまたはセカンダリ) を指定します。  「サマリー」をクリックして確認します。
++
+image:vmware-vcf-aff-061.png["ファイルとフォルダの復元"]
+
+
+
+====
+NetApp SnapCenter for VCP マルチドメインは、データ保護を集中化し、 NetAppスナップショットを使用してバックアップに必要な時間とストレージ容量を効率的に削減し、強力なバックアップおよびレプリケーション機能によって大規模な VMware 環境をサポートし、VM 全体、特定の VMDK、または個々のファイルのきめ細かなリカバリを可能にします。
+
+
+
+== SCV による VCF 複数ドメインの保護に関するビデオ デモ
+
+.NetApp SCV で VMware VCF の複数ドメインを保護
+video::25a5a06c-1def-4aa4-ab00-b28100142194[panopto,width=360]

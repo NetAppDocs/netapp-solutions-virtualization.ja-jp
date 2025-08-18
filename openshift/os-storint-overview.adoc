@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-storint-overview.html 
+keywords: Trident, Trident, persistent storage 
+summary: NetApp は、Red Hat OpenShift などのコンテナベースの環境で永続的なデータをオーケストレーションおよび管理するお客様を支援するさまざまな製品を提供しています。 
+---
+= NetApp Tridentと Red Hat OpenShift の統合について学ぶ
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift Virtualization ソリューションのアプリケーションおよび永続ストレージ管理用に検証されたNetApp Trident Protect について説明します。
+
+Trident は、 NetAppが管理するオープンソースのストレージ プロビジョナーおよびオーケストレーターであり、 NetApp Trident Protect は、Red Hat OpenShift などのコンテナー ベースの環境での永続データのオーケストレーションと管理に役立ちます。
+
+image:redhat-openshift-108.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+次のページには、Red Hat OpenShift with NetAppソリューションにおけるアプリケーションおよび永続ストレージ管理用に検証されたNetApp製品に関する追加情報が記載されています。
+
+* link:https://docs.netapp.com/us-en/trident/["Tridentドキュメント"]
+* link:https://docs.netapp.com/us-en/trident/trident-protect/learn-about-trident-protect.html["Tridentプロテクトのドキュメント"]
+

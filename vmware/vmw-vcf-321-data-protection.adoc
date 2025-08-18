@@ -1,0 +1,700 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-321-data-protection.html 
+keywords: disaster recovery, vmc, vmware cloud, aws, amazon web services, nfs datastore, fsxn, FSx ONTAP, FSx ONTAP, backup, restore, sql server, oracle 
+summary:  
+---
+= VMware vSphere およびBlueXP backup and recoveryのSnapCenterプラグインを使用して、VMware の 3-2-1 データ保護を構成します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware vSphere およびBlueXP backup and recoveryのSnapCenterプラグインを使用して、VMware 環境向けの 3-2-1 データ保護戦略を構成します。この手順には、プライマリおよびセカンダリONTAPクラスタ上の VM およびデータストアのバックアップの設定、プラグインおよびBlueXPの設定、信頼性の高いリカバリのためのクラウドまたはオフサイト ストレージへのデータ レプリケーションの管理が含まれます。
+
+3-2-1 バックアップ戦略は業界で認められたデータ保護方法であり、貴重なデータを保護するための包括的なアプローチを提供します。この戦略は信頼性が高く、予期しない災害が発生した場合でも、データのコピーが利用可能であることを保証します。
+
+
+
+== 概要
+
+この戦略は、次の 3 つの基本ルールで構成されます。
+
+. データのコピーを少なくとも 3 つ保存してください。これにより、1 つのコピーが失われたり破損したりした場合でも、少なくとも 2 つのコピーが残っているので、それを頼りにすることができます。
+. 2 つのバックアップ コピーを異なるストレージ メディアまたはデバイスに保存します。ストレージ メディアを多様化することで、デバイス固有またはメディア固有の障害から保護することができます。1 つのデバイスが破損したり、ある種類のメディアに障害が発生したりしても、他のバックアップ コピーは影響を受けません。
+. 最後に、少なくとも 1 つのバックアップ コピーがオフサイトにあることを確認します。オフサイト ストレージは、オンサイト コピーが使用できなくなる可能性のある火災や洪水などの局所的な災害に対するフェイルセーフとして機能します。
+
+
+このソリューション ドキュメントでは、SnapCenter Plug-in for VMware vSphere (SCV) を使用してオンプレミスの仮想マシンのプライマリ バックアップとセカンダリ バックアップを作成し、仮想マシン用のBlueXP backup and recoveryを使用してデータのコピーをクラウド ストレージまたはStorageGRIDにバックアップする 3-2-1 バックアップ ソリューションについて説明します。
+
+
+
+== ユースケース
+
+このソリューションは、次のユースケースに対応します。
+
+* SnapCenter Plug-in for VMware vSphereを使用して、オンプレミスの仮想マシンとデータストアをバックアップおよび復元します。
+* ONTAPクラスターでホストされ、仮想マシン用のBlueXP backup and recovery。
+
+
+
+
+== NetApp ONTAPデータストレージ
+
+ONTAP は、SAN プロトコルまたは NAS プロトコルのどちらでアクセスする場合でも統合ストレージを提供する、NetApp の業界をリードするストレージ ソリューションです。3-2-1 バックアップ戦略により、オンプレミスのデータが複数のメディア タイプで保護されることが保証され、 NetApp は高速フラッシュから低コストのメディアに至るまでのプラットフォームを提供します。
+
+image:bxp-scv-hybrid-040.png["ONTAPデータストレージ"]
+
+NetAppのハードウェアプラットフォームの詳細については、以下をご覧ください。 https://www.netapp.com/data-storage/["NetAppデータストレージ"] 。
+
+
+
+== SnapCenter Plug-in for VMware vSphere
+
+SnapCenter Plugin for VMware vSphere は、VMware vSphere と緊密に統合され、仮想マシンのバックアップとリストアの管理を容易にするデータ保護サービスです。このソリューションの一部として、 SnapMirror は、セカンダリONTAPストレージ クラスタ上に仮想マシン データの 2 番目の不変バックアップ コピーを作成するための高速で信頼性の高い方法を提供します。このアーキテクチャを導入すると、プライマリ バックアップの場所またはセカンダリ バックアップの場所から仮想マシンの復元操作を簡単に開始できるようになります。
+
+SCV は、OVA ファイルを使用して Linux 仮想アプライアンスとして展開されます。プラグインはリモート プラグイン アーキテクチャを使用するようになりました。リモート プラグインは vCenter サーバーの外部で実行され、SCV 仮想アプライアンス上でホストされます。
+
+SCVの詳細については、 https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/["SnapCenter Plug-in for VMware vSphereのドキュメント"] 。
+
+
+
+== 仮想マシンのBlueXP backup and recovery
+
+BlueXP backup and recoveryは、オンプレミスとクラウド環境の両方にわたる幅広いバックアップおよびリカバリ操作に対して単一のコントロール プレーンを提供する、クラウド ベースのデータ管理ツールです。NetApp BlueXP backup and recoveryスイートの一部である機能は、VMware vSphere (オンプレミス) 用のSnapCenterプラグインと統合して、データのコピーをクラウド内のオブジェクト ストレージに拡張します。これにより、プライマリまたはセカンダリ ストレージ バックアップから取得されたデータの 3 番目のコピーがオフサイトに作成されます。BlueXP backup and recoveryを使用すると、オンプレミスのこれら 2 つの場所のいずれかからデータのコピーを転送するストレージ ポリシーを簡単に設定できます。
+
+BlueXP Backup and Recovery でソースとしてプライマリ バックアップとセカンダリ バックアップのいずれかを選択すると、次の 2 つのトポロジのいずれかが実装されます。
+
+*ファンアウト トポロジ* – SnapCenter Plug-in for VMware vSphereによってバックアップが開始されると、ローカル スナップショットが直ちに作成されます。次に、SCV は最新のスナップショットをセカンダリONTAPクラスタに複製するSnapMirror操作を開始します。BlueXP Backup and Recovery では、ポリシーによって、選択したクラウド プロバイダーのオブジェクト ストレージに転送されるデータのスナップショット コピーのソースとしてプライマリONTAPクラスターが指定されます。
+
+image:bxp-scv-hybrid-001.png["ファンアウトトポロジー、800,418"]
+
+*カスケード トポロジ* – SCV を使用してプライマリ データ コピーとセカンダリ データ コピーを作成する方法は、上記のファンアウト トポロジと同じです。ただし、今回は、オブジェクト ストレージへのバックアップがセカンダリONTAPクラスターから実行されるように指定するポリシーがBlueXP Backup and Recovery に作成されます。
+
+image:bxp-scv-hybrid-002.png["カスケードトポロジー"]
+
+BlueXP backup and recoveryでは、オンプレミスのONTAPスナップショットのバックアップ コピーを AWS Glacier、Azure Blob、GCP アーカイブ ストレージに作成できます。
+
+image:bxp-scv-hybrid-003.png["カスケードトポロジー"]
+
+さらに、オブジェクト ストレージのバックアップ ターゲットとしてNetApp StorageGRIDを使用することもできます。StorageGRIDの詳細については、 https://www.netapp.com/data-storage/storagegrid["StorageGRIDランディングページ"] 。
+
+.ソリューション展開の概要
+[%collapsible%open]
+====
+このリストには、このソリューションを構成し、SCV およびBlueXP backup and recoveryからバックアップと復元操作を実行するために必要な高レベルの手順が示されています。
+
+. プライマリおよびセカンダリ データ コピーに使用するONTAPクラスタ間のSnapMirror関係を構成します。
+. VMware vSphere 用のSnapCenterプラグインを構成します。
++
+.. ストレージシステムを追加する
+.. バックアップ ポリシーの作成
+.. リソース グループの作成
+.. 最初のバックアップジョブを実行する
+
+
+. 仮想マシンのBlueXP backup and recoveryを構成する
++
+.. 作業環境を追加する
+.. SCVおよびvCenterアプライアンスの検出
+.. バックアップ ポリシーの作成
+.. バックアップを有効にする
+
+
+. SCV を使用してプライマリ ストレージとセカンダリ ストレージから仮想マシンを復元します。
+. BlueXPバックアップと復元を使用して、オブジェクト ストレージから仮想マシンを復元します。
+
+
+====
+.前提条件
+[%collapsible%open]
+====
+このソリューションの目的は、VMware vSphere、VCF VI ワークロード ドメイン、または VCF 管理ドメインで実行されている仮想マシンのデータ保護を実証することです。このソリューションの仮想マシンは、 NetApp ONTAPによって提供される NFS データストアでホストされます。このソリューションでは、次のコンポーネントが構成され、使用できる状態になっていることを前提としています。
+
+. VMware vSphere に接続された NFS または VMFS データストアを備えたONTAPストレージ クラスター。NFS と VMFS の両方のデータストアがサポートされています。このソリューションでは NFS データストアが利用されました。
+. NFS データストアに使用されるボリュームに対してSnapMirror関係が確立されたセカンダリONTAPストレージ クラスタ。
+. オブジェクト ストレージ バックアップに使用されるクラウド プロバイダー用にBlueXPコネクタがインストールされています。
+. バックアップされる仮想マシンは、プライマリONTAPストレージ クラスタにある NFS データストア上にあります。
+. BlueXPコネクタとオンプレミスのONTAPストレージ クラスタ管理インターフェイス間のネットワーク接続。
+. BlueXPコネクタとオンプレミスの SCV アプライアンス VM 間、およびBlueXPコネクタと vCenter 間のネットワーク接続。
+. オンプレミスのONTAPクラスタ間 LIF とオブジェクト ストレージ サービス間のネットワーク接続。
+. プライマリおよびセカンダリONTAPストレージ クラスタ上の管理 SVM 用に設定された DNS。詳細については、 https://docs.netapp.com/us-en/ontap/networking/configure_dns_for_host-name_resolution.html#configure-an-svm-and-data-lifs-for-host-name-resolution-using-an-external-dns-server["ホスト名解決に使用するDNSの設定"] 。
+
+
+====
+
+
+== 高レベルアーキテクチャ
+
+このソリューションのテスト/検証は、最終的な展開環境と一致する場合も一致しない場合もあるラボで実行されました。
+
+image:bxp-scv-hybrid-004.png["ソリューションアーキテクチャ図"]
+
+
+
+== ソリューションの展開
+
+このソリューションでは、オンプレミス データ センターにある VMware vSphere クラスター内の Windows および Linux 仮想マシンのバックアップとリカバリを実行するために、 SnapCenter Plug-in for VMware vSphereとBlueXP backup and recoveryを利用するソリューションを展開および検証するための詳細な手順を示します。このセットアップの仮想マシンは、 ONTAP A300 ストレージ クラスタによってホストされる NFS データストアに保存されます。さらに、別のONTAP A300 ストレージ クラスタは、 SnapMirrorを使用して複製されたボリュームのセカンダリ デスティネーションとして機能します。さらに、Amazon Web Services と Azure Blob でホストされているオブジェクト ストレージが、データの 3 番目のコピーのターゲットとして使用されました。
+
+SCV によって管理されるバックアップのセカンダリ コピーのSnapMirror関係の作成と、SCV とBlueXP backup and recoveryの両方でのバックアップ ジョブの構成について説明します。
+
+SnapCenter Plug-in for VMware vSphereの詳細については、 https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/["SnapCenter Plug-in for VMware vSphereのドキュメント"] 。
+
+BlueXP backup and recoveryの詳細については、 https://docs.netapp.com/us-en/bluexp-backup-recovery/index.html["BlueXP backup and recoveryドキュメント"] 。
+
+
+
+=== ONTAPクラスタ間のSnapMirror関係を確立する
+
+SnapCenter Plug-in for VMware vSphereは、 ONTAP SnapMirrorテクノロジを使用して、セカンダリSnapMirrorおよび/またはSnapVaultコピーのセカンダリONTAPクラスタへの転送を管理します。
+
+SCV バックアップ ポリシーには、 SnapMirrorまたはSnapVault関係を使用するオプションがあります。主な違いは、 SnapMirrorオプションを使用する場合、ポリシーでバックアップ用に構成された保持スケジュールがプライマリ ロケーションとセカンダリ ロケーションで同じになることです。SnapVaultはアーカイブ用に設計されており、このオプションを使用すると、セカンダリONTAPストレージ クラスタ上のスナップショット コピーに対してSnapMirror関係を使用して個別の保持スケジュールを確立できます。
+
+SnapMirror関係の設定は、多くの手順が自動化されているBlueXPで実行することも、System Manager とONTAP CLI を使用して実行することもできます。これらすべての方法について以下で説明します。
+
+
+
+=== BlueXPとのSnapMirror関係を確立する
+
+BlueXP Web コンソールから次の手順を完了する必要があります。
+
+.プライマリおよびセカンダリONTAPストレージ システムのレプリケーション設定
+[%collapsible%open]
+====
+まず、 BlueXP Web コンソールにログインし、Canvas に移動します。
+
+. ソース (プライマリ) ONTAPストレージ システムを、宛先 (セカンダリ) ONTAPストレージ システムにドラッグ アンド ドロップします。
++
+image:bxp-scv-hybrid-041.png["ドラッグアンドドロップストレージシステム"]
+
+. 表示されるメニューから*レプリケーション*を選択します。
++
+image:bxp-scv-hybrid-042.png["レプリケーションを選択"]
+
+. *宛先ピアリング設定* ページで、ストレージ システム間の接続に使用する宛先クラスタ間 LIF を選択します。
++
+image:bxp-scv-hybrid-043.png["クラスタ間LIFを選択する"]
+
+. *宛先ボリューム名* ページで、最初にソース ボリュームを選択し、次に宛先ボリューム名を入力して、宛先 SVM とアグリゲートを選択します。続行するには、[次へ] をクリックします。
++
+image:bxp-scv-hybrid-044.png["ソースボリュームを選択"]
+
++
+image:bxp-scv-hybrid-045.png["宛先ボリュームの詳細"]
+
+. レプリケーションを実行するための最大転送速度を選択します。
++
+image:bxp-scv-hybrid-046.png["最大転送速度"]
+
+. セカンダリ バックアップの保持スケジュールを決定するポリシーを選択します。このポリシーは事前に作成することも (以下の「スナップショット保持ポリシーの作成」手順の手動プロセスを参照)、必要に応じて事後に変更することもできます。
++
+image:bxp-scv-hybrid-047.png["保持ポリシーを選択"]
+
+. 最後に、すべての情報を確認し、「Go」ボタンをクリックしてレプリケーションのセットアップ プロセスを開始します。
++
+image:bxp-scv-hybrid-048.png["確認して出発"]
+
+
+
+====
+
+
+=== System ManagerとONTAP CLIを使用してSnapMirror関係を確立する
+
+SnapMirror関係を確立するために必要なすべての手順は、System Manager またはONTAP CLI を使用して実行できます。次のセクションでは、両方の方法について詳細な情報を提供します。
+
+.送信元と宛先のクラスタ間論理インターフェースを記録する
+[%collapsible%open]
+====
+ソースおよびデスティネーションのONTAPクラスタについては、System Manager または CLI からクラスタ間 LIF 情報を取得できます。
+
+. ONTAP System Manager で、[ネットワークの概要] ページに移動し、FSx がインストールされている AWS VPC と通信するように設定されているタイプ: クラスタ間の IP アドレスを取得します。
++
+image:dr-vmc-aws-010.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+. CLI を使用してクラスタ間 IP アドレスを取得するには、次のコマンドを実行します。
++
+....
+ONTAP-Dest::> network interface show -role intercluster
+....
+
+
+====
+.ONTAPクラスタ間のクラスタピアリングを確立する
+[%collapsible%open]
+====
+ONTAPクラスタ間のクラスタ ピアリングを確立するには、開始側のONTAPクラスタで入力した一意のパスフレーズを、他のピア クラスタで確認する必要があります。
+
+. 宛先ONTAPクラスタでピアリングを設定するには、 `cluster peer create`指示。プロンプトが表示されたら、後でソース クラスターで作成プロセスを完了するために使用する一意のパスフレーズを入力します。
++
+....
+ONTAP-Dest::> cluster peer create -address-family ipv4 -peer-addrs source_intercluster_1, source_intercluster_2
+Enter the passphrase:
+Confirm the passphrase:
+....
+. ソース クラスタでは、 ONTAP System Manager または CLI を使用してクラスタ ピア関係を確立できます。ONTAP System Manager から、[Protection] > [Overview] に移動し、[Peer Cluster] を選択します。
++
+image:dr-vmc-aws-012.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+. [ピア クラスター] ダイアログ ボックスで、必要な情報を入力します。
++
+.. 宛先ONTAPクラスタでピア クラスタ関係を確立するために使用されたパスフレーズを入力します。
+.. 選択 `Yes`暗号化された関係を確立します。
+.. 宛先ONTAPクラスタのクラスタ間 LIF IP アドレスを入力します。
+.. プロセスを終了するには、「クラスター ピアリングの開始」をクリックします。
++
+image:dr-vmc-aws-013.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+
+
+. 次のコマンドを使用して、宛先ONTAPクラスタからクラスタ ピア関係のステータスを確認します。
++
+....
+ONTAP-Dest::> cluster peer show
+....
+
+
+====
+.SVMピアリング関係を確立する
+[%collapsible%open]
+====
+次の手順では、 SnapMirror関係になるボリュームを含む宛先ストレージ仮想マシンとソース ストレージ仮想マシン間の SVM 関係を設定します。
+
+. 宛先ONTAPクラスタから、CLI から次のコマンドを使用して SVM ピア関係を作成します。
++
+....
+ONTAP-Dest::> vserver peer create -vserver DestSVM -peer-vserver Backup -peer-cluster OnPremSourceSVM -applications snapmirror
+....
+. ソースONTAPクラスタから、 ONTAP System Manager または CLI のいずれかを使用してピアリング関係を受け入れます。
+. ONTAP System Manager から、[Protection] > [Overview] に移動し、[Storage VM Peers] の下の [Peer Storage VMs] を選択します。
++
+image:dr-vmc-aws-015.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+. ピア ストレージ VM のダイアログ ボックスで、必須フィールドに入力します。
++
+** ソースストレージVM
+** 宛先クラスター
+** 宛先ストレージVM
++
+image:dr-vmc-aws-016.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+
+
+. SVM ピアリング プロセスを完了するには、[ピア ストレージ VM] をクリックします。
+
+
+====
+.スナップショット保持ポリシーを作成する
+[%collapsible%open]
+====
+SnapCenter は、プライマリ ストレージ システム上にスナップショット コピーとして存在するバックアップの保持スケジュールを管理します。これは、 SnapCenterでポリシーを作成するときに確立されます。SnapCenter は、セカンダリ ストレージ システムに保持されるバックアップの保持ポリシーを管理しません。これらのポリシーは、セカンダリ FSx クラスター上に作成され、ソース ボリュームとSnapMirror関係にある宛先ボリュームに関連付けられたSnapMirrorポリシーを通じて個別に管理されます。
+
+SnapCenterポリシーを作成するときに、 SnapCenterバックアップの作成時に生成される各スナップショットのSnapMirrorラベルに追加されるセカンダリ ポリシー ラベルを指定するオプションがあります。
+
+
+NOTE: セカンダリ ストレージでは、これらのラベルは、スナップショットの保持を強制する目的で、宛先ボリュームに関連付けられたポリシー ルールと照合されます。
+
+次の例は、SQL Server データベースとログ ボリュームの毎日のバックアップに使用されるポリシーの一部として生成されたすべてのスナップショットに存在するSnapMirrorラベルを示しています。
+
+image:dr-vmc-aws-017.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+SQL Serverデータベース用のSnapCenterポリシーの作成の詳細については、 https://docs.netapp.com/us-en/snapcenter/protect-scsql/task_create_backup_policies_for_sql_server_databases.html["SnapCenterのドキュメント"^] 。
+
+まず、保持するスナップショット コピーの数を指定するルールを含むSnapMirrorポリシーを作成する必要があります。
+
+. FSx クラスターにSnapMirrorポリシーを作成します。
++
+....
+ONTAP-Dest::> snapmirror policy create -vserver DestSVM -policy PolicyName -type mirror-vault -restart always
+....
+. SnapCenterポリシーで指定されたセカンダリ ポリシー ラベルと一致するSnapMirrorラベルを使用して、ポリシーにルールを追加します。
++
+....
+ONTAP-Dest::> snapmirror policy add-rule -vserver DestSVM -policy PolicyName -snapmirror-label SnapMirrorLabelName -keep #ofSnapshotsToRetain
+....
++
+次のスクリプトは、ポリシーに追加できるルールの例を示しています。
+
++
+....
+ONTAP-Dest::> snapmirror policy add-rule -vserver sql_svm_dest -policy Async_SnapCenter_SQL -snapmirror-label sql-ondemand -keep 15
+....
++
+
+NOTE: 各SnapMirrorラベルと保持するスナップショットの数 (保持期間) に対して追加のルールを作成します。
+
+
+
+====
+.宛先ボリュームを作成する
+[%collapsible%open]
+====
+ソース ボリュームからのスナップショット コピーの受信者となる宛先ボリュームをONTAP上に作成するには、宛先ONTAPクラスターで次のコマンドを実行します。
+
+....
+ONTAP-Dest::> volume create -vserver DestSVM -volume DestVolName -aggregate DestAggrName -size VolSize -type DP
+....
+====
+.ソースボリュームと宛先ボリューム間のSnapMirror関係を作成する
+[%collapsible%open]
+====
+ソース ボリュームと宛先ボリュームの間にSnapMirror関係を作成するには、宛先ONTAPクラスタで次のコマンドを実行します。
+
+....
+ONTAP-Dest::> snapmirror create -source-path OnPremSourceSVM:OnPremSourceVol -destination-path DestSVM:DestVol -type XDP -policy PolicyName
+....
+====
+.SnapMirror関係を初期化する
+[%collapsible%open]
+====
+SnapMirror関係を初期化します。このプロセスは、ソース ボリュームから生成された新しいスナップショットを開始し、それを宛先ボリュームにコピーします。
+
+ボリュームを作成するには、宛先のONTAPクラスターで次のコマンドを実行します。
+
+....
+ONTAP-Dest::> snapmirror initialize -destination-path DestSVM:DestVol
+....
+====
+
+
+=== SnapCenter Plug-in for VMware vSphereを構成する
+
+インストールが完了すると、vCenter Server Appliance 管理インターフェイスからSnapCenter Plug-in for VMware vSphereにアクセスできるようになります。SCV は、ESXi ホストにマウントされ、Windows および Linux VM を含む NFS データストアのバックアップを管理します。
+
+レビュー https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_protect_data_overview.html["データ保護のワークフロー"]バックアップの構成手順の詳細については、SCV ドキュメントのセクションを参照してください。
+
+仮想マシンとデータストアのバックアップを構成するには、プラグイン インターフェイスから次の手順を完了する必要があります。
+
+.Discovery ONTAPストレージシステム
+[%collapsible%open]
+====
+プライマリ バックアップとセカンダリ バックアップの両方に使用されるONTAPストレージ クラスターを検出します。
+
+. SnapCenter Plug-in for VMware vSphereで、左側のメニューの *ストレージ システム* に移動し、*追加* ボタンをクリックします。
++
+image:bxp-scv-hybrid-005.png["ストレージ システム"]
+
+. プライマリONTAPストレージ システムの資格情報とプラットフォーム タイプを入力し、[*追加*] をクリックします。
++
+image:bxp-scv-hybrid-006.png["ストレージ システムの追加"]
+
+. セカンダリONTAPストレージ システムに対してこの手順を繰り返します。
+
+
+====
+.SCVバックアップポリシーを作成する
+[%collapsible%open]
+====
+ポリシーは、SCV によって管理されるバックアップの保持期間、頻度、およびレプリケーション オプションを指定します。
+
+レビュー https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_backup_policies_for_vms_and_datastores.html["VMとデータストアのバックアップ ポリシーの作成"]詳細については、ドキュメントのセクションを参照してください。
+
+バックアップ ポリシーを作成するには、次の手順を実行します。
+
+. SnapCenter Plug-in for VMware vSphereで、左側のメニューの *ポリシー* に移動し、*作成* ボタンをクリックします。
++
+image:bxp-scv-hybrid-007.png["ポリシー"]
+
+. ポリシーの名前、保持期間、頻度とレプリケーションのオプション、スナップショット ラベルを指定します。
++
+image:bxp-scv-hybrid-008.png["ポリシーを作成"]
+
++
+
+NOTE: SnapCenterプラグインでポリシーを作成すると、 SnapMirrorとSnapVaultのオプションが表示されます。SnapMirrorを選択した場合、ポリシーで指定された保持スケジュールはプライマリ スナップショットとセカンダリ スナップショットの両方で同じになります。SnapVaultを選択した場合、セカンダリ スナップショットの保持スケジュールは、 SnapMirror関係で実装された別のスケジュールに基づいて決定されます。これは、セカンダリ バックアップの保持期間を長くしたい場合に便利です。
+
++
+
+NOTE: スナップショット ラベルは、セカンダリONTAPクラスタに複製されたSnapVaultコピーに対して特定の保持期間を設定したポリシーを適用するために使用できるため便利です。SCV をBlueXPバックアップおよびリストアで使用する場合、スナップショット ラベル フィールドは空白にするか、 BlueXPバックアップ ポリシーで指定されたラベルと [下線]#一致# する必要があります。
+
+. 必要なポリシーごとにこの手順を繰り返します。たとえば、毎日、毎週、毎月のバックアップに個別のポリシーを設定します。
+
+
+====
+.リソース グループの作成
+[%collapsible%open]
+====
+リソース グループには、バックアップ ジョブに含めるデータストアと仮想マシン、および関連するポリシーとバックアップ スケジュールが含まれます。
+
+レビュー https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_resource_groups_for_vms_and_datastores.html["リソース グループの作成"]詳細については、ドキュメントのセクションを参照してください。
+
+リソース グループを作成するには、次の手順を実行します。
+
+. SnapCenter Plug-in for VMware vSphereで、左側のメニューの *リソース グループ* に移動し、*作成* ボタンをクリックします。
++
+image:bxp-scv-hybrid-009.png["リソース グループの作成"]
+
+. リソース グループの作成ウィザードで、グループの名前と説明、および通知を受信するために必要な情報を入力します。「次へ」をクリックします
+. 次のページで、バックアップ ジョブに含めるデータストアと仮想マシンを選択し、[次へ] をクリックします。
++
+image:bxp-scv-hybrid-010.png["データストアと仮想マシンを選択"]
+
++
+
+NOTE: 特定の VM またはデータストア全体を選択するオプションがあります。どちらを選択した場合でも、バックアップは基礎となるボリュームのスナップショットを取得した結果であるため、ボリューム全体 (およびデータストア) がバックアップされます。ほとんどの場合、データストア全体を選択するのが最も簡単です。ただし、復元時に使用可能な VM のリストを制限する場合は、バックアップ対象として VM のサブセットのみを選択できます。
+
+. 複数のデータストアに存在する VMDK を持つ VM のデータストアをまたぐためのオプションを選択し、[次へ] をクリックします。
++
+image:bxp-scv-hybrid-011.png["データストアをまたぐ"]
+
++
+
+NOTE: BlueXP backup and recoveryでは、現在、複数のデータストアにまたがる VMDK を持つ VM のバックアップはサポートされていません。
+
+. 次のページで、リソース グループに関連付けるポリシーを選択し、[次へ] をクリックします。
++
+image:bxp-scv-hybrid-012.png["リソースグループポリシー"]
+
++
+
+NOTE: BlueXP backup and recoveryを使用して SCV 管理スナップショットをオブジェクト ストレージにバックアップする場合、各リソース グループは 1 つのポリシーにのみ関連付けることができます。
+
+. バックアップが実行される時刻を決定するスケジュールを選択します。*次へ*をクリックします。
++
+image:bxp-scv-hybrid-013.png["リソースグループポリシー"]
+
+. 最後に、概要ページを確認し、[完了] をクリックしてリソース グループの作成を完了します。
+
+
+====
+.バックアップジョブを実行する
+[%collapsible%open]
+====
+この最後のステップでは、バックアップ ジョブを実行し、その進行状況を監視します。BlueXP backup and recoveryからリソースを検出する前に、SCV で少なくとも 1 つのバックアップ ジョブが正常に完了している必要があります。
+
+. SnapCenter Plug-in for VMware vSphereで、左側のメニューの *リソース グループ* に移動します。
+. バックアップ ジョブを開始するには、目的のリソース グループを選択し、[今すぐ実行] ボタンをクリックします。
++
+image:bxp-scv-hybrid-014.png["バックアップジョブを実行する"]
+
+. バックアップ ジョブを監視するには、左側のメニューの *ダッシュボード* に移動します。*最近のジョブアクティビティ* の下でジョブ ID 番号をクリックして、ジョブの進行状況を監視します。
++
+image:bxp-scv-hybrid-015.png["ジョブの進行状況を監視する"]
+
+
+
+====
+
+
+=== BlueXP backup and recoveryでオブジェクト ストレージへのバックアップを構成する
+
+BlueXPがデータ インフラストラクチャを効果的に管理するには、事前にコネクタをインストールする必要があります。コネクタは、リソースの検出とデータ操作の管理に関連するアクションを実行します。
+
+BlueXPコネクタの詳細については、以下を参照してください。 https://docs.netapp.com/us-en/bluexp-setup-admin/concept-connectors.html["コネクタについて学ぶ"] BlueXPドキュメント内。
+
+利用しているクラウド プロバイダーのコネクタがインストールされると、オブジェクト ストレージのグラフィック表現がキャンバスから表示できるようになります。
+
+SCV オンプレミスで管理されるデータをバックアップするようにBlueXP backup and recoveryを構成するには、次の手順を実行します。
+
+.キャンバスに作業環境を追加する
+[%collapsible%open]
+====
+最初のステップは、オンプレミスのONTAPストレージシステムをBlueXPに追加することです。
+
+. キャンバスから「*作業環境の追加*」を選択して開始します。
++
+image:bxp-scv-hybrid-016.png["作業環境を追加する"]
+
+. 場所の選択肢から「*オンプレミス*」を選択し、「*検出*」ボタンをクリックします。
++
+image:bxp-scv-hybrid-017.png["オンプレミスを選択"]
+
+. ONTAPストレージ システムの資格情報を入力し、[検出] ボタンをクリックして作業環境を追加します。
++
+image:bxp-scv-hybrid-018.png["ストレージシステムの資格情報を追加する"]
+
+
+
+====
+.オンプレミスの SCV アプライアンスと vCenter の検出
+[%collapsible%open]
+====
+オンプレミスのデータストアと仮想マシンのリソースを検出するには、SCV データ ブローカーの情報と vCenter 管理アプライアンスの資格情報を追加します。
+
+. BlueXPの左側のメニューから*保護 > バックアップとリカバリ > 仮想マシン*を選択します。
++
+image:bxp-scv-hybrid-019.png["仮想マシンを選択"]
+
+. 仮想マシンのメイン画面から [設定] ドロップダウン メニューにアクセスし、[SnapCenter Plug-in for VMware vSphere] を選択します。
++
+image:bxp-scv-hybrid-020.png["設定ドロップダウンメニュー"]
+
+. *登録* ボタンをクリックし、 SnapCenterプラグイン アプライアンスの IP アドレスとポート番号、および vCenter 管理アプライアンスのユーザー名とパスワードを入力します。検出プロセスを開始するには、[*登録*] ボタンをクリックします。
++
+image:bxp-scv-hybrid-021.png["SCVとvCenterの情報を入力します"]
+
+. ジョブの進行状況は、「ジョブ監視」タブから監視できます。
++
+image:bxp-scv-hybrid-022.png["ジョブの進捗状況を表示する"]
+
+. 検出が完了すると、検出されたすべての SCV アプライアンスのデータストアと仮想マシンを表示できるようになります。
++
+image:bxp-scv-hybrid-023.png["利用可能なリソースを表示"]
+
+
+
+====
+.BlueXPバックアップポリシーを作成する
+[%collapsible%open]
+====
+仮想マシンのBlueXP backup and recoveryでは、保持期間、バックアップ ソース、アーカイブ ポリシーを指定するポリシーを作成します。
+
+ポリシー作成の詳細については、以下を参照してください。 https://docs.netapp.com/us-en/bluexp-backup-recovery/task-create-policies-vms.html["データストアをバックアップするポリシーを作成する"] 。
+
+. BlueXP backup and recoveryのメイン ページで、[設定] ドロップダウン メニューにアクセスし、[ポリシー] を選択します。
++
+image:bxp-scv-hybrid-024.png["仮想マシンを選択"]
+
+. *ポリシーの作成* をクリックして、*ハイブリッド バックアップのポリシーの作成* ウィンドウにアクセスします。
++
+.. ポリシーの名前を追加する
+.. 希望する保存期間を選択してください
+.. バックアップをプライマリまたはセカンダリのオンプレミスONTAPストレージ システムから取得するかどうかを選択します。
+.. オプションで、追加のコスト削減のために、どのくらいの期間後にバックアップがアーカイブ ストレージに階層化されるかを指定します。
++
+image:bxp-scv-hybrid-025.png["バックアップ ポリシーの作成"]
+
++
+
+NOTE: ここで入力したSnapMirrorラベルは、ポリシーを適用するバックアップを識別するために使用されます。ラベル名は、対応するオンプレミスの SCV ポリシーのラベル名と一致する必要があります。
+
+
+
+. *作成*をクリックしてポリシーの作成を完了します。
+
+
+====
+.Amazon Web Services へのデータストアのバックアップ
+[%collapsible%open]
+====
+最後のステップは、個々のデータストアと仮想マシンのデータ保護を有効にすることです。次の手順では、AWS へのバックアップをアクティブ化する方法を説明します。
+
+詳細については、 https://docs.netapp.com/us-en/bluexp-backup-recovery/task-backup-vm-data-to-aws.html["データストアを Amazon Web Services にバックアップする"] 。
+
+. BlueXP backup and recoveryのメイン ページから、バックアップするデータストアの設定ドロップダウンにアクセスし、[バックアップのアクティブ化] を選択します。
++
+image:bxp-scv-hybrid-026.png["バックアップを有効にする"]
+
+. データ保護操作に使用するポリシーを割り当て、[次へ] をクリックします。
++
+image:bxp-scv-hybrid-027.png["ポリシーを割り当てる"]
+
+. 作業環境が以前に検出されている場合は、「*作業環境の追加*」ページに、チェックマークが付いたデータストアと作業環境が表示されます。作業環境が以前に検出されていない場合は、ここで追加できます。続行するには、[次へ] をクリックします。
++
+image:bxp-scv-hybrid-028.png["作業環境を追加する"]
+
+. *プロバイダーの選択*ページでAWSをクリックし、*次へ*ボタンをクリックして続行します。
++
+image:bxp-scv-hybrid-029.png["クラウドプロバイダーを選択"]
+
+. 使用する AWS アクセスキーとシークレットキー、リージョン、アーカイブ層など、AWS のプロバイダー固有の認証情報を入力します。また、オンプレミスのONTAPストレージ システムのONTAP IP スペースを選択します。*次へ*をクリックします。
++
+image:bxp-scv-hybrid-030.png["クラウドを提供する資格情報を提供する"]
+
+. 最後に、バックアップ ジョブの詳細を確認し、[バックアップのアクティブ化] ボタンをクリックして、データストアのデータ保護を開始します。
++
+image:bxp-scv-hybrid-031.png["確認して有効化"]
+
++
+
+NOTE: この時点ではデータ転送がすぐに開始されない場合があります。BlueXP backup and recoveryは、未処理のスナップショットを 1 時間ごとにスキャンし、それらをオブジェクト ストレージに転送します。
+
+
+
+====
+
+
+=== データ損失の場合の仮想マシンの復元
+
+データの安全を確保することは、包括的なデータ保護の 1 つの側面にすぎません。同様に重要なのは、データの損失やランサムウェア攻撃が発生した場合に、どこからでも迅速にデータを復元できる機能です。この機能は、シームレスなビジネス運用を維持し、リカバリポイント目標を達成するために不可欠です。
+
+NetApp は、適応性に優れた 3-2-1 戦略を提供し、プライマリ、セカンダリ、およびオブジェクト ストレージの場所で保持スケジュールをカスタマイズして制御できます。この戦略により、データ保護のアプローチを特定のニーズに合わせて柔軟にカスタマイズできるようになります。
+
+このセクションでは、SnapCenter Plug-in for VMware vSphereと仮想マシンのBlueXP backup and recoveryの両方からのデータ復元プロセスの概要を説明します。
+
+
+
+==== SnapCenter Plug-in for VMware vSphereからの仮想マシンの復元
+
+このソリューションでは、仮想マシンが元の場所と別の場所に復元されました。このソリューションでは、SCV のデータ復元機能のすべての側面がカバーされるわけではありません。SCVが提供するすべての詳細情報については、 https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_restore_vms_from_backups.html["バックアップからのVMのリストア"]製品ドキュメントに記載されています。
+
+.SCVから仮想マシンを復元する
+[%collapsible%open]
+====
+プライマリ ストレージまたはセカンダリ ストレージから仮想マシンを復元するには、次の手順を実行します。
+
+. vCenter クライアントから *インベントリ > ストレージ* に移動し、復元する仮想マシンが含まれているデータストアをクリックします。
+. *構成* タブから *バックアップ* をクリックして、利用可能なバックアップのリストにアクセスします。
++
+image:bxp-scv-hybrid-032.png["バックアップのアクセスリスト"]
+
+. バックアップをクリックして VM のリストにアクセスし、復元する VM を選択します。*復元*をクリックします。
++
+image:bxp-scv-hybrid-033.png["復元するVMを選択"]
+
+. 復元ウィザードから、仮想マシン全体を復元するか、特定の VMDK を復元するかを選択します。元の場所または別の場所にインストールすることを選択し、復元後の VM 名と宛先データストアを指定します。*次へ*をクリックします。
++
+image:bxp-scv-hybrid-034.png["復元の詳細を入力してください"]
+
+. プライマリまたはセカンダリのストレージ場所からバックアップすることを選択します。
++
+image:bxp-scv-hybrid-035.png["プライマリまたはセカンダリを選択"]
+
+. 最後に、バックアップ ジョブの概要を確認し、「完了」をクリックして復元プロセスを開始します。
+
+
+====
+
+
+==== BlueXP backup and recoveryから仮想マシンを復元する
+
+仮想マシン用のBlueXP backup and recoveryを使用すると、仮想マシンを元の場所に復元できます。復元機能には、 BlueXP Web コンソールからアクセスします。
+
+詳細については、 https://docs.netapp.com/us-en/bluexp-backup-recovery/task-restore-vm-data.html["クラウドから仮想マシンのデータを復元する"] 。
+
+.BlueXP backup and recoveryから仮想マシンを復元する
+[%collapsible%open]
+====
+BlueXP backup and recoveryから仮想マシンを復元するには、次の手順を実行します。
+
+. *保護 > バックアップとリカバリ > 仮想マシン* に移動し、仮想マシンをクリックして、復元可能な仮想マシンのリストを表示します。
++
+image:bxp-scv-hybrid-036.png["VMのアクセスリスト"]
+
+. 復元するVMの設定ドロップダウンメニューにアクセスし、
++
+image:bxp-scv-hybrid-037.png["設定から復元を選択"]
+
+. 復元するバックアップを選択し、「次へ」をクリックします。
++
+image:bxp-scv-hybrid-038.png["バックアップを選択"]
+
+. バックアップ ジョブの概要を確認し、[復元] をクリックして復元プロセスを開始します。
+. *ジョブ監視*タブから復元ジョブの進行状況を監視します。
++
+image:bxp-scv-hybrid-039.png["ジョブ監視タブから復元を確認する"]
+
+
+
+====
+
+
+== まとめ
+
+3-2-1 バックアップ戦略は、 SnapCenter Plug-in for VMware vSphereと仮想マシン用のBlueXP backup and recoveryを使用して実装すると、データ保護のための堅牢で信頼性が高く、コスト効率に優れたソリューションを提供します。この戦略は、データの冗長性とアクセス性を保証するだけでなく、オンプレミスのONTAPストレージ システムとクラウドベースのオブジェクト ストレージの両方から、任意の場所からデータを復元できる柔軟性も提供します。
+
+このドキュメントで紹介するユースケースは、 NetApp、VMware、および主要なクラウド プロバイダー間の統合を強調する実証済みのデータ保護テクノロジに重点を置いています。SnapCenter Plug-in for VMware vSphere は、VMware vSphere とのシームレスな統合を提供し、データ保護操作の効率的かつ集中的な管理を可能にします。この統合により、仮想マシンのバックアップおよびリカバリ プロセスが合理化され、VMware エコシステム内でのスケジュール設定、監視、および柔軟な復元操作が容易になります。BlueXP backup and recoveryは、仮想マシン データの安全なエアギャップ バックアップをクラウド ベースのオブジェクト ストレージに提供することで、3-2-1 の 1 つを実現します。直感的なインターフェースと論理的なワークフローにより、重要なデータを長期にわたってアーカイブするための安全なプラットフォームが提供されます。
+
+
+
+== 追加情報
+
+このソリューションで紹介されているテクノロジーの詳細については、次の追加情報を参照してください。
+
+* https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/["SnapCenter Plug-in for VMware vSphereのドキュメント"]
+* https://docs.netapp.com/us-en/bluexp-family/["BlueXPドキュメント"]
+

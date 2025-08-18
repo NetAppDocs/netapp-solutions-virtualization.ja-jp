@@ -1,0 +1,124 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-vm-restore-using-velero.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization, OADP operator, Openshift Data Protection Application operator, velero 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Velero を使用して Red Hat OpenShift Virtualization のバックアップから VM を復元する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Velero と OpenShift API for Data Protection (OADP) を使用して、OpenShift Virtualization で VM を復元します。この手順には、元の名前空間、別の名前空間、または代替ストレージ クラスに復元するオプションを使用して、バックアップから VM とその永続ボリュームを回復するための復元カスタム リソース (CR) の作成が含まれます。
+
+
+
+== 前提条件
+
+バックアップから復元するには、仮想マシンが存在していた名前空間が誤って削除されたと仮定します。
+
+.同じ名前空間に復元する
+[%collapsible%open]
+====
+作成したバックアップから復元するには、復元カスタム リソース (CR) を作成する必要があります。名前を付け、復元元のバックアップの名前を指定して、restorePVs を true に設定する必要があります。追加のパラメータは、link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/restoring-applications.html["ドキュメント"] 。「作成」ボタンをクリックします。
+
+image:redhat-openshift-oadp-restore-001.png["復元CRの作成"]
+
+....
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: restore1
+  namespace: openshift-adp
+spec:
+  backupName: backup1
+  restorePVs: true
+....
+フェーズが完了したことが表示されると、仮想マシンがスナップショットが作成された時点の状態に復元されたことがわかります。  (VM の実行中にバックアップが作成された場合、バックアップから VM を復元すると、復元された VM が起動し、実行状態になります)。  VM は同じ名前空間に復元されます。
+
+image:redhat-openshift-oadp-restore-002.png["復元が完了しました"]
+
+====
+.別の名前空間に復元する
+[%collapsible%open]
+====
+VM を別の名前空間に復元するには、Restore CR の yaml 定義で namespaceMapping を指定できます。
+
+次のサンプル yaml ファイルは、バックアップが virtual-machines 名前空間に取得されたときに、virtual-machines-demo 名前空間内の VM とそのディスクを復元するための Restore CR を作成します。
+
+....
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: restore-to-different-ns
+  namespace: openshift-adp
+spec:
+  backupName: backup
+  restorePVs: true
+  includedNamespaces:
+  - virtual-machines-demo
+  namespaceMapping:
+    virtual-machines-demo: virtual-machines
+....
+フェーズが完了したことが表示されると、仮想マシンがスナップショットが作成された時点の状態に復元されていることがわかります。  (VM の実行中にバックアップが作成された場合、バックアップから VM を復元すると、復元された VM が起動し、実行状態になります)。  VM は、yaml で指定された別の名前空間に復元されます。
+
+image:redhat-openshift-oadp-restore-003.png["新しい名前空間への復元が完了しました"]
+
+====
+.別のストレージクラスに復元する
+[%collapsible%open]
+====
+Velero は、json パッチを指定して復元中にリソースを変更する一般的な機能を提供します。リソースが復元される前に、json パッチが適用されます。json パッチは configmap で指定され、configmap は復元コマンドで参照されます。この機能を使用すると、異なるストレージ クラスを使用して復元できます。
+
+以下の例では、仮想マシンは作成時に、ディスクのストレージ クラスとして ontap-nas を使用します。  「backup1」という名前の仮想マシンのバックアップが作成されます。
+
+image:redhat-openshift-oadp-restore-004.png["ontap-nas を使用した VM"]
+
+image:redhat-openshift-oadp-restore-005.png["VMバックアップ ontap-nas"]
+
+VM を削除して VM の損失をシミュレートします。
+
+別のストレージ クラス (ontap-nas-eco ストレージ クラスなど) を使用して VM を復元するには、次の 2 つの手順を実行する必要があります。
+
+**ステップ1**
+
+次のように、openshift-adp 名前空間に構成マップ (コンソール) を作成します。スクリーンショットに示すように詳細を入力します。名前空間を選択: openshift-adp 名前: change-storage-class-config (任意の名前にすることができます) キー: change-storage-class-config.yaml: 値:
+
+....
+version: v1
+    resourceModifierRules:
+    - conditions:
+         groupResource: persistentvolumeclaims
+         resourceNameRegex: "^rhel*"
+         namespaces:
+         - virtual-machines-demo
+      patches:
+      - operation: replace
+        path: "/spec/storageClassName"
+        value: "ontap-nas-eco"
+....
+image:redhat-openshift-oadp-restore-006.png["設定マップUI"]
+
+結果の構成マップ オブジェクトは次のようになります (CLI)。
+
+image:redhat-openshift-oadp-restore-007.png["設定マップ CLI"]
+
+この構成マップは、復元の作成時にリソース修飾子ルールを適用します。rhel で始まるすべての永続ボリューム要求のストレージ クラス名を ontap-nas-eco に置き換えるパッチが適用されます。
+
+**ステップ2**
+
+VM を復元するには、Velero CLI から次のコマンドを使用します。
+
+....
+#velero restore create restore1 --from-backup backup1 --resource-modifier-configmap change-storage-class-config -n openshift-adp
+....
+VM は、ストレージ クラス ontap-nas-eco を使用して作成されたディスクと同じ名前空間に復元されます。
+
+image:redhat-openshift-oadp-restore-008.png["VM 復元 ontap-nas-eco"]
+
+====

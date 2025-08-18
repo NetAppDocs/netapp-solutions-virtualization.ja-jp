@@ -1,0 +1,74 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-workflow-create-vm.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Red Hat OpenShift Virtualization を使用してONTAPストレージ上に VM を作成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift Virtualization を使用して VM を作成します。この手順には、オペレーティング システム テンプレートの選択、ストレージ クラスの構成、特定の要件を満たすための VM パラメータのカスタマイズが含まれます。前提条件として、トライデント バックエンド、ストレージ クラス、ボリューム スナップショット クラス オブジェクトがすでに作成されている必要があります。参照するにはlink:osv-trident-install.html["Trident設置部"]詳細については。
+
+
+
+== VMの作成
+
+VM は、オペレーティング システムとデータをホストするためのボリュームを必要とするステートフルな展開です。 CNV では、VM はポッドとして実行されるため、VM はTridentを介してNetApp ONTAPでホストされている PV によってバックアップされます。これらのボリュームはディスクとして接続され、VM のブート ソースを含むファイル システム全体を保存します。
+
+image:redhat-openshift-052.png["VMアーキテクチャを作成する"]
+
+OpenShift クラスター上に仮想マシンをすばやく作成するには、次の手順を実行します。
+
+. [仮想化] > [仮想マシン] に移動し、[作成] をクリックします。
+. テンプレートから選択します。
+. ブート ソースが利用可能な目的のオペレーティング システムを選択します。
+. 作成後に仮想マシンを起動するチェックボックスをオンにします。
+. 「仮想マシンのクイック作成」をクリックします。
+
+
+仮想マシンが作成され、起動され、*実行中*状態になります。デフォルトのストレージ クラスを使用して、ブート ディスクの PVC と対応する PV が自動的に作成されます。将来 VM をライブ マイグレーションできるようにするには、ディスクに使用されるストレージ クラスが RWX ボリュームをサポートできることを確認する必要があります。これはライブ マイグレーションの要件です。ontap-nas および ontap-san (iSCSI および NVMe/TCP プロトコルの volumeMode ブロック) は、それぞれのストレージ クラスを使用して作成されたボリュームの RWX アクセス モードをサポートできます。
+
+クラスタ上でontap-sanストレージクラスを構成するには、link:osv-workflow-vm-migration-mtv.html["VMware から OpenShift Virtualization への VM の移行に関するセクション"] 。
+
+
+NOTE: 「仮想マシンのクイック作成」をクリックすると、デフォルトのストレージ クラスを使用して、VM の起動可能なルート ディスクの PVC と PV が作成されます。ディスクに別のストレージ クラスを選択するには、[仮想マシンのカスタマイズ] > [仮想マシン パラメータのカスタマイズ] > [ディスク] を選択し、必要なストレージ クラスを使用するようにディスクを編集します。
+
+通常、VM ディスクをプロビジョニングする際は、ファイル システムよりもブロック アクセス モードが優先されます。
+
+OS テンプレートを選択した後、仮想マシンの作成をカスタマイズするには、「クイック作成」ではなく「仮想マシンのカスタマイズ」をクリックします。
+
+. 選択したオペレーティング システムにブート ソースが設定されている場合は、[*仮想マシン パラメータのカスタマイズ*] をクリックできます。
+. 選択したオペレーティング システムにブート ソースが設定されていない場合は、それを設定する必要があります。手順の詳細については、link:https://docs.openshift.com/container-platform/4.14/virt/virtual_machines/creating_vms_custom/virt-creating-vms-from-custom-images-overview.html["ドキュメント"] 。
+. ブート ディスクを構成した後、[*仮想マシン パラメータのカスタマイズ*] をクリックできます。
+. このページのタブから VM をカスタマイズできます。たとえば、*ディスク*タブをクリックし、*ディスクの追加*をクリックして、VM に別のディスクを追加します。
+. 「仮想マシンの作成」をクリックして仮想マシンを作成します。これにより、対応するポッドがバックグラウンドで起動します。
+
+
+
+NOTE: URLまたはレジストリからテンプレートまたはオペレーティングシステムのブートソースが設定されると、PVCが `openshift-virtualization-os-images`プロジェクトを実行し、KVM ゲスト イメージを PVC にダウンロードします。テンプレート PVC に、対応する OS の KVM ゲスト イメージを収容するのに十分なプロビジョニングされた領域があることを確認する必要があります。これらの PVC は、任意のプロジェクトでそれぞれのテンプレートを使用して仮想マシンが作成されると、複製され、ルートディスクとして仮想マシンに接続されます。
+
+image:rh-os-n-use-case-vm-create-001.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+image:rh-os-n-use-case-vm-create-002.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+image:rh-os-n-use-case-vm-create-003.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+image:rh-os-n-use-case-vm-create-004.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+image:rh-os-n-use-case-vm-create-005.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+
+
+== ビデオデモンストレーション
+
+次のビデオは、iSCSI ストレージを使用して OpenShift Virtualization で VM を作成するデモを示しています。
+
+.ブロックストレージを使用して OpenShift Virtualization で VM を作成する
+video::497b868d-2917-4824-bbaa-b2d500f92dda[panopto,width=360]

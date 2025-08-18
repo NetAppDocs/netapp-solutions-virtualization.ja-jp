@@ -1,0 +1,29 @@
+---
+sidebar: sidebar 
+permalink: whats-new.html 
+keywords: 'netapp, solutions, virtualization, what"s new, updates, change log' 
+summary: NetApp仮想化ソリューション資料への最近の変更のログ。 
+---
+= NetApp仮想化ソリューションの新機能
+:allow-uri-read: 
+:icons: font
+:imagesdir: ./media/
+
+
+[role="lead"]
+仮想化ソリューションの最新情報を学びます。
+
+
+
+== 2025年8月18日
+
+NetAppソリューションサイトは、link:https://docs.netapp.com/us-en/netapp-solutions-family/index.html["NetAppソリューションファミリー"^]これには次のサイトが含まれます。
+
+* link:https://docs.netapp.com/us-en/netapp-solutions-ai/index.html["NetAppの人工知能ソリューション"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-containers/index.html["NetAppコンテナソリューション"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-dataops/index.html["NetAppデータ管理ソリューション"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-databases/index.html["NetAppデータベースソリューション"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/index.html["NetAppパブリックおよびハイブリッド クラウド ソリューション"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-sap/index.html["SAP向けNetAppソリューション"^]
+* NetApp仮想化ソリューション
+

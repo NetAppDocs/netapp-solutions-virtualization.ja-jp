@@ -1,0 +1,43 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-workflow-vm-live-migration.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Red Hat OpenShift クラスター内の 2 つのノード間で VM を移行する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift Virtualization の VM を、ダウンタイムなしでクラスター内の 2 つのノード間で移行します。この手順には、ディスクが RWX 互換のストレージ クラスを使用していることを確認し、移行を開始し、進行状況を監視することが含まれます。
+
+
+
+== VMライブマイグレーション
+
+ライブ マイグレーションは、OpenShift クラスター内のあるノードから別のノードにダウンタイムなしで VM インスタンスを移行するプロセスです。  OpenShift クラスターでライブ マイグレーションを機能させるには、VM を共有 ReadWriteMany アクセス モードで PVC にバインドする必要があります。 ontap-nas ドライバーを使用して構成されたTridentバックエンドは、FileSystem プロトコル nfs および smb の RWX アクセス モードをサポートします。ドキュメントを参照してくださいlink:https://docs.netapp.com/us-en/trident/trident-use/ontap-nas.html["ここをクリックしてください。"]。 ontap-san ドライバーを使用して構成されたTridentバックエンドは、iSCSI および NVMe/TCP プロトコルのブロック ボリューム モードの RWX アクセス モードをサポートします。ドキュメントを参照してくださいlink:https://docs.netapp.com/us-en/trident/trident-use/ontap-san.html["ここをクリックしてください。"]。
+
+したがって、ライブ マイグレーションを成功させるには、ontap-nas または ontap-san (volumeMode: Block) ストレージ クラスを使用して、PVC でディスク (ブート ディスクと追加のホット プラグ ディスク) を VM にプロビジョニングする必要があります。  PVC が作成されると、 Trident はNFS 対応または iSCSI 対応の SVM にONTAPボリュームを作成します。
+
+image:redhat-openshift-055.png["VMライブマイグレーションアーキテクチャ"]
+
+以前に作成され、実行状態にある VM のライブ マイグレーションを実行するには、次の手順を実行します。
+
+. ライブマイグレーションする VM を選択します。
+. *構成*タブをクリックします。
+. VM のすべてのディスクが、RWX アクセス モードをサポートできるストレージ クラスを使用して作成されていることを確認します。
+. 右隅の*アクション*をクリックし、*移行*を選択します。
+. 移行の進行状況を確認するには、左側のメニューで [仮想化] > [概要] に移動し、[移行] タブをクリックします。  VM の移行は、*保留中*から*スケジュール*、そして*成功*へと移行します。
+
+
+
+NOTE: evictionStrategy が LiveMigrate に設定されている場合、OpenShift クラスター内の VM インスタンスは、元のノードがメンテナンス モードになると、自動的に別のノードに移行します。
+
+image:rh-os-n-use-case-vm-live-migrate-001.png["VMライブマイグレーションの開始"]
+
+image:rh-os-n-use-case-vm-live-migrate-002.png["VMライブマイグレーションが成功しました"]

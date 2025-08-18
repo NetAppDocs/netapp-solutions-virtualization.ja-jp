@@ -1,0 +1,162 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-rosa-overview.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: ROSA 上の Red Hat OpenShift Virtualization 
+---
+= ROSA クラスターに FSx for ONTAPを搭載した Red Hat OpenShift Virtualization を導入する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ROSA (Red Hat OpenShift Service on AWS) クラスターのデフォルトの StorageClass としてAmazon FSx for NetApp ONTAPを設定します。この手順には、ボリュームに FSx ONTAPストレージを活用する VM の作成、VM 用に作成されたすべてのオブジェクトの確認、ゲスト資格情報を使用した VM への接続が含まれます。
+
+また、ゲスト資格情報を使用して仮想マシンに接続し、VM を再起動する方法についても説明します。最後に、現在のノードから新しいノードへの仮想マシンのライブマイグレーションを実行します。  VM の再起動とライブ マイグレーション後のディスク ストレージの内容を調べます。
+
+
+
+== 前提条件
+
+* link:https://signin.aws.amazon.com/signin?redirect_uri=https://portal.aws.amazon.com/billing/signup/resume&client_id=signup["AWSアカウント"]
+* link:https://console.redhat.com/["Red Hatアカウント"]
+* IAMユーザーlink:https://www.rosaworkshop.io/rosa/1-account_setup/["適切な権限を持つ"]ROSAクラスタを作成してアクセスする
+* link:https://aws.amazon.com/cli/["AWS CLI"]
+* link:https://console.redhat.com/openshift/downloads["ローザCLI"]
+* link:https://console.redhat.com/openshift/downloads["OpenShift コマンドラインインターフェース"]（oc）
+* link:https://docs.aws.amazon.com/eks/latest/userguide/helm.html["Helm 3 ドキュメント"]
+* link:https://docs.openshift.com/rosa/rosa_hcp/rosa-hcp-sts-creating-a-cluster-quickly.html["HCP ROSAクラスター"]（少なくとも 3 つのベアメタル ワーカー ノードを含む）
+* link:https://console.redhat.com/openshift/overview["Red Hat OpenShift Webコンソールへのアクセス"]
+* Trident 25.02以降 上記のTridentの前提条件については、link:osv-trident-install.html["Trident設置部"]詳細については。
+* link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/virtualization/installing#virt-aws-bm_preparing-cluster-for-virt["ROSA クラスターにインストールされた OpenShift Virtualization"]
+
+
+Trident 25.02 リリース以降では、ROSA クラスター (または任意の OpenShift クラスター) のワーカー ノードを簡単に準備して、FSxN ストレージで iSCSI 操作を実行できます。iSCSI のワーカー ノードの準備を自動化するTrident 25.02 (またはそれ以降) をインストールするには、2 つの簡単な方法があります。OpenShift Virtualization をインストールする前に、トライデント バックエンド、ストレージ クラス、ボリューム スナップショット クラス オブジェクトを作成し、デフォルトとして設定しておく必要があります。参照するにはlink:osv-trident-install.html["Trident設置部"]詳細については。
+
+
+
+== 初期セットアップ
+
+Trident バックエンド、ストレージ クラス、および VolumeSnapshotClass を設定します。参照するにはlink:osv-trident-install.html["Trident設置部"]詳細については。
+
+Trident バックエンド オブジェクトを作成するためのサンプル yaml
+
+[source, yaml]
+----
+cat tbc.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-tbc-ontap-san-secret
+type: Opaque
+stringData:
+  username: fsxadmin
+  password: <password for the fsxN filesystem>
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: backend-tbc-ontap-san
+spec:
+  version: 1
+  storageDriverName: ontap-san
+  managementLIF: <management lif of fsxN filesystem>
+  backendName: backend-tbc-ontap-san
+  svm: svm_FSxNForROSAiSCSI
+  credentials:
+    name: backend-tbc-ontap-san-secret
+
+cat sc.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: trident-csi
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "ontap-san"
+  media: "ssd"
+  provisioningType: "thin"
+  snapshots: "true"
+allowVolumeExpansion: true
+
+cat snapshot-class.yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: fsx-snapclass
+driver: csi.trident.netapp.io
+deletionPolicy: Retain
+
+#oc create -f tbc,yaml -n trident
+#oc create -f sc.yaml
+#oc create -f snapshot-class.yaml
+----
+OpenShift Virtualization をインストールする前に、ストレージ クラスとボリューム スナップショット クラスがデフォルトとして設定されていることを確認します。デフォルトの設定方法の詳細については、link:osv-trident-install.html["Tridentストレージとスナップショットクラスセクションでのデフォルトの設定"]詳細については。
+
+
+
+=== **テンプレートからVMを作成する**
+
+Web コンソールを使用して、テンプレートから VM を作成します。 AWS コンソールの RedHat OpenShiftService から仮想マシンを作成します。クラスターには、VM の作成に使用できるテンプレートが用意されています。以下のスクリーンショットでは、このリストから fedora VM を選択しています。  VM に名前を付けて、[**仮想マシンのカスタマイズ**] をクリックします。 **ディスク** タブを選択し、**ディスクの追加** をクリックします。ディスクの名前をできれば意味のある名前に変更し、ストレージ クラスとして **trident-csi** が選択されていることを確認します。  **保存**をクリックします。  **仮想マシンの作成**をクリックします
+
+数分後、VMは実行状態になりますimage:redhat-openshift-ocpv-rosa-003.png["OCP-v テンプレートから VM を作成する"]
+
+image:redhat-openshift-ocpv-rosa-004.png["OCP-v テンプレートソースが利用可能"]
+
+image:redhat-openshift-ocpv-rosa-005.png["OCP-v VMのカスタマイズ"]
+
+image:redhat-openshift-ocpv-rosa-006.png["OCP-v ディスクタブ"]
+
+image:redhat-openshift-ocpv-rosa-007.png["OCP-v ディスクの追加"]
+
+image:redhat-openshift-ocpv-rosa-008.png["OCP-v VM 実行中"]
+
+
+
+=== **VM 用に作成されたすべてのオブジェクトを確認します**
+
+ストレージ ディスク。image:redhat-openshift-ocpv-rosa-009.png["OCP-v ストレージディスク"]
+
+VM のファイル システムには、パーティション、ファイル システムの種類、マウント ポイントが表示されます。image:redhat-openshift-ocpv-rosa-010.png["OCP-v ファイルシステム"]
+
+VM 用に 2 つの PVC が作成されます。1 つはブート ディスクから、もう 1 つはホット プラグ ディスク用です。image:redhat-openshift-ocpv-rosa-011.png["OCP-v VM PVC"]
+
+ブート ディスクの PVC では、アクセス モードが ReadWriteMany であり、ストレージ クラスが trident-csi であることが示されています。image:redhat-openshift-ocpv-rosa-012.png["OCP-v VM ブートディスク PVC"]
+
+同様に、ホットプラグ ディスクの PVC では、アクセス モードが ReadWriteMany であり、ストレージ クラスが trident-csi であることが示されています。image:redhat-openshift-ocpv-rosa-013.png["OCP-v VM ホットプラグ ディスク PVC"]
+
+以下のスクリーンショットでは、VM のポッドのステータスが実行中であることがわかります。image:redhat-openshift-ocpv-rosa-014.png["OCP-v VM 実行中"]
+
+ここでは、VM ポッドに関連付けられた 2 つのボリュームと、それらに関連付けられた 2 つの PVC を確認できます。image:redhat-openshift-ocpv-rosa-015.png["OCP-v VM PVC と PV"]
+
+
+
+=== **VM に接続する**
+
+「ウェブコンソールを開く」ボタンをクリックし、ゲスト認証情報を使用してログインします。image:redhat-openshift-ocpv-rosa-016.png["OCP-v VM接続"]
+
+image:redhat-openshift-ocpv-rosa-017.png["OCP-v ログイン"]
+
+次のコマンドを発行します
+
+[source]
+----
+$ df (to display information about the disk space usage on a file system).
+----
+[source]
+----
+$ dd if=/dev/urandom of=random.dat bs=1M count=10240 (to create a file called random.dat in the home dir and fill it with random data).
+----
+ディスクには 11 GB のデータが入っています。image:redhat-openshift-ocpv-rosa-018.png["OCP-v VMがディスクをいっぱいにする"]
+
+vi を使用して、テストに使用するサンプル テキスト ファイルを作成します。image:redhat-openshift-ocpv-rosa-019.png["OCP-vでファイルを作成する"]
+
+**関連ブログ**
+
+link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Unlock-Seamless-iSCSI-Storage-Integration-A-Guide-to-FSxN-on-ROSA-Clusters-for/ba-p/459124["シームレスな iSCSI ストレージ統合を実現: iSCSI 向け ROSA クラスタ上の FSxN ガイド"]
+
+link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/Simplifying-Trident-Installation-on-Red-Hat-OpenShift-with-the-New-Certified/ba-p/459710["新しい認定Trident Operator による Red Hat OpenShift へのTrident のインストールの簡素化"]

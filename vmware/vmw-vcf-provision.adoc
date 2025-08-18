@@ -1,0 +1,25 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-provision.html 
+keywords: vmware, vcf, provision, principal, storage 
+summary:  
+---
+= ONTAPを主要ストレージソリューションとしてVCF環境をプロビジョニングする
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPストレージは、VMware Cloud Foundation (VCF) 管理および仮想インフラストラクチャ (VI) ワークロード ドメインに最適なプライマリ ストレージ ソリューションです。  ONTAP は、高いパフォーマンス、拡張性、高度なデータ管理、シームレスな統合を実現し、運用効率とデータ保護を向上させます。
+
+適切なドメインおよび適切なプロトコルで VCF 環境をプロビジョニングするための技術的な詳細については、次のソリューションを参照してください。
+
+* link:vmw-vcf-mgmt-principal-fc.html["FCによる管理ドメイン"]
+* link:vmw-vcf-mgmt-principal-nfs.html["NFSを使用した管理ドメイン"]
+* link:vmw-vcf-viwld-principal-fc.html["FC を使用した仮想インフラストラクチャ ワークロード ドメイン"]
+* link:vmw-vcf-viwld-principal-nfs.html["NFS を使用した仮想インフラストラクチャ ワークロード ドメイン"]
+

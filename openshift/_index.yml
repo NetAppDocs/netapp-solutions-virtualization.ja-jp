@@ -1,0 +1,76 @@
+---
+indexpage:
+  title: NetApp OpenShift仮想化ソリューション
+  summary: NetApp OpenShift 仮想化ソリューションは、Red Hat OpenShift Virtualization を使用した仮想化のためのNetAppストレージの機能を実証する戦略的および技術的な機能のセットです。
+  lead: NetApp OpenShift 仮想化ソリューションは、Red Hat OpenShift Virtualization を使用した仮想化のためのNetAppストレージの機能を実証する戦略的および技術的な機能のセットです。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: OpenShift Virtualizationについて
+      url: osv-overview.html
+    - title: OpenShift のストレージプロビジョニング
+      url: os-netapp-overview.html
+    - title: NetApp Tridentストレージ統合
+      url: os-storint-overview.html
+    - title: 展開のベストプラクティス
+      url: os-osv-bpg.html
+    - title: ブログ
+      url: "../blogs.html"
+    - title: ビデオ
+      url: "../videos/openshift-videos.html"
+  - title: オンプレミス展開
+    links:
+    - title: 導入の要件
+      url: osv-deployment-prerequisites.html
+    - title: ONTAPを使用したRed Hat OpenShift Virtualizationの導入
+      url: osv-deployment.html
+    - title: VMを作成する
+      url: osv-workflow-create-vm.html
+    - title: VMのクローン作成
+      url: osv-workflow-clone-vm.html
+    - title: スナップショットからVMを作成する
+      url: osv-workflow-vm-from-snapshot.html
+  - title: 仮想マシンの移行
+    links:
+    - title: VMware から OpenShift クラスターに VM を移行する
+      url: osv-workflow-vm-migration-mtv.html
+    - title: 2つのクラスタノード間でVMを移行する
+      url: osv-workflow-vm-live-migration.html
+  - title: Trident Protectを使用してデータを保護する
+    links:
+    - title: Tridentをインストールする
+      url: osv-trident-install.html
+    - title: スナップショットとバックアップでVMを保護する
+      url: osv-vm-dp-using-tp.html
+    - title: フェイルオーバーとフェイルバックを設定する
+      url: osv-vm-dr-using-tp.html
+  - title: サードパーティのツールを使用してデータを保護する
+    links:
+    - title: OADP と Velero を使用して VM を保護する
+      url: osv-vm-dp-using-velero-overview.html
+    - title: OADPをインストールする
+      url: osv-oadp-installation.html
+    - title: Velero を使用して VM をバックアップする
+      url: osv-vm-dp-using-velero.html
+    - title: Velero を使用して VM を復元する
+      url: osv-vm-restore-using-velero.html
+    - title: バックアップと復元を削除する
+      url: osv-vm-dp-delete-using-velero.html
+  - title: Data Infrastructure Insightsによる VM の監視
+    links:
+    - title: Data Infrastructure Insightsについて
+      url: os-ci-overview.html
+    - title: Data Infrastructure Insightsを構成する
+      url: os-ci-integration.html
+    - title: Data Infrastructure Insightsを使用して VM を監視する
+      url: os-ci-samples.html
+  - title: 参考資料
+    links:
+    - title: Red Hat OpenShift 仮想化
+      url: https://www.redhat.com/en/technologies/cloud-computing/openshift/virtualization
+    - title: 'OpenShift Virtualization: 仮想環境のパワーを解き放つ'
+      url: https://www.redhat.com/en/blog/openshift-virtualization-unleashing-the-power-of-cloud-native-virtual-environments
+    - title: Red Hat OpenShift ドキュメント
+      url: https://docs.openshift.com/container-platform/4.15/virt/about_virt/about-virt.html
+    - title: Red Hatブログ
+      url: https://www.redhat.com/en/blog/products

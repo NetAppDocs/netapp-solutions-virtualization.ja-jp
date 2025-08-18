@@ -1,0 +1,65 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-getting-started-vmdc.html 
+keywords: vmware, getting, started, overview, netapp, vm, data, collector, vmdc 
+summary:  
+---
+= 仮想マシン データ コレクターを使用して VMware インフラストラクチャを評価する方法について学習します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+仮想マシン データ コレクター (VMDC) は、VMware 環境向けに設計された GUI を備えた無料の軽量ツールです。  VM、ホスト、ストレージ、ネットワークのインベントリとパフォーマンス データを収集し、リソースの最適化と容量計画に役立つ情報を提供します。
+
+
+
+== はじめに
+
+仮想マシン データ コレクター (VMDC) は、VMware 環境向けの無料、軽量、シンプルな GUI ベースのツールキットであり、ユーザーはこれを使用して仮想マシン (VM)、ホスト、ストレージ、およびネットワークに関する詳細なインベントリ情報を収集できます。
+
+仮想マシンデータコレクターの詳細については、以下を参照してください。link:../assess/vmw-vmdc.html["仮想マシンデータコレクターのドキュメント"] 。
+
+
+
+== VMDCの機能
+
+VMDC は、VMWare コア ライセンス、vCPU、RAM の最適化の可能性を予測するための統計を迅速かつ即時に収集するための足がかりにすぎません。  AU とデータ コレクターのインストールを必要とするNetApp Data Infrastructure Insightsは、詳細な VM トポロジを理解し、アノテーションを使用して VM をグループ化し、ワークロードのサイズを適正化してインフラストラクチャを将来に備えるための次のステップとなることは明らかです。
+
+VMDC で収集されたメトリックのサンプリング:
+
+* VMの情報
++
+** VM name
+** VMの電源状態
+** VM CPU情報
+** VMメモリ情報
+** VMの場所
+** VMネットワーク情報
+** その他
+
+
+* VMパフォーマンス
++
+** 選択した間隔での VM のパフォーマンス データ
+** VMの読み取り/書き込み情報
+** VM IOPS情報
+** VMレイテンシ
+** その他
+
+
+* ESXiホスト情報
++
+** ホストデータセンター情報
+** ホストクラスタ情報
+** ホストモデル情報
+** ホストCPU情報
+** ホストメモリ情報
+** その他
+
+
+

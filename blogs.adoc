@@ -1,0 +1,31 @@
+---
+sidebar: sidebar 
+permalink: blogs.html 
+summary: ONTAPストレージとNetApp仮想化ソリューションを統合するための実用的なガイダンスとベスト プラクティスを紹介するブログをお読みください。 
+keywords: netapp, solutions, blogs 
+---
+= NetApp の専門家による仮想化ソリューションのブログを読む
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ./media/
+
+
+[role="lead"]
+ONTAPストレージとNetApp仮想化ソリューションを統合するための実用的なガイダンスとベスト プラクティスを紹介するブログをお読みください。
+
+* NetAppと VMware Cloud Foundation (VCF)
++
+** link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-getting-started["パート1：はじめに"]
+** link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-ontap-principal-storage["パート2: VCFとONTAPのプリンシパルストレージ"]
+** link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-element-principal-storage["パート3: VCFと要素プリンシパルストレージ"]
+** link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-supplemental-storage["パート4: VMwareと補助ストレージ用のONTAPツール"]
+
+
+* link:https://cloud.netapp.com/blog/azure-blg-optimize-storage-for-cloud-based-vmware-deployments["クラウドベースの VMware 展開向けにストレージを最適化"]
+* link:https://cloud.netapp.com/blog/azure-blg-netapp-cloud-offerings-with-azure-vmware-solution["NetAppベースのクラウド サービスを使用して Azure VMware ソリューションを開始する"]
+* link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/NetApp-and-VMware-Better-than-ever/ba-p/445780["NetAppとVMware – これまで以上に優れた"]
+* link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/3-2-1-Data-Protection-for-VMware-with-SnapCenter-Plug-in-and-BlueXP-Backup-and/ba-p/446180["SnapCenterプラグインとBlueXP のVM バックアップおよびリカバリを使用した VMware 向け 3-2-1 データ保護"]
+

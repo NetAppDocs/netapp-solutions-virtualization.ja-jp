@@ -1,0 +1,239 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-vm-dr-using-tp.html 
+keywords: OpenShift, OCP, Trident, Trident protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, Red Hat OpenShift Virtualization 
+summary: ROSA 上の Red Hat OpenShift Virtualization 
+---
+= Trident Protect を使用して Red Hat OpenShift Virtualization の VM のフェイルオーバーとフェイルバックを設定する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Trident Protect を使用して OpenShift Virtualization 内の VM の災害復旧を設定します。この手順には、 ONTAP S3 を使用した AppVault の作成、ソースとディザスタ リカバリ名前空間間の AppMirror 関係の確立、レプリケーションのスケジュール設定、サイト停止中の VM の可用性を維持するためのフェイルオーバーおよびフェイルバック操作の実行が含まれます。
+
+
+
+== 前提条件
+
+* Tridentをインストールする必要があります。  OpenShift Virtualization オペレーターを使用してクラスターに OpenShift Virtualization をインストールする前に、バックエンド クラスとストレージ クラスを作成する必要があります。
+* OpenShift VM のフェイルオーバーおよびフェイルバック操作を実装するには、 Trident Protect をインストールする必要があります。こちらの説明を参照してくださいlink:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["トライデントプロテクトをインストールする"]
+
+
+image:redhat-openshift-ocpv-tp-001.png["OCP-v trident protect が trident-protect 名前空間にインストールされました"]
+
+VM は OpenShift Virtualization で利用可能である必要があります。新しい VM をデプロイする方法、または既存の VM を OpenShift Virtualization に移行する方法の詳細については、ドキュメントの適切なセクションを参照してください。
+
+image:redhat-openshift-ocpv-tp-003.png["OCP-v VM が source-ns 名前空間にインストールされる"]
+
+
+
+== ONTAP S3を使用してApp Vaultを作成する
+
+このセクションでは、ontap S3 オブジェクト ストレージを使用して、Trident Protect でアプリ ボールトを設定する方法を説明します。
+
+oc コマンドと以下に示す yaml ファイルを使用して、ontap s3 のシークレットと appvault カスタム リソースを作成します。必ず trident protect 名前空間内に作成してください。
+
+[source, cli]
+----
+oc create -f app-vault-secret.yaml -n trident-protect
+oc create -f app-vault.yaml -n trident-protect
+----
+[source, yaml]
+----
+apiVersion: v1
+# You can provide the keys either as stringData or base 64 encoded data
+stringData:
+  accessKeyID: "<access key id as obtained from ONTAP>"
+  secretAccessKey: "<secret access key as obtained from ONTAP>"
+#data:
+  #accessKeyID: <base 64 encoded value of access key>
+  #secretAccessKey: <base 64 encoded value of secret access key>
+kind: Secret
+metadata:
+  name: appvault-secret
+  namespace: trident-protect
+type: Opaque
+----
+[source, yaml]
+----
+apiVersion: protect.trident.netapp.io/v1
+kind: AppVault
+metadata:
+  name: ontap-s3-appvault
+  namespace: trident-protect
+spec:
+  providerConfig:
+    azure:
+      accountName: ""
+      bucketName: ""
+      endpoint: ""
+    gcp:
+      bucketName: ""
+      projectID: ""
+    s3:
+      bucketName: trident-protect
+      endpoint: <data lif to use to access S3>
+      secure: "false"
+      skipCertValidation: "true"
+  providerCredentials:
+    accessKeyID:
+      valueFromSecret:
+        key: accessKeyID
+        name: appvault-secret
+    secretAccessKey:
+      valueFromSecret:
+        key: secretAccessKey
+        name: appvault-secret
+  providerType: OntapS3
+----
+ontap S3 ボールトが作成され、使用可能な状態になっていることを確認します。
+
+image:redhat-openshift-ocpv-tp-002.png["trident-protect 名前空間の OCP-v appvault"]
+
+
+
+== VM用のTrident保護アプリを作成する
+
+VM が配置されている名前空間にアプリのカスタム リソースを作成します。
+
+image:redhat-openshift-ocpv-tp-004.png["source-ns 名前空間の OCP-v アプリ"]
+
+[source, CLI]
+----
+tridentctl-protect create app source-vm -n source-ns --namespaces source-ns
+----
+image:redhat-openshift-ocpv-tp-004.png["source-ns 名前空間の OCP-v アプリ"]
+
+
+
+== 新しい名前空間に災害復旧 VM 用のTrident保護アプリを作成する
+
+[source, CLI]
+----
+oc create ns dr-ns
+tridentctl-protect create app dr-vm -n dr-ns --namespaces dr-ns
+----
+image:redhat-openshift-ocpv-tp-005.png["source-ns 名前空間の OCP-v アプリ"]
+
+
+
+== ソース名前空間にAppMirrorスケジュールを作成する
+
+示されているように、yaml を使用して AppMirror のスケジュールを作成します。これにより、スケジュール（5分ごと）を使用してスナップショットが作成され、2つのスナップショットが保持されます。
+
+[source, CLI]
+----
+oc create -f appmirror-schedule.yaml -n source-ns
+----
+[source, yaml]
+----
+apiVersion: protect.trident.netapp.io/v1
+kind: Schedule
+metadata:
+  name: appmirror-sched1
+spec:
+  appVaultRef: ontap-s3-appvault
+  applicationRef: source-vm
+  backupRetention: "0"
+  enabled: true
+  granularity: Custom
+  recurrenceRule: |-
+    DTSTART:20240901T000200Z
+    RRULE:FREQ=MINUTELY;INTERVAL=5
+  snapshotRetention: "2"
+----
+image:redhat-openshift-ocpv-tp-006.png["アプリミラースケジュールソースns名前空間"]
+
+image:redhat-openshift-ocpv-tp-007.png["スナップショットを作成しました"]
+
+
+
+== DR名前空間にappMirror関係を作成する
+
+Disaster Recovery 名前空間に Appmirror 関係を作成します。  desiredState を Established に設定します。
+
+[source, yaml]
+----
+apiVersion: protect.trident.netapp.io/v1
+kind: AppMirrorRelationship
+metadata:
+  name: amr1
+spec:
+  desiredState: Established
+  destinationAppVaultRef: ontap-s3-appvault
+  destinationApplicationRef: dr-vm
+  namespaceMapping:
+  - destination: dr-ns
+    source: source-ns
+  recurrenceRule: |-
+    DTSTART:20240901T000200Z
+    RRULE:FREQ=MINUTELY;INTERVAL=5
+  sourceAppVaultRef: ontap-s3-appvault
+  sourceApplicationName: source-vm
+  sourceApplicationUID: "<application UID of the source VM>"
+  storageClassName: "ontap-nas"
+----
+
+NOTE: 以下に示すように、ソース アプリの json 出力からソース VM のアプリケーション UID を取得できます。
+
+image:redhat-openshift-ocpv-tp-008.png["アプリUIDが作成されました"]
+
+image:redhat-openshift-ocpv-tp-009.png["アプリミラー関係を作成する"]
+
+AppMirror 関係が確立されると、最新のスナップショットが宛先名前空間に転送されます。  PVC は dr 名前空間の VM 用に作成されていますが、VM ポッドはまだ dr 名前空間に作成されていません。
+
+image:redhat-openshift-ocpv-tp-010.png["アプリミラー関係が確立されました"]
+
+image:redhat-openshift-ocpv-tp-011.png["アプリミラーの状態変化"]
+
+image:redhat-openshift-ocpv-tp-012.png["PVCは宛先名前空間に作成される"]
+
+
+
+== 関係をフェイルオーバーに昇格する
+
+関係の目的の状態を「昇格」に変更して、DR 名前空間に VM を作成します。  VM はソース名前空間で引き続き実行されています。
+
+[source, CLI]
+----
+oc patch amr amr1 -n dr-ns --type=merge -p '{"spec":{"desiredState":"Promoted"}}'
+----
+image:redhat-openshift-ocpv-tp-013.png["AppMirror関係パッチ適用"]
+
+image:redhat-openshift-ocpv-tp-014.png["AppMirror関係は昇格状態です"]
+
+image:redhat-openshift-ocpv-tp-015.png["DR 名前空間に作成された VM"]
+
+image:redhat-openshift-ocpv-tp-016.png["ソース ns の VM はまだ実行中です"]
+
+
+
+== フェイルバックのために再度関係を確立する
+
+関係の希望する状態を「確立済み」に変更します。  VM は DR 名前空間で削除されます。  pvc は DR 名前空間にまだ存在します。 VM はソース名前空間で引き続き実行されています。ソース名前空間から DR ns への元の関係が確立されます。  。
+
+[source, CLI]
+----
+oc patch amr amr1 -n dr-ns --type=merge -p '{"spec":{"desiredState":"Established"}}'
+----
+image:redhat-openshift-ocpv-tp-017.png["確立された状態へのパッチ"]
+
+image:redhat-openshift-ocpv-tp-018.png["確立された状態のApp Mirror"]
+
+image:redhat-openshift-ocpv-tp-019.png["DR nsのPVCはまだ残っている"]
+
+image:redhat-openshift-ocpv-tp-020.png["ソースnsのPODとPVCはまだ残っている"]
+
+
+
+== ビデオデモンストレーション
+
+次のビデオは、 Trident Protect を使用して OpenShift VM の災害復旧シナリオを実装するデモを示しています。
+
+.Trident Protectを使用した災害復旧
+video::ae4bdcf7-b344-4f19-89ed-b2d500f94efd[panopto,width=360]

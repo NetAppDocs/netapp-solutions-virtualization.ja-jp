@@ -1,0 +1,250 @@
+---
+sidebar: sidebar 
+permalink: migration/migrate-vms-to-ec2-fsxn-deploy.html 
+keywords: netapp, vmware, amazon, ec2, fsxn, migration, iscsi, deploy 
+summary: 'この技術レポートでは、Cirrus Migrate Cloud (CMC) の MigrateOps の「コードとしてのデータモビリティ」機能を使用して、オンプレミスの VMware vSphere VM を、FSx ONTAP iSCSI LUN 上にデータディスクが配置された Amazon EC2 インスタンスに移行する方法について説明します。' 
+---
+= Amazon FSx for ONTAPを使用して VM を Amazon EC2 に移行する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Amazon FSx for NetApp ONTAPをデプロイして、VM を Amazon EC2 に移行します。この手順には、FSx ONTAP環境のセットアップ、iSCSI 接続の構成、シームレスなデータ転送のための Cirrus Data の MigrateOps の使用が含まれます。
+
+
+
+== 移行操作のために FSx ONTAPと Cirrus Data を構成する
+
+これ https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/getting-started-step1.html["ステップバイステップの展開ガイド"]FSx ONTAPボリュームを VPC に追加する方法を示します。これらの手順は連続的な性質を持つため、必ず順番に実行してください。
+
+このデモでは、作成されたファイル システムの名前は「DRaaSDemo」です。
+
+image:migrate-ec2-fsxn-002.png["デモ用ファイルシステムのユーザーインターフェースの画像"]
+
+AWS VPCが設定され、パフォーマンス要件に基づいてFSx ONTAPがプロビジョニングされたら、link:http://cloud.cirrusdata.com/["cloud.cirrusdata.com"]そしてlink:https://customer.cirrusdata.com/cdc/kb/articles/get-started-with-cirrus-data-cloud-4eDqjIxQpg["新しいプロジェクトを作成する"]または既存のプロジェクトにアクセスします。
+
+image:migrate-ec2-fsxn-003.png["Cirrus Data プロジェクトのユーザー インターフェースの画像"]
+
+MigrationOps のレシピを作成する前に、AWS クラウドを統合として追加する必要があります。  CMC は、FSx ONTAPおよび AWS との組み込み統合を提供します。  FSx ONTAPの統合により、次の自動化機能が提供されます。
+
+*FSx ONTAPファイルシステムを準備します:*
+
+* ソースボリュームに一致する新しいボリュームとLUNを作成する
+
+
+*注*: FSx ONTAP FS モデルの宛先ディスクは、LUN を格納するのに十分な容量と、スナップショットとメタデータを容易にするための適切な量のオーバーヘッドを持つ「ボリューム」上に作成される「LUN」です。  CMC 自動化はこれらすべての詳細を処理し、オプションのユーザー定義パラメータを使用して適切なボリュームと LUN を作成します。
+
+* ホスト イニシエータ IQN を使用してホスト エンティティ (FSx では iGroup と呼ばれます) を作成します。
+* マッピングを使用して、新しく作成されたボリュームを適切なホストエンティティにマップします。
+* その他必要な設定をすべて作成する
+
+
+*iSCSI接続用に本番ホストを準備する:*
+
+* 必要に応じて、iSCSI 機能をインストールして構成し、イニシエーターを設定します。
+* 必要に応じて、適切なベンダー ID を使用してマルチパス (Windows の場合は MPIO) をインストールおよび構成します。
+* 必要に応じて、ベンダーのベスト プラクティス (Linux の udev 設定など) に従ってシステム設定を調整します。
+* Windows 上で永続的/お気に入りの iSCSI ターゲットなどの iSCSI 接続を作成および管理します。
+
+
+FSx ONTAPと AWS の CMC 統合を構成するには、次の手順を実行します。
+
+. Cirrus Data Cloud ポータルにログインします。
+. 統合を有効にするプロジェクトに移動します。
+. 「統合」->「Goodies」に移動します。
+. スクロールして FSx ONTAPを見つけ、「ADD INTEGRATION」をクリックします。
++
+image:migrate-ec2-fsxn-004.png["Cirrus Dataの「統合の追加」ユーザーインターフェースの画像"]
+
+. わかりやすい名前（表示目的のみ）を入力し、適切な資格情報を追加します。
++
+image:migrate-ec2-fsxn-005.png["Cirrus Dataの「統合の追加」ユーザーインターフェースの画像"]
+
+. 統合が作成されると、新しい移行セッションの作成中に、「宛先ボリュームの自動割り当て」を選択して、FSx ONTAPに新しいボリュームを自動的に割り当てます。
++
+*注意*: 移行で「より小さいボリュームに移行」が有効になっていない限り、新しい LUN はソース ボリュームと同じサイズで作成されます。
+
++
+*注意*: ホスト エンティティ (iGroup) がまだ存在しない場合は、新しいものが作成されます。すべてのホスト iSCSI イニシエーター IQN が新しいホスト エンティティに追加されます。
+
++
+*注意*: いずれかの iSCSI イニシエーターを持つ既存のホスト エンティティがすでに存在する場合は、それが再利用されます。
+
+. 完了したら、画面の手順に従って AWS の統合を追加します。
++
+image:migrate-ec2-fsxn-006.png["Cirrus Dataの「統合の追加」ユーザーインターフェースの画像"]
+
++
+*注*: この統合は、FSx ONTAP統合とともに、オンプレミスのストレージから AWS に仮想マシンを移行するときに使用されます。
+
++
+*注*: 移行する本番インスタンスへの直接の送信接続がない場合は、管理リレーを使用して Cirrus Data Cloud と通信します。
+
+
+
+統合を追加したら、ホストをプロジェクトに登録します。これを例のシナリオで説明しましょう。
+
+
+
+== ホスト登録シナリオ
+
+オンプレミス データ センターの vCenter 上に存在するゲスト VMware VM:
+
+* OS とデータ ディスクを含む 3 つの VMDK を備えた SQL Server で実行される Windows 2016。アクティブなデータベースを実行しています。データベースは、2 つの VMDK によってバックアップされたデータ ボリューム上に配置されます。
+
+
+*注*: ソースは VMware 環境であり、VMDK が使用されているため、このゲスト VM では現在 Windows iSCSI イニシエーター ソフトウェアは構成されていません。  iSCSI 経由で宛先ストレージに接続するには、iSCSI と MPIO の両方をインストールして構成する必要があります。  Cirrus Data Cloud 統合により、このインストールはプロセス中に自動的に実行されます。
+
+*注*: 前のセクションで構成された統合により、新しいディスクの作成、ホスト エンティティとその IQN の設定、さらには iSCSI およびマルチパス構成のアプリケーション VM (ホスト) の修復において、新しい宛先ストレージの構成が自動化されます。
+
+image:migrate-ec2-fsxn-007.png["移行される VMware 仮想マシンのイメージ"]
+
+このデモンストレーションでは、各 VM のアプリケーション VMDK を、FSx ONTAPから自動的にプロビジョニングおよびマップされた iSCSI ボリュームに移行します。この場合、Amazon EC2 インスタンスはこの Amazon EBS をブートディスクとしてのみサポートするため、OS VMDK は Amazon EBS ボリュームに移行されます。
+
+*注*: この移行アプローチのスケール係数は、ネットワーク帯域幅とオンプレミスを AWS VPC に接続するパイプです。各 VM には 1:1 ホスト セッションが構成されているため、全体的な移行パフォーマンスは次の 2 つの要因に依存します。
+
+* ネットワーク帯域幅
+* 対象インスタンスタイプとENI帯域幅
+
+
+移行手順は次のとおりです。
+
+. 移行ウェーブに指定された各ホスト (Windows および Linux) に CMC エージェントをインストールします。これは、1 行のインストール コマンドを実行することによって実行できます。
++
+これを行うには、「データ移行」>「移行ホスト」にアクセスし、「Cirrus Migrate Cloud のデプロイ」をクリックして、「Windows」をクリックして選択します。
+
++
+次に、 `iex`コマンドをホストに送信し、PowerShell を使用して実行します。エージェントのデプロイが成功すると、ホストがプロジェクトの「移行ホスト」の下に追加されます。
+
++
+image:migrate-ec2-fsxn-008.png["Cirrus Data インストール インターフェースの画像"]
+
++
+image:migrate-ec2-fsxn-009.png["Windows のインストール進行状況の画像"]
+
+. 各仮想マシンの YAML を準備します。
++
+*注*: 移行タスクに必要なレシピまたはブループリントを指定する YAML を各 VM に用意することは重要なステップです。
+
++
+YAMLは、レシピ名に加えて、操作名、メモ（説明）を提供します。 `MIGRATEOPS_AWS_COMPUTE` 、ホスト名(`system_name`）と統合名(`integration_name`) およびソースと宛先の構成。カスタム スクリプトは、カットオーバーの前後のアクションとして指定できます。
+
++
+[source, yaml]
+----
+operations:
+    -   name: Win2016 SQL server to AWS
+        notes: Migrate OS to AWS with EBS and Data to FSx ONTAP
+        recipe: MIGRATEOPS_AWS_COMPUTE
+        config:
+            system_name: Win2016-123
+            integration_name: NimAWShybrid
+            migrateops_aws_compute:
+                region: us-west-2
+                compute:
+                    instance_type: t3.medium
+                    availability_zone: us-west-2b
+                network:
+                    vpc_id: vpc-05596abe79cb653b7
+                    subnet_id: subnet-070aeb9d6b1b804dd
+                    security_group_names:
+                        - default
+                destination:
+                    default_volume_params:
+                        volume_type: GP2
+                    iscsi_data_storage:
+                        integration_name: DemoDRaaS
+                        default_volume_params:
+                            netapp:
+                                qos_policy_name: ""
+                migration:
+                    session_description: Migrate OS to AWS with EBS and Data to FSx ONTAP
+                    qos_level: MODERATE
+                cutover:
+                    stop_applications:
+                        - os_shell:
+                              script:
+                                  - stop-service -name 'MSSQLSERVER' -Force
+                                  - Start-Sleep -Seconds 5
+                                  - Set-Service -Name 'MSSQLSERVER' -StartupType Disabled
+                                  - write-output "SQL service stopped and disabled"
+
+                        - storage_unmount:
+                              mountpoint: e
+                        - storage_unmount:
+                              mountpoint: f
+                    after_cutover:
+                        - os_shell:
+                              script:
+                                  - stop-service -name 'MSSQLSERVER' -Force
+                                  - write-output "Waiting 90 seconds to mount disks..." > log.txt
+                                  - Start-Sleep -Seconds 90
+                                  - write-output "Now re-mounting disks E and F for SQL..." >>log.txt
+                        - storage_unmount:
+                              mountpoint: e
+                        - storage_unmount:
+                              mountpoint: f
+                        - storage_mount_all: {}
+                        - os_shell:
+                              script:
+                                  - write-output "Waiting 60 seconds to restart SQL Services..." >>log.txt
+                                  - Start-Sleep -Seconds 60
+                                  - stop-service -name 'MSSQLSERVER' -Force
+                                  - Start-Sleep -Seconds 3
+                                  - write-output "Start SQL Services..." >>log.txt
+                                  - Set-Service -Name 'MSSQLSERVER' -StartupType Automatic
+                                  - start-service -name 'MSSQLSERVER'
+                                  - write-output "SQL started" >>log.txt
+----
+. YAML が配置されたら、MigrateOps 構成を作成します。これを行うには、「データ移行」>「MigrateOps」に移動し、「新しい操作の開始」をクリックして、有効な YAML 形式で構成を入力します。
+. 「操作を作成」をクリックします。
++
+*注*: 並列処理を実現するには、各ホストで YAML ファイルを指定して構成する必要があります。
+
+. ない限り、 `scheduled_start_time`フィールドが構成に指定されている場合、操作はすぐに開始されます。
+. 操作が実行され、続行されます。 Cirrus Data Cloud UI から、詳細なメッセージで進行状況を監視できます。これらの手順には、自動割り当ての実行や移行セッションの作成など、通常は手動で実行されるタスクが自動的に含まれます。
++
+image:migrate-ec2-fsxn-010.png["Cirrus Data 移行の進捗状況の画像"]
+
++
+*注意*: ホスト間の移行中に、受信 4996 ポートを許可するルールを持つ追加のセキュリティ グループが作成され、通信に必要なポートが許可され、同期が完了すると自動的に削除されます。
+
++
+image:migrate-ec2-fsxn-011.png["Cirrus Data 移行に必要な受信ルールの画像"]
+
+. この移行セッションが同期されている間に、フェーズ 3 (カットオーバー) に「承認が必要」というラベルが付いた将来のステップがあります。 MigrateOps レシピでは、重要なタスク (移行のカットオーバーなど) を実行する前にユーザーの承認が必要です。プロジェクト オペレーターまたは管理者は、UI からこれらのタスクを承認できます。将来の承認ウィンドウも作成できます。
++
+image:migrate-ec2-fsxn-012.png["Cirrusデータ移行同期のイメージ"]
+
+. 承認されると、MigrateOps 操作は切り替えを続行します。
+. しばらくすると、操作が完了します。
++
+image:migrate-ec2-fsxn-013.png["Cirrus Data 移行完了のイメージ"]
+
++
+*注*: Cirrus Data cMotion テクノロジーの助けにより、宛先ストレージは最新の変更をすべて反映した最新の状態に保たれています。したがって、承認が得られた後、この最終的な切り替えプロセス全体は、完了するまでに非常に短い時間（1 分未満）しかかかりません。
+
+
+
+
+
+== 移行後の検証
+
+Windows Server OS を実行している移行された Amazon EC2 インスタンスと、完了した次の手順を見てみましょう。
+
+. Windows SQL サービスが開始されました。
+. データベースはオンラインに戻り、iSCSI マルチパス デバイスのストレージを使用しています。
+. 移行中に追加されたすべての新しいデータベース レコードは、新しく移行されたデータベースで見つかります。
+. 古いストレージは現在オフラインです。
+
+
+*注*: 1 回のクリックでデータ移動操作をコードとして送信し、1 回のクリックでカットオーバーを承認するだけで、VM は FSx ONTAPとその iSCSI 機能を使用してオンプレミスの VMware から Amazon EC2 インスタンスに正常に移行されます。
+
+*注*: AWS API の制限により、変換された VM は「Ubuntu」として表示されます。これは厳密には表示の問題であり、移行されたインスタンスの機能には影響しません。今後のリリースではこの問題に対処します。
+
+*注意*: 移行された Amazon EC2 インスタンスには、オンプレミス側で使用されていた認証情報を使用してアクセスできます。

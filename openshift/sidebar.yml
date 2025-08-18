@@ -1,0 +1,74 @@
+---
+section: osv
+title: OpenShift仮想化
+url: "/openshift/index.html"
+entries:
+- title: 始めましょう
+  pdf-filename: Red Hat OpenShift Virtualization の概要
+  entries:
+  - title: OpenShift Virtualizationについて
+    url: "/openshift/osv-overview.html"
+  - title: OpenShift のストレージプロビジョニング
+    url: "/openshift/os-netapp-overview.html"
+  - title: NetApp Tridentストレージ統合
+    url: "/openshift/os-storint-overview.html"
+- title: 展開のベストプラクティス
+  pdf-filename: NetAppにおける Red Hat OpenShift Virtualization のベストプラクティス
+  url: "/openshift/os-osv-bpg.html"
+- title: Tridentをインストールする
+  pdf-filename: Tridentをインストールする
+  url: "/openshift/osv-trident-install.html"
+- title: オンプレミス展開
+  pdf-filename: Red Hat OpenShift Virtualization をオンプレミスで導入
+  entries:
+  - title: 導入の要件
+    url: "/openshift/osv-deployment-prerequisites.html"
+  - title: OpenShift Virtualization のデプロイ
+    url: "/openshift/osv-deployment.html"
+  - title: VMを作成する
+    url: "/openshift/osv-workflow-create-vm.html"
+  - title: VMware から VM を移行する
+    url: "/openshift/osv-workflow-vm-migration-mtv.html"
+  - title: 2つのクラスタノード間でVMを移行する
+    url: "/openshift/osv-workflow-vm-live-migration.html"
+  - title: VMのクローン作成
+    url: "/openshift/osv-workflow-clone-vm.html"
+  - title: スナップショットからVMを作成する
+    url: "/openshift/osv-workflow-vm-from-snapshot.html"
+- title: FSxNを使用してROSAにデプロイする
+  pdf-filename: Amazon FSx for ONTAPを使用して ROSA に Red Hat OpenShift 仮想化を導入する
+  entries:
+  - title: ROSAにOpenShiftをデプロイする
+    url: "/openshift/osv-rosa-overview.html"
+  - title: VMの再起動またはライブマイグレーション
+    url: "/openshift/osv-rosa-vm-workflows.html"
+- title: Trident Protectを使用してデータを保護する
+  entries:
+  - title: スナップショットとバックアップでVMを保護する
+    url: "/openshift/osv-vm-dp-using-tp.html"
+  - title: フェイルオーバーとフェイルバックを設定する
+    url: "/openshift/osv-vm-dr-using-tp.html"
+- title: サードパーティのツールを使用してデータを保護する
+  pdf-filename: Red Hat OpenShift 仮想化データ保護
+  entries:
+  - title: OADP と Velero を使用して VM を保護する
+    url: "/openshift/osv-vm-dp-using-velero-overview.html"
+  - title: OADPをインストールする
+    url: "/openshift/osv-oadp-installation.html"
+  - title: Velero を使用して VM をバックアップする
+    url: "/openshift/osv-vm-dp-using-velero.html"
+  - title: Velero を使用して VM を復元する
+    url: "/openshift/osv-vm-restore-using-velero.html"
+  - title: バックアップと復元を削除する
+    url: "/openshift/osv-vm-dp-delete-using-velero.html"
+- title: DII で VM を監視する
+  pdf-filename: Red Hat OpenShift 仮想化監視
+  entries:
+  - title: DIIについて
+    url: "/openshift/os-ci-overview.html"
+  - title: D IIを構成する
+    url: "/openshift/os-ci-integration.html"
+  - title: DII を使用して VM を監視する
+    url: "/openshift/os-ci-samples.html"
+- title: その他のリソース
+  url: "/openshift/os-additional-information.html"

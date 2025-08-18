@@ -1,0 +1,43 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-sovereign-cloud-use-cases.html 
+keywords: NetApp solutions, vmware, sovereign cloud, netapp, use case 
+summary:  
+---
+= NetAppテクノロジーとVMware Soverine Cloudの統合
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetAppテクノロジーは VMware Sovereign Cloud フレームワークと統合され、政府機関や規制の厳しい組織にデータ主権、セキュリティ、コンプライアンスのソリューションを提供します。これらの統合により、サービス プロバイダーは、オブジェクト ストレージにNetApp StorageGRIDを活用し、プライマリ データ ストレージと保護サービスにONTAP を活用しながら、機密データに対する完全な管轄権制御を維持できます。
+
+NetApp は、複数のNetAppテクノロジーを統合することで、VMware Sovereign Cloud コンセプトのサポートを提供します。  NetAppテクノロジーと VMware Sovereign Cloud の統合の詳細については、次のリンクを参照してください。
+
+* link:#storageGRID["オブジェクトストア拡張機能としてのNetApp StorageGRID"]
+
+
+
+
+== オブジェクトストア拡張機能としてのNetApp StorageGRID
+
+NetApp はVMware と連携し、VMware Sovereign Cloud をサポートするためにNetApp StorageGRID をVMware Cloud Director に統合しました。  VMware Cloud Director へのこのプラグインにより、サービス プロバイダは、 StorageGRID をオブジェクト ストレージ サービスとして使用できるようになります (ユース ケースに関係なく)。また、サービス プロバイダがサービス カタログの他の部分を管理するために使用するのと同じ VMware マルチテナント ソリューション (VMware Cloud Director) を通じて、 StorageGRID を管理できるようになります。
+
+VMware Sovereign Clouds を提供するパートナーは、 NetApp StorageGRIDを選択して、非構造化データを含むクラウド環境の管理と保守を行うことができます。  Amazon S3 API などの業界標準 API のネイティブ サポートにおける汎用的な互換性により、さまざまなクラウド環境間でのスムーズな相互運用性が確保され、自動化されたライフサイクル管理などの独自のイノベーションにより、顧客の非構造化データをよりコスト効率よく保護、保存、および長期保存することができます。
+
+NetApp の Sovereign Cloud と Cloud Director の統合により、顧客には次のメリットがもたらされます。
+
+* メタデータを含む機密データが主権管理下に置かれ、データプライバシー法に違反する可能性のある外国当局によるアクセスが防止されることを保証します。
+* 信頼できるローカル インフラストラクチャ、組み込みフレームワーク、ローカル エキスパートによって継続的なコンプライアンスを維持しながら、急速に進化する攻撃ベクトルからアプリケーションとデータを保護する、セキュリティとコンプライアンスの強化。
+* 変化するデータ プライバシー規制、セキュリティの脅威、地政学的な変化に迅速に対応できる、将来を見据えたインフラストラクチャ。
+* 安全なデータ共有と分析によりデータの価値を解き放ち、プライバシー法に違反することなくイノベーションを推進する能力。データの整合性が保護され、正確な洞察が確保されます。
+
+
+StorageGRID統合の詳細については、以下を参照してください。
+
+* link:https://www.netapp.com/newsroom/press-releases/news-rel-20231107-561294/["NetAppの発表"]
+

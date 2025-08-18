@@ -1,0 +1,34 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-netapp-overview.html 
+keywords: NetApp, ONTAP, Element, Storage 
+summary: NetApp には、Red Hat OpenShift に導入されたアプリケーション用のストレージをプロビジョニングするために、 Trident Storage Orchestrator で認定されたストレージ プラットフォームがいくつかあります。 
+---
+= Red Hat OpenShift にデプロイされたアプリケーションのストレージのプロビジョニングについて学習します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp は、 Trident Storage Orchestrator を使用して Red Hat OpenShift と統合し、コンテナ化されたアプリケーションに永続的なストレージを提供します。サポートされているストレージ オプションには、 AFFやFASなどのONTAPベースのシステム、仮想化環境とクラウド環境向けのONTAP SelectおよびCloud Volumes ONTAPなどがあります。  Amazon FSx for NetApp ONTAP、 Azure NetApp Files、 Google Cloud NetApp Volumesなどのクラウドネイティブ サービスもサポートされています。
+
+image:redhat-openshift-043.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+* AFFおよびFASシステムはNetApp ONTAPを実行し、ファイルベース (NFS) とブロックベース (iSCSI) の両方のユースケースにストレージを提供します。
+* Cloud Volumes ONTAPとONTAP Select は、それぞれクラウドと仮想空間で同じ利点を提供します。
+* Amazon FSx for NetApp ONTAP、 Azure NetApp Files、 Google Cloud NetApp Volumes は、クラウド内でファイルベースのストレージを提供します。
+* NetApp Elementストレージ システムは、高度にスケーラブルな環境でブロックベース (iSCSI) の使用例を実現します。
+
+
+
+NOTE: NetAppポートフォリオの各ストレージ システムは、オンプレミス サイトとクラウド間のデータ管理と移動を容易にし、データがアプリケーションがある場所にあることを保証します。
+
+次のページには、Red Hat OpenShift with NetAppソリューションで検証されたNetAppストレージ システムに関する追加情報が記載されています。
+
+* link:os-netapp-ontap.html["NetApp ONTAP"]
+* link:https://docs.netapp.com/us-en/netapp-solutions-containers/openshift/os-netapp-element.html["NetApp Element"^]
+

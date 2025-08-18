@@ -1,0 +1,167 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-overview.html 
+keywords: netapp, vmware, cloud, foundation, vcf, flexpod 
+summary:  
+---
+= VMware Cloud Foundation とONTAPでハイブリッド クラウド エクスペリエンスを簡素化
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAP はVMware Cloud Foundation (VCF) と統合され、ブロック プロトコルとファイル プロトコルの両方をサポートする統合ストレージ ソリューションを提供します。この統合により、ハイブリッド クラウドの展開が簡素化され、データ管理とパフォーマンスが向上し、オンプレミスとクラウド環境全体で一貫したデータ サービスが確保されます。
+
+
+
+= はじめに
+
+NetApp をVCF と併用すると、重複排除、圧縮、スナップショットなどの NetApp の高度な機能を通じて、データ管理とストレージ効率が向上します。この組み合わせにより、仮想化環境にシームレスな統合、高パフォーマンス、およびスケーラビリティが実現します。さらに、オンプレミスとクラウド インフラストラクチャ全体で一貫したデータ サービスと管理を可能にすることで、ハイブリッド クラウドの展開を簡素化します。
+
+
+
+== NetApp ONTAPの紹介
+
+NetApp ONTAPは、幅広い製品ラインにわたって高度なストレージ機能を提供する包括的なデータ管理ソフトウェアです。  ONTAP は、ソフトウェア定義ストレージとして、主要なクラウド プロバイダーによるファースト パーティ サービスとして、またNetApp ASA (All San Array)、 AFF (All-flash FAS)、 FAS (Fabric-Attached Storage) プラットフォームのストレージ OS として利用できます。  ONTAP は、サイロを作成することなく、VMware 仮想化を含むさまざまなユース ケースで高パフォーマンスと低レイテンシを実現します。
+
+
+
+== VMware Cloud Foundation の概要
+
+VCF は、コンピューティング、ネットワーク、ストレージ オファリングを VMware 製品およびサードパーティ統合と統合し、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方を容易にします。このソフトウェア プラットフォームには、VMware vSphere、NSX、Aria Suite Enterprise、Tanzu Kubernetes Grid、HCX Enterprise、SDDC Manager などの主要コンポーネントと、vSAN 経由でホスト CPU コアにリンクされたストレージ容量が含まれています。  NetApp ONTAP は、オンプレミスとパブリック クラウドの両方で、さまざまな VCF 導入モデルとシームレスに統合されます。
+
+image:vmware-vcf-overview-components.png["VMware Cloud Foundation コンポーネント"]
+
+
+
+== VCF ドメイン
+
+ドメインは、VCF 内の基本的な構成要素であり、リソースを個別の独立したグループに編成することを可能にします。ドメインはインフラストラクチャをより効果的に整理し、リソースが効率的に利用されるようにするのに役立ちます。各ドメインは、独自のコンピューティング、ネットワーク、およびストレージ要素とともに展開されます。
+
+image:vmware-vcf-overview-domains.png["VMware クラウドドメイン"]
+
+VCF には主に 2 つのタイプのドメインがあります。
+
+* *管理ドメイン* – 管理ドメインには、VCF 環境のコア機能を担当するコンポーネントが含まれます。コンポーネントは、リソースのプロビジョニング、監視、メンテナンスなどの重要なタスクを処理し、 NetApp ONTAP Tools for VMware などのサードパーティ プラグインの統合が含まれます。管理ドメインは、ベスト プラクティスに従うために Cloud Builder Appliance を使用して展開することも、既存の vCenter 環境を VCF 管理ドメインに変換することもできます。
+* *仮想インフラストラクチャ ワークロード ドメイン* – 仮想インフラストラクチャ ワークロード ドメインは、特定の運用ニーズ、ワークロード、または組織専用のリソース プールとして設計されています。ワークロード ドメインは SDDC マネージャーを介して簡単に展開され、一連の複雑なタスクを自動化するのに役立ちます。  VCF 環境内に最大 24 個のワークロード ドメインをプロビジョニングでき、各ドメインはアプリケーション対応インフラストラクチャのユニットを表します。
+
+
+
+
+== VCFによるストレージ
+
+ドメインの機能の中心となるのは、ドメインが消費するストレージです。 VCF にはハイパーコンバージド ユースケース向けの CPU コア ベースの vSAN 容量が含まれているだけでなく、幅広い外部ストレージ ソリューションもサポートしています。この柔軟性は、既存のストレージ アレイに多額の投資を行っている企業や、vSAN がサポートできる範囲を超えたプロトコルをサポートする必要がある企業にとって非常に重要です。  VMware は、VCF で複数のストレージ タイプをサポートしています。
+
+VCF には主に 2 つのタイプのストレージがあります。
+
+* *プリンシパル ストレージ* – このストレージ タイプは、ドメインの初期作成時に割り当てられます。管理ドメインの場合、このストレージには VCF 管理および運用コンポーネントが格納されます。ワークロード ドメインの場合、このストレージは、ドメインが展開されたワークロード、VM、またはコンテナーをサポートするように設計されています。
+* *補足ストレージ* – 補足ストレージは、デプロイメント後に任意のワークロード ドメインに追加できます。このストレージ タイプは、組織がストレージ インフラストラクチャへの既存の投資を活用し、さまざまなストレージ テクノロジーを統合して、パフォーマンス、スケーラビリティ、コスト効率を最適化するのに役立ちます。
+
+
+*VCFストレージタイプをサポート*
+
+[cols="25%, 25%, 50%"]
+|===
+
+
+| *ドメインタイプ* | *プリンシパルストレージ* | *補助ストレージ* 
+
+
+| 管理ドメイン | vSAN FC* NFS* | vVols (FC、iSCSI、または NFS) FC NFS iSCSI NVMe/TCP NVMe/FC NVMe/RDMA 
+
+
+| 仮想インフラストラクチャワークロードドメイン | vSAN vVols (FC、iSCSI、または NFS) FC NFS | vVols (FC、iSCSI、または NFS) FC NFS iSCSI NVMe/TCP NVMe/FC NVMe/RDMA 
+|===
+注: * 既存の vSphere 環境で VCF インポート ツールを使用する場合、特定のプロトコル サポートが提供されます。
+
+
+
+== ONTAPがVCFに選ばれる理由
+
+投資保護やマルチプロトコル サポートを含むユース ケースに加えて、VCF ワークロード ドメイン内で外部共有ストレージを活用する理由は他にも多数あります。ワークロード ドメイン用にプロビジョニングされたストレージは、VM とコンテナをホストするためのリポジトリにすぎないと考えられるかもしれません。ただし、組織のニーズがライセンス容量の能力を超え、エンタープライズ ストレージが必要になることがよくあります。  ONTAPによって提供され、VCF 内のドメインに割り当てられるストレージは、導入が簡単で、将来を見据えた共有ストレージ ソリューションを提供します。
+
+image:why-ontap-for-vmware-002.png["ONTAPがVCFに選ばれる理由"]
+
+以下に挙げたVMware VCFにおけるONTAPの主なメリットの詳細については、以下を参照してください。link:vmw-getting-started-overview.html#why-ontap-for-vmware["ONTAP for VMwareを選ぶ理由"] 。
+
+* 初日から拡張まで柔軟に対応
+* ストレージタスクをONTAPにオフロードする
+* クラス最高のストレージ効率
+* エンタープライズグレードのデータ可用性
+* 効率的なバックアップとリカバリ操作
+* 包括的な事業継続機能
+
+
+
+
+== 追加情報
+
+* link:vmw-getting-started-ntap-options.html["NetAppストレージ オプション"]
+* link:vmw-getting-started-vmsc.html["vSphere Metro Storage Cluster (vMSC) のサポート"]
+* link:vmw-getting-started-otv.html["ONTAP Tools for VMware vSphere"]
+* link:vmw-getting-started-automation.html["ONTAPを使用した VMware 自動化"]
+* link:vmw-getting-started-snapcenter.html["NetApp SnapCenter"]
+* link:vmw-getting-started-hmc.html["VMware とNetAppによるハイブリッド マルチクラウド"]
+* link:vmw-getting-started-security.html["セキュリティとランサムウェア対策"]
+* link:vmw-getting-started-migration.html["VMwareワークロードをNetAppに簡単に移行"]
+* link:vmw-dr-gs.html["BlueXP災害復旧"]
+* link:vmw-getting-started-dii.html["データインフラストラクチャの洞察"]
+* link:vmw-getting-started-vmdc.html["VMデータコレクター"]
+
+
+
+
+== まとめ
+
+ONTAP は、すべてのワークロード要件に対応するプラットフォームを提供し、カスタマイズされたブロック ストレージ ソリューションと統合されたサービスを提供することを通じて、信頼性とセキュリティに優れた方法で VM とアプリケーションの結果をより迅速に実現します。 ONTAP には、データセンターの占有スペースを最小限に抑える高度なデータ削減および移動技術が組み込まれており、同時にエンタープライズ レベルの可用性を確保して重要なワークロードをオンライン状態に維持します。さらに、AWS、Azure、Google は、VMware-in-the-Cloud サービスの一部として、VMware クラウドベース クラスタ内の vSAN ストレージを強化するために、 NetApp搭載の外部ストレージをサポートしています。全体的に、NetApp の優れた機能により、VMware Cloud Foundation の導入にとってより効果的な選択肢となります。
+
+
+
+== ドキュメントリソース
+
+VMware Cloud Foundation 向けのNetAppサービスの詳細については、以下を参照してください。
+
+*VMware Cloud Foundation ドキュメント*
+
+* link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"]
+
+
+* NetAppを使用したVCFに関する4部構成のブログシリーズ*
+
+* link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-getting-started/["NetAppと VMware Cloud Foundation を簡単にするパート 1: はじめに"]
+* link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-ontap-principal-storage/["NetAppと VMware Cloud Foundation を簡単にするパート 2: VCF とONTAP の主要ストレージ"]
+* link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-element-principal-storage/["NetAppと VMware Cloud Foundation を簡単にするパート 3: VCF と Element のプリンシパル ストレージ"]
+* link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-supplemental-storage/["NetAppと VMware Cloud Foundation を簡単に - パート 4: VMware と補助ストレージ用のONTAPツール"]
+
+
+*VMware Cloud Foundation とNetAppオールフラッシュ SAN アレイ*
+
+* link:vmw-getting-started-ntap-options.html#netapp-asa-all-san-array-benefits["NetApp ASAアレイを使用したVCFの紹介と技術概要"]
+* link:vmw-vcf-mgmt-principal-fc.html["管理ドメインの主要ストレージとして FC 搭載ONTAP を使用する"]
+* link:vmw-vcf-viwld-principal-fc.html["VIワークロードドメインのプライマリストレージとしてFC搭載のONTAPを使用する"]
+* link:vmw-vcf-mgmt-supplemental-iscsi.html["Ontap ツールを使用して、VCF 管理ドメインに iSCSI データストアを展開します。"]
+* link:vmw-vcf-mgmt-supplemental-fc.html["Ontap ツールを使用して、VCF 管理ドメインに FC データストアを展開します。"]
+* link:vmw-vcf-viwld-supp-iscsi-vvols.html["Ontap ツールを使用して、VI ワークロード ドメインにvVols (iSCSI) データストアを展開します。"]
+* link:vmw-vcf-viwld-supp-nvme.html["VIワークロードドメインで使用するためにNVMe over TCPデータストアを構成する"]
+* link:vmw-vcf-scv-viwld.html["SnapCenter Plug-in for VMware vSphereを導入して使用し、VI ワークロード ドメイン内の VM を保護および復元します。"]
+* link:vmw-vcf-scv-nvme.html["SnapCenter Plug-in for VMware vSphereを導入して使用し、VI ワークロード ドメイン (NVMe/TCP データストア) 内の VM を保護および復元します。"]
+
+
+*VMware Cloud Foundation とNetAppオールフラッシュAFFアレイ*
+
+* link:vmw-getting-started-ntap-options.html#netapp-aff-all-flash-fas-benefits["NetApp AFFアレイを搭載したVCFの紹介と技術概要"]
+* link:vmw-vcf-mgmt-principal-nfs.html["管理ドメインの主要ストレージとして NFS を搭載したONTAP を使用する"]
+* link:vmw-vcf-viwld-principal-nfs.html["VIワークロードドメインの主要ストレージとしてNFSを搭載したONTAPを使用する"]
+* link:vmw-vcf-viwld-supp-nfs-vvols.html["ONTAPツールを使用して、VI ワークロード ドメインにvVols (NFS) データストアを展開します。"]
+
+
+* VMware Cloud Foundation 向けNetApp FlexPodソリューション*
+
+* link:https://www.netapp.com/blog/expanding-flexpod-hybrid-cloud-with-vmware-cloud-foundation/["VMware Cloud Foundation によるFlexPodハイブリッド クラウドの拡張"]
+* link:https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/flexpod_vcf.html["VMware Cloud Foundation のワークロード ドメインとしてのFlexPod"]
+* link:https://www.cisco.com/c/en/us/td/docs/unified_computing/ucs/UCS_CVDs/flexpod_vcf_design.html["VMware Cloud Foundation のワークロード ドメインとしてのFlexPod設計ガイド"]
+

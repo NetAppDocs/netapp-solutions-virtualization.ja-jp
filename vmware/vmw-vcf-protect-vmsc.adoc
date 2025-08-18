@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-protect-vmsc.html 
+keywords: vmware, vcf, protect, vmsc, vsphere, metro, storage, cluster 
+summary:  
+---
+= ONTAP高可用性と VMware vSphere Metro Storage Cluster (vMSC) の統合について学習します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAP の高可用性を VMware vSphere Metro Storage Cluster (vMSC) と統合するために使用できるNetAppソリューションについて学習します。これにより、VMware Cloud Foundation (VCF) 管理および VI ワークロード ドメインに堅牢なソリューションが提供されます。
+
+この組み合わせにより、地理的に分散したサイト間での継続的なデータ可用性、シームレスなフェイルオーバー、災害復旧が保証され、重要なワークロードの回復力と運用の継続性が向上します。 SnapMirrorアクティブ シンクにより、サイト全体の障害が発生してもビジネス サービスの運用が継続され、セカンダリ コピーを使用してアプリケーションが透過的にフェイルオーバーできるようになります。SnapMirrorアクティブ同期でフェイルオーバーをトリガーするために、手動操作やカスタム スクリプトは必要ありません。
+
+詳細については、以下の解決策を参照してください。
+
+* link:vmw-vcf-vmsc-mgmt-smas.html["SnapMirror Active Sync を使用した管理ドメインのストレッチ クラスタ"]
+* link:vmw-vcf-vmsc-mgmt-mcc.html["MetroClusterを使用した管理ドメインのストレッチ クラスタ"]
+* link:vmw-vcf-vmsc-viwld-smas.html["SnapMirror Active Sync を使用した VI ワークロード ドメインのストレッチ クラスタ"]
+* link:vmw-vcf-vmsc-viwld-mcc.html["MetroClusterを使用した VI ワークロード ドメインのストレッチ クラスタ"]
+

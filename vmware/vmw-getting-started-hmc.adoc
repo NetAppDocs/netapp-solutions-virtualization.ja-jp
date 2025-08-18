@@ -1,0 +1,51 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-getting-started-hmc.html 
+keywords: vmware, getting, started, overview, netapp, hybrid, multicloud, multi, cloud 
+summary:  
+---
+= NetAppとVMwareによるハイブリッドマルチクラウド環境について学ぶ
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetAppと VMware がオンプレミスのインフラストラクチャとパブリック クラウド サービスを統合し、ワークロードの移行、リソースの最適化、環境全体での一貫した運用を可能にすることで、ハイブリッド マルチクラウドのセットアップを効率化する方法をご覧ください。
+
+
+
+== はじめに
+
+このアプローチにより、企業はワークロードを簡単に移行し、リソースの使用を最適化し、両方の環境で一貫した運用を維持できるようになります。
+
+VMwareとNetAppを使用したハイブリッドクラウドのシナリオの詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-overview.html#vmware-cloud-options-in-public-cloud["VMware を使用したNetAppハイブリッド マルチクラウドの概要"^] 。
+
+
+
+== NetAppを使用した VMware 導入シナリオ
+
+このセクションでは、オンプレミスとパブリック クラウドにわたる VMware 環境のさまざまな展開オプションについて説明します。各クラウド プロバイダーは、それぞれのパブリック クラウド サービス内で VMware Software Defined Data Center (SDDC) および/または VMware Cloud Foundation (VCF) スタックをサポートしています。
+
+* *オンプレミスの VMware*
+
+
+オンプレミスのNetAppストレージと VMware を併用することで、堅牢でスケーラブルかつ柔軟な仮想化環境が実現します。重複排除、圧縮、効率的なスナップショットなどの NetApp の高度なデータ管理機能とONTAPを搭載した適切なストレージ システムを組み合わせることで、お客様は自分に最適なプラットフォームを選択できます。この組み合わせにより、仮想化されたワークロードの高パフォーマンス、信頼性、管理の簡素化が保証され、データセンター全体の効率が向上します。
+
+* *Azure VMware ソリューション*
+
+
+Azure VMware Solution は、Microsoft Azure パブリック クラウド内で VMware SDDC を完全に機能させることができるハイブリッド クラウド サービスです。Azure VMware Solution は、Microsoft によって完全に管理およびサポートされ、Azure インフラストラクチャを活用して VMware によって検証されたファーストパーティ ソリューションです。つまり、Azure VMware Solution を導入すると、お客様は、コンピューティング仮想化用の VMware ESXi、ハイパーコンバージド ストレージ用の vSAN、ネットワークとセキュリティ用の NSX を利用できるようになると同時に、Microsoft Azure のグローバルなプレゼンス、クラス最高のデータ センター設備、ネイティブ Azure サービスとソリューションの豊富なエコシステムへの近接性を活用できるようになります。
+
+* *VMware Cloud on AWS*
+
+
+VMware Cloud on AWS は、ネイティブ AWS サービスへの最適化されたアクセスを備えた VMware のエンタープライズクラスの SDDC ソフトウェアを AWS クラウドに提供します。VMware Cloud Foundation を搭載した VMware Cloud on AWS は、VMware のコンピューティング、ストレージ、ネットワーク仮想化製品 (VMware vSphere、VMware vSAN、VMware NSX) と VMware vCenter Server 管理を統合し、専用の柔軟なベアメタル AWS インフラストラクチャ上で実行できるように最適化されています。
+
+* *Google Cloud VMware エンジン*
+
+
+Google Cloud VMware Engine は、Google Cloud の高性能でスケーラブルなインフラストラクチャと VMware Cloud Foundation スタック（VMware vSphere、vCenter、vSAN、NSX-T）を基盤とする IaaS（Infrastructure as a Service）サービスです。このサービスは、アプリケーションの再設計や運用の再構築に伴うコスト、労力、リスクを負うことなく、既存の VMware ワークロードをオンプレミス環境から Google Cloud Platform にシームレスに移行または拡張することで、クラウドへの迅速な移行を実現します。これは、VMware と緊密に連携して Google が販売およびサポートするサービスです。

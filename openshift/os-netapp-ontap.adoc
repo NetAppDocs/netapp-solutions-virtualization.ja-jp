@@ -1,0 +1,93 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-netapp-ontap.html 
+keywords: NetApp, ONTAP, AFF, FAS, iSCSI, NFS 
+summary: NetApp ONTAPは、直感的な GUI、自動化統合を備えた REST API、AI を活用した予測分析と修正アクション、中断のないハードウェア アップグレード、ストレージ間のインポートなどの機能を備えた強力なストレージ ソフトウェア ツールです。 
+---
+= NetApp ONTAP
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPは、直感的な GUI、自動化統合を備えた REST API、AI を活用した予測分析と修正アクション、中断のないハードウェア アップグレード、ストレージ間のインポートなどの機能を備えた強力なストレージ ソフトウェア ツールです。
+
+NetApp ONTAPストレージシステムの詳細については、 https://www.netapp.com/data-management/ontap-data-management-software/["NetApp ONTAPウェブサイト"^] 。
+
+ONTAP は次の機能を提供します。
+
+* NFS、CIFS、iSCSI、FC、FCoE、FC-NVMe プロトコルの同時データ アクセスと管理を備えた統合ストレージ システム。
+* さまざまな導入モデルには、オールフラッシュ、ハイブリッド、オール HDD ハードウェア構成のオンプレミス、 ONTAP Selectなどのサポートされているハイパーバイザー上の VM ベースのストレージ プラットフォーム、およびCloud Volumes ONTAPとしてのクラウドが含まれます。
+* 自動データ階層化、インライン データ圧縮、重複排除、および圧縮のサポートにより、 ONTAPシステムのデータ ストレージ効率が向上します。
+* ワークロードベースの QoS 制御ストレージ。
+* データの階層化と保護のためにパブリック クラウドとシームレスに統合します。ONTAP は、あらゆる環境において際立った強力なデータ保護機能も提供します。
++
+** * NetAppスナップショットコピー。*追加のパフォーマンス オーバーヘッドなしで、最小限のディスク領域を使用して、データの高速なポイントインタイム バックアップを実行します。
+** * NetApp SnapMirror。*あるストレージ システムから別のストレージ システムにデータのスナップショット コピーをミラーリングします。ONTAP は、他の物理プラットフォームやクラウドネイティブ サービスへのデータのミラーリングもサポートします。
+** * NetAppSnapLock。*指定された期間、上書きまたは消去できない特別なボリュームに書き込むことで、書き換え不可能なデータを効率的に管理します。
+** * NetApp SnapVault*複数のストレージ システムからのデータを、指定されたすべてのシステムのバックアップとして機能する中央のスナップショット コピーにバックアップします。
+** * NetApp SyncMirror。*同じコントローラに物理的に接続された 2 つの異なるディスク プレックスに、リアルタイムの RAID レベルのデータ ミラーリングを提供します。
+** * NetApp SnapRestore。*スナップショット コピーからオンデマンドでバックアップされたデータを高速に復元します。
+** * NetApp FlexClone。*スナップショット コピーに基づいて、 NetAppボリュームの完全に読み取りおよび書き込み可能なコピーを瞬時にプロビジョニングします。
+
+
+
+
+ONTAPの詳細については、 https://docs.netapp.com/ontap-9/index.jsp["ONTAP 9ドキュメント センター"^] 。
+
+
+NOTE: NetApp ONTAP は、オンプレミス、仮想化、またはクラウドで利用できます。
+
+image:redhat-openshift-035.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+
+
+== NetAppプラットフォーム
+
+
+
+=== NetApp AFF/ FAS
+
+NetApp は、低遅延パフォーマンス、統合データ保護、およびマルチプロトコル サポートを備えたカスタマイズされた、堅牢なオールフラッシュ (AFF) およびスケールアウト ハイブリッド (FAS) ストレージ プラットフォームを提供します。
+
+どちらのシステムも、業界最先端のデータ管理ソフトウェアであるNetApp ONTAPデータ管理ソフトウェアを搭載しており、高可用性、クラウド統合、簡素化されたストレージ管理を実現し、データ ファブリックに必要なエンタープライズ クラスの速度、効率、セキュリティを実現します。
+
+NETAPP AFF/ FASプラットフォームの詳細については、こちらをクリックしてください。 https://docs.netapp.com/platstor/index.jsp["ここをクリックしてください。"] 。
+
+
+
+=== ONTAP Select
+
+ONTAP Select は、環境内のハイパーバイザーに導入できるNetApp ONTAPのソフトウェア定義の導入です。VMware vSphere または KVM にインストールでき、ハードウェアベースのONTAPシステムの完全な機能とエクスペリエンスを提供します。
+
+ONTAP Selectの詳細については、 https://docs.netapp.com/us-en/ontap-select/["ここをクリックしてください。"] 。
+
+
+
+=== Cloud Volumes ONTAP
+
+NetApp Cloud Volumes ONTAP は、Amazon AWS、Microsoft Azure、Google Cloud などのさまざまなパブリック クラウドに導入できるNetApp ONTAPのクラウド導入バージョンです。
+
+Cloud Volumes ONTAPの詳細については、 https://docs.netapp.com/us-en/occm/#discover-whats-new["ここをクリックしてください。"] 。
+
+
+
+=== Amazon FSx ONTAP
+
+Amazon FSx ONTAP は、 ONTAPの一般的なデータアクセスおよび管理機能を備えた、AWS クラウドで完全に管理された共有ストレージを提供します。Amazon FSx ONTAPの詳細については、 https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html["ここをクリックしてください。"] 。
+
+
+
+=== Azure NetApp Files
+
+Azure NetApp Files は、Azure ネイティブ、ファーストパーティ、エンタープライズ クラスの高パフォーマンス ファイル ストレージ サービスです。NetAppアカウント、容量プール、ボリュームを作成できるボリュームをサービスとして提供します。サービスとパフォーマンスのレベルを選択し、データ保護を管理することもできます。オンプレミスで使い慣れているものと同じプロトコルとツールを使用して、高パフォーマンス、高可用性、スケーラブルなファイル共有を作成および管理できます。Azure NetApp Filesの詳細については、 https://learn.microsoft.com/en-us/azure/azure-netapp-files/["ここをクリックしてください。"] 。
+
+
+
+=== Google Cloud NetApp Volumes
+
+Google Cloud NetApp Volumes は、高度なデータ管理機能と高度にスケーラブルなパフォーマンスを提供する、完全に管理されたクラウドベースのデータ ストレージ サービスです。ファイルベースのアプリケーションを Google Cloud に移動できます。ネットワーク ファイル システム (NFSv3 および NFSv4.1) とサーバー メッセージ ブロック (SMB) プロトコルのサポートが組み込まれているため、アプリケーションを再設計する必要がなく、アプリケーション用の永続的なストレージを継続的に利用できます。Google Cloud NetApp VolumesPの詳細については、 https://cloud.google.com/netapp/volumes/docs/discover/overview["ここをクリックしてください。"] 。

@@ -1,0 +1,25 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-migrate.html 
+keywords: vmware, vcf, migrate, import 
+summary:  
+---
+= 既存のデータストアを持つ vSphere 環境を VCF に変換する方法について学習します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAP上で実行されている既存のデータストアを含む vSphere 環境を VMware Cloud Foundation (VCF) 環境に変換するには、現在のインフラストラクチャを最新のプライベート クラウド アーキテクチャに統合する必要があります。
+
+このプロセスは、 ONTAPストレージの柔軟性を活用して、シームレスなデータ アクセスと管理を実現します。 VCF 管理ドメインが確立されると、管理者は追加の vSphere 環境を VCF エコシステムに効率的にインポートできます。この統合により、リソースの使用率が向上し、プライベート クラウドの管理が簡素化され、既存のワークロードの中断を最小限に抑えながらスムーズな移行が保証されます。
+
+vCenter インスタンスの変換に関する技術的な詳細については、次のソリューションを参照してください。
+
+* link:vmw-vcf-mgmt-nfs.html["既存の vCenter インスタンスを VCF 管理ドメイン (NFS) に変換する"]
+* link:vmw-vcf-mgmt-fc.html["vCenterインスタンス（FCデータストア）をVCF管理ドメインに変換する"]
+

@@ -1,0 +1,34 @@
+---
+indexpage:
+  title: NetApp Hyper-V 仮想化ソリューション
+  summary: NetApp Hyper-V 仮想化ソリューションは、Microsoft Hyper-V を使用した仮想化のためのNetAppストレージの機能を実証する戦略およびテクノロジ機能のセットです。
+  lead: NetApp Hyper-V 仮想化ソリューションは、Microsoft Hyper-V を使用した仮想化のためのNetAppストレージの機能を実証する戦略およびテクノロジ機能のセットです。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: ONTAPを使用したHyper-Vの導入について学ぶ
+      url: hyperv-deploy.html
+    - title: Windows Server 上の Hyper-V の概要
+      url: https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/about/
+    - title: Hyper-Vテクノロジーについて学ぶ
+      url: https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/hyper-v-technology-overview
+  - title: Microsoft Hyper-V を展開する
+    links:
+    - title: 展開の準備
+      url: hyperv-deploy-prereqs.html
+    - title: 展開ガイドライン
+      url: hyperv-deploy-considerations.html
+    - title: NetAppストレージにMicrosoft Hyper-Vを導入する
+      url: hyperv-deploy-data-protection.html
+    - title: FlexCloneと PowerShell を使用して VM を移行する
+      url: hyperv-deploy-script.html
+  - title: NetAppを使用した Microsoft Hyper-V 向けソリューション
+    links:
+    - title: ストレッチクラスタを備えたSnapMirror Active Sync
+      url: hyperv-smas.html
+    - title: Hyper-V 用NetApp SMI-S Provider
+      url: hyperv-smis.html
+  - title: その他のリソース
+    links:
+    - title: Hyper-V の導入ガイドラインとストレージのベストプラクティス
+      url: https://docs.netapp.com/us-en/ontap-apps-dbs/microsoft/win_overview.html

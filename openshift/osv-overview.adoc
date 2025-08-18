@@ -1,0 +1,27 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-overview.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= ONTAPを使用したRed Hat OpenShift Virtualizationについて学ぶ
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Red Hat OpenShift Virtualization とONTAPストレージを使用して VM を実行および管理する方法について学習します。  Tridentを使用すると、ライブ VM 移行、VM ディスクのクローン作成、VM スナップショットが有効になり、インフラストラクチャの管理とデータ保護が簡素化されます。
+
+具体的なユースケースに応じて、コンテナと仮想マシン (VM) の両方が、さまざまな種類のアプリケーションに最適なプラットフォームとして機能できます。そのため、多くの組織では、ワークロードの一部をコンテナ上で実行し、一部を VM 上で実行しています。多くの場合、これにより組織は、VM 用のハイパーバイザーとアプリケーション用のコンテナ オーケストレーターという別々のプラットフォームを管理する必要があり、追加の課題に直面することになります。
+
+この課題に対処するために、Red Hat は OpenShift バージョン 4.6 から OpenShift Virtualization (旧称 Container Native Virtualization) を導入しました。  OpenShift Virtualization 機能を使用すると、同じ OpenShift Container Platform インストール上のコンテナーと並行して仮想マシンを実行および管理することができ、オペレーターによる VM のデプロイメントと管理を自動化するハイブリッド管理機能が提供されます。  OpenShift での VM の作成に加えて、OpenShift Virtualization では、Red Hat は VMware vSphere、Red Hat Virtualization、および Red Hat OpenStack Platform デプロイメントからの VM のインポートもサポートしています。
+
+image:redhat-openshift-044.png["OpenShift仮想化"]
+
+ライブ VM マイグレーション、VM ディスクのクローン作成、VM スナップショットなどの特定の機能も、 NetApp ONTAPを利用する場合はTridentのサポートにより OpenShift Virtualization でサポートされます。これらの各ワークフローの例については、このドキュメントの後半のそれぞれのセクションで説明します。
+
+Red Hat OpenShift Virtualizationの詳細については、ドキュメントを参照してください。 https://www.openshift.com/learn/topics/virtualization/["ここをクリックしてください。"] 。

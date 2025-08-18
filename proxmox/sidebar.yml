@@ -1,0 +1,11 @@
+---
+section: proxmox
+title: Proxmox仮想化
+url: "/proxmox/index.html"
+entries:
+- title: Proxmox VEについて
+  pdf-filename: NetApp上の Proxmox 仮想化の概要
+  url: "/proxmox/proxmox-overview.html"
+- title: Proxmox VE 用のONTAPストレージのプロビジョニング
+  pdf-filename: Proxmox VE 向けNetAppストレージ
+  url: "/proxmox/proxmox-ontap.html"

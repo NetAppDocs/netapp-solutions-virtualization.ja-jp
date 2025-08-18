@@ -1,0 +1,29 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-expand.html 
+keywords: vmware, vcf, expand, supplemental, storage 
+summary:  
+---
+= 補助ストレージを使用して VCF 環境のストレージを拡張する方法について説明します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware Cloud Foundation (VCF) は、VCF 管理ドメインと仮想インフラストラクチャ (VI) ワークロード ドメインのストレージを拡張するための幅広い補足ストレージ オプションをサポートしています。
+
+NetApp のONTAP Tools for VMware vSphere は、 NetAppストレージを VCF 環境にシームレスに統合することで、この拡張のための効率的なソリューションを提供します。 ONTAPツールはデータストアのセットアップと管理を簡素化し、管理者が vSphere Client から直接ストレージをプロビジョニングおよび管理できるようにします。スナップショット、クローニング、データ保護などの ONTAP の高度な機能により、VCF 環境内のストレージ パフォーマンス、効率、スケーラビリティが向上します。
+
+VCF 環境を拡張するための技術的な詳細については、次のソリューションを参照してください。
+
+* link:vmw-vcf-mgmt-supplemental-iscsi.html["iSCSI による管理ドメイン"]
+* link:vmw-vcf-mgmt-supplemental-fc.html["FCによる管理ドメイン"]
+* link:vmw-vcf-viwld-supp-iscsi-vvols.html["vVolsを使用した仮想インフラストラクチャ ワークロード ドメイン (iSCSI)"]
+* link:vmw-vcf-viwld-supp-nfs-vvols.html["vVolsを使用した仮想インフラストラクチャ ワークロード ドメイン (NFS)"]
+* link:vmw-vcf-viwld-supp-nvme.html["NVMe/TCP を使用した仮想インフラストラクチャ ワークロード ドメイン"]
+* link:vmw-vcf-viwld-supp-fc.html["FC を使用した仮想インフラストラクチャ ワークロード ドメイン"]
+

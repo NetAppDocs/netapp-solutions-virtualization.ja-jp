@@ -1,0 +1,64 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-vmsc-viwld-smas.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, iscsi 
+summary:  
+---
+= SnapMirror Active Syncを使用してVIワークロードドメインのストレッチクラスタを構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このユースケースでは、ONTAP tools for VMware vSphereを使用してSnapMirror Active Sync を使用し、仮想インフラストラクチャ (VI) ワークロード ドメインのストレッチ クラスターを構成する手順について説明します。この手順には、ファイバ チャネル上の VMFS を使用した VCF ワークロード ドメインの作成、 ONTAPツールを使用した vCenter の登録、ストレージ システムの登録、および vSphere クラスタの保護が含まれます。
+
+image:vmware-vcf-asa-mgmt-stretchcluster-001.png["単一インスタンス - 複数のアベイラビリティゾーン"]
+
+
+
+== シナリオの概要
+
+VCF ワークロード ドメイン上のデータストアは、 SnapMirrorアクティブ シンクを使用して保護し、ストレッチ クラスタ ソリューションを提供できます。保護は vSphere クラスタ レベルで有効になり、クラスタ内のすべてのONTAPブロック データストアが保護されます。
+
+.ワークロードドメイン上のプリンシパルストレージ
+[%collapsible%open]
+====
+ワークロード ドメインは、VCF インポート ツールを使用してインポートするか、SDDC マネージャーを使用してデプロイすることで作成できます。  SDDC マネージャーを使用して展開すると、既存の環境をインポートするよりも多くのネットワーク オプションが提供されます。
+
+. FC上のVMFSでワークロードドメインを作成する
+. link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["ワークロード ドメイン vCenter をONTAPツール マネージャーに登録して、vCenter プラグインを展開します。"]
+. link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html["ONTAPツールにストレージシステムを登録する"]
+. link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/protect-cluster.html["vSphere クラスタを保護する"]
+
+
+
+NOTE: クラスタが拡張または縮小されるたびに、クラスタのONTAPツールでホスト クラスタ関係を更新し、ソースまたはターゲットに加えられた変更を示す必要があります。
+
+====
+.ワークロードドメインの補助ストレージ
+[%collapsible%open]
+====
+ワークロード ドメインが起動して実行されると、 ONTAPツールを使用して追加のデータストアを作成し、整合性グループの拡張をトリガーできます。
+
+
+TIP: vSphere クラスタが保護されている場合、クラスタ内のすべてのデータストアが保護されます。
+
+====
+
+
+== 追加情報
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。
+
+
+
+== このソリューションのビデオデモ
+
+.ONTAPツールを使用した VCF 用ストレッチ クラスタ
+video::569a91a9-2679-4414-b6dc-b25d00ff0c5a[panopto,width=360]

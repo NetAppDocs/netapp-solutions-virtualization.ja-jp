@@ -1,0 +1,33 @@
+---
+section: migration
+title: VM移行ソリューション
+url: "/migration/index.html"
+entries:
+- title: Shift Toolkit を使用して VM を移行または変換する
+  pdf-filename: Shift Toolkit を使用して VM を移行または変換する
+  entries:
+  - title: Shift Toolkitについて
+    url: "/migration/shift-toolkit-overview.html"
+  - title: Shift Toolkitをインストールする
+    url: "/migration/shift-toolkit-install.html"
+  - title: Shift Toolkit を構成する
+    url: "/migration/shift-toolkit-ui.html"
+  - title: Shift Toolkit を使用して VM を移行する
+    url: "/migration/shift-toolkit-migration.html"
+  - title: Shift Toolkit を使用して VM を変換する
+    url: "/migration/shift-toolkit-conversion.html"
+  - title: 次の手順
+    url: "/migration/shift-toolkit-summary.html"
+- title: VMをONTAPに移行する
+  url: "/migration/migrate-vms-to-ontap-datastore.html"
+- title: VMをAmazon EC2に移行する
+  pdf-filename: FSx ONTAPを使用して VM を Amazon EC2 に移行する
+  entries:
+  - title: VMをAmazon EC2に移行することについて
+    url: "/migration/migrate-vms-to-ec2-fsxn-overview.html"
+  - title: 移行要件
+    url: "/migration/migrate-vms-to-ec2-fsxn-arch.html"
+  - title: VMをAmazon EC2に移行する
+    url: "/migration/migrate-vms-to-ec2-fsxn-deploy.html"
+  - title: その他の移行オプション
+    url: "/migration/migrate-vms-to-ec2-fsxn-summary.html"

@@ -1,0 +1,158 @@
+---
+section: vmware
+title: VMware仮想化
+url: "/vmware/index.html"
+entries:
+- title: 始めましょう
+  pdf-filename: NetAppとVMwareを使い始める
+  entries:
+  - title: コアコンセプト
+    entries:
+    - title: ONTAP for VMware vSphere について
+      url: "/vmware/vmw-getting-started-overview.html"
+    - title: VMware向けNetAppプラットフォームについて
+      url: "/vmware/vmw-getting-started-ntap-options.html"
+    - title: ハイブリッドマルチクラウド環境について
+      url: "/vmware/vmw-getting-started-hmc.html"
+  - title: 管理ツールとソリューション
+    entries:
+    - title: ONTAP tools for VMware vSphere
+      url: "/vmware/vmw-getting-started-otv.html"
+    - title: 管理用のONTAPおよび VMware API
+      url: "/vmware/vmw-getting-started-automation.html"
+    - title: 監視のためのData Infrastructure Insights
+      url: "/vmware/vmw-getting-started-dii.html"
+    - title: VMワークロードの移行による効率性の向上
+      url: "/vmware/vmw-getting-started-migration.html"
+  - title: データ保護ソリューション
+    entries:
+    - title: MetroClusterとSnapMirrorアクティブ同期による保護
+      url: "/vmware/vmw-getting-started-vmsc.html"
+    - title: ONTAPによるセキュリティとランサムウェア対策
+      url: "/vmware/vmw-getting-started-security.html"
+  - title: バックアップおよび災害復旧ソリューション
+    entries:
+    - title: SnapCenter Plug-in for VMware vSphere
+      url: "/vmware/vmw-getting-started-snapcenter.html"
+    - title: BlueXP disaster recovery
+      url: "/vmware/vmw-dr-gs.html"
+- title: NetApp上の VMware Cloud Foundation
+  pdf-filename: NetApp上の VMware Cloud Foundation
+  entries:
+  - title: VMware Cloud Foundation とONTAPについて
+    url: "/vmware/vmw-vcf-overview.html"
+  - title: 既存の vSphere クラスタを VCF に変換する
+    entries:
+    - title: 既存の vSphere クラスタを VCF に変換する方法について
+      url: "/vmware/vmw-vcf-migrate.html"
+    - title: 既存の vSphere クラスタを NFS データストアに変換する
+      url: "/vmware/vmw-vcf-mgmt-nfs.html"
+    - title: FCデータストアを持つ既存のvSphereクラスタを変換する
+      url: "/vmware/vmw-vcf-mgmt-fc.html"
+  - title: VCFにプリンシパルストレージをプロビジョニングする
+    entries:
+    - title: プリンシパルストレージのプロビジョニングについて
+      url: "/vmware/vmw-vcf-provision.html"
+    - title: FCによる管理ドメインのプロビジョニング
+      url: "/vmware/vmw-vcf-mgmt-principal-fc.html"
+    - title: NFS による管理ドメインのプロビジョニング
+      url: "/vmware/vmw-vcf-mgmt-principal-nfs.html"
+    - title: FCを使用してVIワークロードドメインをプロビジョニングする
+      url: "/vmware/vmw-vcf-viwld-principal-fc.html"
+    - title: NFSを使用してVIワークロードドメインをプロビジョニングする
+      url: "/vmware/vmw-vcf-viwld-principal-nfs.html"
+  - title: 補助ストレージでVCFを拡張
+    entries:
+    - title: ストレージの拡張について
+      url: "/vmware/vmw-vcf-expand.html"
+    - title: iSCSIで管理ドメインを拡張
+      url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi.html"
+    - title: FCで管理領域を拡大
+      url: "/vmware/vmw-vcf-mgmt-supplemental-fc.html"
+    - title: vVols iSCSIでVIワークロードドメインを拡張
+      url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols.html"
+    - title: vVols NFSでVIワークロードドメインを拡張
+      url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols.html"
+    - title: NVMe/TCPでVIワークロードドメインを拡張
+      url: "/vmware/vmw-vcf-viwld-supp-nvme.html"
+    - title: FCでVIワークロードドメインを拡張
+      url: "/vmware/vmw-vcf-viwld-supp-fc.html"
+  - title: SnapCenterでVCFを保護する
+    entries:
+    - title: SnapCenterによるVCFワークロードの保護について
+      url: "/vmware/vmw-vcf-protect-sc.html"
+    - title: 単一のVCFワークロードドメインを保護する
+      url: "/vmware/vmw-vcf-scv-viwld.html"
+    - title: 複数のVCFワークロードドメインを保護する
+      url: "/vmware/vmw-vcf-scv-multiwkld-protection.html"
+    - title: NVMeでVCFワークロードドメインを保護する
+      url: "/vmware/vmw-vcf-scv-nvme.html"
+  - title: BlueXPでVMwareデータストアを保護する
+    entries:
+    - title: BlueXPによる VMware データストアの保護について
+      url: "/vmware/vmw-vcf-disaster-recovery.html"
+    - title: SnapCenterとBlueXPでデータ保護を構成する
+      url: "/vmware/vmw-vcf-321-data-protection.html"
+    - title: VMFSデータストアの災害復旧を設定する
+      url: "/vmware/vmw-disaster-recovery-vmfs.html"
+    - title: NFSデータストアの災害復旧を設定する
+      url: "/vmware/vmw-disaster-recovery-nfs.html"
+  - title: vSphere Metro Storage Clusterでワークロードを保護する
+    entries:
+    - title: ONTAP高可用性の統合について
+      url: "/vmware/vmw-vcf-protect-vmsc.html"
+    - title: MetroClusterで管理ドメインを構成する
+      url: "/vmware/vmw-vcf-vmsc-mgmt-mcc.html"
+    - title: MetroClusterを使用してVIワークロードドメインを構成する
+      url: "/vmware/vmw-vcf-vmsc-viwld-mcc.html"
+    - title: SnapMirror Active Syncを使用して管理ドメインを構成する
+      url: "/vmware/vmw-vcf-vmsc-mgmt-smas.html"
+    - title: SnapMirror Active Syncを使用してVIワークロードドメインを構成する
+      url: "/vmware/vmw-vcf-vmsc-viwld-smas.html"
+  - title: vSphere から VM を移行する
+    url: "/vmware/migrate-vms-to-ontap-datastore.html"
+  - title: ランサムウェアからデータを保護および回復する
+    url: "/vmware/vmw-nfs-arp.html"
+  - title: DII でオンプレミス ストレージを監視する
+    url: "/vmware/vmw-dii.html"
+- title: NetApp上の VMware vSphere Foundation
+  pdf-filename: NetApp上の VMware vSphere Foundation
+  entries:
+  - title: 始めましょう
+    entries:
+    - title: VMware vSphere Foundation on NetAppについて
+      url: "/vmware/vmw-vvf-overview.html"
+    - title: VMware vSphere 8 に対するNetApp のサポートについて
+      url: "/vmware/vmw-vsphere8.html"
+    - title: ONTAPストレージでVMware vSphere 8を使用する方法について
+      url: "/vmware/vmw-vsphere-with-ontap.html"
+    - title: VMware vSphere 8 の新機能
+      url: "/vmware/vmw-vsphere8-overview.html"
+  - title: vSphere 8 用の VMFS を導入する
+    url: "/vmware/vmw-vmfs-deploy.html"
+  - title: NFS nConnect機能を使用する
+    url: "/vmware/vmw-vsphere8-nfs-nconnect.html"
+  - title: NFSデータストアを構成する
+    url: "/vmware/vmw-nfs-otv10.html"
+  - title: ディザスタ リカバリを設定
+    url: "/vmware/vmw-nfs-vlsr.html"
+  - title: SnapMirror Active Syncを使用してvMSCを設定する
+    url: "/vmware/vmw-vmsc-with-smas.html"
+  - title: VMSCを使用してSnapMirror Active Syncを変換する
+    url: "/vmware/vmware-smbc-cvt-smas.html"
+  - title: ONTAPでvVolsを使用する
+    url: "/vmware/vmw-vvol-overview.html"
+  - title: 仮想マシンデータコレクターでデータを収集する
+    pdf-filename: 仮想マシンデータコレクター
+    entries:
+    - title: VMDCについて
+      url: "/vmware/vmw-getting-started-vmdc.html"
+    - title: VMDCを使用してデータを収集する
+      url: "/assess/vmw-vmdc.html"
+- title: VMware ソブリンクラウド
+  pdf-filename: NetAppとVMwareのソブリンクラウド
+  entries:
+  - title: ソブリンクラウドについて
+    url: "/vmware/vmw-sovereign-cloud.html"
+  - title: NetAppとSovereign Cloudの統合
+    url: "/vmware/vmw-sovereign-cloud-use-cases.html"

@@ -1,0 +1,55 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-rosa-vm-workflows.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: ROSA 上の Red Hat OpenShift Virtualization 
+---
+= ROSA クラスター上の FSx for ONTAPを使用して Red Hat OpenShift Virtualization で VM を再起動または移行する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Amazon FSx for ONTAPを使用して、OpenShift Virtualization で VM を再起動するか、2 つのノード間で VM のライブマイグレーションを実行します。
+
+再起動ボタンをクリックします。image:redhat-openshift-ocpv-rosa-020.png["OCP-v VMの再起動"]
+
+VMは、ファイルシステム、PVC、およびファイルシステム内のファイルとまったく同じ状態で実行状態に戻ります。image:redhat-openshift-ocpv-rosa-021.png["OCP-v VM 再起動ファイルシステム"]
+
+image:redhat-openshift-ocpv-rosa-022.png["OCP-v VM 再起動ディスク"]
+
+image:redhat-openshift-ocpv-rosa-023.png["OCP-v VM 再起動ファイル"]
+
+
+
+== VMライブマイグレーション
+
+このセクションでは、VM のライブ マイグレーションを実行し、ディスクの内容を調べます。ライブ マイグレーションとは、通常の操作を中断したり、ダウンタイムやエンド ユーザーにその他の悪影響を与えたりすることなく、実行中の仮想マシン (VM) を 1 つの物理ホストから別のホストに移動するプロセスを指します。ライブマイグレーションは仮想化における重要なステップと考えられています。これにより、実行中のオペレーティング システム (OS)、メモリ、ストレージ、ネットワーク接続とともに、VM 全体を現在のノードから宛先に移動できるようになります。以下では、現在のノードから新しいノードへの VM のライブ マイグレーションを実行する方法について説明します。
+
+VMが動作しているノードをメモしますimage:redhat-openshift-ocpv-rosa-024.png["OCP-v VMの現在のノード"]
+
+3つのドットをクリックして「移行」を選択しますimage:redhat-openshift-ocpv-rosa-025.png["OCP-v VM ライブマイグレーション"]
+
+[概要] ページでは、移行が成功し、ステータスが [成功] に変わったことを確認できます。image:redhat-openshift-ocpv-rosa-026.png["OCP-v VM 移行成功"]
+
+ライブマイグレーションが完了すると、VM は別のノード上に移動します。image:redhat-openshift-ocpv-rosa-027.png["異なるノード上の OCP-v VM"]
+
+Web コンソールを開き、ディスクの内容を表示します。ライブマイグレーション前に作成した 2 つのファイルと同じものがまだ残っています。image:redhat-openshift-ocpv-rosa-028.png["OCP-v VM ライブマイグレーション後の同じファイル1"] image:redhat-openshift-ocpv-rosa-029.png["OCP-v VM ライブマイグレーション後の同じファイル2"]
+
+新しいノード上のVMのストレージには、同じディスクが表示されますimage:redhat-openshift-ocpv-rosa-030.png["ライブマイグレーション後の OCP-v VM の同じディスク"]
+
+また、PVCも同じです。image:redhat-openshift-ocpv-rosa-031.png["ライブマイグレーション後の OCP-v VM の同じ PVC"]
+
+VM ポッドに関連付けられているボリュームも以前と同じ (2 つの PVC) です。image:redhat-openshift-ocpv-rosa-032.png["ライブマイグレーション後の OCP-v VM の同じ PVC"]
+
+
+
+== デモビデオ
+
+.Amazon FSx for NetApp ONTAPを使用した ROSA 上の OpenShift Virtualization での仮想マシンのライブマイグレーション
+video::4b3ef03d-7d65-4637-9dab-b21301371d7d[panopto,width=360]
+Red Hat OpenShiftとOpenShift仮想化ソリューションに関するその他のビデオは、link:../videos/openshift-videos.html["ここをクリックしてください。"] 。

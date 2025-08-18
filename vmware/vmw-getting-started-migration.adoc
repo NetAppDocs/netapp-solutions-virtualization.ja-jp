@@ -1,0 +1,37 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-getting-started-migration.html 
+keywords: vmware, getting, started, overview, netapp 
+summary:  
+---
+= VMware vSphere からONTAPデータストアまでの VM について学習します
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware vSphere 管理者は、ワークロードをNetApp ONTAPデータストアに移行することでインフラストラクチャを強化できます。  ONTAP は、ストレージ ポリシー ベース管理 (SPBM) をサポートしながら、VM 対応のスナップショット、ストレージ効率の高いクローン、シームレスな vMotion 操作を実現します。  vSAN や従来のストレージからの移行、あるいはハイブリッド クラウドの導入の実装の場合でも、 ONTAP はVMware 環境のパフォーマンスを向上させ、ストレージ操作を簡素化します。
+
+この移行により、シームレスな統合、データ保護の強化、仮想化環境の管理の柔軟性の向上が実現し、ダウンタイムを最小限に抑えてスムーズな移行が保証されます。
+
+
+
+== ユースケース
+
+ONTAP でバックアップされたデータストアへの移行を検討する場合、ソースと宛先に関して移行に関するオプションが多数あります。
+
+* サードパーティのストレージ システム (vSAN を含む) からONTAPデータストアへの移行。
+* 同じ vSphere クラスタ内の VM の移行
+* 複数の vSphere クラスタ間での VM の移行
+* 同じ SSO ドメイン内の vCenter サーバー間での VM の移行
+* 異なる SSO ドメイン内の vCenter サーバー間での VM の移行
+* データセンター間のVMの移行
+* サードパーティのストレージ システム (vSAN を含む) からONTAPデータストアへの移行。
+* ハイブリッドクラウド環境でのVMの移行
+
+
+VMwareワークロードをONTAPベースのデータストアに移行する方法の詳細については、link:migrate-vms-to-ontap-datastore.html["VMをONTAPデータストアに移行する"] 。

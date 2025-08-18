@@ -1,0 +1,46 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-dr-gs.html 
+keywords: vmware, getting, started, overview, netapp, bluexp, disaster, recovery, draas 
+summary:  
+---
+= BlueXP disaster recoveryを使用した仮想マシンの災害復旧について学習します
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+BlueXP disaster recoveryは、 ONTAPストレージを使用して VMware 仮想マシンのレプリケーションとリカバリを自動化します。  Amazon FSx for NetApp ONTAPまたはその他のオンプレミス VMware 環境を使用したオンプレミスセットアップから VMware Cloud on AWS へのリカバリをサポートします。
+
+
+
+== はじめに
+
+適切な計画とテクノロジの組み合わせにより、重要なデータ、アプリケーション、VM を確実に保護できます。  DR の課題は、適切な保護レベルと関連コストを決定することです。
+
+ONTAPアレイには、ボリューム データ、および指定されたデータストア LUN 上に存在する仮想マシンをあるサイトから別のサイトに転送するための組み込みレプリケーション機能が備わっています。BlueXP DRaaS は vSphere と統合し、災害発生時にシームレスなフェイルオーバーとフェイルバックを実現するためにワークフロー全体を自動化します。
+
+BlueXP DRaaSの詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-overview.html["BlueXP DRaaSの概要"^] 。
+
+
+
+== 考慮事項
+
+VMware vSphere 環境での DR フェイルオーバーで最も時間のかかる部分は、DR サイトでの VM のインベントリ、登録、再構成、および電源投入に必要な手順の実行です。理想的なソリューションは、RPO (分単位で測定) と RTO (分から時間単位で測定) の両方が低いものです。DR ソリューションで見落とされがちな要素の 1 つは、DR ソリューションを定期的に効率的にテストする機能です。
+
+DR ソリューションを設計するには、次の要素を考慮してください。
+
+* 目標復旧時間 (RTO)。RTO とは、企業が災害からどれだけ早く回復できるか、より具体的には、ビジネス サービスを再び利用できるようにするために回復プロセスを実行するのにどれだけの時間がかかるかということです。
+* 回復ポイント目標 (RPO)。RPO は、災害が発生した時間に対して、回復されたデータが利用可能になってからどのくらい経っているかを示します。
+* スケーラビリティと適応性。この要素には、需要の増加に応じてストレージ リソースを段階的に拡張する機能が含まれます。
+
+
+利用可能なソリューションに関する詳細な技術情報については、以下を参照してください。
+
+* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["NFS データストア向けBlueXP DRaaS を使用した DR"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-vmfs.html["VMFS データストア向けBlueXP DRaaS を使用した DR"^]
+

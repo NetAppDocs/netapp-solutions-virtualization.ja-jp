@@ -1,0 +1,77 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vmfs-nvmeof.html 
+keywords: vSphere, datastore, VMFS, NVMeoF, ONTAP tools, zone, network interface, namespace, storage subsystem 
+summary: このページでは、VMware vSphere 環境で VMFS データストア用のNetApp ONTAP NVMe/FC ストレージを展開する手順について説明します。 
+---
+= vSphere VMFS データストア - ONTAPを使用した NVMe/FC
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このセクションでは、NVMe/FC を使用したONTAPストレージによる VMFS データストアの作成について説明します。
+
+
+
+== 必要なもの
+
+* vSphere 環境とONTAPを管理するために必要な基本的なスキル。
+* link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/about-vmware-nvme-storage/vmware-nvme-concepts/basic-vmware-nvme-architecture.html++["NVMe/FCの基礎知識"] 。
+* {ontap_version} を実行しているONTAPストレージ システム (FAS/ AFF/CVO/ ONTAP Select/ ASA)
+* ONTAP認証情報 (SVM 名、ユーザー ID、パスワード)
+* ホスト、ターゲット、SVM、およびLUN情報のONTAP WWPN
+* link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.exp-fc-esx-cpg/GUID-429C4DDD-5EC0-4DBD-8EA8-76082AB7ADEC.html++["完了した FC 構成ワークシート"]
+* vCenter Server
+* vSphere ホスト情報 ({vsphere_version})
+* ファブリックスイッチ
++
+** ONTAP FC データ ポートと vSphere ホストが接続されています。
+** N_port ID 仮想化 (NPIV) 機能が有効になっています。
+** 単一のイニシエーター ターゲット ゾーンを作成します。
+** イニシエーターごとに 1 つのゾーンを作成します (単一イニシエーター ゾーン)。
+** 各ゾーンには、SVM のONTAP FC 論理インターフェイス (WWPN) であるターゲットを含めます。 SVM ごとにノードごとに少なくとも 2 つの論理インターフェイスが必要です。物理ポートの WWPN を使用しないでください。
+
+
+
+
+
+
+== VMFSデータストアのプロビジョニング
+
+. 互換性を確認してください https://mysupport.netapp.com/matrix["Interoperability Matrix Tool（IMT）"]。
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.exp-fc-esx-cpg/GUID-7D444A0D-02CE-4A21-8017-CB1DC99EFD9A.html++["NVMe/FC 構成がサポートされていることを確認します。"]
+
+
+
+
+== ONTAPタスク
+
+. link:https://docs.netapp.com/us-en/ontap-cli-98/system-license-show.html["FCP のONTAPライセンスを確認します。"]使用 `system license show`コマンドを実行し、NVMe_oF がリストされているかどうかを確認します。使用 `license add -license-code <license code>`ライセンスを追加します。
+. SVM で NVMe プロトコルが有効になっていることを確認します。
++
+.. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.dot-cm-sanag/GUID-CDDBD7F4-2089-4466-892F-F2DFF5798B1C.html++["NVMe 用に SVM を構成します。"]
+
+
+. NVMe/FC 論理インターフェイスが SVM で使用可能であることを確認します。
++
+.. 使用 `Network Interface show`FCP アダプターを検証します。
+.. GUI を使用して SVM を作成すると、論理インターフェイスはそのプロセスの一部になります。
+.. ネットワークインターフェースの名前を変更するには、次のコマンドを使用します。 `Network Interface modify` 。
+
+
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.dot-cm-sanag/GUID-BBBAB2E4-E106-4355-B95C-C3626DCD5088.html++["NVMe名前空間とサブシステムを作成する"]
+
+
+
+
+== VMware vSphere タスク
+
+. HBA ドライバーがインストールされていることを確認します。  VMwareがサポートするHBAにはドライバがすぐに導入されており、link:++https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.storage.doc/GUID-ED20B7BE-0D1C-4BF7-85C9-631D45D96FEC.html++["ストレージアダプタ情報"]
+. link:++https://docs.netapp.com/us-en/ontap-sanhost/nvme_esxi_7.html++["vSphere ホスト NVMe ドライバのインストールと検証タスクを実行します。"]
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/working-with-datastores-in-vsphere-storage-environment/creating-vsphere-datastores/create-a-vsphere-vmfs-datastore.html++["VMFSデータストアを作成する"]
+

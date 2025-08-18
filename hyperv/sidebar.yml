@@ -1,0 +1,26 @@
+---
+section: hyperv
+title: Hyper-V仮想化
+url: "/hyperv/index.html"
+entries:
+- title: NetAppストレージにHyper-Vを導入する
+  pdf-filename: NetAppストレージにHyper-Vを導入する
+  entries:
+  - title: ONTAPを使用したHyper-Vの導入について
+    url: "/hyperv/hyperv-deploy.html"
+  - title: 展開の準備
+    url: "/hyperv/hyperv-deploy-prereqs.html"
+  - title: 展開ガイドライン
+    url: "/hyperv/hyperv-deploy-considerations.html"
+  - title: Hyper-V を展開する
+    url: "/hyperv/hyperv-deploy-data-protection.html"
+  - title: まとめ
+    url: "/hyperv/hyperv-deploy-conclusion.html"
+  - title: VMをHyper-Vに移行する
+    url: "/hyperv/hyperv-deploy-script.html"
+- title: SnapMirror Active Syncでレプリケーションを設定する
+  pdf-filename: SnapMirror Active Syncでレプリケーションを設定する
+  url: "/hyperv/hyperv-smas.html"
+- title: Hyper-V の SMI-S プロバイダーを使用する
+  pdf-filename: Microsoft Hyper-V 用の SMI-S プロバイダーを使用する
+  url: "/hyperv/hyperv-smis.html"

@@ -1,0 +1,9 @@
+---
+section: virtualization
+title: 始めましょう
+pdf-filename: あらゆる仮想化ソリューションにNetAppを使用する
+entries:
+- title: あらゆる仮想化ソリューションにNetAppを活用
+  url: "/virtualization/virt-options-on-netapp.html"
+- title: ONTAPで仮想化環境を強化
+  url: "/virtualization/virt-overview.html"

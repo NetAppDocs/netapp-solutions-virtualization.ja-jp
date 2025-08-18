@@ -1,0 +1,11 @@
+---
+section: kvm
+title: KVM仮想化
+url: "/kvm/index.html"
+entries:
+- title: KVM仮想化について
+  pdf-filename: NetAppにおける KVM 仮想化の概要
+  url: "/kvm/kvm-overview.html"
+- title: KVM と Libvirt を搭載したONTAPストレージ
+  pdf-filename: KVM仮想化向けNetApp ONTAPストレージ
+  url: "/kvm/kvm-ontap.html"

@@ -1,0 +1,79 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-principal-nfs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, nfs 
+summary:  
+---
+= ONTAP上のNFSデータストアをVCF管理ドメインの主ストレージとして使用する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このユースケースでは、 ONTAP上の既存の NFS データストアを VMware Cloud Foundation (VCF) 管理ドメインのプライマリ ストレージとして使用する手順について説明します。この手順では、必要なコンポーネント、構成手順、および展開プロセスをまとめています。
+
+
+
+== はじめに
+
+必要に応じて、VCF の SDDC マネージャーで実行する必要がある手順については外部ドキュメントを参照し、ストレージ構成部分に固有の手順を参照します。
+
+既存のNFSベースのvSphere環境をONTAPに変換する方法については、以下を参照してください。link:vmw-vcf-mgmt-nfs.html["vSphere 環境 (NFS データストア) を VCF 管理ドメインに変換する"] 。
+
+
+NOTE: VCF リリース 5.2 では、既存の vSphere 8 環境を VCF 管理ドメインに変換したり、VCF VI ワークロード ドメインとしてインポートしたりする機能が導入されました。このリリースより前は、VMware vSAN が VCF 管理ドメインの主要ストレージの唯一のオプションでした。
+
+
+NOTE: このソリューションは、 NetApp AFFやFASなどの NFS ストレージをサポートするONTAPプラットフォームに適用できます。
+
+
+
+== 前提条件
+
+このシナリオでは、次のコンポーネントと構成が使用されます。
+
+* NFS トラフィックを許可するように構成されたストレージ仮想マシン (SVM) を備えたNetAppストレージ システム。
+* NFS トラフィックを伝送し、SVM に関連付けられた IP ネットワーク上に論理インターフェイス (LIF) が作成されています。
+* 4 台の ESXi ホストと、クラスター上に共存する vCenter アプライアンスを備えた vSphere 8 クラスター。
+* この目的のために確立された VLAN またはネットワーク セグメント上の vMotion および NFS ストレージ トラフィック用に構成された分散ポート グループ。
+* VCF 変換に必要なソフトウェアをダウンロードします。
+
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://docs.vmware.com/en/VMware-Cloud-Foundation/index.html["VMware Cloud Foundation ドキュメント"] 。
+
+
+
+== 展開手順
+
+
+
+=== 管理ドメイン - デフォルトクラスタ
+
+初期クラスター上の NFS プリンシパル ストレージは、VCF ブラウンフィールド インポート ツールでのみサポートされます。  VCF が Cloud Builder ツール (バージョン 5.2.x まで) を使用してデプロイされている場合、VSAN のみがサポートされます。
+
+既存のvSphere環境の使用に関する詳細については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["既存の vSphere 環境を管理ドメインに変換する"]詳細については。
+
+
+
+=== 管理ドメイン - 追加クラスター
+
+管理ドメイン上の追加の vSphere クラスタは、次のオプションを使用して展開できます。
+
+* vSphere 環境に追加のクラスターを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html["ONTAP tools for VMware vSphere"] https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] NFS データストアを vSphere クラスタにデプロイするために使用できます。
+* SDDC API を使用して追加のクラスターを展開します。 vSphere ホストには NFS データストアが設定されている必要があります。使用 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"]LUN を vSphere ホストに展開します。
+* SDDC Manager UI を使用して追加のクラスターを展開します。ただし、このオプションでは、リリース 5.2.x より前の vSAN データストアのみが作成されます。
+
+
+
+
+== 追加情報
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation ドキュメント"] 。

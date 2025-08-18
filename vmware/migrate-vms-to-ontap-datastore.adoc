@@ -1,0 +1,552 @@
+---
+sidebar: sidebar 
+permalink: vmware/migrate-vms-to-ontap-datastore.html 
+keywords: netapp, vmware, ontap, datastore, migration, svmotion, hcx, xvmotion, vmotion, vvol, iscsi, nfs, nvme, fc, sso 
+summary:  
+---
+= VMware vSphere からONTAPデータストアに VM を移行する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware vSphere 環境では、仮想マシンをNetApp ONTAP対応データストアに移行することで大きなメリットが得られます。 vSAN やサードパーティのストレージ システムから移行する場合でも、既存のインフラストラクチャをアップグレードする場合でも、さまざまな vMotion シナリオと移行戦略を検討して、VM をONTAPデータストアにシームレスに移行します。これにより、ONTAP のエンタープライズ クラスのストレージ機能を活用しながら、ビジネスの継続性が確保されます。
+
+Broadcom の VMware vSphere は、仮想マシンをホストするための VMFS、NFS、および vVol データストアをサポートしています。顧客は、ハイパーコンバージド インフラストラクチャまたは集中型共有ストレージ システムを使用してこれらのデータストアを作成することができます。
+
+お客様は、 ONTAPベースのストレージ システムでホスティングすることで、スペース効率の高い仮想マシンのスナップショットやクローン、データセンターやクラウド全体でさまざまな導入モデルを選択できる柔軟性、監視およびアラート ツールによる運用効率、VM データを検査するためのセキュリティ、ガバナンス、オプションのコンプライアンス ツールなどが得られることに価値を見出しています。
+
+ONTAPデータストアでホストされている VM は、 SnapCenter Plugin for VMware vSphere (SCV) を使用して保護できます。 SCV はストレージ ベースのスナップショットを作成し、リモートONTAPストレージ システムに複製します。復元はプライマリ ストレージ システムまたはセカンダリ ストレージ システムから実行できます。
+
+お客様は、Cloud Insightsまたは Aria Operations、あるいはその両方の組み合わせ、あるいはONTAP API を使用してトラブルシューティング、パフォーマンス監視、レポート、アラート通知機能を実行するその他のサードパーティ ツールを柔軟に選択できます。
+
+お客様は、 ONTAP Tools vCenter Plug-in またはその API を使用してデータストアを簡単にプロビジョニングでき、電源がオンの状態でも VM をONTAPデータストアに移行できます。
+
+
+NOTE: Aria Automation、Tanzu (またはその他の Kubernetes フレーバー) などの外部管理ツールでデプロイされる一部の VM は通常、VM ストレージ ポリシーに依存します。同じ VM ストレージ ポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなります。アプリケーション所有者に確認して、これらのVMを新しいデータストアに適切に移行してください。vSphere 8が導入されました https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/how-to-prepare-an-application-for-vsphere-vmotion.html#:~:text=vSphere%208.0%20introduces%20a%20notification,the%20necessary%20steps%20to%20prepare.["遅延に敏感なアプリケーション向けの vSphere vMotion 通知"]vMotion 用にアプリケーションを準備します。
+
+
+
+== ネットワーク要件
+
+.vMotion による VM 移行
+[%collapsible%open]
+====
+接続性、フォールト トレランス、およびパフォーマンスの向上を実現するために、 ONTAPデータストアにはデュアル ストレージ ネットワークがすでに導入されているものと想定されています。
+
+vSphere ホスト間での VM の移行も、vSphere ホストの VMKernel インターフェイスによって処理されます。ホット マイグレーション (VM の電源がオン) の場合、vMotion 対応サービスを備えた VMKernel インターフェイスが使用され、コールド マイグレーション (VM の電源がオフ) の場合、プロビジョニング サービスが有効な VMKernel インターフェイスがデータの移動に使用されます。有効なインターフェースが見つからない場合は、管理インターフェースを使用してデータを移動しますが、これは特定のユースケースでは望ましくない可能性があります。
+
+image:migrate-vms-to-ontap-002.png["有効なサービスを備えた VMKernel"]
+
+VMKernel インターフェイスを編集するときに、必要なサービスを有効にするオプションがここにあります。
+
+image:migrate-vms-to-ontap-001.png["VMKernelサービスオプション"]
+
+
+TIP: vMotion および Provisioning VMkernel インターフェイスで使用されるポート グループに、少なくとも 2 つの高速アクティブ アップリンク NIC が使用可能であることを確認します。
+
+====
+
+
+== VM移行シナリオ
+
+vMotion は、電源状態に関係なく VM を移行するためによく使用されます。特定のシナリオに関する追加の考慮事項と移行手順については、以下を参照してください。
+
+
+NOTE: 理解する https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/migration-with-vmotion-host-management/virtual-machine-conditions-and-limitation-for-vmotion-host-management.html["vSphere vMotion の VM の条件と制限"]VM 移行オプションに進む前に。
+
+.特定の vSphere データストアからの VM の移行
+[%collapsible%open]
+====
+UI を使用して VM を新しいデータストアに移行するには、以下の手順に従います。
+
+. vSphere Web Client で、ストレージ インベントリからデータストアを選択し、VM タブをクリックします。
++
+image:migrate-vms-to-ontap-003.png["特定のデータストア上のVM"]
+
+. 移行する必要がある VM を選択し、右クリックして [移行] オプションを選択します。
++
+image:migrate-vms-to-ontap-004.png["移行するVM"]
+
+. ストレージのみを変更するオプションを選択し、「次へ」をクリックします。
++
+image:migrate-vms-to-ontap-005.png["ストレージのみ変更"]
+
+. 必要な VM ストレージ ポリシーを選択し、互換性のあるデータストアを選択します。[Next]をクリックします。
++
+image:migrate-vms-to-ontap-006.png["VMストレージポリシーを満たすデータストア"]
+
+. 確認して「完了」をクリックします。
++
+image:migrate-vms-to-ontap-007.png["ストレージ移行のレビュー"]
+
+
+
+PowerCLI を使用して VM を移行するためのサンプル スクリプトを次に示します。
+
+[source, powershell]
+----
+#Authenticate to vCenter
+Connect-VIServer -server vcsa.sddc.netapp.local -force
+
+# Get all VMs with filter applied for a specific datastore
+$vm = Get-DataStore 'vSanDatastore' | Get-VM Har*
+
+#Gather VM Disk info
+$vmdisk = $vm | Get-HardDisk
+
+#Gather the desired Storage Policy to set for the VMs. Policy should be available with valid datastores.
+$storagepolicy = Get-SPBMStoragePolicy 'NetApp Storage'
+
+#set VM Storage Policy for VM config and its data disks.
+$vm, $vmdisk | Get-SPBMEntityConfiguration | Set-SPBMEntityConfiguration -StoragePolicy $storagepolicy
+
+#Migrate VMs to Datastore specified by Policy
+$vm | Move-VM -Datastore (Get-SPBMCompatibleStorage -StoragePolicy $storagepolicy)
+
+#Ensure VM Storage Policy remains compliant.
+$vm, $vmdisk | Get-SPBMEntityConfiguration
+----
+====
+.同じ vSphere クラスタ内の VM の移行
+[%collapsible%open]
+====
+UI を使用して VM を新しいデータストアに移行するには、以下の手順に従います。
+
+. vSphere Web Client で、ホストおよびクラスタ インベントリからクラスタを選択し、VM タブをクリックします。
++
+image:migrate-vms-to-ontap-008.png["特定のクラスター上のVM"]
+
+. 移行する必要がある VM を選択し、右クリックして [移行] オプションを選択します。
++
+image:migrate-vms-to-ontap-004.png["移行するVM"]
+
+. ストレージのみを変更するオプションを選択し、「次へ」をクリックします。
++
+image:migrate-vms-to-ontap-005.png["ストレージのみ変更"]
+
+. 必要な VM ストレージ ポリシーを選択し、互換性のあるデータストアを選択します。[Next]をクリックします。
++
+image:migrate-vms-to-ontap-006.png["VMストレージポリシーを満たすデータストア"]
+
+. 確認して「完了」をクリックします。
++
+image:migrate-vms-to-ontap-007.png["ストレージ移行のレビュー"]
+
+
+
+PowerCLI を使用して VM を移行するためのサンプル スクリプトを次に示します。
+
+[source, powershell]
+----
+#Authenticate to vCenter
+Connect-VIServer -server vcsa.sddc.netapp.local -force
+
+# Get all VMs with filter applied for a specific cluster
+$vm = Get-Cluster 'vcf-m01-cl01' | Get-VM Aria*
+
+#Gather VM Disk info
+$vmdisk = $vm | Get-HardDisk
+
+#Gather the desired Storage Policy to set for the VMs. Policy should be available with valid datastores.
+$storagepolicy = Get-SPBMStoragePolicy 'NetApp Storage'
+
+#set VM Storage Policy for VM config and its data disks.
+$vm, $vmdisk | Get-SPBMEntityConfiguration | Set-SPBMEntityConfiguration -StoragePolicy $storagepolicy
+
+#Migrate VMs to Datastore specified by Policy
+$vm | Move-VM -Datastore (Get-SPBMCompatibleStorage -StoragePolicy $storagepolicy)
+
+#Ensure VM Storage Policy remains compliant.
+$vm, $vmdisk | Get-SPBMEntityConfiguration
+----
+
+TIP: データストア クラスターが完全に自動化されたストレージ DRS (Dynamic Resource Scheduling) で使用されており、両方の (ソースとターゲット) データストアが同じタイプ (VMFS/NFS/vVol) である場合は、両方のデータストアを同じストレージ クラスターに保持し、ソースでメンテナンス モードを有効にして、ソース データストアから VM を移行します。エクスペリエンスは、コンピューティング ホストがメンテナンスのために処理される方法と同様になります。
+
+====
+.複数の vSphere クラスタ間での VM の移行
+[%collapsible%open]
+====
+
+NOTE: 参照する https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/cpu-compatibility-and-evc-host-management.html["CPU 互換性と vSphere Enhanced vMotion 互換性"]ソース ホストとターゲット ホストの CPU ファミリまたはモデルが異なる場合。
+
+UI を使用して VM を新しいデータストアに移行するには、以下の手順に従います。
+
+. vSphere Web Client で、ホストおよびクラスタ インベントリからクラスタを選択し、VM タブをクリックします。
++
+image:migrate-vms-to-ontap-008.png["特定のクラスター上のVM"]
+
+. 移行する必要がある VM を選択し、右クリックして [移行] オプションを選択します。
++
+image:migrate-vms-to-ontap-004.png["移行するVM"]
+
+. コンピューティングリソースとストレージを変更するオプションを選択し、[次へ] をクリックします。
++
+image:migrate-vms-to-ontap-009.png["コンピューティングとストレージの両方を変更する"]
+
+. 移行する適切なクラスターに移動して選択します。
++
+image:migrate-vms-to-ontap-012.png["ターゲットクラスターを選択する"]
+
+. 必要な VM ストレージ ポリシーを選択し、互換性のあるデータストアを選択します。[Next]をクリックします。
++
+image:migrate-vms-to-ontap-013.png["VMストレージポリシーを満たすデータストア"]
+
+. ターゲット VM を配置する VM フォルダーを選択します。
++
+image:migrate-vms-to-ontap-014.png["ターゲットVMフォルダの選択"]
+
+. ターゲット ポート グループを選択します。
++
+image:migrate-vms-to-ontap-015.png["ターゲットポートグループの選択"]
+
+. 確認して「完了」をクリックします。
++
+image:migrate-vms-to-ontap-007.png["ストレージ移行のレビュー"]
+
+
+
+PowerCLI を使用して VM を移行するためのサンプル スクリプトを次に示します。
+
+[source, powershell]
+----
+#Authenticate to vCenter
+Connect-VIServer -server vcsa.sddc.netapp.local -force
+
+# Get all VMs with filter applied for a specific cluster
+$vm = Get-Cluster 'vcf-m01-cl01' | Get-VM Aria*
+
+#Gather VM Disk info
+$vmdisk = $vm | Get-HardDisk
+
+#Gather the desired Storage Policy to set for the VMs. Policy should be available with valid datastores.
+$storagepolicy = Get-SPBMStoragePolicy 'NetApp Storage'
+
+#set VM Storage Policy for VM config and its data disks.
+$vm, $vmdisk | Get-SPBMEntityConfiguration | Set-SPBMEntityConfiguration -StoragePolicy $storagepolicy
+
+#Migrate VMs to another cluster and Datastore specified by Policy
+$vm | Move-VM -Destination (Get-Cluster 'Target Cluster') -Datastore (Get-SPBMCompatibleStorage -StoragePolicy $storagepolicy)
+
+#When Portgroup is specific to each cluster, replace the above command with
+$vm | Move-VM -Destination (Get-Cluster 'Target Cluster') -Datastore (Get-SPBMCompatibleStorage -StoragePolicy $storagepolicy) -PortGroup (Get-VirtualPortGroup 'VLAN 101')
+
+#Ensure VM Storage Policy remains compliant.
+$vm, $vmdisk | Get-SPBMEntityConfiguration
+----
+====
+.同じ SSO ドメイン内の vCenter サーバー間での VM の移行
+[#vmotion-same-sso%collapsible%open]
+====
+以下の手順に従って、同じ vSphere Client UI にリストされている新しい vCenter サーバーに VM を移行します。
+
+
+NOTE: ソースおよびターゲットのvCenterバージョンなどの追加要件については、以下を確認してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/vmotion-across-vcenter-server-systems-host-management/requirements-for-migration-across-vcenter-servers-host-management.html["vCenter Server インスタンス間の vMotion の要件に関する vSphere ドキュメント"]
+
+. vSphere Web Client で、ホストおよびクラスタ インベントリからクラスタを選択し、VM タブをクリックします。
++
+image:migrate-vms-to-ontap-008.png["特定のクラスター上のVM"]
+
+. 移行する必要がある VM を選択し、右クリックして [移行] オプションを選択します。
++
+image:migrate-vms-to-ontap-004.png["移行するVM"]
+
+. コンピューティングリソースとストレージを変更するオプションを選択し、[次へ] をクリックします。
++
+image:migrate-vms-to-ontap-009.png["コンピューティングとストレージの両方を変更する"]
+
+. ターゲット vCenter サーバーでターゲット クラスタを選択します。
++
+image:migrate-vms-to-ontap-012.png["ターゲットクラスターを選択する"]
+
+. 必要な VM ストレージ ポリシーを選択し、互換性のあるデータストアを選択します。[Next]をクリックします。
++
+image:migrate-vms-to-ontap-013.png["VMストレージポリシーを満たすデータストア"]
+
+. ターゲット VM を配置する VM フォルダーを選択します。
++
+image:migrate-vms-to-ontap-014.png["ターゲットVMフォルダの選択"]
+
+. ターゲット ポート グループを選択します。
++
+image:migrate-vms-to-ontap-015.png["ターゲットポートグループの選択"]
+
+. 移行オプションを確認し、「完了」をクリックします。
++
+image:migrate-vms-to-ontap-007.png["ストレージ移行のレビュー"]
+
+
+
+PowerCLI を使用して VM を移行するためのサンプル スクリプトを次に示します。
+
+[source, powershell]
+----
+#Authenticate to Source vCenter
+$sourcevc = Connect-VIServer -server vcsa01.sddc.netapp.local -force
+$targetvc = Connect-VIServer -server vcsa02.sddc.netapp.local -force
+
+# Get all VMs with filter applied for a specific cluster
+$vm = Get-Cluster 'vcf-m01-cl01'  -server $sourcevc| Get-VM Win*
+
+#Gather the desired Storage Policy to set for the VMs. Policy should be available with valid datastores.
+$storagepolicy = Get-SPBMStoragePolicy 'iSCSI' -server $targetvc
+
+#Migrate VMs to target vCenter
+$vm | Move-VM -Destination (Get-Cluster 'Target Cluster' -server $targetvc) -Datastore (Get-SPBMCompatibleStorage -StoragePolicy $storagepolicy -server $targetvc) -PortGroup (Get-VirtualPortGroup 'VLAN 101' -server $targetvc)
+
+$targetvm = Get-Cluster 'Target Cluster' -server $targetvc | Get-VM Win*
+
+#Gather VM Disk info
+$targetvmdisk = $targetvm | Get-HardDisk
+
+#set VM Storage Policy for VM config and its data disks.
+$targetvm, $targetvmdisk | Get-SPBMEntityConfiguration | Set-SPBMEntityConfiguration -StoragePolicy $storagepolicy
+
+#Ensure VM Storage Policy remains compliant.
+$targetvm, $targetvmdisk | Get-SPBMEntityConfiguration
+----
+====
+.異なる SSO ドメイン内の vCenter サーバー間での VM の移行
+[%collapsible%open]
+====
+
+NOTE: このシナリオでは、vCenter サーバー間に通信が存在することを前提としています。それ以外の場合は、以下にリストされているデータセンター間の場所のシナリオを確認してください。前提条件については、 https://docs.vmware.com/en/VMware-vSphere/8.0/vsphere-vcenter-esxi-management/GUID-1960B6A6-59CD-4B34-8FE5-42C19EE8422A.html["高度な Cross vCenter vMotion に関する vSphere ドキュメント"]
+
+UI を使用して VM を別の vCenter サーバーに移行するには、以下の手順に従います。
+
+. vSphere Web Client で、ソース vCenter サーバーを選択し、[VM] タブをクリックします。
++
+image:migrate-vms-to-ontap-010.png["ソース vCenter 上の VM"]
+
+. 移行する必要がある VM を選択し、右クリックして [移行] オプションを選択します。
++
+image:migrate-vms-to-ontap-004.png["移行するVM"]
+
+. オプション「Cross vCenter Server エクスポート」を選択し、「次へ」をクリックします。
++
+image:migrate-vms-to-ontap-011.png["vCenter Server間のエクスポート"]
+
++
+
+TIP: VM はターゲットの vCenter サーバーからインポートすることもできます。その手順については、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/vmotion-across-vcenter-server-systems-host-management/migrate-a-virtual-machine-from-an-external-vcenter-server-instance-host-management.html["高度な Cross vCenter vMotion を使用して仮想マシンをインポートまたはクローンする"]
+
+. vCenter 資格情報の詳細を入力し、「ログイン」をクリックします。
++
+image:migrate-vms-to-ontap-023.png["vCenter の資格情報"]
+
+. vCenter ServerのSSL証明書のサムプリントを確認して承認します。
++
+image:migrate-vms-to-ontap-024.png["SSLサムプリント"]
+
+. ターゲット vCenter を展開し、ターゲット コンピューティング クラスターを選択します。
++
+image:migrate-vms-to-ontap-025.png["ターゲットコンピューティングクラスタを選択"]
+
+. VM ストレージ ポリシーに基づいてターゲット データストアを選択します。
++
+image:migrate-vms-to-ontap-026.png["ターゲットデータストアを選択"]
+
+. ターゲット VM フォルダーを選択します。
++
+image:migrate-vms-to-ontap-027.png["ターゲットVMフォルダを選択"]
+
+. 各ネットワーク インターフェイス カード マッピングの VM ポート グループを選択します。
++
+image:migrate-vms-to-ontap-028.png["ターゲットポートグループを選択"]
+
+. 確認して「完了」をクリックすると、vCenter サーバー間で vMotion が開始されます。
++
+image:migrate-vms-to-ontap-029.png["クロスvMotion操作レビュー"]
+
+
+
+PowerCLI を使用して VM を移行するためのサンプル スクリプトを次に示します。
+
+[source, powershell]
+----
+#Authenticate to Source vCenter
+$sourcevc = Connect-VIServer -server vcsa01.sddc.netapp.local -force
+$targetvc = Connect-VIServer -server vcsa02.sddc.netapp.local -force
+
+# Get all VMs with filter applied for a specific cluster
+$vm = Get-Cluster 'Source Cluster'  -server $sourcevc| Get-VM Win*
+
+#Gather the desired Storage Policy to set for the VMs. Policy should be available with valid datastores.
+$storagepolicy = Get-SPBMStoragePolicy 'iSCSI' -server $targetvc
+
+#Migrate VMs to target vCenter
+$vm | Move-VM -Destination (Get-Cluster 'Target Cluster' -server $targetvc) -Datastore (Get-SPBMCompatibleStorage -StoragePolicy $storagepolicy -server $targetvc) -PortGroup (Get-VirtualPortGroup 'VLAN 101' -server $targetvc)
+
+$targetvm = Get-Cluster 'Target Cluster' -server $targetvc | Get-VM Win*
+
+#Gather VM Disk info
+$targetvmdisk = $targetvm | Get-HardDisk
+
+#set VM Storage Policy for VM config and its data disks.
+$targetvm, $targetvmdisk | Get-SPBMEntityConfiguration | Set-SPBMEntityConfiguration -StoragePolicy $storagepolicy
+
+#Ensure VM Storage Policy remains compliant.
+$targetvm, $targetvmdisk | Get-SPBMEntityConfiguration
+----
+====
+.データセンター間のVMの移行
+[%collapsible%open]
+====
+* NSX フェデレーションまたはその他のオプションを使用してレイヤー 2 トラフィックがデータセンター全体に拡張される場合は、vCenter サーバー間で VM を移行する手順に従います。
+* HCXはさまざまな https://techdocs.broadcom.com/us/en/vmware-cis/hcx/vmware-hcx/4-11/vmware-hcx-user-guide-4-11/migrating-virtual-machines-with-vmware-hcx/vmware-hcx-migration-types.html["移行の種類"]ダウンタイムなしで VM を移動するための、データセンター間のレプリケーション アシスト vMotion が含まれます。
+* https://docs.vmware.com/en/Site-Recovery-Manager/index.html["Site Recovery Manager（SRM）"]通常は災害復旧を目的としており、ストレージ アレイ ベースのレプリケーションを利用した計画的な移行にもよく使用されます。
+* 継続的データ保護（CDP）製品では、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/filtering-virtual-machine-i-o-in-vsphere/about-i-o-filters/classes-of-vaio-filters.html["vSphere API for IO (VAIO)"]データを傍受し、そのコピーをリモート ロケーションに送信して、RPO がほぼゼロのソリューションを実現します。
+* バックアップおよびリカバリ製品も利用できます。しかし、多くの場合、RTO が長くなります。
+* https://docs.netapp.com/us-en/bluexp-disaster-recovery/get-started/dr-intro.html["BlueXP災害復旧サービス (DRaaS)"]ストレージ アレイ ベースのレプリケーションを利用し、特定のタスクを自動化してターゲット サイトで VM を回復します。
+
+
+====
+.ハイブリッドクラウド環境でのVMの移行
+[%collapsible%open]
+====
+* https://techdocs.broadcom.com/us/en/vmware-cis/cloud/vmware-cloud/cloud/vmware-cloud-gateway-administration/about-hybrid-linked-mode.html["ハイブリッドリンクモードを構成する"]そして、以下の手順に従ってくださいlink:#vmotion-same-sso["同じ SSO ドメイン内の vCenter サーバー間での VM の移行"]
+* HCXはさまざまな https://docs.vmware.com/en/VMware-HCX/4.8/hcx-user-guide/GUID-8A31731C-AA28-4714-9C23-D9E924DBB666.html["移行の種類"]電源がオンの状態で VM を移動する、データセンター間のレプリケーション アシスト vMotion など。
++
+** link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-aws-vmc-migrate-hcx.html["TR 4942: VMware HCX を使用してワークロードを FSx ONTAPデータストアに移行する"^]
+** link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-azure-avs-migrate-hcx.html["TR-4940: VMware HCX を使用してワークロードをAzure NetApp Filesデータストアに移行する - クイックスタート ガイド"^]
+** link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-gcp-gcve-migrate-hcx.html["VMware HCX を使用して Google Cloud VMware Engine 上の Google Cloud Google Cloud NetApp Volumesデータストアにワークロードを移行する - クイックスタート ガイド"^]
+
+
+* https://docs.netapp.com/us-en/bluexp-disaster-recovery/get-started/dr-intro.html["BlueXP災害復旧サービス (DRaaS)"]ストレージ アレイ ベースのレプリケーションを利用し、特定のタスクを自動化してターゲット サイトで VM を回復します。
+* サポートされている継続的データ保護（CDP）製品では、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/filtering-virtual-machine-i-o-in-vsphere/about-i-o-filters/classes-of-vaio-filters.html["vSphere API for IO (VAIO)"]データを傍受し、そのコピーをリモート ロケーションに送信して、RPO がほぼゼロのソリューションを実現します。
+
+
+
+TIP: ソース VM がブロック vVol データストアに存在する場合、 SnapMirrorを使用して、サポートされている他のクラウドプロバイダーのAmazon FSx ONTAPまたはCloud Volumes ONTAP (CVO) に複製し、クラウド ネイティブ VM で iSCSI ボリュームとして使用できます。
+
+====
+
+
+== VM テンプレートの移行シナリオ
+
+VM テンプレートは、vCenter Server またはコンテンツ ライブラリによって管理できます。  VM テンプレート、OVF および OVA テンプレート、その他の種類のファイルの配布は、ローカル コンテンツ ライブラリに公開することによって処理され、リモート コンテンツ ライブラリはそれをサブスクライブできます。
+
+* vCenter インベントリに保存されている VM テンプレートは VM に変換でき、VM 移行オプションを使用できます。
+* OVF および OVA テンプレート、コンテンツ ライブラリに保存されている他の種類のファイルは、他のコンテンツ ライブラリに複製できます。
+* コンテンツ ライブラリ VM テンプレートは任意のデータストアでホストでき、新しいコンテンツ ライブラリに追加する必要があります。
+
+
+.データストアでホストされている VM テンプレートの移行
+[%collapsible%open]
+====
+. vSphere Web Client で、VM およびテンプレート フォルダー ビューの VM テンプレートを右クリックし、VM に変換するオプションを選択します。
++
+image:migrate-vms-to-ontap-016.png["VM テンプレートを VM に変換する"]
+
+. VM として変換されたら、VM 移行オプションに従います。
+
+
+====
+.コンテンツライブラリアイテムの複製
+[%collapsible%open]
+====
+. vSphere Web Clientでコンテンツライブラリを選択します
++
+image:migrate-vms-to-ontap-017.png["コンテンツライブラリの選択"]
+
+. 複製したいアイテムがあるコンテンツライブラリを選択します
+. アイテムを右クリックし、「アイテムの複製」をクリックします。
++
+image:migrate-vms-to-ontap-018.png["コンテンツライブラリ項目の複製"]
+
++
+
+WARNING: アクション メニューを使用する場合は、アクションを実行するための正しいターゲット オブジェクトがリストされていることを確認してください。
+
+. 対象のコンテンツ ライブラリを選択し、[OK] をクリックします。
++
+image:migrate-vms-to-ontap-019.png["ターゲットコンテンツライブラリの選択"]
+
+. アイテムがターゲット コンテンツ ライブラリで使用可能であることを確認します。
++
+image:migrate-vms-to-ontap-020.png["クローンアイテムの検証"]
+
+
+
+以下は、コンテンツ ライブラリ CL01 から CL02 にコンテンツ ライブラリ項目をコピーするサンプル PowerCLI スクリプトです。
+
+[source, powershell]
+----
+#Authenticate to vCenter Server(s)
+$sourcevc = Connect-VIServer -server 'vcenter01.domain' -force
+$targetvc = Connect-VIServer -server 'vcenter02.domain' -force
+
+#Copy content library items from source vCenter content library CL01 to target vCenter content library CL02.
+Get-ContentLibaryItem -ContentLibary (Get-ContentLibary 'CL01' -Server $sourcevc) | Where-Object { $_.ItemType -ne 'vm-template' } | Copy-ContentLibaryItem -ContentLibrary (Get-ContentLibary 'CL02' -Server $targetvc)
+----
+====
+.コンテンツライブラリにテンプレートとしてVMを追加する
+[%collapsible%open]
+====
+. vSphere Web ClientでVMを選択し、右クリックしてライブラリのテンプレートとしてクローンを選択します。
++
+image:migrate-vms-to-ontap-021.png["ライブラリ内のテンプレートとしての VM クローン"]
+
++
+
+TIP: VM テンプレートをライブラリにクローンするように選択した場合、VM テンプレートとしてではなく、OVF および OVA テンプレートとしてのみ保存できます。
+
+. テンプレート タイプが VM テンプレートとして選択されていることを確認し、ウィザードの回答に従って操作を完了します。
++
+image:migrate-vms-to-ontap-022.png["テンプレートタイプの選択"]
+
++
+
+NOTE: コンテンツライブラリのVMテンプレートの詳細については、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-virtual-machine-administration-guide-8-0.html["vSphere VM 管理ガイド"]
+
+
+
+====
+
+
+== ユースケース
+
+.サードパーティのストレージ システム (vSAN を含む) からONTAPデータストアへの移行。
+[%collapsible%open]
+====
+* ONTAPデータストアがプロビジョニングされている場所に基づいて、上記の VM 移行オプションを選択します。
+
+
+====
+.vSphere の以前のバージョンから最新バージョンへの移行。
+[%collapsible%open]
+====
+* インプレース アップグレードが不可能な場合は、新しい環境を立ち上げて上記の移行オプションを使用できます。
++
+
+TIP: クロス vCenter 移行オプションでは、ソースでエクスポート オプションが使用できない場合はターゲットからインポートします。その手順については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/vmotion-across-vcenter-server-systems-host-management/migrate-a-virtual-machine-from-an-external-vcenter-server-instance-host-management.html["高度な Cross vCenter vMotion を使用して仮想マシンをインポートまたはクローンする"]
+
+
+
+====
+.VCF ワークロード ドメインへの移行。
+[%collapsible%open]
+====
+* 各 vSphere クラスタからターゲット ワークロード ドメインに VM を移行します。
++
+
+NOTE: ソース vCenter 上の他のクラスタにある既存の VM とのネットワーク通信を許可するには、ソース vCenter vSphere ホストをトランスポート ゾーンに追加して NSX セグメントを拡張するか、エッジで L2 ブリッジを使用して VLAN での L2 通信を許可します。  NSXのドキュメントを確認する https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-2/administration-guide/segments/edge-bridging-extending-overlay-segments-to-vlan/configure-an-edge-vm-for-bridging.html["ブリッジ用のエッジVMを構成する"]
+
+
+
+====
+
+
+== 参考資料
+
+* https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management.html["vSphere 仮想マシンの移行"]
+* https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/migration-with-vmotion-host-management.html["vSphere vMotion を使用した仮想マシンの移行"]
+* https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-2/administration-guide/managing-nsx-t-in-multiple-locations/nsx-t-federation/networking-topologies-in-nsx-federation/tier-0-in-federation.html["NSXフェデレーションにおけるTier-0ゲートウェイ構成"]
+* https://techdocs.broadcom.com/us/en/vmware-cis/hcx/vmware-hcx/4-11/vmware-hcx-user-guide-4-11.html["HCX 4.8 ユーザーガイド"]
+* https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery.html["VMware Live Recovery ドキュメント"]
+* https://docs.netapp.com/us-en/bluexp-disaster-recovery/get-started/dr-intro.html["VMware 向けBlueXP disaster recovery"]
+

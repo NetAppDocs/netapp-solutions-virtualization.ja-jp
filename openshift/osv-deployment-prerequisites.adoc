@@ -1,0 +1,42 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-deployment-prerequisites.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= ONTAPを使用した Red Hat OpenShift Virtualization の導入要件
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAPストレージ システムを使用して OpenShift 仮想化をインストールおよび展開するための要件を確認します。
+
+
+
+== 前提条件
+
+* RHCOS ワーカーノードを備えたベアメタル インフラストラクチャにインストールされた Red Hat OpenShift クラスター (バージョン 4.6 以降)
+* VMのHAを維持するためにマシンヘルスチェックを導入する
+* 正しいプロトコルで設定された SVM を備えたNetApp ONTAPクラスター。
+* OpenShift クラスタにインストールされたTrident
+* Tridentバックエンド構成が作成されました
+* Tridentをプロビジョナーとして OpenShift クラスター上に構成された StorageClass
+
+
+上記のTridentの前提条件については、link:osv-trident-install.html["Trident設置部"]詳細については。
+
+* Red Hat OpenShift クラスターへのクラスター管理者アクセス
+* NetApp ONTAPクラスタへの管理者アクセス
+* tridentctl および oc ツールがインストールされ、$PATH に追加された管理ワークステーション
+
+
+OpenShift Virtualization は OpenShift クラスターにインストールされたオペレーターによって管理されるため、メモリ、CPU、ストレージに追加のオーバーヘッドがかかります。これは、クラスターのハードウェア要件を計画する際に考慮する必要があります。ドキュメントを参照 https://docs.openshift.com/container-platform/4.7/virt/install/preparing-cluster-for-virt.html#virt-cluster-resource-requirements_preparing-cluster-for-virt["ここをクリックしてください。"]詳細についてはこちらをご覧ください。
+
+オプションで、ノード配置ルールを構成することで、OpenShift クラスター ノードのサブセットを指定して、OpenShift Virtualization オペレーター、コントローラー、および VM をホストすることもできます。  OpenShift Virtualizationのノード配置ルールを設定するには、ドキュメントに従ってください。 https://docs.openshift.com/container-platform/4.7/virt/install/virt-specifying-nodes-for-virtualization-components.html["ここをクリックしてください。"] 。
+
+OpenShift Virtualization を支えるストレージについては、 NetApp、専用の SVM によって支えられている特定のTridentバックエンドからストレージを要求する専用の StorageClass を用意することを推奨しています。これにより、OpenShift クラスター上の VM ベースのワークロードに提供されるデータに関して、マルチテナントのレベルが維持されます。

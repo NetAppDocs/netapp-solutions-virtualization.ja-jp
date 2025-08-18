@@ -1,0 +1,307 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-principal-nfs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
+summary:  
+---
+= ONTAP上の NFS データストアを VI ワークロード ドメインの主ストレージとして使用する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このユースケースでは、VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインのプライマリ ストレージ ソリューションとしてONTAP上の NFS データストアを構成する手順について説明します。この手順では、必要なコンポーネント、構成手順、および展開プロセスをまとめています。
+
+
+
+== NFSの利点
+
+*シンプルさと使いやすさ:* NFS はセットアップと管理が簡単なので、迅速かつ簡単なファイル共有を必要とする環境に最適です。
+
+*スケーラビリティ:* ONTAP のアーキテクチャにより、NFS は効率的に拡張でき、インフラストラクチャに大きな変更を加えることなく増大するデータ ニーズに対応できます。
+
+*柔軟性:* NFS は幅広いアプリケーションとワークロードをサポートしており、仮想化環境を含むさまざまなユースケースに幅広く対応できます。
+
+詳細については、『vSphere 8 の NFS v3 リファレンス ガイド』を参照してください。
+
+NetAppストレージシステムでのファイバーチャネルの使用に関する詳細については、link:vmw-vvf-overview.html["vSphere 8 向け NFS v3 リファレンス ガイド"] 。
+
+
+
+== シナリオの概要
+
+このシナリオでは、次の大まかな手順について説明します。
+
+* NFSトラフィック用の論理インターフェース（LIF）を備えたストレージ仮想マシン（SVM）を作成する
+* ONTAPストレージ仮想マシン (SVM) のネットワークを確認し、NFS トラフィックを伝送するための論理インターフェイス (LIF) が存在することを確認します。
+* ESXi ホストが NFS ボリュームにアクセスできるようにするエクスポート ポリシーを作成します。
+* ONTAPストレージ システムに NFS ボリュームを作成します。
+* SDDC Manager で NFS および vMotion トラフィック用のネットワーク プールを作成します。
+* VI ワークロード ドメインで使用するために VCF 内のホストを委託します。
+* NFS データストアをプリンシパル ストレージとして使用して、VCF に VI ワークロード ドメインを展開します。
+* VMware VAAI用のNetApp NFSプラグインをインストールする
+
+
+
+NOTE: このソリューションは、 NetApp AFFやFASなどの NFS ストレージをサポートするONTAPプラットフォームに適用できます。
+
+
+
+== 前提条件
+
+このシナリオでは、次のコンポーネントと構成が使用されます。
+
+* NFS トラフィックを許可するように構成されたストレージ仮想マシン (SVM) を備えたNetApp AFFストレージ システム。
+* NFS トラフィックを伝送し、SVM に関連付けられた IP ネットワーク上に論理インターフェイス (LIF) が作成されています。
+* VCF 管理ドメインの展開が完了し、SDDC マネージャー インターフェイスにアクセスできるようになりました。
+* VCF 管理ネットワーク上で通信用に構成された 4 台の ESXi ホスト。
+* この目的のために確立された VLAN またはネットワーク セグメント上の vMotion および NFS ストレージ トラフィック用に予約された IP アドレス。
+
+
+
+NOTE: VI ワークロード ドメインを展開する場合、VCF は NFS サーバーへの接続を検証します。これは、NFS IP アドレスを使用して追加の vmkernel アダプタが追加される前に、ESXi ホスト上の管理アダプタを使用して実行されます。したがって、検証を続行できるようにするには、1) 管理ネットワークが NFS サーバーにルーティング可能であること、または 2) 管理ネットワークの LIF が NFS データストア ボリュームをホストしている SVM に追加されていることを確認する必要があります。
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。
+
+vSphereクラスタでNFSを使用する方法の詳細については、link:vmw-vvf-overview.html["vSphere 8 向け NFS v3 リファレンス ガイド"] 。
+
+{nbsp}image:vmware-vcf-aff-070.png["NFSアーキテクチャ図"] {nbsp}
+
+
+
+== 展開手順
+
+NFS データストアをプリンシパル ストレージとして VI ワークロード ドメインを展開するには、次の手順を実行します。
+
+.ONTAP SVMのネットワークを確認する
+[%collapsible%open]
+====
+ONTAPストレージ クラスタと VI ワークロード ドメイン間の NFS トラフィックを伝送するネットワークに必要な論理インターフェイスが確立されていることを確認します。
+
+. ONTAP System Manager から、左側のメニューの *Storage VMs* に移動し、NFS トラフィックに使用する SVM をクリックします。 *概要* タブの *ネットワーク IP インターフェイス* の下で、*NFS* の右側にある数字をクリックします。リストに必要な LIF IP アドレスがリストされていることを確認します。
++
+image:vmware-vcf-aff-003.png["SVMのLIFを確認する"]
+
+
+
+または、次のコマンドを使用して、 ONTAP CLI から SVM に関連付けられている LIF を確認します。
+
+[source, cli]
+----
+network interface show -vserver <SVM_NAME>
+----
+. ESXi ホストがONTAP NFS サーバと通信できることを確認します。  SSH 経由で ESXi ホストにログインし、SVM LIF に ping を実行します。
+
+
+[source, cli]
+----
+vmkping <IP Address>
+----
+
+NOTE: VI ワークロード ドメインを展開する場合、VCF は NFS サーバーへの接続を検証します。これは、NFS IP アドレスを使用して追加の vmkernel アダプタが追加される前に、ESXi ホスト上の管理アダプタを使用して実行されます。したがって、検証を続行できるようにするには、1) 管理ネットワークが NFS サーバーにルーティング可能であること、または 2) 管理ネットワークの LIF が NFS データストア ボリュームをホストしている SVM に追加されていることを確認する必要があります。
+
+====
+.NFSボリュームを共有するためのエクスポートポリシーを作成する
+[%collapsible%open]
+====
+ONTAP System Manager でエクスポート ポリシーを作成し、NFS ボリュームのアクセス制御を定義します。
+
+. ONTAP System Manager で、左側のメニューの *Storage VMs* をクリックし、リストから SVM を選択します。
+. *設定*タブで*エクスポート ポリシー*を見つけて、矢印をクリックしてアクセスします。
++
+image:vmware-vcf-aff-006.png["輸出ポリシーにアクセスする"]
+
++
+{nbsp}
+
+. *新しいエクスポート ポリシー* ウィンドウでポリシーの名前を追加し、*新しいルールの追加* ボタンをクリックし、*+ 追加* ボタンをクリックして新しいルールの追加を開始します。
++
+image:vmware-vcf-aff-007.png["新しい輸出政策"]
+
++
+{nbsp}
+
+. ルールに含める IP アドレス、IP アドレス範囲、またはネットワークを入力します。  *SMB/Cifs* および * FlexCache* ボックスのチェックを外し、以下のアクセス詳細を選択します。  ESXi ホストにアクセスするには、UNIX ボックスを選択するだけで十分です。
++
+image:vmware-vcf-aff-008.png["新しいルールを保存"]
+
++
+
+NOTE: VI ワークロード ドメインを展開する場合、VCF は NFS サーバーへの接続を検証します。これは、NFS IP アドレスを使用して追加の vmkernel アダプタが追加される前に、ESXi ホスト上の管理アダプタを使用して実行されます。したがって、検証を続行するには、エクスポート ポリシーに VCF 管理ネットワークが含まれていることを確認する必要があります。
+
+. すべてのルールを入力したら、[*保存*] ボタンをクリックして新しいエクスポート ポリシーを保存します。
+. あるいは、 ONTAP CLI でエクスポート ポリシーとルールを作成することもできます。  ONTAPドキュメントでエクスポート ポリシーを作成し、ルールを追加する手順を参照してください。
++
+** ONTAP CLIを使用してlink:https://docs.netapp.com/us-en/ontap/nfs-config/create-export-policy-task.html["エクスポート ポリシーの作成"]。
+** ONTAP CLIを使用してlink:https://docs.netapp.com/us-en/ontap/nfs-config/add-rule-export-policy-task.html["エクスポート ポリシーへのルールの追加"]。
+
+
+
+
+====
+.NFSボリュームを作成する
+[%collapsible%open]
+====
+ワークロード ドメインのデプロイメントでデータストアとして使用する NFS ボリュームをONTAPストレージ システム上に作成します。
+
+. ONTAP System Manager から、左側のメニューの *Storage > Volumes* に移動し、*+Add* をクリックして新しいボリュームを作成します。
++
+image:vmware-vcf-aff-009.png["新しいボリュームを追加"]
+
++
+{nbsp}
+
+. ボリュームの名前を追加し、必要な容量を入力して、ボリュームをホストするストレージ VM を選択します。続行するには、[*その他のオプション*] をクリックします。
++
+image:vmware-vcf-aff-010.png["ボリュームの詳細を追加する"]
+
++
+{nbsp}
+
+. [アクセス許可] で、NFS サーバーと NFS トラフィックの両方の検証に使用される VCF 管理ネットワークまたは IP アドレスと NFS ネットワーク IP アドレスを含むエクスポート ポリシーを選択します。
++
+image:vmware-vcf-aff-011.png["ボリュームの詳細を追加する"]
+
++
++
+
++
+
+NOTE: VI ワークロード ドメインを展開する場合、VCF は NFS サーバーへの接続を検証します。これは、NFS IP アドレスを使用して追加の vmkernel アダプタが追加される前に、ESXi ホスト上の管理アダプタを使用して実行されます。したがって、検証を続行できるようにするには、1) 管理ネットワークが NFS サーバーにルーティング可能であること、または 2) 管理ネットワークの LIF が NFS データストア ボリュームをホストしている SVM に追加されていることを確認する必要があります。
+
+. あるいは、 ONTAPボリュームはONTAP CLI で作成することもできます。詳細については、link:https://docs.netapp.com/us-en/ontap-cli-9141//lun-create.html["lun create"] ONTAPコマンドのドキュメントのコマンド。
+
+
+====
+.SDDC マネージャーでネットワーク プールを作成する
+[%collapsible%open]
+====
+ESXi ホストを VI ワークロード ドメインに展開するための準備として、ESXi ホストをコミッショニングする前に、SDDC マネージャでネットワーク プールを作成する必要があります。ネットワーク プールには、NFS サーバーとの通信に使用される VMkernel アダプタのネットワーク情報と IP アドレス範囲が含まれている必要があります。
+
+. SDDC Manager Web インターフェースから、左側のメニューの *ネットワーク設定* に移動し、*+ ネットワーク プールの作成* ボタンをクリックします。
++
+image:vmware-vcf-aff-004.png["ネットワークプールを作成する"]
+
++
+{nbsp}
+
+. ネットワーク プールの名前を入力し、NFS のチェック ボックスをオンにして、すべてのネットワークの詳細を入力します。  vMotion ネットワーク情報についてもこれを繰り返します。
++
+image:vmware-vcf-aff-005.png["ネットワークプールの構成"]
+
++
+{nbsp}
+
+. *保存* ボタンをクリックして、ネットワーク プールの作成を完了します。
+
+
+====
+.委員会ホスト
+[%collapsible%open]
+====
+ESXi ホストをワークロード ドメインとして展開する前に、SDDC Manager インベントリに追加する必要があります。これには、必要な情報の提供、検証の通過、および試運転プロセスの開始が含まれます。
+
+詳細については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/commission-hosts.html["委員会ホスト"] VCF 管理ガイドを参照してください。
+
+. SDDC マネージャー インターフェースから、左側のメニューの *ホスト* に移動し、*ホストのコミッション* ボタンをクリックします。
++
+image:vmware-vcf-aff-016.png["コミッションホストを開始する"]
+
++
+{nbsp}
+
+. 最初のページは前提条件のチェックリストです。すべての前提条件を再確認し、すべてのチェックボックスを選択して続行します。
++
+image:vmware-vcf-aff-017.png["前提条件を確認する"]
+
++
+{nbsp}
+
+. *ホストの追加と検証* ウィンドウで、*ホスト FQDN*、*ストレージ タイプ*、ワークロード ドメインに使用する vMotion および NFS ストレージ IP アドレスを含む *ネットワーク プール* 名、および ESXi ホストにアクセスするための資格情報を入力します。  *追加* をクリックして、検証するホストのグループにホストを追加します。
++
+image:vmware-vcf-aff-018.png["ホストの追加と検証ウィンドウ"]
+
++
+{nbsp}
+
+. 検証するすべてのホストを追加したら、[*すべて検証*] ボタンをクリックして続行します。
+. すべてのホストが検証されたと仮定して、[次へ] をクリックして続行します。
++
+image:vmware-vcf-aff-019.png["すべて検証して「次へ」をクリックします"]
+
++
+{nbsp}
+
+. 委託するホストのリストを確認し、「委託」ボタンをクリックしてプロセスを開始します。  SDDC マネージャーのタスク ペインからコミッショニング プロセスを監視します。
++
+image:vmware-vcf-aff-020.png["すべて検証して「次へ」をクリックします"]
+
+
+
+====
+.VIワークロードドメインのデプロイ
+[%collapsible%open]
+====
+VI ワークロード ドメインの展開は、VCF Cloud Manager インターフェイスを使用して行われます。ここでは、ストレージ構成に関連する手順のみを説明します。
+
+VIワークロードドメインの展開手順については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/working-with-workload-domains-admin/about-virtual-infrastructure-workload-domains-admin/deploy-a-vi-workload-domain-using-the-sddc-manager-ui-admin.html["SDDC Manager UI を使用して VI ワークロード ドメインを展開する"] 。
+
+. SDDC Manager ダッシュボードから、右上隅の *+ ワークロード ドメイン* をクリックして、新しいワークロード ドメインを作成します。
++
+image:vmware-vcf-aff-012.png["新しいワークロードドメインを作成する"]
+
++
+{nbsp}
+
+. VI 構成ウィザードで、必要に応じて *一般情報、クラスター、コンピューティング、ネットワーク*、および *ホスト選択* のセクションに入力します。
+
+
+VI構成ウィザードに必要な情報を入力する方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/working-with-workload-domains-admin/about-virtual-infrastructure-workload-domains-admin/deploy-a-vi-workload-domain-using-the-sddc-manager-ui-admin.html["SDDC Manager UI を使用して VI ワークロード ドメインを展開する"] 。
+
++image:vmware-vcf-aff-013.png["VI構成ウィザード"]
+
+. NFS ストレージ セクションで、データストア名、NFS ボリュームのフォルダー マウント ポイント、およびONTAP NFS ストレージ VM LIF の IP アドレスを入力します。
++
+image:vmware-vcf-aff-014.png["NFSストレージ情報を追加する"]
+
++
+{nbsp}
+
+. VI 構成ウィザードでスイッチ構成とライセンスの手順を完了し、[完了] をクリックしてワークロード ドメインの作成プロセスを開始します。
++
+image:vmware-vcf-aff-015.png["VI構成ウィザードを完了する"]
+
++
+{nbsp}
+
+. プロセスを監視し、プロセス中に発生する検証の問題を解決します。
+
+
+====
+.VMware VAAI用のNetApp NFSプラグインをインストールする
+[%collapsible%open]
+====
+NetApp NFS Plug-in for VMware VAAI は、ESXi ホストにインストールされた VMware 仮想ディスク ライブラリを統合し、より高速に完了する、より高性能なクローン作成操作を提供します。これは、VMware vSphere でONTAPストレージ システムを使用する場合に推奨される手順です。
+
+VMware VAAI用のNetApp NFSプラグインを導入するための手順については、次のURLを参照してください。link:https://docs.netapp.com/us-en/nfs-plugin-vmware-vaai/task-install-netapp-nfs-plugin-for-vmware-vaai.html["VMware VAAI用のNetApp NFSプラグインをインストールする"] 。
+
+====
+
+
+== このソリューションのビデオデモ
+
+.VCF ワークロード ドメインの主要ストレージとしての NFS データストア
+video::9b66ac8d-d2b1-4ac4-a33c-b16900f67df6[panopto,width=360]
+
+
+== 追加情報
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。

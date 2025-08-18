@@ -1,0 +1,270 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvf-overview.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, san, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi, fc, fibre channel, nvme 
+summary:  
+---
+= VMware vSphere 8 を搭載したONTAPストレージ システムで NFS v3 データストアを使用する方法について説明します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPと VMware vSphere 8 は連携して、 NetAppオールフラッシュ アレイを使用したハイブリッド クラウド環境向けに、スケーラブルで安全な NFS v3 ベースのストレージ ソリューションを提供します。  VMware vSphere Foundation でサポートされているストレージ オプションと、災害復旧用の VMware Live Site Recovery や NFS ストレージ用の NetApp の Autonomous Ransomware Protection (ARP) などの主要な使用例について説明します。
+
+
+
+== vSphere 8 およびONTAPストレージシステムで NFS v3 を使用する
+
+このドキュメントでは、 NetAppオールフラッシュ アレイを使用する VMware Cloud vSphere Foundation で使用できるストレージ オプションについて説明します。サポートされているストレージ オプションについては、NFS データストアを展開するための具体的な手順で説明します。さらに、NFS データストアの災害復旧のための VMware Live Site Recovery についても説明します。最後に、NFS ストレージ向けの NetApp の Autonomous Ransomware Protection についてレビューします。
+
+
+
+=== ユースケース
+
+このドキュメントで取り上げるユースケース:
+
+* プライベート クラウドとパブリック クラウドの両方で均一な環境を求めるお客様向けのストレージ オプション。
+* ワークロード用の仮想インフラストラクチャの展開。
+* コンピューティング リソースの要件に直接適合していない場合でも、進化するニーズに合わせてカスタマイズされたスケーラブルなストレージ ソリューション。
+* SnapCenter Plug-in for VMware vSphereを使用して VM とデータストアを保護します。
+* NFS データストアの災害復旧に VMware Live Site Recovery を使用します。
+* ESXi ホストおよびゲスト VM レベルでの複数層の保護を含むランサムウェア検出戦略。
+
+
+
+
+=== 観客
+
+このソリューションは次の人々を対象としています。
+
+* TCO を最大化するように設計された VMware 環境向けの、より柔軟なストレージ オプションを求めているソリューション アーキテクト。
+* 主要なクラウド プロバイダーによるデータ保護と災害復旧オプションを提供する VVF ストレージ オプションを探しているソリューション アーキテクト。
+* NFS ストレージで VVF を構成する方法について具体的な指示が必要なストレージ管理者。
+* ONTAPストレージ上にある VM とデータストアを保護する方法について具体的な指示を希望するストレージ管理者。
+
+
+
+
+== テクノロジの概要
+
+vSphere 8 の NFS v3 VVF リファレンス ガイドは、次の主要コンポーネントで構成されています。
+
+
+
+=== VMware vSphere 基盤
+
+vSphere Foundationの中核コンポーネントであるVMware vCenterは、vSphere環境の構成、制御、管理を提供する集中管理プラットフォームです。vCenterは仮想化インフラストラクチャの管理基盤として機能し、管理者は仮想環境内でVM、コンテナ、ESXiホストを展開、監視、管理できます。
+
+VVF ソリューションは、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方をサポートします。主なコンポーネントは次のとおりです。
+
+* VMware vSphere
+* VMware vSAN
+* アリアスタンダード
+* vSphere 向け VMware Tanzu Kubernetes グリッド サービス
+* vSphere 分散スイッチ
+
+
+VVFに含まれるコンポーネントの詳細については、アーキテクチャと計画を参照してください。 https://www.vmware.com/docs/vmw-datasheet-vsphere-product-line-comparison["VMware vSphere 製品のライブ比較"] 。
+
+
+
+=== VVF ストレージ オプション
+
+成功する強力な仮想環境の中心となるのはストレージです。  VMware データストア経由かゲスト接続ユースケース経由かを問わず、ストレージはワークロードの能力を最大限に引き出し、最大の価値を提供すると同時に未使用容量を削減する最適な GB あたりの価格を選択できるようになります。  ONTAP は、ほぼ 20 年にわたって VMware vSphere 環境向けの主要なストレージ ソリューションであり、コストを削減しながら管理を簡素化する革新的な機能を継続的に追加しています。
+
+VMware ストレージ オプションは通常、従来のストレージとソフトウェア定義ストレージ サービスとして編成されます。従来のストレージ モデルにはローカル ストレージとネットワーク ストレージが含まれますが、ソフトウェア定義ストレージ モデルには vSAN と VMware Virtual Volumes (vVols) が含まれます。
+
+image:vmware-nfs-overview-001.png["VMストレージオプション"]{nbsp}
+
+参照 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-storage-8-0/introduction-to-storage-in-vsphere-environment.html["vSphere 環境におけるストレージの概要"]VMware vSphere Foundation でサポートされているストレージ タイプの詳細については、こちらをご覧ください。
+
+
+
+=== NetApp ONTAP
+
+何万ものお客様が vSphere のプライマリ ストレージ ソリューションとしてONTAPを選択したのには、説得力のある理由が数多くあります。これらには次のものが含まれます。
+
+. *統合ストレージ システム:* ONTAP は、SAN プロトコルと NAS プロトコルの両方をサポートする統合ストレージ システムを提供します。この汎用性により、単一のソリューション内でさまざまなストレージ テクノロジをシームレスに統合できます。
+. *堅牢なデータ保護:* ONTAP は、スペース効率の高いスナップショットを通じて堅牢なデータ保護機能を提供します。これらのスナップショットにより、効率的なバックアップおよびリカバリプロセスが可能になり、アプリケーション データの安全性と整合性が確保されます。
+. *包括的な管理ツール:* ONTAP は、アプリケーション データを効率的に管理できるように設計された豊富なツールを提供します。これらのツールはストレージ管理タスクを合理化し、運用効率を高め、管理を簡素化します。
+. *ストレージ効率:* ONTAPには、ストレージ使用率の最適化、コストの削減、全体的なシステム パフォーマンスの向上を目的として設計された、デフォルトで有効になっている複数のストレージ効率機能が含まれています。
+
+
+ONTAP をVMware と併用すると、特定のアプリケーションのニーズに非常に柔軟に対応できます。  ONTAPを使用した VMware データストアとして、次のプロトコルがサポートされています: * FCP * FCoE * NVMe/FC * NVMe/TCP * iSCSI * NFS v3 * NFS v4.1
+
+ハイパーバイザーとは別のストレージ システムを使用すると、多くの機能をオフロードし、vSphere ホスト システムへの投資を最大限に活用できます。このアプローチにより、ホスト リソースがアプリケーションのワークロードに集中するだけでなく、ストレージ操作によるアプリケーションへのランダムなパフォーマンス影響も回避されます。
+
+ONTAP をvSphere と併用すると、ホスト ハードウェアと VMware ソフトウェアの費用を削減できる優れた組み合わせになります。一貫した高いパフォーマンスを維持しながら、低コストでデータを保護することもできます。仮想化されたワークロードはモバイルであるため、Storage vMotion を使用して、同じストレージ システム上の VMFS、NFS、またはvVolsデータストア間で VM を移動するさまざまなアプローチを検討できます。
+
+
+
+=== NetAppオールフラッシュアレイ
+
+NetApp AFF (All Flash FAS) は、オールフラッシュ ストレージ アレイの製品ラインです。エンタープライズ ワークロード向けに、高性能で低レイテンシのストレージ ソリューションを提供するように設計されています。  AFFシリーズは、フラッシュ テクノロジの利点と NetApp のデータ管理機能を組み合わせて、強力で効率的なストレージ プラットフォームを組織に提供します。
+
+AFFラインナップは、A シリーズと C シリーズの両モデルで構成されています。
+
+NetApp A シリーズのオール NVMe フラッシュ アレイは、高パフォーマンスのワークロード向けに設計されており、超低レイテンシと高い耐障害性を提供し、ミッション クリティカルなアプリケーションに最適です。
+
+image:vmware-nfs-overview-002.png["AFFアレイ"]{nbsp}
+
+C シリーズ QLC フラッシュ アレイは、大容量のユース ケースを対象としており、フラッシュの速度とハイブリッド フラッシュの経済性を兼ね備えています。
+
+image:vmware-nfs-overview-003.png["Cシリーズアレイ"]
+
+
+
+==== ストレージプロトコルのサポート
+
+AFF は、NFS、SMB、iSCSI、ファイバ チャネル (FC)、ファイバ チャネル オーバー イーサネット (FCoE)、NVME オーバー ファブリック、S3 など、データストアとゲスト接続ストレージの両方の仮想化に使用されるすべての標準プロトコルをサポートします。お客様は、ワークロードとアプリケーションに最適なものを自由に選択できます。
+
+*NFS* - NetApp AFF はNFS をサポートし、VMware データストアへのファイルベースのアクセスを可能にします。多数の ESXi ホストからの NFS 接続データストアは、VMFS ファイル システムに課せられた制限をはるかに超えています。 vSphere で NFS を使用すると、使いやすさとストレージ効率の可視性が向上します。ONTAPには、NFSプロトコルで利用できるファイル アクセス機能があります。NFSサーバを有効にして、ボリュームまたはqtreeをエクスポートできます。
+
+NFS構成の設計ガイダンスについては、 https://docs.netapp.com/us-en/ontap/nas-management/index.html["NASストレージ管理ドキュメント"] 。
+
+*iSCSI* - NetApp AFF はiSCSI を強力にサポートし、IP ネットワーク経由でストレージ デバイスへのブロック レベルのアクセスを可能にします。 iSCSI イニシエーターとのシームレスな統合を提供し、iSCSI LUN の効率的なプロビジョニングと管理を可能にします。マルチパス、CHAP 認証、ALUA サポートなどの ONTAP の高度な機能。
+
+iSCSI構成の設計ガイダンスについては、 https://docs.netapp.com/us-en/ontap/san-config/configure-iscsi-san-hosts-ha-pairs-reference.html["SAN構成リファレンスドキュメント"] 。
+
+*ファイバー チャネル* - NetApp AFF は、ストレージ エリア ネットワーク (SAN) で一般的に使用される高速ネットワーク テクノロジであるファイバー チャネル (FC) を包括的にサポートします。 ONTAP はFC インフラストラクチャとシームレスに統合され、ストレージ デバイスへの信頼性が高く効率的なブロック レベルのアクセスを提供します。ゾーニング、マルチパス、ファブリック ログイン (FLOGI) などの機能を提供し、パフォーマンスを最適化し、セキュリティを強化し、FC 環境でのシームレスな接続を保証します。
+
+ファイバーチャネル構成の設計ガイダンスについては、 https://docs.netapp.com/us-en/ontap/san-config/configure-fc-nvme-hosts-ha-pairs-reference.html["SAN構成リファレンスドキュメント"] 。
+
+*NVMe over Fabrics* - NetApp ONTAP はNVMe over Fabrics をサポートします。  NVMe/FC により、ファイバー チャネル インフラストラクチャ経由で NVMe ストレージ デバイスを使用し、ストレージ IP ネットワーク経由で NVMe/TCP を使用できるようになります。
+
+NVMeの設計ガイドラインについては、以下を参照してください。 https://docs.netapp.com/us-en/ontap/nvme/support-limitations.html["NVMeの構成、サポート、制限事項"] 。
+
+
+
+==== アクティブアクティブ技術
+
+NetAppオールフラッシュ アレイは、両方のコントローラを介したアクティブ/アクティブ パスを可能にするため、ホスト オペレーティング システムがアクティブ パスに障害が発生するまで待機してから代替パスをアクティブ化する必要がなくなります。つまり、ホストはすべてのコントローラ上の利用可能なすべてのパスを利用できるため、システムが安定した状態にあるか、コントローラのフェイルオーバー操作中であるかに関係なく、アクティブなパスが常に存在することが保証されます。
+
+詳細については、 https://docs.netapp.com/us-en/ontap/data-protection-disaster-recovery/index.html["データ保護と災害復旧"]ドキュメント。
+
+
+
+==== 保管保証
+
+NetApp は、 NetAppオールフラッシュ アレイで独自のストレージ保証セットを提供します。独自の利点は次のとおりです:
+
+*ストレージ効率保証:* ストレージ効率保証により、ストレージ コストを最小限に抑えながら高いパフォーマンスを実現します。  SAN ワークロードの場合は 4:1。  *ランサムウェア復旧保証:* ランサムウェア攻撃が発生した場合にデータの復旧を保証します。
+
+詳細については、 https://www.netapp.com/data-storage/aff-a-series/["NetApp AFFランディングページ"] 。
+
+
+
+=== VMware vSphere 向けNetApp ONTAPツール
+
+vCenter の強力なコンポーネントは、機能をさらに強化し、追加の機能と機能を提供するプラグインまたは拡張機能を統合する機能です。これらのプラグインは vCenter の管理機能を拡張し、管理者がサードパーティのソリューション、ツール、サービスを vSphere 環境に統合できるようにします。
+
+VMware 向けNetApp ONTAPツールは、vCenter プラグイン アーキテクチャを介して VMware 環境内で仮想マシンのライフサイクル管理を容易にするように設計された包括的なツール スイートです。これらのツールは VMware エコシステムとシームレスに統合され、効率的なデータストアのプロビジョニングを可能にし、仮想マシンに不可欠な保護を提供します。  ONTAP Tools for VMware vSphere を使用すると、管理者はストレージ ライフサイクル管理タスクを簡単に管理できます。
+
+包括的なONTAPツール10のリソースが見つかります https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/index.html["ONTAP tools for VMware vSphereのドキュメント リソース"]。
+
+ONTAPツール10の導入ソリューションについては、link:vmw-nfs-otv10.html["ONTAPツール10を使用してvSphere 8のNFSデータストアを構成する"]
+
+
+
+=== NetApp NFS Plug-in for VMware VAAI
+
+NetApp NFS プラグイン for VAAI (vStorage APIs for Array Integration) は、特定のタスクをNetAppストレージ システムにオフロードすることでストレージ操作を強化し、パフォーマンスと効率を向上させます。これには、完全なコピー、ブロックのゼロ化、ハードウェア支援によるロックなどの操作が含まれます。さらに、VAAI プラグインは、仮想マシンのプロビジョニングおよびクローン作成操作中にネットワーク経由で転送されるデータの量を削減することで、ストレージの使用率を最適化します。
+
+NetApp NFS プラグイン for VAAI はNetAppサポート サイトからダウンロードでき、 ONTAP tools for VMware vSphereを使用して ESXi ホストにアップロードおよびインストールされます。
+
+参照 https://docs.netapp.com/us-en/nfs-plugin-vmware-vaai/["NetApp NFS プラグイン for VMware VAAI ドキュメント"]詳細についてはこちらをご覧ください。
+
+
+
+=== SnapCenter Plug-in for VMware vSphere
+
+SnapCenter Plug-in for VMware vSphere (SCV) は、VMware vSphere 環境に包括的なデータ保護を提供するNetAppのソフトウェア ソリューションです。仮想マシン (VM) とデータストアの保護および管理のプロセスを簡素化および合理化するように設計されています。  SCV は、ストレージ ベースのスナップショットとセカンダリ アレイへのレプリケーションを使用して、リカバリ時間の目標を短縮します。
+
+SnapCenter Plug-in for VMware vSphereは、 vSphere クライアントと統合された統合インターフェイスで次の機能を提供します。
+
+*ポリシーベースのスナップショット* - SnapCenter を使用すると、VMware vSphere 内の仮想マシン (VM) のアプリケーション整合性スナップショットを作成および管理するためのポリシーを定義できます。
+
+*自動化* - 定義されたポリシーに基づいてスナップショットを自動作成および管理することで、一貫性のある効率的なデータ保護を実現します。
+
+*VM レベルの保護* - VM レベルでのきめ細かな保護により、個々の仮想マシンを効率的に管理および復旧できます。
+
+*ストレージ効率機能* - NetAppストレージ テクノロジーとの統合により、スナップショットの重複排除や圧縮などのストレージ効率機能が提供され、ストレージ要件が最小限に抑えられます。
+
+SnapCenterプラグインは、 NetAppストレージ アレイ上のハードウェア ベースのスナップショットと組み合わせて仮想マシンの静止を調整します。  SnapMirrorテクノロジーは、クラウドを含むセカンダリ ストレージ システムにバックアップのコピーを複製するために使用されます。
+
+詳細については、 https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere["SnapCenter Plug-in for VMware vSphereのドキュメント"] 。
+
+BlueXP の統合により、データのコピーをクラウド内のオブジェクト ストレージに拡張する 3-2-1 バックアップ戦略が可能になります。
+
+BlueXPの3-2-1バックアップ戦略の詳細については、以下をご覧ください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"^] 。
+
+SnapCenterプラグインの導入手順については、ソリューションを参照してください。link:vmw-vcf-scv-viwld.html["SnapCenter Plug-in for VMware vSphereを使用して、VCF ワークロード ドメイン上の VM を保護します。"] 。
+
+
+
+=== 保管に関する考慮事項
+
+ONTAP NFS データストアを VMware vSphere で活用すると、ブロックベースのストレージ プロトコルでは実現できない VM 対データストア比率を実現する、高性能で管理が容易なスケーラブルな環境が実現します。このアーキテクチャにより、データストアの密度が 10 倍に増加し、それに応じてデータストアの数が削減されます。
+
+*NFS 用 nConnect:* NFS を使用するもう 1 つの利点は、*nConnect* 機能を活用できることです。nConnect は、NFS v3 データストア ボリュームに対して複数の TCP 接続を可能にし、より高いスループットを実現します。これにより、並列処理が向上し、NFS データストアが向上します。  NFS バージョン 3 を使用してデータストアを展開するお客様は、NFS サーバーへの接続数を増やし、高速ネットワーク インターフェイス カードの利用率を最大限に高めることができます。
+
+nConnectの詳細については、link:vmw-vsphere8-nfs-nconnect.html["VMware およびNetAppの NFS nConnect 機能"] 。
+
+*NFS のセッション トランキング:* ONTAP 9.14.1 以降、NFSv4.1 を使用するクライアントは、セッション トランキングを利用して、NFS サーバー上のさまざまな LIF への複数の接続を確立できます。これにより、マルチパスを利用してデータ転送が高速化され、耐障害性が向上します。トランキングは、VMware や Linux クライアントなどのトランキングをサポートするクライアントにFlexVolボリュームをエクスポートする場合や、RDMA、TCP、または pNFS プロトコル経由で NFS を使用する場合に特に有益です。
+
+参照 https://docs.netapp.com/us-en/ontap/nfs-trunking/["NFSトランキングの概要"]詳細についてはこちらをご覧ください。
+
+* FlexVolボリューム:* NetApp、ほとんどの NFS データストアに * FlexVol * ボリュームの使用を推奨しています。データストアが大きいほどストレージ効率と運用上の利点が向上しますが、単一のONTAPコントローラに VM を保存するには、少なくとも 4 つのデータストア ( FlexVolボリューム) の使用を検討することをお勧めします。通常、管理者は 4 TB ～ 8 TB の容量を持つFlexVolボリュームでバックアップされたデータストアを展開します。このサイズは、パフォーマンス、管理の容易さ、およびデータ保護の間で適切なバランスを実現します。管理者は小規模から始めて、必要に応じてデータストアを拡張できます (最大 100 TB)。データストアが小さいほど、バックアップや災害からの回復が速くなり、クラスター間で迅速に移動できます。このアプローチにより、ハードウェア リソースのパフォーマンスを最大限に利用でき、異なるリカバリ ポリシーを持つデータストアが可能になります。
+
+* FlexGroupボリューム:* 大規模なデータストアが必要なシナリオでは、 NetApp は* FlexGroup* ボリュームの使用を推奨します。  FlexGroupボリュームには容量やファイル数の制約がほとんどないため、管理者は大規模な単一の名前空間を簡単にプロビジョニングできます。  FlexGroupボリュームを使用すると、追加のメンテナンスや管理のオーバーヘッドは発生しません。  FlexGroupボリュームは本質的に拡張可能なので、パフォーマンス向上のために複数のデータストアは必要ありません。  ONTAPおよびFlexGroupボリュームを VMware vSphere で利用することで、 ONTAPクラスタ全体のパワーを最大限に活用するシンプルでスケーラブルなデータストアを構築できます。
+
+
+
+=== ランサムウェア対策
+
+NetApp ONTAPデータ管理ソフトウェアは、ランサムウェア攻撃からの保護、検出、回復を支援する包括的な統合テクノロジ スイートを備えています。 ONTAPに組み込まれたNetApp SnapLock Compliance機能は、高度なデータ保持機能を備えた WORM (write once, read many) テクノロジを使用して、有効なボリュームに保存されたデータの削除を防止します。保持期間が設定され、スナップショット コピーがロックされると、完全なシステム権限を持つストレージ管理者やNetAppサポート チームのメンバーであってもスナップショット コピーを削除できなくなります。しかし、さらに重要なのは、資格情報を侵害されたハッカーはデータを削除できないことです。
+
+NetApp は、対象アレイ上の保護されたNetApp Snapshot コピーを回復できることを保証し、回復できない場合はお客様の組織に補償します。
+
+ランサムウェア回復保証の詳細については、以下を参照してください。 https://www.netapp.com/media/103031-SB-4279-Ransomware_Recovery_Guarantee.pdf["ランサムウェア復旧保証"] 。
+
+参照 https://docs.netapp.com/us-en/ontap/anti-ransomware/["自律型ランサムウェア対策 - 概要"]さらに詳しい情報については。
+
+完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。link:vmw-nfs-arp.html["NFSストレージ向けの自律型ランサムウェア防御"]
+
+
+
+=== 災害復旧の考慮事項
+
+NetApp は、地球上で最も安全なストレージを提供します。  NetApp は、データとアプリケーション インフラストラクチャの保護、オンプレミスのストレージとクラウド間のデータの移動、クラウド全体のデータ可用性の確保に役立ちます。  ONTAP には、脅威をプロアクティブに検出し、データとアプリケーションを迅速に回復することで、お客様を災害から保護する強力なデータ保護およびセキュリティ テクノロジーが搭載されています。
+
+*VMware Live Site Recovery* (旧称 VMware Site Recovery Manager) は、vSphere Web クライアント内で仮想マシンを保護するための、合理化されたポリシーベースの自動化機能を提供します。このソリューションは、 ONTAP Tools for VMware の一部であるストレージ レプリケーション アダプタを通じて、NetApp の高度なデータ管理テクノロジを活用します。アレイベースのレプリケーションにNetApp SnapMirrorの機能を活用することで、VMware 環境は ONTAP の最も信頼性が高く成熟したテクノロジーの 1 つを活用できます。 SnapMirror は、VM 全体またはデータストア全体ではなく、変更されたファイル システム ブロックのみをコピーすることで、安全で非常に効率的なデータ転送を保証します。さらに、これらのブロックは重複排除、圧縮、コンパクト化などのスペース節約技術を活用します。最新のONTAPシステムにバージョンに依存しないSnapMirrorが導入されたことにより、ソース クラスタと宛先クラスタを柔軟に選択できるようになりました。  SnapMirror は、災害復旧のための強力なツールとして登場し、Live Site Recovery と組み合わせることで、ローカル ストレージの代替手段に比べて、拡張性、パフォーマンス、コスト削減が向上します。
+
+詳細については、 https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery/site-recovery-manager/8-7/site-recovery-manager-installation-and-configuration-8-7/overview-of-vmware-site-recovery-manager.html["VMware Site Recovery Manager の概要"] 。
+
+完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。link:vmw-nfs-vlsr.html["NFSストレージ向けの自律型ランサムウェア防御"]
+
+* BlueXP DRaaS* (Disaster Recovery as a Service) for NFS は、NFS データストアを備えたオンプレミスのONTAPシステムで実行される VMware ワークロード向けに設計された、コスト効率の高いディザスタ リカバリ ソリューションです。 NetApp SnapMirrorレプリケーションを活用して、サイトの停止やランサムウェア攻撃などのデータ破損イベントから保護します。このサービスはNetApp BlueXPコンソールと統合されており、VMware vCenter およびONTAPストレージの容易な管理と自動検出を可能にします。組織は災害復旧計画を作成およびテストし、ブロックレベルのレプリケーションを通じて最大 5 分の復旧ポイント目標 (RPO) を達成できます。 BlueXP DRaaS は、ONTAP のFlexCloneテクノロジーを活用して、実稼働リソースに影響を与えることなく、スペース効率の高いテストを実行します。このサービスは、フェイルオーバーとフェイルバックのプロセスを調整し、最小限の労力で保護された仮想マシンを指定された災害復旧サイトに起動できるようにします。  BlueXP DRaaS は、他のよく知られている代替製品と比較して、わずかなコストでこれらの機能を提供するため、組織がONTAPストレージ システムを使用して VMware 環境の災害復旧操作をセットアップ、テスト、および実行するための効率的なソリューションとなります。
+
+完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["NFS データストア向けBlueXP DRaaS を使用した DR"^]
+
+
+
+=== ソリューションの概要
+
+このドキュメントで取り上げられているソリューション:
+
+* * NetAppおよび VMware の NFS nConnect 機能*。クリックlink:vmw-vsphere8-nfs-nconnect.html["*ここ*"]展開手順については。
++
+** * ONTAPツール 10 を使用して、vSphere 8 の NFS データストアを構成します*。クリックlink:vmw-nfs-otv10.html["*ここ*"]展開手順については。
+** * SnapCenter Plug-in for VMware vSphereを導入して使用し、VM を保護および復元します*。クリックlink:vmw-vcf-scv-viwld.html["*ここ*"]展開手順については。
+** *VMware Site Recovery Manager を使用した NFS データストアの災害復旧*。クリックlink:vmw-nfs-vlsr.html["*ここ*"]展開手順については。
+** *NFS ストレージ向けの自律型ランサムウェア保護*。クリックlink:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["*ここ*"^]展開手順については。
+
+
+

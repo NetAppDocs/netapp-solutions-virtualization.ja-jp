@@ -1,0 +1,74 @@
+---
+sidebar: sidebar 
+permalink: openshift/os-overview.html 
+keywords: OpenShift, deploy, baremetal, private cloud, virtual 
+summary: Red Hat OpenShift Container Platform は、開発と IT 運用を単一のプラットフォームに統合し、オンプレミスとハイブリッド クラウド インフラストラクチャ全体で一貫してアプリケーションを構築、展開、管理します。Red Hat OpenShift は、Kubernetes や、コンテナベースのワークロード向けに設計された主要なエンタープライズ Linux ディストリビューションである Red Hat Enterprise Linux CoreOS などのオープンソースのイノベーションと業界標準に基づいて構築されています。 
+---
+= OpenShift の概要
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Red Hat OpenShift Container Platform は、開発と IT 運用を単一のプラットフォームに統合し、オンプレミスとハイブリッド クラウド インフラストラクチャ全体で一貫してアプリケーションを構築、展開、管理します。Red Hat OpenShift は、Kubernetes や、コンテナベースのワークロード向けに設計された世界トップクラスのエンタープライズ Linux ディストリビューションである Red Hat Enterprise Linux CoreOS などのオープンソースのイノベーションと業界標準に基づいて構築されています。OpenShift は、Cloud Native Computing Foundation (CNCF) 認定 Kubernetes プログラムの一部であり、コンテナー ワークロードの移植性と相互運用性を提供します。
+
+
+
+== Red Hat OpenShift は次の機能を提供します。
+
+* *セルフサービス プロビジョニング* 開発者は、最もよく使用するツールからオンデマンドでアプリケーションを迅速かつ簡単に作成でき、運用担当者は環境全体を完全に制御できます。
+* *永続ストレージ* 永続ストレージのサポートを提供することで、OpenShift Container Platform ではステートフル アプリケーションとクラウド ネイティブのステートレス アプリケーションの両方を実行できます。
+* *継続的インテグレーションと継続的開発 (CI/CD)* このソースコード プラットフォームは、ビルドおよびデプロイメント イメージを大規模に管理します。
+* *オープンソース標準* これらの標準には、他のオープンソーステクノロジーに加えて、コンテナオーケストレーション用の Open Container Initiative (OCI) と Kubernetes が組み込まれています。特定のベンダーのテクノロジーやビジネス ロードマップに制限されることはありません。
+* *CI/CD パイプライン* OpenShift は、すぐに使用できる CI/CD パイプラインのサポートを提供するため、開発チームはアプリケーション配信プロセスのすべてのステップを自動化し、アプリケーションのコードや構成に加えられたすべての変更に対して確実に実行することができます。
+* *ロールベースのアクセス制御 (RBAC)* この機能は、チームとユーザーの追跡を提供し、大規模な開発者グループの編成に役立ちます。
+* *自動ビルドとデプロイ* OpenShift では、開発者はコンテナ化されたアプリケーションをビルドするか、プラットフォームでアプリケーションのソース コードやバイナリからコンテナをビルドするかを選択できます。次に、プラットフォームは、アプリケーションに対して定義された特性に基づいて、インフラストラクチャ全体にわたるこれらのアプリケーションの展開を自動化します。たとえば、サードパーティのライセンスに準拠するために、リソースをどのくらいの量割り当て、インフラストラクチャのどこに展開する必要があるかなどです。
+* *一貫性のある環境* OpenShift は、一貫性のない環境から生じるリスクを排除するために、開発者向けにプロビジョニングされた環境とアプリケーションのライフサイクル全体にわたって、オペレーティング システムからライブラリ、ランタイム バージョン (Java ランタイムなど)、さらには使用中のアプリケーション ランタイム (Tomcat など) まで一貫性があることを確認します。
+* *構成管理* 構成と機密データの管理がプラットフォームに組み込まれているため、アプリケーションの構築にどのテクノロジが使用され、どの環境にデプロイされるかに関係なく、一貫性があり環境に依存しないアプリケーション構成がアプリケーションに提供されます。
+* *アプリケーション ログとメトリック。*迅速なフィードバックはアプリケーション開発の重要な側面です。OpenShift の統合モニタリングおよびログ管理では、開発者に即時のメトリックが提供され、開発者は変更後のアプリケーションの動作を調査し、アプリケーション ライフサイクルのできるだけ早い段階で問題を修正できるようになります。
+* *セキュリティとコンテナ カタログ* OpenShift は、Security-Enhanced Linux (SELinux)、CGroups、および Secure Computing Mode (seccomp) による確立されたセキュリティを使用してコンテナを分離および保護し、マルチテナント機能を提供し、有害なコード実行からユーザーを保護します。また、さまざまなサブシステムの TLS 証明書による暗号化や、セキュリティに特に重点を置いたスキャンとグレード付けが行われた Red Hat 認定コンテナ (access.redhat.com/containers) へのアクセスも提供し、認定された、信頼できる、安全なアプリケーション コンテナをエンド ユーザーに提供します。
+
+
+image:redhat-openshift-004.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+
+
+== Red Hat OpenShiftのデプロイメント方法
+
+Red Hat OpenShift 4 以降、OpenShift のデプロイメント方法には、高度にカスタマイズされたデプロイメントのための User Provisioned Infrastructure (UPI) を使用した手動デプロイメントや、Installer Provisioned Infrastructure (IPI) を使用した完全に自動化されたデプロイメントが含まれます。
+
+IPI インストール方法は、開発、テスト、実稼働環境向けの OpenShift クラスターの迅速な導入を可能にするため、ほとんどの場合に推奨される方法です。
+
+
+
+=== Red Hat OpenShiftのIPIインストール
+
+OpenShift の Installer Provisioned Infrastructure (IPI) デプロイメントには、次の大まかな手順が含まれます。
+
+. Red Hat OpenShiftをご覧くださいlink:https://www.openshift.com["Webサイト"^]SSO 資格情報を使用してログインします。
+. Red Hat OpenShift をデプロイする環境を選択します。
++
+image:redhat-openshift-008.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+. 次の画面で、インストーラー、一意のプル シークレット、および管理用の CLI ツールをダウンロードします。
++
+image:redhat-openshift-009.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+. フォローlink:https://docs.openshift.com/container-platform/4.7/installing/index.html["インストール手順"]選択した環境にデプロイするために Red Hat によって提供されます。
+
+
+
+
+=== NetApp検証済み OpenShift 導入
+
+NetApp は、次の各データセンター環境で、インストーラー プロビジョニング インフラストラクチャ (IPI) 導入方法を使用して、ラボで Red Hat OpenShift の導入をテストおよび検証しました。
+
+* link:https://docs.netapp.com/us-en/netapp-solutions-containers/openshift/os-on-bm.html["ベアメタル上の OpenShift"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-containers/openshift/os-on-openstack.html["Red Hat OpenStack プラットフォーム上の OpenShift"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-containers/openshift/os-on-rhv.html["Red Hat Virtualization 上の OpenShift"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-containers/openshift/os-on-vmw.html["VMware vSphere 上の OpenShift"^]
+

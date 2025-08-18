@@ -1,0 +1,113 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-principal-fc.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, fc 
+summary:  
+---
+= ONTAP上のFCベースのVMFSデータストアをVIワークロードドメインの主ストレージとして使用する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このユースケースでは、VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインのプライマリ ストレージ ソリューションとして、 ONTAP上にファイバ チャネル (FC) VMFS データストアをセットアップする手順について説明します。この手順では、必要なコンポーネント、構成手順、および展開プロセスをまとめています。
+
+
+
+== ファイバーチャネルの利点
+
+*高性能:* FC は高速データ転送速度を提供するため、大量のデータへの高速かつ信頼性の高いアクセスを必要とするアプリケーションに最適です。
+
+*低レイテンシ:* 非常に低いレイテンシ。これは、データベースや仮想化環境などのパフォーマンスが重視されるアプリケーションにとって非常に重要です。
+
+*信頼性:* FC ネットワークは、冗長性やエラー訂正などの機能が組み込まれており、堅牢性と信頼性に優れています。
+
+*専用帯域幅:* FC はストレージ トラフィックに専用の帯域幅を提供し、ネットワーク輻輳のリスクを軽減します。
+
+NetAppストレージシステムでのファイバーチャネルの使用に関する詳細については、 https://docs.netapp.com/us-en/ontap/san-admin/san-provisioning-fc-concept.html["FCを使用したSANプロビジョニング"] 。
+
+
+
+== シナリオの概要
+
+このシナリオでは、次の大まかな手順について説明します。
+
+* FC トラフィック用の論理インターフェイス (LIF) を備えたストレージ仮想マシン (SVM) を作成します。
+* 展開するホストの WWPN 情報を収集し、 ONTAPストレージ システム上に対応するイニシエーター グループを作成します。
+* ONTAPストレージ システムに FC ボリュームを作成します。
+* イニシエーターグループをマップしてFCボリュームを作成する
+* FC スイッチで単一のイニシエーター ターゲット ゾーニングを活用します。イニシエーターごとに 1 つのゾーンを作成します (単一イニシエーター ゾーン)。
++
+** 各ゾーンには、SVM のONTAP FC 論理インターフェイス (WWPN) であるターゲットを含めます。 SVM ごとにノードごとに少なくとも 2 つの論理インターフェイスが必要です。物理ポートの WWPN を使用しないでください。
+
+
+* SDDC Manager で vMotion トラフィック用のネットワーク プールを作成します。
+* VI ワークロード ドメインで使用するために VCF 内のホストを委託します。
+* FC データストアをプリンシパル ストレージとして使用して、VCF に VI ワークロード ドメインを展開します。
+
+
+
+NOTE: このソリューションは、 NetApp AFFやFASなどの NFS ストレージをサポートするONTAPプラットフォームに適用できます。
+
+
+
+== 前提条件
+
+このシナリオでは、次のコンポーネントと構成が使用されます。
+
+* FC スイッチに接続された FC ポートを備えたONTAP AFFまたはASAストレージ システム。
+* FC lifs で作成された SVM。
+* FC スイッチに接続された FC HBA を備えた vSphere。
+* FC スイッチには単一のイニシエーター ターゲット ゾーニングが構成されています。
+
+
+
+NOTE: NetApp は、FC LUN にマルチパスを推奨しています。
+
+
+
+== 展開手順
+
+
+
+=== 管理ドメイン - デフォルトクラスタ
+
+初期クラスター上の FC プリンシパル ストレージは、VCF ブラウンフィールド インポート ツールでのみサポートされます。 VCF が cloudbuilder ツール (バージョン 5.2.x まで) を使用して展開されている場合、VSAN のみがサポートされます。参照する https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["既存の vSphere 環境を管理ドメインに変換する"]詳細については。
+
+
+
+=== 管理ドメイン - 追加クラスター
+
+管理ドメイン上の追加の vSphere クラスタは、次のオプションを使用して展開できます。 * vSphere 環境に追加のクラスタを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html["ONTAP tools for VMware vSphere"] 、 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] VMFS データストアを vSphere クラスタにデプロイするために使用できます。  * SDDC API を使用して追加のクラスターを展開します。 vSphere ホストには VMFS データストアが設定されている必要があります。使用 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"]LUN を vSphere ホストに展開します。 * SDDC Manager UI を使用して追加のクラスターを展開します。ただし、このオプションはバージョン 5.2.x までの VSAN データストアのみを作成します。
+
+
+
+=== VI ワークロードドメイン - デフォルトクラスタ
+
+管理ドメインが起動したら、VI ワークロード ドメインを作成できます。
+
+* SDDC マネージャー UI を使用します。  vSphere ホストには VMFS データストアが設定されている必要があります。  System Manager またはONTAP API を使用して、LUN を vSphere ホストに展開します。
+* 既存の vSphere 環境を新しい VI ワークロード ドメインとしてインポートします。  ONTAP tools for VMware vSphere、System Manager、またはONTAP API を使用して、VMFS データストアを vSphere クラスターに展開できます。
+
+
+
+
+=== VI ワークロードドメイン - 追加クラスター
+
+VI ワークロードが起動して実行されると、次のオプションを使用して、FC LUN 上の VMFS を使用して追加のクラスターを展開できます。
+
+* VCF ブラウンフィールド インポート ツールを使用してインポートされた vSphere 環境内の追加クラスター。  ONTAP tools for VMware vSphere、System Manager、またはONTAP API を使用して、VMFS データストアを vSphere クラスターに展開できます。
+* SDDC Manager UI または API を使用して追加のクラスターをデプロイします。  vSphere ホストには VMFS データストアが設定されている必要があります。  System Manager またはONTAP API を使用して、LUN を vSphere ホストに展開します。
+
+
+
+
+== 追加情報
+
+ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
+
+VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation ドキュメント"] 。

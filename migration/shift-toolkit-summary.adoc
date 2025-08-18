@@ -1,0 +1,161 @@
+---
+sidebar: sidebar 
+permalink: migration/shift-toolkit-summary.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox 
+summary:  
+---
+= Shift Toolkit を使用して VM を変換または移行した後の次の手順
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Shift Toolkit を使用して VM を変換または移行した後、移行後の主要なタスクを確認して新しい環境を検証します。詳細な例を使用して、システムの健全性を確認し、クリーンアップ手順を実行し、一般的な問題をトラブルシューティングできます。
+
+
+
+== まとめ
+
+NetApp Shiftツールキットは、管理者がVMwareからHyper-VへVMを迅速かつシームレスに移行するのに役立ちます。また、異なるハイパーバイザー間で仮想ディスクのみを変換することも可能です。したがって、Shift ツールキットを使用すると、ワークロードを 1 つのハイパーバイザーから別のハイパーバイザーに移動するたびに、数時間の労力を節約できます。組織は、ワークロードが単一のハイパーバイザーに縛られているかどうかを心配することなく、マルチハイパーバイザー環境をホストできるようになりました。この機能により柔軟性が向上し、ライセンス コスト、ロックイン、単一ベンダーへのコミットメントが削減されます。
+
+
+
+== 次のステップ
+
+Shift ツールキット パッケージをダウンロードしてData ONTAPの可能性を最大限に引き出し、仮想マシンまたはディスク ファイルの移行または変換を開始して、移行を簡素化および合理化します。
+
+このプロセスについて詳しく知りたい場合は、次の詳細なチュートリアルをご覧ください。
+
+.Shift Toolkit のウォークスルー
+video::6bf11896-3219-4ba7-9a00-b2d800d47144[panopto,width=360]
+
+
+== トラブルシューティングと既知の問題
+
+. IPアドレスの設定とVMwareツールの削除のためのトリガースクリプトがWindows VMで次のエラーで失敗します: 資格情報が無効です
++
+[listing]
+----
+Error message:
+
+Enter-PSSession : The credential is invalid.
+
+Potential causes:
+
+The guest credentials couldn't be validated
+
+a. The supplied credentials were incorrect
+b. There are no user accounts in the guest
+----
+. Windows仮想マシンでBSODエラーが発生する
++
+*注意:* これは Shift ツールキットの問題ではありませんが、環境に関連しています。
+
++
+[listing]
+----
+Error message:
+
+Bluescreen error during initial boot after migration.
+
+Potential cause:
+
+Local group policy setup to block the installation of applications including new drivers for Microsoft Hyper-V.
+
+a. Update the policy to allow installation of drivers.
+----
+. リソース グループを作成しようとしたときにデータストアがリストされません
++
+[listing]
+----
+Error message:
+
+Mount paths are empty while getting volumes for mountpaths for site.
+
+Potential causes:
+
+The NFS volume used as a datastore is using v4.1
+
+a. Shift toolkit filters out NFS v3 datastores during the resource group creation. NFS 4.1 or 4.2 is not supported in the current release.
+----
+. SSL を有効にした後、Shift ツールキット UI にアクセスできません。
++
+[listing]
+----
+Error message:
+
+Login failed, Network error
+
+Potential causes:
+
+MongoDB service not running
+Using Firefox browser to access Shift UI
+
+a. Ensure Mongo service is running
+b. Use Google Chrome or IE to access Shift UI.
+----
+. 暗号化が有効になっている VM を移行できません。
++
+[listing]
+----
+Error message:
+
+Boot failure on Hyper-V side
+
+Potential causes:
+
+VMDK encrytped using vSphere encryption
+
+a. Decrypt the VMDK inside VMware and retry the operation.
+----
+
+
+
+
+== 付録
+
+
+
+=== Shift ツールキットのカスタムONTAPロール
+
+Shift ツールキットで操作を実行するためにONTAP管理者ロールを使用する必要がないように、最小限の権限を持つONTAPロールを作成します。これらの最小限のロールは、 ONTAPストレージ側の SVM レベルで必要です。
+
+
+NOTE: vsadmin も使用できます。
+
+image:shift-toolkit-084.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+
+ONTAP System Manager を使用してロールを作成します。
+
+ONTAP System Manager で次の手順を実行します。
+
+*カスタムロールを作成する:*
+
+* SVM レベルでカスタム ロールを作成するには、[ストレージ] > [ストレージ VM] > 必要な SVM > [設定] > [ユーザーとロール] を選択します。
+* [ユーザーとロール] の横にある矢印アイコン (→) を選択します。
+* [役割] の下の [+ 追加] を選択します。
+* ロールのルールを定義し、「保存」をクリックします。
+
+
+*Shift ツールキット ユーザーにロールをマップします。*
+
+「ユーザーとロール」ページで次の手順を実行します。
+
+* [ユーザー] の下の [追加アイコン +] を選択します。
+* 必要なユーザー名を選択し、ロールのドロップダウン メニューで前の手順で作成したロールを選択します。
+* [Save]をクリックします。
+
+
+完了したら、Shift ツールキット UI 内でソース サイトと宛先サイトを構成するときに、上記で作成したユーザーを使用します。
+
+
+
+=== VMware で必要な最小限の権限ロール
+
+Shift ツールキットを使用して VMware vSphere から仮想マシンを移行するには、[管理] > [アクセス制御] > [ロール] を使用して、以下の権限を持つ RBAC ユーザーを作成します。
+
+image:shift-toolkit-085.png["入出力ダイアログまたは書かれたコンテンツを示す図"]

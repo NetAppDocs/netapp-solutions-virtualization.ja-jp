@@ -1,0 +1,60 @@
+---
+indexpage:
+  title: NetApp VMware仮想化ソリューション
+  summary: NetApp VMware 仮想化ソリューションは、オンプレミスおよびクラウドで VMware を使用して仮想化を行うNetAppストレージの機能を実証する、戦略およびテクノロジ機能のセットです。
+  lead: NetApp VMware 仮想化ソリューションは、オンプレミスおよびクラウドで VMware を使用して仮想化を行うNetAppストレージの機能を実証する、戦略およびテクノロジ機能のセットです。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: ONTAP for VMware vSphere について
+      url: vmw-getting-started-overview.html
+    - title: VMware向けNetAppプラットフォームについて
+      url: vmw-getting-started-ntap-options.html
+    - title: ブログ
+      url: "../blogs.html"
+    - title: ビデオ
+      url: "../videos/vmware-videos.html"
+  - title: NetApp上の VMware Cloud Foundation
+    links:
+    - title: VMware Cloud Foundation とONTAPについて
+      url: vmw-vcf-overview.html
+    - title: SnapCenterでVCFワークロードを保護する
+      url: vmw-vcf-protect-sc.html
+    - title: BlueXPでVMwareデータストアを保護する
+      url: vmw-vcf-disaster-recovery.html
+    - title: ONTAPの高可用性をvMSCと統合する
+      url: vmw-vcf-protect-vmsc.html
+    - title: ランサムウェアからデータを保護および回復する
+      url: vmw-nfs-arp.html
+    - title: DII でオンプレミス ストレージを監視する
+      url: vmw-dii.html
+  - title: NetApp上の VMware vSphere Foundation
+    links:
+    - title: VMware vSphere Foundation on NetAppについて
+      url: vmw-vvf-overview.html
+    - title: vSphere 8 用の VMFS を導入する
+      url: vmw-vmfs-deploy.html
+    - title: NFS nConnect機能を使用する
+      url: vmw-vsphere8-nfs-nconnect.html
+    - title: NFSデータストアを構成する
+      url: vmw-nfs-otv10.html
+    - title: ディザスタ リカバリを設定
+      url: vmw-nfs-vlsr.html
+  - title: VMwareツールとユーティリティ
+    links:
+    - title: 仮想マシンデータコレクター
+      url: "../assess/vmw-vmdc.html"
+    - title: ONTAP tools for VMware vSphere
+      url: https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/index.html
+    - title: VMware Site Recovery Manager (SRM) とNetApp ONTAP 9
+      url: https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-srm-overview.html
+    - title: NetApp Interoperability Matrix Tool
+      url: https://mysupport.netapp.com/matrix/#welcome
+    - title: VMware ハードウェア互換性ガイド
+      url: https://www.vmware.com/resources/compatibility/search.php?deviceCategory=san&details=1&partner=64&isSVA=0&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc
+  - title: その他のリソース
+    links:
+    - title: VMware vSphere with ONTAP のベストプラクティス
+      url: https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-overview.html
+    - title: VMware vSphere 仮想ボリューム (vVols) とNetApp ONTAP
+      url: https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vvols-overview.html

@@ -1,0 +1,123 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vmsc-with-smas.html 
+keywords: NetApp Solutions, vMSC, Metro Storage Cluster, SnapMirror active sync, Business Continuity, SMBC, ONTAP Tools, AFD, SCV, iSCSI, backup, restore 
+summary:  
+---
+= SnapMirrorアクティブ同期を備えた VMware vSphere Metro Storage Cluster
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+link:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware_vmsc_overview.html["VMware vSphere メトロ ストレージ クラスタ (vMSC)"]は、異なる障害ドメインにまたがるストレッチ クラスタ ソリューションであり、可用性ゾーンまたはサイト間でのワークロードのモビリティを提供します。  * ダウンタイムの回避 * 災害の回避 * 迅速な復旧
+
+この文書ではvMSCの実装の詳細について説明しています。link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync["SnapMirrorアクティブ同期 (SM-as)"] System Manager とONTAPツールを活用します。さらに、VM をサードパーティのサイトに複製して保護し、 SnapCenter Plugin for VMware vSphere を使用して管理する方法も示します。
+
+image:vmware-vmsc-with-smas-001.png["SnapMirrorアクティブ同期アーキテクチャを備えた vMSC"]
+
+SnapMirrorアクティブ シンクは、 ASA、 AFF、およびFASストレージ アレイをサポートします。両方の障害ドメインで同じタイプ (パフォーマンス/容量モデル) を使用することをお勧めします。現在、FC や iSCSI などのブロック プロトコルのみがサポートされています。詳細なサポートガイドラインについては、link:https://imt.netapp.com/matrix/["Interoperability Matrix Tool"]そしてlink:https://hwu.netapp.com/["Hardware Universe"]
+
+vMSC は、均一ホスト アクセスと非均一ホスト アクセスという 2 つの異なる展開モデルをサポートしています。均一ホスト アクセス構成では、クラスター上のすべてのホストが両方の障害ドメインの LUN にアクセスできます。通常、同じデータセンター内の異なる可用性ゾーンで使用されます。
+
+image:vmware-vmsc-with-smas-002.png["vMSC 均一ホストアクセスモードと非均一ホストアクセスモード"]
+
+非均一ホスト アクセス構成では、ホストはローカル障害ドメインにのみアクセスできます。これは通常、障害ドメイン間で複数のケーブルを配線することが制限されるオプションである、さまざまなサイトで使用されます。
+
+
+NOTE: 非均一ホスト アクセス モードでは、VM は vSphere HA によって他の障害ドメインで再起動されます。アプリケーションの可用性は、その設計に応じて影響を受けます。非均一ホスト アクセス モードは、 ONTAP 9.15 以降でのみサポートされます。
+
+
+
+== 前提条件
+
+* link:vmw-vcf-mgmt-supplemental-iscsi.html["ホストごとにデュアル ストレージ ファブリック (2 つの HBA または iSCSI 用のデュアル VLAN) が展開された VMware vSphere ホスト"] 。
+* link:https://docs.netapp.com/us-en/ontap/networking/combine_physical_ports_to_create_interface_groups.html["ストレージアレイは、データポート（iSCSI用）のリンクアグリゲーションを使用して導入されます。"] 。
+* link:vmw-vcf-mgmt-supplemental-iscsi.html["ストレージVMとLIFが利用可能"]
+* link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/prerequisites-reference.html#networking-environment["クラスタ間の遅延ラウンドトリップ時間は10ミリ秒未満である必要があります"] 。
+* link:https://docs.netapp.com/us-en/ontap/mediator/index.html["ONTAP Mediator VMは別の障害ドメインに導入されています"]
+* link:https://docs.netapp.com/us-en/ontap/task_dp_prepare_mirror.html["クラスタピア関係が確立されました"]
+* link:https://docs.netapp.com/us-en/ontap/peering/create-intercluster-svm-peer-relationship-93-later-task.html["SVMピア関係が確立される"]
+* link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/mediator-install-task.html#initialize-the-ontap-mediator["ONTAPメディエーターがONTAPクラスタに登録されました"]
+
+
+
+TIP: 自己署名証明書を使用する場合、CA 証明書は、メディエーター VM 上の <インストール パス>/ontap_mediator/server_config/ca.crt から取得できます。
+
+
+
+== ONTAP System Manager UI を使用した vMSC の非均一ホスト アクセス。
+
+注: ONTAP Tools 10.2 以降を使用すると、複数のユーザー インターフェイスを切り替えることなく、非均一ホスト アクセス モードで拡張データストアをプロビジョニングできます。このセクションは、 ONTAPツールが使用されていない場合の参考用です。
+
+. ローカル障害ドメイン ストレージ アレイから iSCSI データ lif IP アドレスの 1 つを書き留めます。image:vmware-vmsc-with-smas-004.png["システムマネージャ iSCSI ライフ"]
+. vSphere ホスト iSCSI ストレージ アダプタで、[Dynamic Discovery] タブの下にその iSCSI IP を追加します。image:vmware-vmsc-with-smas-003.png["動的検出用のiSCSIサーバーを追加する"]
++
+
+NOTE: 均一アクセス モードの場合、ソースおよびターゲットの障害ドメイン iSCSI データ LIF アドレスを指定する必要があります。
+
+. 他の障害ドメインの vSphere ホストで上記の手順を繰り返し、動的検出タブでそのローカル iSCSI データ ライフ IP を追加します。
+. 適切なネットワーク接続では、ストレージ コントローラごとに 2 つの iSCSI VMKernel NIC と 2 つの iSCSI データ LIFS を持つ vSphere ホストごとに 4 つの iSCSI 接続が存在する必要があります。image:vmware-vmsc-with-smas-005.png["iSCSI接続情報"]
+. ONTAP System Manager を使用して LUN を作成し、レプリケーション ポリシー AutomatedFailOverDuplex を使用してSnapMirrorを設定し、ホスト イニシエーターを選択してホストの近接性を設定します。image:vmware-vmsc-with-smas-006.png["AutomatedFailOverDuplexでLUNを作成する"]
+. 他の障害ドメイン ストレージ アレイで、vSphere ホスト イニシエーターを使用して SAN イニシエーター グループを作成し、ホストの近接性を設定します。image:vmware-vmsc-with-smas-009.png["SANイニシエーターグループ"]
++
+
+NOTE: 均一アクセス モードの場合、igroup はソース障害ドメインから複製できます。
+
+. 複製された LUN をソース障害ドメインと同じマッピング ID でマップします。image:vmware-vmsc-with-smas-010.png["LUNマッピングID"]
+. vCenter で、vSphere クラスターを右クリックし、ストレージの再スキャン オプションを選択します。image:vmware-vmsc-with-smas-007.png["ストレージを再スキャン"]
+. クラスター内の vSphere ホストの 1 つで、新しく作成されたデバイスがデータストアに「未使用」と表示されていることを確認します。image:vmware-vmsc-with-smas-008.png["vSphere ホスト上の iSCSI デバイス リスト"]
+. vCenter で、vSphere Cluster を右クリックし、[New Datastore] オプションを選択します。image:vmware-vmsc-with-smas-007.png["新しいデータストア"]
+. ウィザードでは、データストア名を指定し、適切な容量とデバイス ID を持つデバイスを選択することを忘れないでください。image:vmware-vmsc-with-smas-011.png["iSCSIデバイス上のデータストアの作成"]
+. 両方の障害ドメインにわたるクラスタ上のすべてのホストにデータストアがマウントされていることを確認します。image:vmware-vmsc-with-smas-012.png["ソースホスト上のデータストア"]
++
+image:vmware-vmsc-with-smas-013.png["宛先ホスト上のデータストア"]
+
++
+
+NOTE: 上記のスクリーンショットは、 AFFを使用したため、単一コントローラー上のアクティブ I/O を示しています。  ASAの場合、すべてのパスにアクティブ IO が存在します。
+
+. 追加のデータストアを追加する場合は、既存の整合性グループを拡張して、vSphere クラスター全体で一貫性を保つようにする必要があります。image:vmware-vmsc-with-smas-014.png["CG保護ポリシー"]
+
+
+
+
+== ONTAPツールを使用した vMSC 均一ホスト アクセス モード。
+
+. NetApp ONTAPツールがデプロイされ、vCenter に登録されていることを確認します。image:vmware-vmsc-with-smas-015.png["ONTAP Tools プラグインが vCenter に登録されました"]そうでない場合は、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/ontap-tools-deployment.html["ONTAPツールの導入"]そしてlink:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["vCenter Serverインスタンスを追加する"]
+. ONTAPストレージ システムがONTAPツールに登録されていることを確認します。これには、両方の障害ドメイン ストレージ システムと、VMware vSphere 用SnapCenterプラグインによる VM 保護に使用する非同期リモート レプリケーション用の 3 番目のシステムが含まれます。image:vmware-vmsc-with-smas-016.png["登録済みストレージバックエンド"]そうでない場合は、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html#add-storage-backend-using-vsphere-client-ui["vSphere クライアント UI を使用してストレージ バックエンドを追加する"]
+. ホストデータを更新してONTAPツールと同期し、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html#create-a-vmfs-datastore["データストアを作成する"] 。image:vmware-vmsc-with-smas-017.png["ホストデータを更新する"]
+. SM-as を有効にするには、vSphere クラスタを右クリックし、 NetApp ONTAPツールで [Protect cluster] を選択します (上記のスクリーンショットを参照)。
+. そのクラスターの既存のデータストアと SVM の詳細が表示されます。デフォルトの CG 名は <vSphere Cluster name>_<SVM name> です。  「関係を追加」ボタンをクリックします。image:vmware-vmsc-with-smas-018.png["クラスターを保護する"]
+. ターゲット SVM を選択し、SM-as のポリシーを AutomatedFailOverDuplex に設定します。均一ホスト構成用のトグル スイッチがあります。各ホストの近接性を設定します。image:vmware-vmsc-with-smas-019.png["SnapMirror関係の追加"]
+. ホストのプロモーション情報やその他の詳細を確認します。必要に応じて、非同期のレプリケーション ポリシーを使用して 3 番目のサイトに別の関係を追加します。次に、「保護」をクリックします。image:vmware-vmsc-with-smas-020.png["関係を追加"]注意: SnapCenter Plug-in for VMware vSphereを使用する予定の場合は、整合性グループ レベルではなくボリューム レベルでレプリケーションを設定する必要があります。
+. 均一ホスト アクセスでは、ホストは両方の障害ドメイン ストレージ アレイに iSCSI 接続されます。image:vmware-vmsc-with-smas-021.png["iSCSIマルチパス情報"]注: 上記のスクリーンショットはAFFからのものです。  ASAの場合、適切なネットワーク接続を持つすべてのパスに ACTIVE I/O が存在する必要があります。
+. ONTAPツール プラグインは、ボリュームが保護されているかどうかも示します。image:vmware-vmsc-with-smas-022.png["ボリューム保護ステータス"]
+. 詳細とホスト近接情報の更新については、 ONTAPツールのホスト クラスタ関係オプションを利用できます。image:vmware-vmsc-with-smas-023.png["ホストクラスタ関係"]
+
+
+
+
+== VMware vSphere 用のSnapCenterプラグインによる VM 保護。
+
+SnapCenter Plug-in for VMware vSphereは、 SnapMirrorアクティブ同期をサポートし、 SnapMirror Async と組み合わせて 3 番目の障害ドメインに複製することもできます。
+
+image:vmware-vmsc-with-smas-033.png["3サイトトポロジ"]
+
+image:vmware-vmsc-with-smas-024.png["非同期フェイルオーバーを備えた3サイトトポロジ"]
+
+サポートされているユースケースは次のとおりです: * SnapMirror Active Sync を使用して、いずれかの障害ドメインから VM またはデータストアをバックアップおよび復元します。  * 3 番目の障害ドメインからリソースを復元します。
+
+. SCV で使用する予定のすべてのONTAPストレージ システムを追加します。image:vmware-vmsc-with-smas-025.png["ストレージアレイを登録する"]
+. ポリシーを作成します。  SM-as の「バックアップ後にSnapMirrorを更新する」がチェックされていることを確認し、3 番目の障害ドメインへの非同期レプリケーションの「バックアップ後にSnapVault を更新する」もチェックします。image:vmware-vmsc-with-smas-026.png["バックアップ ポリシー"]
+. 保護する必要がある指定のアイテムを含むリソース グループを作成し、ポリシーとスケジュールに関連付けます。image:vmware-vmsc-with-smas-027.png["Resource Group"]注意: _recent で終わるスナップショット名は SM-as ではサポートされません。
+. バックアップは、リソース グループに関連付けられたポリシーに基づいてスケジュールされた時間に実行されます。ジョブは、ダッシュボードのジョブ モニターから、またはそれらのリソースのバックアップ情報から監視できます。image:vmware-vmsc-with-smas-028.png["SCVダッシュボード"] image:vmware-vmsc-with-smas-029.png["データストアのリソースバックアップ情報"] image:vmware-vmsc-with-smas-030.png["VMのリソースバックアップ情報"]
+. VM は、プライマリ障害ドメインの SVM またはセカンダリ ロケーションの 1 つから、同じ vCenter または代替 vCenter に復元できます。image:vmware-vmsc-with-smas-031.png["VMの復元場所オプション"]
+. データストアのマウント操作でも同様のオプションが利用できます。image:vmware-vmsc-with-smas-032.png["データストアの復元場所オプション"]
+
+
+SCVの追加操作については、以下を参照してください。link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/index.html["SnapCenter Plug-in for VMware vSphereのドキュメント"]

@@ -1,0 +1,229 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vmfs-iscsi.html 
+keywords: vSphere, datastore, VMFS, iSCSI, ONTAP tools, vlan, network interface, service policy 
+summary: このページでは、VMware vSphere 環境にNetApp ONTAPストレージ iSCSI VMFS データストアを展開する手順について説明します。 
+---
+= vSphere VMFS データストア - ONTAPを使用した iSCSI ストレージ バックエンド
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このセクションでは、 ONTAP iSCSI ストレージを使用した VMFS データストアの作成について説明します。
+
+自動プロビジョニングの場合は、次のスクリプトを使用します。<<Ansible>> 。
+
+
+
+== 必要なもの
+
+* vSphere 環境とONTAPを管理するために必要な基本的なスキル。
+* {ontap_version} を実行しているONTAPストレージ システム (FAS/ AFF/CVO/ ONTAP Select/ ASA)
+* ONTAP認証情報 (SVM 名、ユーザー ID、パスワード)
+* iSCSI のONTAPネットワーク ポート、SVM、および LUN 情報
+* link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.exp-iscsi-esx-cpg/GUID-429C4DDD-5EC0-4DBD-8EA8-76082AB7ADEC.html++["完了したiSCSI構成ワークシート"]
+* vCenter Server の認証情報
+* vSphere ホスト情報
++
+** {vsphere_バージョン}
+
+
+* iSCSI VMKernelアダプタのIP情報
+* ネットワークスイッチ
++
+** ONTAPシステムのネットワークデータポートと接続されたvSphereホスト
+** iSCSI用に設定されたVLAN
+** （オプション） ONTAPネットワークデータポート用に構成されたリンクアグリゲーション
+
+
+* ONTAP Tool for VMware vSphere が導入、構成され、すぐに使用可能
+
+
+
+
+== 手順
+
+. 互換性を確認してください https://mysupport.netapp.com/matrix["Interoperability Matrix Tool（IMT）"]。
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.exp-iscsi-esx-cpg/GUID-7D444A0D-02CE-4A21-8017-CB1DC99EFD9A.html++["iSCSI 構成がサポートされていることを確認します。"]
+. 次のONTAPおよび vSphere タスクを完了します。
+
+
+
+
+== ONTAPタスク
+
+. link:https://docs.netapp.com/us-en/ontap-cli-98/system-license-show.html["iSCSIのONTAPライセンスを確認する"] 。
++
+.. 使用 `system license show`iSCSI がリストされているかどうかを確認するコマンド。
+.. 使用 `license add -license-code <license code>`ライセンスを追加します。
+
+
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.exp-iscsi-esx-cpg/GUID-ED75D939-C45A-4546-8B22-6B765FF6083F.html++["SVM で iSCSI プロトコルが有効になっていることを確認します。"]
+. iSCSI ネットワーク論理インターフェイスが SVM で使用可能であることを確認します。
++
+
+NOTE: GUI を使用して SVM を作成すると、iSCSI ネットワーク インターフェイスも作成されます。
+
+. 使用 `Network interface`ネットワーク インターフェイスを表示または変更するためのコマンド。
++
+
+TIP: ノードごとに 2 つの iSCSI ネットワーク インターフェイスが推奨されます。
+
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.dot-cm-nmg/GUID-CEE760DF-A059-4018-BE6C-6B3A034CB377.html++["iSCSI ネットワーク インターフェイスを作成します。"]default-data-blocks サービス ポリシーを使用できます。
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.dot-cm-nmg/GUID-BBC2D94B-DD3A-4029-9FCE-F71F9C157B53.html++["data-iscsi サービスがサービス ポリシーに含まれていることを確認します。"]使用できます `network interface service-policy show`確認します。
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.dot-cm-nmg/GUID-DE59CF49-3A5F-4F38-9F17-E2C16B567DC0.html++["ジャンボ フレームが有効になっていることを確認します。"]
+. link:++https://docs.netapp.com/ontap-9/topic/com.netapp.doc.dot-cm-sanag/GUID-D4DAC7DB-A6B0-4696-B972-7327EE99FD72.html++["LUN を作成してマップします。"]ONTAP tools for VMware vSphereを使用している場合は、この手順をスキップしてください。各 LUN に対してこの手順を繰り返します。
+
+
+
+
+== VMware vSphere タスク
+
+. iSCSI VLAN に少なくとも 1 つの NIC が使用可能であることを確認します。パフォーマンスとフォールト トレランスを向上させるには、2 つの NIC が推奨されます。
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-single-host-management-vmware-host-client-7-0/networking-in-the-vsphere-host-client-vSphereSingleHostManagementVMwareHostClient/managing-physical-network-adapters-in-the-vsphere-host-client-vSphereSingleHostManagementVMwareHostClient/view-physical-network-adapter-information-in-the-vsphere-host-client-vSphereSingleHostManagementVMwareHostClient.html++["vSphere ホストで使用可能な物理 NIC の数を特定します。"]
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-storage-8-0/configuring-iscsi-and-iser-adapters-and-storage-with-esxi/configure-the-software-iscsi-adapter-with-esxi.html++["iSCSI イニシエーターを構成します。"]典型的な使用例は、ソフトウェア iSCSI イニシエーターです。
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-network-design/ip-network-transport-configuration/vsphere-tcp-ip-stacks.html++["iSCSIのTCPIPスタックが利用可能であることを確認する"] 。
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/assign-a-port-group-or-network-to-a-network-protocol-profile.html++["iSCSIポートグループが利用可能であることを確認する"] 。
++
+** 通常、複数のアップリンク ポートを持つ単一の仮想スイッチを使用します。
+** 1:1 アダプタ マッピングを使用します。
+
+
+. iSCSI VMKernel アダプタが NIC の数に合わせて有効化されており、IP が割り当てられていることを確認します。
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-storage-8-0/configuring-iscsi-and-iser-adapters-and-storage-with-esxi/configure-the-software-iscsi-adapter-with-esxi.html++["iSCSI ソフトウェア アダプタを iSCSI VMKernel アダプタにバインドします。"]
+. link:++https://docs.netapp.com/vapp-98/topic/com.netapp.doc.vsc-iag/GUID-D7CAD8AF-E722-40C2-A4CB-5B4089A14B00.html++["ONTAPツールを使用して VMFS データストアをプロビジョニングする"] 。すべてのデータストアに対してこの手順を繰り返します。
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/storage-hardware-acceleration-in-vsphere/vsphere-hardware-acceleration-on-block-storage/managing-hardware-acceleration-filter-and-plug-ins/verify-hardware-acceleration-support-status.html++["ハードウェア アクセラレーションのサポートを確認します。"]
+
+
+
+
+== 次の手順
+
+これらのタスクが完了すると、VMFS データストアは仮想マシンのプロビジョニングに使用できるようになります。
+
+.Ansibleプレイブック
+[source]
+----
+## Disclaimer: Sample script for reference purpose only.
+
+- hosts: '{{ vsphere_host }}'
+  name: Play for vSphere iSCSI Configuration
+  connection: local
+  gather_facts: false
+  tasks:
+    # Generate Session ID for vCenter
+    - name: Generate a Session ID for vCenter
+      uri:
+        url: "https://{{ vcenter_hostname }}/rest/com/vmware/cis/session"
+        validate_certs: false
+        method: POST
+        user: "{{ vcenter_username }}"
+       password: "{{ vcenter_password }}"
+        force_basic_auth: yes
+        return_content: yes
+      register: vclogin
+
+    # Generate Session ID for ONTAP tools with vCenter
+    - name: Generate a Session ID for ONTAP tools with vCenter
+      uri:
+        url: "https://{{ ontap_tools_ip }}:8143/api/rest/2.0/security/user/login"
+        validate_certs: false
+        method: POST
+        return_content: yes
+        body_format: json
+        body:
+          vcenterUserName: "{{ vcenter_username }}"
+          vcenterPassword: "{{ vcenter_password }}"
+      register: login
+
+    # Get existing registered ONTAP Cluster info with ONTAP tools
+    - name: Get ONTAP Cluster info from ONTAP tools
+      uri:
+        url: "https://{{ ontap_tools_ip }}:8143/api/rest/2.0/storage/clusters"
+        validate_certs: false
+        method: Get
+        return_content: yes
+        headers:
+          vmware-api-session-id: "{{ login.json.vmwareApiSessionId }}"
+      register: clusterinfo
+
+    - name: Get ONTAP Cluster ID
+      set_fact:
+        ontap_cluster_id: "{{ clusterinfo.json | json_query(clusteridquery) }}"
+      vars:
+        clusteridquery: "records[?ipAddress == '{{ netapp_hostname }}' && type=='Cluster'].id | [0]"
+
+    - name: Get ONTAP SVM ID
+      set_fact:
+        ontap_svm_id: "{{ clusterinfo.json | json_query(svmidquery) }}"
+      vars:
+        svmidquery: "records[?ipAddress == '{{ netapp_hostname }}' && type=='SVM' && name == '{{ svm_name }}'].id | [0]"
+
+    - name: Get Aggregate detail
+      uri:
+        url: "https://{{ ontap_tools_ip }}:8143/api/rest/2.0/storage/clusters/{{ ontap_svm_id }}/aggregates"
+        validate_certs: false
+        method: GET
+        return_content: yes
+        headers:
+          vmware-api-session-id: "{{ login.json.vmwareApiSessionId }}"
+          cluster-id: "{{ ontap_svm_id }}"
+      when: ontap_svm_id != ''
+      register: aggrinfo
+
+    - name: Select Aggregate with max free capacity
+      set_fact:
+        aggr_name: "{{ aggrinfo.json | json_query(aggrquery) }}"
+      vars:
+        aggrquery: "max_by(records, &freeCapacity).name"
+
+    - name: Convert datastore size in MB
+      set_fact:
+        datastoreSizeInMB: "{{ iscsi_datastore_size | human_to_bytes/1024/1024 | int }}"
+
+    - name: Get vSphere Cluster Info
+      uri:
+        url: "https://{{ vcenter_hostname }}/api/vcenter/cluster?names={{ vsphere_cluster }}"
+        validate_certs: false
+        method: GET
+        return_content: yes
+        body_format: json
+        headers:
+          vmware-api-session-id: "{{ vclogin.json.value }}"
+      when: vsphere_cluster != ''
+      register: vcenterclusterid
+
+    - name: Create iSCSI VMFS-6 Datastore with ONTAP tools
+      uri:
+        url: "https://{{ ontap_tools_ip }}:8143/api/rest/3.0/admin/datastore"
+        validate_certs: false
+        method: POST
+        return_content: yes
+        status_code: [200]
+        body_format: json
+        body:
+          traditionalDatastoreRequest:
+            name: "{{ iscsi_datastore_name }}"
+            datastoreType: VMFS
+            protocol: ISCSI
+            spaceReserve: Thin
+            clusterID:  "{{ ontap_cluster_id }}"
+            svmID: "{{ ontap_svm_id }}"
+            targetMoref: ClusterComputeResource:{{ vcenterclusterid.json[0].cluster }}
+            datastoreSizeInMB: "{{ datastoreSizeInMB | int }}"
+            vmfsFileSystem: VMFS6
+            aggrName: "{{ aggr_name }}"
+            existingFlexVolName: ""
+            volumeStyle: FLEXVOL
+            datastoreClusterMoref: ""
+        headers:
+          vmware-api-session-id: "{{ login.json.vmwareApiSessionId }}"
+      when: ontap_cluster_id != '' and ontap_svm_id != '' and aggr_name != ''
+      register: result
+      changed_when: result.status == 200
+----

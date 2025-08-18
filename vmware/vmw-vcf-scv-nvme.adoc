@@ -1,0 +1,123 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-scv-nvme.html 
+keywords: netapp, vmware, nvme, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, scv, workload, domain, backup 
+summary:  
+---
+= NVMe over TCP ストレージと VMware vSphere 向けSnapCenterプラグインを使用して VCF ワークロード ドメインを保護します。
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+SnapCenter Plug-in for VMware vSphereを使用して、NVMe で VCF ワークロード ドメインを保護します。この手順には、プラグインのセットアップ、最適なパフォーマンスを実現するための NVMe over TCP の構成、バックアップ、復元、またはクローン作成操作の実行が含まれます。
+
+NVMe (Non-Volatile Memory Express) over TCP は、VMware Cloud Foundation ESXi サーバーと、All Flash FAS (AFF) や All SAN Array (ASA ) などのNetAppストレージ間の高速データ転送を可能にする最先端のネットワーク プロトコルです。
+
+
+
+== はじめに
+
+NVMe over TCP を活用することで、要求の厳しいワークロードに対して低レイテンシと高スループットを実現します。  NVMe over TCP とNetApp SnapCenter Plug-in for VMware vSphere (SCV) の統合により、VMware 環境内での効率的なデータ管理、バックアップ、リストア、およびクローン作成操作の強化を実現する強力な組み合わせが実現します。
+
+
+
+== NVMe over TCPの利点
+
+* 高性能: 低レイテンシと高いデータ転送速度で優れたパフォーマンスを実現します。これは、要求の厳しいアプリケーションや大規模なデータ操作にとって非常に重要です。
+* スケーラビリティ: スケーラブルな構成をサポートし、IT 管理者はデータ要件の増大に応じてインフラストラクチャをシームレスに拡張できます。
+* 効率: バックアップと復元の操作が高速化され、ダウンタイムが短縮され、システム全体の可用性が向上します。
+
+
+このドキュメントでは、最適なパフォーマンスを得るために NVMe over TCP を活用することに重点を置いて、VMware Cloud Foundation (VCF) 環境で SCV を展開および管理する手順について説明します。
+
+
+
+== 観客
+
+VMware VCF ワークロード ドメインのデータ保護と災害復旧を保証するソリューション アーキテクトまたはストレージ管理者。
+
+
+
+== アーキテクチャの概要
+
+SCV は、VMware 環境内の VM、データストア、ファイル、フォルダーに対して、高速でスペース効率が高く、クラッシュ整合性と VM 整合性のあるバックアップと復元操作を容易にするように設計された強力なツールです。  SCV は、OVA ファイルを使用して Linux 仮想アプライアンスとして導入され、リモート プラグイン アーキテクチャを活用します。
+
+
+
+=== SCV 展開アーキテクチャ
+
+* 仮想アプライアンスの展開: SCV は、OVA ファイルを使用して Linux 仮想アプライアンスとして展開されます。この展開方法により、合理的かつ効率的なセットアップ プロセスが保証されます。
+* リモート プラグイン アーキテクチャ: SCV はリモート プラグイン アーキテクチャを使用して、複数のインスタンスを管理する際のスケーラビリティと柔軟性を実現します。
+* 1 対 1 の関係: 各 VCF ドメインには専用の SCV インスタンスが必要であり、分離された効率的なバックアップおよび復元操作を保証します。
+
+
+ONTAP 9.10.1 以降のバージョンでは、 NetApp AFFとASA はNVMe over TCP をサポートします。  AFFまたはASAプライマリ システム上にあり、 ONTAP AFFまたはASAセカンダリ システムにレプリケートできるデータ。 SCV はSnapCenter Server と連携して、 SnapCenterアプリケーション固有のプラグインの VMware 環境でのアプリケーションベースのバックアップおよびリストア操作もサポートします。詳細については、link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/index.html["SnapCenter Plug-in for VMware vSphereのドキュメント"]そしてlink:https://docs.netapp.com/us-en/netapp-solutions/vmware/vmware_vcf_aff_multi_wkld_scv.html#audience["SnapCenter Plug-in for VMware vSphereのドキュメントと、 NetApp SnapCenter for VMWare vSphere (SCV) による VCF 管理ドメインと複数のワークロード ドメインの保護。"]
+
+image:vmware-vcf-aff-050.png["SCV を使用した VCF マルチワークロード ドメイン"]
+
+3-2-1 バックアップ ルールは、データのコピーを 3 つ作成し、それらを 2 種類の異なるメディアに保存し、1 つのコピーをオフサイトに保管するというデータ保護戦略です。BlueXP backup and recoveryは、オンプレミスとクラウド環境の両方にわたる幅広いバックアップおよびリカバリ操作に対して単一のコントロール プレーンを提供する、クラウド ベースのデータ管理ツールです。 NetApp BlueXP backup and recoveryスイートの一部は、SCV (オンプレミス) と統合してデータのコピーをクラウド内のオブジェクト ストレージに拡張する機能です。これにより、プライマリまたはセカンダリ ストレージ バックアップから取得されたデータの 3 番目のコピーがオフサイトに作成されます。BlueXP backup and recoveryを使用すると、オンプレミスのこれら 2 つの場所のいずれかからデータのコピーを転送するストレージ ポリシーを簡単に設定できます。詳細については、link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"^] 。
+
+
+
+== NVMe 上の VCF 向け SCV の導入手順
+
+そのlink:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/index.html["ONTAP tools for VMware vSphere"](OTV) は、VMware 環境でNetAppストレージを管理するための強力かつ効率的なソリューションを提供します。 OTV は、vCenter Server と直接統合することで、ストレージ管理を簡素化し、データ保護を強化し、パフォーマンスを最適化します。オプションではありますが、OTV を導入すると、VMware 環境の管理機能と全体的な効率が大幅に向上します。
+
+* link:https://docs.netapp.com/us-en/netapp-solutions/vmware/vmware_vcf_asa_supp_wkld_nvme.html#scenario-overview["VCF ワークロード ドメイン用の NVMe/TCP ストレージを作成する"]
+* link:https://docs.netapp.com/us-en/netapp-solutions/vmware/vmware_vcf_aff_multi_wkld_scv.html#architecture-overview["NetApp SnapCenter for VMware vSphere (SCV) を構成する"]
+
+
+.VM、データストア、仮想ディスク、ファイルまたはフォルダを復元する
+[%collapsible%open]
+====
+SCV は、VMware 環境向けの包括的なバックアップおよび復元機能を提供します。 VMFS 環境の場合、SCV はクローンおよびマウント操作を Storage VMotion と組み合わせて使用し、復元操作を実行します。これにより、データの効率的かつシームレスな復元が保証されます。詳細についてはlink:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_how_restore_operations_are_performed.html["復元操作の実行方法。"]
+
+* VM のリストア VM を同じ vCenter Server 内の元のホストにリストアするか、同じ vCenter Server によって管理されている別の ESXi ホストにリストアできます。
++
+.. VM を右クリックし、ドロップダウン リストで[SnapCenter Plug-in for VMware vSphere]を選択し、2 番目のドロップダウン リストで [復元] を選択してウィザードを起動します。
+.. 復元ウィザードで、復元するバックアップ スナップショットを選択し、[復元範囲] フィールドで [仮想マシン全体] を選択し、復元場所を選択して、バックアップをマウントする宛先情報を入力します。 [場所の選択] ページで、復元されたデータストアの場所を選択します。概要ページを確認し、「完了」をクリックします。image:vmware-vcf-aff-066.png["VM Restore"]
+
+
+* データストアをマウントする バックアップ内のファイルにアクセスする場合は、バックアップから従来のデータストアをマウントできます。バックアップは、バックアップが作成されたESXiホストにも、同じタイプのVMおよびホスト構成を使用する代替ESXiホストにもマウントできます。同じデータストアを1つのホストに複数回マウントできます。
++
+.. データストアを右クリックし、 [SnapCenter Plug-in for VMware vSphere] > [マウント バックアップ] を選択します。
+.. [データストアのマウント] ページで、バックアップとバックアップの場所 (プライマリまたはセカンダリ) を選択し、[マウント] をクリックします。
+
+
+
+
+image:vmware-vcf-aff-067.png["データストアをマウントする"]
+
+* 仮想ディスクを接続する バックアップから 1 つ以上の VMDK を親 VM、同じ ESXi ホスト上の代替 VM、または同じ vCenter またはリンク モードの別の vCenter によって管理される代替 ESXi ホスト上の代替 VM に接続できます。
++
+.. VM を右クリックし、 SnapCenter Plug-in for VMware vSphere > 仮想ディスクの接続を選択します。
+.. 「仮想ディスクの接続」ウィンドウで、バックアップを選択し、接続する 1 つ以上のディスクと接続元の場所 (プライマリまたはセカンダリ) を選択します。デフォルトでは、選択した仮想ディスクは親VMに接続されます。選択した仮想ディスクを同じ ESXi ホスト内の代替 VM に接続するには、[ここをクリックして代替 VM に接続する] を選択し、代替 VM を指定します。  「添付」をクリックします。
+
+
+
+
+image:vmware-vcf-aff-068.png["仮想ディスクを接続する"]
+
+* ファイルとフォルダの復元手順 個々のファイルとフォルダは、ゲスト ファイル復元セッションで復元できます。このセッションでは、仮想ディスクのバックアップ コピーを接続し、選択したファイルまたはフォルダを復元します。ファイルやフォルダも復元できます。詳細はチェックlink:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_restore_guest_files_and_folders_overview.html["SnapCenter のファイルとフォルダーの復元。"]
++
+.. ゲスト ファイルまたはフォルダーの復元操作のために仮想接続ディスクを使用する場合、復元する前に、接続先の VM に資格情報が設定されている必要があります。プラグインの下にあるSnapCenter Plug-in for VMware vSphereから、[ゲスト ファイルのリストアと実行資格情報] セクションを選択し、ユーザー資格情報を入力します。ユーザー名には「Administrator」と入力する必要があります。image:vmware-vcf-aff-060.png["資格情報を復元する"]
+.. vSphere クライアントから VM を右クリックし、 [SnapCenter Plug-in for VMware vSphere] > [Guest File Restore] を選択します。  [復元範囲] ページで、バックアップ名、VMDK 仮想ディスク、および場所 (プライマリまたはセカンダリ) を指定します。  「サマリー」をクリックして確認します。image:vmware-vcf-aff-069.png["ファイルとフォルダの復元"]
+
+
+
+
+====
+
+
+== 監視とレポート
+
+SCV は、管理者がバックアップと復元操作を効率的に管理できるように、強力な監視およびレポート機能を提供します。ステータス情報の表示、ジョブの監視、ジョブログのダウンロード、レポートへのアクセスが可能です。詳細については、link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_view_status_information.html["VMware vSphere Monitor and Report 用のSnapCenterプラグイン。"]
+
+image:vmware-vcf-aff-065.png["SCVダッシュボード"]
+
+NVMe over TCP とNetApp SnapCenter Plug-in for VMware vSphereのパワーを活用することで、組織は VMware Cloud Foundation ワークロード ドメインに対して高性能なデータ保護とディザスタ リカバリを実現できます。このアプローチにより、迅速で信頼性の高いバックアップおよび復元操作が保証され、ダウンタイムが最小限に抑えられ、重要なデータが保護されます。

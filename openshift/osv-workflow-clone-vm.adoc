@@ -1,0 +1,78 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-workflow-clone-vm.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Red Hat OpenShift Virtualization で VM をクローンする
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Tridentを使用して OpenShift Virtualization で VM のクローンを作成します。この手順には、 Trident CSI ボリュームのクローン作成を活用することが含まれており、ソース VM をシャットダウンして新しい VM を作成したり、実行を継続したりすることができます。
+
+
+
+== VMのクローニング
+
+OpenShift での既存の VM のクローン作成は、Trident のボリューム CSI クローン作成機能のサポートによって実現されます。 CSI ボリューム クローンを使用すると、既存の PVC の PV を複製して、それをデータ ソースとして使用して新しい PVC を作成できます。新しい PVC が作成されると、それはソース PVC へのリンクや依存関係のない別個のエンティティとして機能します。
+
+image:redhat-openshift-057.png["VMクローンアーキテクチャ"]
+
+CSI ボリュームのクローン作成には、考慮すべき特定の制限があります。
+
+. ソース PVC と宛先 PVC は同じプロジェクト内にある必要があります。
+. 同じストレージ クラス内でのクローン作成がサポートされます。
+. クローン作成は、ソース ボリュームと宛先ボリュームが同じ VolumeMode 設定を使用している場合にのみ実行できます。たとえば、ブロック ボリュームは別のブロック ボリュームにのみクローン作成できます。
+
+
+OpenShift クラスター内の VM は、次の 2 つの方法で複製できます。
+
+. ソースVMをシャットダウンすることで
+. ソースVMを稼働させておくことで
+
+
+
+
+=== ソースVMをシャットダウンすることで
+
+VM をシャットダウンして既存の VM を複製する機能は、 Tridentのサポートを受けて実装されたネイティブの OpenShift 機能です。  VM のクローンを作成するには、次の手順を実行します。
+
+. [ワークロード] > [仮想化] > [仮想マシン] に移動し、クローンを作成する仮想マシンの横にある省略記号をクリックします。
+. 「仮想マシンの複製」をクリックし、新しい VM の詳細を入力します。
++
+image:redhat-openshift-058.png["クローンVM"]
+
+. [仮想マシンのクローン作成] をクリックすると、ソース VM がシャットダウンされ、クローン VM の作成が開始されます。
+. この手順が完了すると、クローンされた VM の内容にアクセスして検証できるようになります。
+
+
+
+
+=== ソースVMを稼働させておくことで
+
+既存の VM は、ソース VM の既存の PVC を複製し、複製された PVC を使用して新しい VM を作成することによって複製することもできます。この方法では、ソース VM をシャットダウンする必要はありません。  VM をシャットダウンせずにクローンするには、次の手順を実行します。
+
+. [ストレージ] > [PersistentVolumeClaims] に移動し、ソース VM に接続されている PVC の横にある省略記号をクリックします。
+. 「PVC の複製」をクリックし、新しい PVC の詳細を入力します。
++
+image:redhat-openshift-059.png["クローンPVC"]
+
+. 次に、「クローン」をクリックします。これにより、新しい VM の PVC が作成されます。
+. [ワークロード] > [仮想化] > [仮想マシン] に移動し、[作成] > [YAML を使用] をクリックします。
+. spec > template > spec > volumes セクションで、コンテナー ディスクの代わりにクローンされた PVC を接続します。要件に応じて、新しい VM のその他すべての詳細を指定します。
++
+[source, cli]
+----
+- name: rootdisk
+  persistentVolumeClaim:
+    claimName: rhel8-short-frog-rootdisk-28dvb-clone
+----
+. [作成] をクリックして新しい VM を作成します。
+. VM が正常に作成されたら、新しい VM にアクセスして、それがソース VM のクローンであることを確認します。
+

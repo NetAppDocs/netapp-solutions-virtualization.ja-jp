@@ -1,0 +1,30 @@
+---
+indexpage:
+  title: VM移行ソリューション
+  summary: NetApp VM 移行ソリューションは、さまざまなプラットフォームやストレージ システム間で仮想マシンを移行および変換するための包括的なツールとユーティリティを提供します。
+  lead: NetApp VM 移行ソリューションは、さまざまなプラットフォームやストレージ システム間で仮想マシンを移行および変換するための包括的なツールとユーティリティを提供します。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: Shift Toolkitについて
+      url: shift-toolkit-overview.html
+    - title: VMをONTAPデータストアに移行することについて
+      url: migrate-get-start-ontap.html
+    - title: VMをAmazon EC2に移行することについて
+      url: migrate-vms-to-ec2-fsxn-overview.html
+  - title: Shift Toolkitを使用する
+    links:
+    - title: Shift Toolkitをインストールする
+      url: shift-toolkit-install.html
+    - title: Shift Toolkit を構成する
+      url: shift-toolkit-ui.html
+    - title: Shift Toolkit を使用して VM を移行する
+      url: shift-toolkit-migration.html
+    - title: Shift Toolkit を使用して VM を変換する
+      url: shift-toolkit-conversion.html
+  - title: オンプレミスとクラウドでVMを移行する
+    links:
+    - title: VMをONTAPデータストアに移行する
+      url: migrate-vms-to-ontap-datastore.html
+    - title: VMをAmazon EC2に移行する
+      url: migrate-vms-to-ec2-fsxn-deploy.html

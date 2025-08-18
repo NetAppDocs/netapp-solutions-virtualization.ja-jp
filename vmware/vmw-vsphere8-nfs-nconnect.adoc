@@ -1,0 +1,145 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vsphere8-nfs-nconnect.html 
+keywords: netapp, vmware, nfsv3, nconnect, performance 
+summary:  
+---
+= NFS v3 データストアで nConnect を使用してデータストアのパフォーマンスを向上します
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NFS nConnect 機能を使用して、VMware vSphere 8 環境のデータストアのパフォーマンスを向上させます。この手順には、NFS データストアごとに VM をホストし、NFS データストアのパフォーマンスを向上させ、VM およびコンテナ ベースのアプリケーション用の上位層を構成することが含まれます。
+
+VMware vSphere 8.0 U1 (テクニカル プレビュー) 以降では、nconnect 機能により、NFS v3 データストア ボリュームに対して複数の TCP 接続が可能になり、スループットが向上します。  NFS データストアを使用しているお客様は、NFS サーバーへの接続数を増やすことができるため、高速ネットワーク インターフェイス カードの利用率を最大限に高めることができます。
+
+
+NOTE: この機能はNFS v3 8.0 U2で一般利用可能になりました。ストレージセクションを参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/release-notes/esxi-update-and-patch-release-notes/vsphere-esxi-802-release-notes.html["VMware vSphere 8.0 Update 2 のリリースノート"] 。  vSphere 8.0 U3ではNFS v4.1のサポートが追加されました。詳細については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/release-notes/esxi-update-and-patch-release-notes/vsphere-esxi-803-release-notes.html["vSphere 8.0 Update 3 リリースノート"]
+
+
+
+== ユースケース
+
+* 同じホスト上の NFS データストアごとに、より多くの仮想マシンをホストします。
+* NFS データストアのパフォーマンスを向上します。
+* VM およびコンテナ ベースのアプリケーションに対して、より高いレベルでサービスを提供するオプションを提供します。
+
+
+
+
+== 技術的な詳細
+
+nconnect の目的は、vSphere ホスト上の NFS データストアごとに複数の TCP 接続を提供することです。これにより、NFS データストアの並列処理とパフォーマンスが向上します。 ONTAPでは、NFS マウントが確立されると、接続 ID (CID) が作成されます。この CID は、最大 128 の同時実行操作を提供します。クライアントがその数を超えると、 ONTAP は、他の操作の完了時に使用可能なリソースの一部を解放できるようになるまで、ある種のフロー制御を実行します。これらの一時停止は通常は数マイクロ秒だけですが、何百万回もの操作の中では、それが蓄積されてパフォーマンスの問題を引き起こす可能性があります。 Nconnect は 128 の制限をクライアント上の nconnect セッションの数で乗算することができ、これにより CID あたりの同時操作数が増加し、パフォーマンス上の利点が追加される可能性があります。詳細については、link:https://www.netapp.com/media/10720-tr-4067.pdf["NFS ベストプラクティスと実装ガイド"]
+
+
+
+=== デフォルトのNFSデータストア
+
+NFS データストアの単一接続のパフォーマンス制限に対処するには、追加のデータストアをマウントするか、追加のホストを追加して接続を増やします。
+
+image:vmware-vsphere8-nfs-wo-nconnect.png["nconnect 機能のない NFS データストア"]
+
+
+
+=== nConnect NFSデータストアを使用
+
+ONTAPツールまたはその他のオプションを使用して NFS データストアを作成すると、vSphere CLI、PowerCLI、govc ツールまたはその他の API オプションを使用して、NFS データストアごとの接続数を変更できます。  vMotion に伴うパフォーマンスの問題を回避するには、vSphere クラスタの一部であるすべての vSphere ホスト上の NFS データストアの接続数を同じに保ちます。
+
+image:vmware-vsphere8-nfs-nconnect.png["nconnect 機能が有効になっている NFS データストア"]
+
+
+
+== 前提条件
+
+nconnect 機能を利用するには、次の依存関係を満たす必要があります。
+
+[cols="25%, 25%, 50%"]
+|===
+
+
+| ONTAPバージョン | vSphere バージョン | コメント 
+
+
+| 9.8以上 | 8 Update 1 | 接続数を増やすオプションを備えた技術プレビュー。接続数を減らすには、データストアをアンマウントする必要があります。 
+
+
+| 9.8以上 | 8 Update 2 | 通常、接続数を増減するオプションが利用可能です。 
+
+
+| 9.8以上 | 8 Update 3 | NFS 4.1 およびマルチパスのサポート。 
+|===
+
+
+== NFSデータストアへの接続数を更新
+
+ONTAPツールまたは vCenter を使用して NFS データストアを作成する場合は、単一の TCP 接続が使用されます。接続数を増やすには、vSphere CLI を使用できます。参考コマンドを以下に示します。
+
+[source, bash]
+----
+# Increase the number of connections while creating the NFS v3 datastore.
+esxcli storage nfs add -H <NFS_Server_FQDN_or_IP> -v <datastore_name> -s <remote_share> -c <number_of_connections>
+# To specify the number of connections while mounting the NFS 4.1 datastore.
+esxcli storage nfs41 add -H <NFS_Server_FQDN_or_IP> -v <datastore_name> -s <remote_share> -c <number_of_connections>
+# To utilize specific VMkernel adapters while mounting, use the -I switch
+esxcli storage nfs41 add -I <NFS_Server_FQDN_or_IP>:vmk1 -I <NFS_Server_FQDN_or_IP>:vmk2 -v <datastore_name> -s <remote_share> -c <number_of_connections>
+# To increase or decrease the number of connections for existing NFSv3 datastore.
+esxcli storage nfs param set -v <datastore_name> -c <number_of_connections>
+# For NFSv4.1 datastore
+esxcli storage nfs41 param set -v <datastore_name> -c <number_of_connections>
+# To set VMkernel adapter for an existing NFS 4.1 datastore
+esxcli storage nfs41 param set -I <NFS_Server_FQDN_or_IP>:vmk2 -v <datastore_name> -c <number_of_connections>
+----
+または、以下に示すようなPowerCLIを使用します。
+
+[source, powershell]
+----
+$datastoreSys = Get-View (Get-VMHost host01.vsphere.local).ExtensionData.ConfigManager.DatastoreSystem
+$nfsSpec = New-Object VMware.Vim.HostNasVolumeSpec
+$nfsSpec.RemoteHost = "nfs_server.ontap.local"
+$nfsSpec.RemotePath = "/DS01"
+$nfsSpec.LocalPath = "DS01"
+$nfsSpec.AccessMode = "readWrite"
+$nfsSpec.Type = "NFS"
+$nfsSpec.Connections = 4
+$datastoreSys.CreateNasDatastore($nfsSpec)
+----
+govc ツールを使用して接続数を増やす例を示します。
+
+[source, powershell]
+----
+$env.GOVC_URL = 'vcenter.vsphere.local'
+$env.GOVC_USERNAME = 'administrator@vsphere.local'
+$env.GOVC_PASSWORD = 'XXXXXXXXX'
+$env.GOVC_Datastore = 'DS01'
+# $env.GOVC_INSECURE = 1
+$env.GOVC_HOST = 'host01.vsphere.local'
+# Increase number of connections while creating the datastore.
+govc host.esxcli storage nfs add -H nfs_server.ontap.local -v DS01 -s /DS01 -c 2
+# For NFS 4.1, replace nfs with nfs41
+govc host.esxcli storage nfs41 add -H <NFS_Server_FQDN_or_IP> -v <datastore_name> -s <remote_share> -c <number_of_connections>
+# To utilize specific VMkernel adapters while mounting, use the -I switch
+govc host.esxcli storage nfs41 add -I <NFS_Server_FQDN_or_IP>:vmk1 -I <NFS_Server_FQDN_or_IP>:vmk2 -v <datastore_name> -s <remote_share> -c <number_of_connections>
+# To increase or decrease the connections for existing datastore.
+govc host.esxcli storage nfs param set -v DS01 -c 4
+# For NFSv4.1 datastore
+govc host.esxcli storage nfs41 param set -v <datastore_name> -c <number_of_connections>
+# View the connection info
+govc host.esxcli storage nfs list
+----
+参照するlink:https://kb.vmware.com/s/article/91497["VMwareの技術情報アーティクル91497"]詳細についてはこちらをご覧ください。
+
+
+
+== 設計上の考慮事項
+
+ONTAPでサポートされる接続の最大数は、ストレージ プラットフォーム モデルによって異なります。  exec_ctxを探すlink:https://www.netapp.com/media/10720-tr-4067.pdf["NFS ベストプラクティスと実装ガイド"]詳細についてはこちらをご覧ください。
+
+NFSv3 データストアあたりの接続数が増加すると、その vSphere ホストにマウントできる NFS データストアの数は減少します。 vSphere ホストごとにサポートされる接続の合計数は 256 です。チェックlink:https://knowledge.broadcom.com/external/article?legacyId=91481["VMwareの技術情報アーティクル91481"]vSphere ホストごとのデータストア制限。
+
+
+NOTE: vVol データストアは nConnect 機能をサポートしていません。ただし、プロトコル エンドポイントは接続制限にカウントされます。  vVol データストアが作成されると、SVM のデータ LIIF ごとにプロトコル エンドポイントが作成されます。

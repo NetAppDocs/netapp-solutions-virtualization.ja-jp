@@ -1,0 +1,82 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-vm-dp-using-velero.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization, OADP operator, Openshift Data Protection Application operator, velero 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Velero を使用して Red Hat OpenShift Virtualization の VM のオンデマンド バックアップを作成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Velero とNetApp ONTAP S3 またはStorageGRIDを使用して OpenShift Virtualization で VM をバックアップします。この手順には、オンデマンド バックアップ用のバックアップ カスタム リソース (CR) と、スケジュールされたバックアップ用のスケジュール CR の作成が含まれます。各バックアップは VM メタデータと永続ボリュームをキャプチャし、リカバリまたはコンプライアンスの目的で指定されたオブジェクト ストレージの場所に保存します。
+
+
+
+== VMのバックアップを作成する手順
+
+VM 全体 (VM メタデータと VM ディスク) のオンデマンド バックアップを作成するには、[**バックアップ**] タブをクリックします。これにより、バックアップ カスタム リソース (CR) が作成されます。バックアップ CR を作成するためのサンプル yaml が提供されています。この yaml を使用すると、指定された名前空間内の VM とそのディスクがバックアップされます。追加のパラメータは、link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/oadp-creating-backup-cr.html["ドキュメント"] 。
+
+ディスクをバックアップする永続ボリュームのスナップショットは、CSI によって作成されます。 VM のバックアップとそのディスクのスナップショットが作成され、yaml で指定されたバックアップの場所に保存されます。バックアップは、TTL で指定されたとおり 30 日間システム内に残ります。
+
+....
+apiVersion: velero.io/v1
+kind: Backup
+metadata:
+  name: backup1
+  namespace: openshift-adp
+spec:
+  includedNamespaces:
+  - virtual-machines-demo
+  snapshotVolumes: true
+  storageLocation: velero-demo-1 -->this is the backupStorageLocation previously created
+                                    when Velero is configured.
+  ttl: 720h0m0s
+....
+バックアップが完了すると、そのフェーズは完了として表示されます。
+
+image:redhat-openshift-oadp-backup-001.png["バックアップが完了しました"]
+
+S3 ブラウザ アプリケーションを使用して、オブジェクト ストレージ内のバックアップを検査できます。バックアップのパスは、プレフィックス名 (velero/demobackup) が付いた設定されたバケットに表示されます。バックアップの内容には、仮想マシンのボリューム スナップショット、ログ、その他のメタデータが含まれていることがわかります。
+
+
+NOTE: StorageGrid では、テナント マネージャーから利用できる S3 コンソールを使用してバックアップ オブジェクトを表示することもできます。
+
+image:redhat-openshift-oadp-backup-002.png["S3 のオブジェクトのバックアップ"]
+
+
+
+== OpenShift Virtualization で VM のスケジュールされたバックアップを作成する
+
+スケジュールに従ってバックアップを作成するには、スケジュール CR を作成する必要があります。スケジュールは、バックアップを作成する時間を指定できる単純な Cron 式です。スケジュール CR を作成するためのサンプル yaml。
+
+....
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: <schedule>
+  namespace: openshift-adp
+spec:
+  schedule: 0 7 * * *
+  template:
+    hooks: {}
+    includedNamespaces:
+    - <namespace>
+    storageLocation: velero-demo-1
+    defaultVolumesToFsBackup: true
+    ttl: 720h0m0s
+....
+Cron 式 0 7 * * * は、毎日 7:00 にバックアップが作成されることを意味します。バックアップに含める名前空間とバックアップの保存場所も指定します。したがって、バックアップ CR の代わりに、スケジュール CR を使用して、指定された時間と頻度でバックアップを作成します。
+
+スケジュールが作成されると、有効になります。
+
+image:redhat-openshift-oadp-backup-003.png["スケジュールが作成されました"]
+
+バックアップはこのスケジュールに従って作成され、[バックアップ] タブから表示できます。
+
+image:redhat-openshift-oadp-backup-004.png["スケジュールが作成されました"]

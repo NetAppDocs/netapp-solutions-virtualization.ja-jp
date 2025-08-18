@@ -1,0 +1,26 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vsphere8.html 
+keywords: netapp, vmware, getting, started 
+summary:  
+---
+= VMware vSphere 8 に対するNetApp のサポートについて
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetAppと VMware のパートナーシップは、単一のストレージ システムで VMware が定義した主要なユース ケースのすべてに対応できる唯一のパートナーシップです。
+
+
+
+== vSphere 8 向けの最新のクラウド接続オールフラッシュ
+
+ONTAP実装は、 NetApp設計のアプライアンス、コモディティ ハードウェア、パブリック クラウドなど、さまざまなプラットフォームで実行されます。  ONTAP は、SAN プロトコルまたは NAS プロトコル経由でアクセスする場合や、高速フラッシュから低コストのメディア、クラウドベースのストレージに至るまでの構成で、統合ストレージを提供します。 NetApp は、サイロを作成することなくストレージのニーズを簡素化およびセグメント化するための専用のフラッシュ プラットフォームも提供しています。さらに、 NetApp はオンプレミスとクラウド間でのデータ移動を簡単に可能にするソフトウェアを提供しています。最後に、 NetApp BlueXP は、これらすべての関係とストレージ フットプリントを管理するための単一のダッシュボードを提供します。
+
+* link:https://docs.netapp.com/us-en/ontap-systems-family/intro-family.html["NetAppプラットフォーム"^]
+

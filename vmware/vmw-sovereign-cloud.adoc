@@ -1,0 +1,52 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-sovereign-cloud.html 
+keywords: NetApp Solutions, vmware, sovereign cloud 
+summary:  
+---
+= VMware Sovereign Cloud について学ぶ
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware Sovereign Cloud は、機密データを扱う組織のデータ主権、管轄権の制御、規制コンプライアンスを優先するクラウド コンピューティング フレームワークです。このアプローチにより、データは収集された国の排他的な管理と権限下に置かれると同時に、最新のクラウド インフラストラクチャの柔軟性と機能が提供されます。
+
+国家や州政府、金融や医療などの規制の厳しい業界など、機密性の高いデータを処理および維持する多くの組織にとって、主権の概念はクラウド コンピューティングの必須の要素として浮上しています。各国政府も、デジタル経済能力を拡大し、クラウド サービスに関して多国籍企業への依存を減らすことを目指しています。
+
+
+
+== VMware ソブリン クラウド イニシアチブ
+
+VMware は、主権クラウドを次のように定義しています。
+
+* 民間および公共部門の組織にとって重要なデータ（国家データ、企業データ、個人データなど）を保護し、その価値を最大限に引き出します。
+* デジタル経済のための国家能力を提供
+* 監査済みのセキュリティ管理でデータを保護
+* データプライバシー法の遵守を確保
+* 完全な管轄権制御によるデータ所在地とデータ主権の両方を提供することで、データの管理を改善します。
+
+
+
+
+== 信頼できる VMware ソブリン クラウド サービス プロバイダーとの提携
+
+成功を確実にするために、組織は信頼できるパートナーと協力し、本物で自律的なソブリン クラウド プラットフォームをホストできる必要があります。  VMware Sovereign Cloud イニシアチブで認定された VMware Cloud Provider は、VMware Sovereign Cloud フレームワークで概説されている主要な原則とベスト プラクティスを具体化した最新のソフトウェア定義アーキテクチャに基づくクラウド ソリューションの設計と運用に取り組んでいます。
+
+* *データ主権と管轄権の管理* – すべてのデータは、そのデータが収集された国の所在し、その国の排他的な管理と権限の対象となります。業務は管轄区域内で完全に管理されています
+* *データ アクセスと整合性* – クラウド インフラストラクチャは耐障害性があり、管轄区域内の少なくとも 2 つのデータ センターで利用可能で、安全でプライベートな接続オプションが利用できます。
+* *データ セキュリティとコンプライアンス* – 情報セキュリティ管理システムの制御は、業界で認められた世界標準 (または地域標準) に基づいて認証され、定期的に監査されます。
+* *データの独立性とモビリティ* – ベンダーのクラウドロックインを防ぎ、アプリケーションの移植性と独立性を実現するための最新のアプリケーションアーキテクチャのサポート
+
+
+VMware の詳細については、以下をご覧ください。
+
+* link:https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/docs/vmw-sovereign-cloud-solution-brief-customer.pdf["VMware ソブリン クラウドの概要"]
+* link:https://www.vmware.com/topics/glossary/content/sovereign-cloud.html["VMware Sovereign Cloud とは何ですか?"]
+* link:https://blogs.vmware.com/cloud/2021/10/06/vmware-sovereign-cloud/["新しい VMware ソブリン クラウド イニシアチブのご紹介"]
+* link:https://www.vmware.com/solutions/cloud-infrastructure/sovereign-cloud["VMware ソブリンクラウドソリューション"]
+

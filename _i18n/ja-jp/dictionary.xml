@@ -7162,4 +7162,151 @@
   <block id="7b3d5a145c3f76308664a64408c99eaa" category="sidebar">NetAppとVMwareのソブリンクラウド</block>
   <block id="55bd65f05776cdd05a9fb927d9835206" category="sidebar">ソブリンクラウドについて</block>
   <block id="cd048e95761db719bdba41eb37a4b0d9" category="sidebar">NetAppとSovereign Cloudの統合</block>
+  <block id="c6215902c114efb89d5447ed2e7f9335" category="summary">ONTAPを使用して VMware Cloud Foundation 9 環境をデプロイ、統合、またはアップグレードします。新しい VCF 9.0 環境をセットアップし、既存の vCenter インスタンスとONTAPデータストアを統合し、以前の VCF 展開をアップグレードする方法を学習します。</block>
+  <block id="387581f1d6573d1818e62d62852ab219" category="doc">VMware Cloud Foundation とONTAPを使用してプライベート クラウド環境をセットアップする</block>
+  <block id="a72bceb4e1132784448690c407c3609e" category="paragraph">ONTAPを使用して VMware Cloud Foundation 9 環境を展開、統合、またはアップグレードします。新しい VCF 9.0 環境をセットアップし、既存の vCenter インスタンスとONTAPデータストアを統合し、以前の VCF 展開をアップグレードする方法を学習します。</block>
+  <block id="d32067c54b3bac63bd44a03e0ea81140" category="section-title">新しいVCF 9インスタンスをデプロイする</block>
+  <block id="44d27c0a0344f54b95759b7fe85d8e1a" category="paragraph">このワークフローを使用して、クリーンな VMware Cloud Foundation (VCF) 9.0 環境をデプロイします。展開後は、ワークロードを移行したり、アプリケーションのプロビジョニングを開始したり、インフラストラクチャ サービスを提供したりできます。</block>
+  <block id="97fa4819cf2e4392ecbe8064e3274273" category="inline-link-macro">ビルドジャーニー – 新しい VMware Cloud Foundation デプロイメントのインストール</block>
+  <block id="32755a71c8f959d4ac7787a078e66ab4" category="paragraph">大まかな手順については、<block ref="e25816c69554adea5634ef69e530621d" category="inline-link-macro-rx"></block> 。</block>
+  <block id="68059df22dc1abc0bdf6287417184424" category="inline-link-macro">Broadcom VCF 9 の導入手順</block>
+  <block id="6f00e63ad17fb9a6904029172c534f2f" category="list-text">フォロー<block ref="eecd5f2ac7f0f13e9cf45a38029c3009" category="inline-link-macro-rx"></block>。</block>
+  <block id="24ca170ce9f7336d95578ee3d1f3ee86" category="list-text">展開準備手順で、プリンシパル ストレージ オプションのタスクを完了します。</block>
+  <block id="803eb67d4866057b9c2c6c8f982b2269" category="open-title">FC 上の VMFS</block>
+  <block id="7bae0c7c422ace44852c1b3ade9a0415" category="list-text">すべての ESXi ホストの WWPN を収集します。走れる<block ref="c2a16b08807ab71a8fde996e835d2ed1" prefix=" " category="inline-code"></block>ESXi ホスト クライアントを使用するか、PowerCLI を使用します。</block>
+  <block id="c1a33a8a2188d4e7317f1b4e8bcde13c" category="inline-link-macro">ONTAPシステムに推奨されるFCゾーニング構成</block>
+  <block id="ce197f3a1410adc45d13f4907d6f5e68" category="list-text">ゾーニングを構成します。見る<block ref="5beab4bc15415f19d04fb73f401fc81f" category="inline-link-macro-rx"></block> 。</block>
+  <block id="cf6bff07c96d4e89a9d3f3747f09d894" category="admonition">物理アダプタの WWPN ではなく、SVM 論理インターフェイス (LIF) の WWPN を使用します。</block>
+  <block id="52b7c10dd6b2306a9c9f7df60ba9c7d3" category="list-text">System Manager、 ONTAP CLI、または API を使用して、LUN を作成し、WWPN によってホストにマップします。</block>
+  <block id="1f8c3f3951ef4e01e2c5abbd3f72c9d2" category="list-text">ESXi 上のストレージ アダプタを再スキャンし、VMFS データストアを作成します。</block>
+  <block id="5b12ee0369243579651edca43ff65c85" category="open-title">NFSv3</block>
+  <block id="fb56341c130ce55e22b690ccd62f3d5c" category="list-text">1 台の ESXi ホストに VMkernel インターフェイスを作成します。</block>
+  <block id="22934a99efc5b841c35971755ae578f0" category="inline-link-macro">SVMでNFSが有効になっています</block>
+  <block id="2367d9834a0034873e06e2332fe8c496" category="inline-link-macro">NFS経由のvStorageが有効になっています</block>
+  <block id="1f92bd5b07cc7307fd2469e633e93d4d" category="list-text">確実に<block ref="96f1124c9b5e40d527cc884b95af0c21" category="inline-link-macro-rx"></block>そして<block ref="f25b5b849f33fc0b8fb2ed633a01a01c" category="inline-link-macro-rx"></block>。</block>
+  <block id="ff62ead87a8b0ec462af711575546d5a" category="list-text">ボリュームを作成し、ESXi ホストを許可するポリシーを使用してエクスポートします。</block>
+  <block id="63858332253645c601dc3017c444dd06" category="list-text">必要に応じて権限を調整します。</block>
+  <block id="b26cbfa423e4dbdd39049d4221013e2b" category="list-text">ONTAP NFS VAAI VIB をデプロイし、vLCM イメージに含めます。例えば：<block ref="73afe7a6acd4a74db996a3fb02511fc6" prefix=" " category="inline-code"></block> 。  ( NetAppサポート サイトから ZIP をダウンロードしてください。)</block>
+  <block id="f397647f4c63cdc8a02924cd51728b7f" category="list-text">VMkernel インターフェイスを作成したホストに NFS ボリュームをマウントします。例えば：<block ref="de490eb31163a6b904883ddd8a7e8488" prefix=" " category="inline-code"></block> 。</block>
+  <block id="d0f7e79cc966c79b495d00b5b7618797" category="admonition">その<block ref="18fa343def87f30e3f96b45cf0b59a40" prefix=" " category="inline-code"></block>セッション数はホストごとです。必要に応じて、展開後に他のホストを更新します。</block>
+  <block id="4a46eaaf404c43e00d3d4c88ff251335" category="list-text">*VCF フリートの展開*フェーズの*展開の概要を確認し、次の手順を確認する*の最後に、次の操作を完了します。</block>
+  <block id="3d7fe3e43f9f24fffe5ed0d546d12f13" category="list-text">ONTAP Toolsの導入</block>
+  <block id="822a5495aa960609265175fb443bdf68" category="inline-link-macro">ONTAPツール10.xをダウンロード</block>
+  <block id="76a81d47dd4c6c2f20e420bba9153e68" category="list-text"><block ref="0ad8f9dcd40fc593bc2059235b67d252" category="inline-link-macro-rx"></block>NetAppサポート サイトから。</block>
+  <block id="c2a6e0e73d239e16d504bdbc611ca9ad" category="list-text">ONTAPツール マネージャー、ノード、および内部通信に使用される仮想 IP の DNS レコードを作成します。</block>
+  <block id="995f383a655fb7d0a0afbdcce5d18a4d" category="list-text">OVA を管理 vCenter Server にデプロイします。</block>
+  <block id="9f601bd2daf1651582a1383821b9afc3" category="inline-link-macro">管理ドメインvCenterを登録する</block>
+  <block id="2c77169fbe649eb2b92af40c3c6f3695" category="list-text"><block ref="4954c7d20f0d22568753d8d00cffbfc3" category="inline-link-macro-rx"></block>ONTAPツール マネージャーを使用します。</block>
+  <block id="b7b548cca311da161065ba4f767b95a7" category="inline-link-macro">ストレージバックエンドを追加する</block>
+  <block id="dcedcf827a87c8e90fb1ce8725777212" category="list-text"><block ref="d7bef56968aee47db4adb8a14a981251" category="inline-link-macro-rx"></block>vSphere Client UI を使用します。</block>
+  <block id="74c6629d6758f3953243df0af0d36910" category="inline-link-macro">補足データストアを作成する</block>
+  <block id="c274967a56cc8c2192846897048bf284" category="list-text"><block ref="bf4864d276cd873bf4878589e9faac9f" category="inline-link-macro-rx"></block>(コンテンツ レジストリ用に 1 つ含めます)。</block>
+  <block id="3129ccd6abb1c6f28e9cded466a59dae" category="list-text">HA 展開を計画している場合は、コンテンツ レジストリを作成します。</block>
+  <block id="626a39bf99aea8d864004319ffc66b9e" category="inline-link-macro">HA を有効にする</block>
+  <block id="b65361593891273a9a3a04902faee73d" category="list-text"><block ref="d25937ee88ed725a5a2b38e0f4dc9473" category="inline-link-macro-rx"></block>ONTAPツール マネージャーで。</block>
+  <block id="289b1e355098d29bd11363a593f0dc76" category="list-text">SnapCenterプラグインの導入</block>
+  <block id="9beedbcb12b97ab44bb9c704d822b5d1" category="list-text"><block ref="e571a06e08f51cdb7ad1c593eaa7ed6d" category="inline-link-macro-rx"></block> 。</block>
+  <block id="2548cfcfac956c46c8a3a89495d1a46a" category="list-text"><block ref="cc1500d76361c72cf779abe48f0fc35a" category="inline-link-macro-rx"></block> 。</block>
+  <block id="c53d877e510b11baafe9977012350927" category="list-text"><block ref="cb0dead520e90c499c96670f780765a6" category="inline-link-macro-rx"></block> 。</block>
+  <block id="1d39d40690c6b0438c6754882aff3298" category="list-text"><block ref="4d5b4b1a7d4a800c0f6172c83d21c237" category="inline-link-macro-rx"></block> 。</block>
+  <block id="3b577205e13f15e3e92d7f8ae09ce62c" category="list-text">BlueXPコネクタをデプロイする</block>
+  <block id="ca7619b24630485fd04911d2a495defd" category="inline-link-macro">コネクタなしで何ができるか確認する</block>
+  <block id="1a3c4e40213fe6b9790fb434adc5745e" category="list-text"><block ref="c78b9a9b3712f648550c534d47359e82" category="inline-link-macro-rx"></block> 。</block>
+  <block id="c4221a876311b977e621fffb89b02613" category="inline-link-macro">コネクタをデプロイする</block>
+  <block id="47650d5e720017f803a359e378200a94" category="list-text"><block ref="c3a6ec4f72766dc4f2bf2ee91acf8029" category="inline-link-macro-rx"></block> 。</block>
+  <block id="824dbf9a0911f671580becced56fe7f6" category="list-text">バックアップとリカバリにはBlueXPを使用する</block>
+  <block id="342e48c14f539eca38e981c5bea831ed" category="inline-link-macro">VMワークロードを保護する</block>
+  <block id="c93ad43108552b957cc3e28d1be2188c" category="list-text"><block ref="9e814f036a9560076b7c3082866cb88f" category="inline-link-macro-rx"></block> 。</block>
+  <block id="baa9e11c89bfdddbdc4cf3eddf1251c3" category="inline-link-macro">VKSワークロードを保護する</block>
+  <block id="2660b5087d0e5c735cc8078a3b0510f4" category="list-text"><block ref="9f08986fdec0abdc78ad8282677ce19e" category="inline-link-macro-rx"></block> 。</block>
+  <block id="4dbaeefdde49c53aef6af40802f8c050" category="list-text">VCF インスタンスに vCenter をワークロード ドメインとしてインポートした後、次の手順を実行します。</block>
+  <block id="3479582d3853d35537049bf157941078" category="list-text">ONTAPツールを登録する</block>
+  <block id="4f3eda0c91ccb5ee6dd6cb20afe9fe6d" category="inline-link-macro">ワークロードドメインvCenterを登録する</block>
+  <block id="14ea68422db5e51ea43b30a09cf0d77b" category="list-text"><block ref="b19ab33e68a1104b2bf877feedb68fc8" category="inline-link-macro-rx"></block>ONTAPツール マネージャーを使用します。</block>
+  <block id="bdfbb9b18654c0d11414bfe7c65cb78b" category="list-text"><block ref="bf4864d276cd873bf4878589e9faac9f" category="inline-link-macro-rx"></block> 。</block>
+  <block id="05dbe8c4e6a9bac744f4406531d2061b" category="paragraph">新しいワークロード ドメインを作成するときはいつでも、これらの手順を再利用できます。</block>
+  <block id="b3c82f59eab80fb8d633c96337cb27e3" category="section-title">既存のコンポーネントをVCF 9に統合</block>
+  <block id="89665820708d6f1603420843a2ef8fca" category="paragraph">VCF フリートのいくつかのコンポーネントをすでに所有しており、それを再利用したい場合があります。  vCenter インスタンスを再利用する場合、データストアはONTAPツールを使用して頻繁にプロビジョニングされ、VCF の主要ストレージとして機能します。</block>
+  <block id="da11788e0580a75793b3c6e5a0fb93f6" category="list-text">既存の vCenter インスタンスが機能していることを確認します。</block>
+  <block id="2cb537a71661b7c2a7a6968059397cec" category="list-text">ONTAPでプロビジョニングされたデータストアが利用可能であることを確認します。</block>
+  <block id="dc351b2abbd920b35cff990b6582b9d7" category="inline-link-macro">Interoperability Matrix</block>
+  <block id="6c68da430cde6e2e273552418701d51c" category="list-text">アクセスを確保する<block ref="9d206e7d8b64697e7ff10e2e8517d1e9" category="inline-link-macro-rx"></block>。</block>
+  <block id="e21a963d536c490dd477ddb6dc84ff36" category="inline-link-macro">VCFに収束するためのサポートされているシナリオ</block>
+  <block id="f89ac32b53262414797b94b331102610" category="list-text">レビュー<block ref="95029b5aaf98b1cee4c885d0fa7b7b03" category="inline-link-macro-rx"></block>。</block>
+  <block id="78edfe40594fa4634576d2deee259a0f" category="list-text">ONTAPでプロビジョニングされたデータストアを主ストレージとして vCenter インスタンスに統合します。</block>
+  <block id="edfd92b3bc32f867012c03ba5d9b001f" category="list-text">サポートされているバージョンを確認するには、<block ref="9d206e7d8b64697e7ff10e2e8517d1e9" category="inline-link-macro-rx"></block> 。</block>
+  <block id="b41e61c996bc663e3cbbb770b4e73f3e" category="inline-link-macro">ONTAPツール</block>
+  <block id="e6c5a48523776f7389cfd125a6d9c099" category="list-text">アップグレード<block ref="cfaafa9d0a3b20dee499513a7199b5a0" category="inline-link-macro-rx"></block>必要に応じて。</block>
+  <block id="8500a2d8b9b445512a10133732ed6a8e" category="inline-link-macro">VMware vSphere 用SnapCenterプラグイン</block>
+  <block id="a03edb2c62782c7126ce2be92e3a06a4" category="list-text">アップグレード<block ref="ec61ce0fc18581edeac6d4f1c992e3e0" category="inline-link-macro-rx"></block>必要に応じて。</block>
+  <block id="b03ae05da839ba2aeda878b573b5fa07" category="section-title">既存のVCF環境をVCF 9にアップグレードする</block>
+  <block id="f70df6a7da4896646127dd428b5da982" category="paragraph">標準のアップグレード プロセスを使用して、以前の VCF デプロイメントをバージョン 9.0 にアップグレードします。その結果、管理ドメインとワークロード ドメインがアップグレードされたバージョン 9.0 を実行する VCF 環境が実現します。</block>
+  <block id="410c53f907a2c476256c7cb81ff354cb" category="list-text">管理ドメインとワークロード ドメインをバックアップします。</block>
+  <block id="3b36c2c506f0a351293e16aabf9f5c4e" category="inline-link-macro">ONTAPツールのアップグレード</block>
+  <block id="0bd5bfedcbb622fc43c9d100a8c8a813" category="list-text">ONTAPツールとSnapCenterプラグインと VCF 9.0 の互換性を確認します。フォロー<block ref="9d206e7d8b64697e7ff10e2e8517d1e9" category="inline-link-macro-rx"></block>に<block ref="d875e42dccfc992261af149190d03bac" category="inline-link-macro-rx"></block>そして<block ref="ec61ce0fc18581edeac6d4f1c992e3e0" category="inline-link-macro-rx"></block>VCF 9 でサポートされています。</block>
+  <block id="f9089a257f7ed15d274a9bc31bff6caa" category="inline-link-macro">VCF管理ドメインをVCF 9にアップグレード</block>
+  <block id="3eb41dbce4b13907427be772aa2f855c" category="list-text">VCF 管理ドメインをアップグレードします。見る<block ref="dabaa90d503550b7c9321e223927d88a" category="inline-link-macro-rx"></block>手順についてはこちらをご覧ください。</block>
+  <block id="a8bb023710bfedd7e42a5470f8b79bcf" category="inline-link-macro">VCF 5.x ワークロード ドメインを VCF 9 にアップグレードする</block>
+  <block id="895af0c34b67dcec4c9bd5dd5a263d4d" category="list-text">任意の VCF 5.x ワークロード ドメインをアップグレードします。見る<block ref="a23caeadd25977c373e6107b0cd023d3" category="inline-link-macro-rx"></block>手順についてはこちらをご覧ください。</block>
+  <block id="d0a4cf1a7c82fcde1b2cf85329cb1d0b" category="summary">VCF 9 を新規に開始することも、既存のデプロイメントを再利用して、VCF 9 とONTAPを使用したプライベート クラウド環境を作成することもできます。  VCF 9 の一般的な設計ブループリントと、 NetApp製品がどのように価値を高めるかについて学習します。</block>
+  <block id="827930e44738b199c1c5b242c8ed3889" category="doc">VMware Cloud Foundation とONTAP を使用した設計オプション</block>
+  <block id="a74077e2e89fe826075fc1050da6c5ec" category="section-title">ストレージオプション</block>
+  <block id="cc191e02cd18d9f35c2ce6fd1f979099" category="paragraph">VMware Cloud Foundation with ONTAP は、さまざまなパフォーマンス、スケーラビリティ、可用性の要件を満たすために、さまざまなストレージ構成をサポートしています。次の表は、ご使用の環境で使用できる主なストレージ オプションと補足ストレージ オプションをまとめたものです。</block>
+  <block id="a902e586417987e16e674a7f455cb736" category="cell">製品ファミリー</block>
+  <block id="f6e3bf0c5970ea1af691f5d9bb9f1dc1" category="cell">ASA AシリーズおよびCシリーズ</block>
+  <block id="5fc3ef0b0771dce6d035ce448d2604ff" category="cell">AFF AシリーズおよびCシリーズ</block>
+  <block id="149f0ea389848f479bd80af6375b383b" category="cell">FAS</block>
+  <block id="a9776c15476fbff0875f710d7962d556" category="cell">iSCSI 上の VMFS</block>
+  <block id="58dd3274563c3248052e832c6ae54e5a" category="cell">NVMe-oF 上の VMFS</block>
+  <block id="de841868c2911da76b8ae2da9fa3166d" category="cell">NFSv4.1</block>
+  <block id="92e9ce04b9db912a9ef4e9e44bda548e" category="paragraph">次のブループリントは、さまざまなサイトおよびリソースのシナリオにおける VMware Cloud Foundation およびONTAPの一般的な展開モデルを示しています。</block>
+  <block id="708eaa77450722ee5d243ecf27ef9fcb" category="section-title">最小限の設置面積で単一のサイトにVCF艦隊を配備</block>
+  <block id="ce5162477d4ecb1688d1b01a5f90ed86" category="paragraph">この設計ブループリントは、最小限のリソースで単一の vSphere クラスタに管理コンポーネントとワークロード コンポーネントを展開するためのものです。  VMFS および NFSv3 プリンシパル データストアと、2 ノード構成によるシンプルな導入オプションをサポートします。  All Apps 組織モデルで VCF Automation を使用する予定の場合は、vSphere Supervisor ノードと NSX Edge ノードを展開するための 2 番目のクラスタが必要です。</block>
+  <block id="4f1dd0a9084f938fd993af8c840d2fd6" category="image-alt">最小限の設置面積で単一のサイトにVCF艦隊を配備</block>
+  <block id="6f3ffbc6ff5125b61226e536d7682c87" category="paragraph">リソースの消費を最小限に抑えるには、可能な場合は既存のONTAPツール インスタンスを使用します。利用できない場合は、Small プロファイルの単一ノードが適しています。  SnapCenter Plug-in for VMware vSphereは、ネイティブ スナップショットと別のONTAPストレージ アレイへのレプリケーションを使用して、仮想マシンとデータストアを保護します。</block>
+  <block id="9198bc39b824214d346935ac54123224" category="admonition">VCF を調査するためのリソースが不足している場合は、多くのクラウド プロバイダーが VCF をサービスとして提供しており、 ONTAP はクラウド プロバイダーのファーストパーティ サービスとして利用できます。</block>
+  <block id="f7c3e4166c74eba11828df82912d28c0" category="inline-link-macro">最小限の設置面積で単一のサイトにVCFフリートに関するBroadcomの技術文書を集約</block>
+  <block id="eeb745e257315857ce445d8d4b92e037" category="paragraph">このデザインの詳細については、<block ref="f26ce32448c6478601e808dd35aad5ba" category="inline-link-macro-rx"></block> 。</block>
+  <block id="7e50f20ff1e926ef774a6bd015d7d0c2" category="section-title">単一サイトでのVCF艦隊</block>
+  <block id="636528e76d417f33afcc87d500bd20d8" category="paragraph">この設計ブループリントは、アプリケーションの高可用性に依存する単一のプライマリ データセンターを持つ顧客向けです。通常、単一の VCF 環境が含まれます。ブロック ワークロードにはASAを使用し、ファイル/統合ワークロードにはAFF を使用できます。</block>
+  <block id="ea8500bd602504056d6e5d54b536eb85" category="paragraph">コンテンツ リポジトリは、VCF ドメイン間で VM テンプレートとコンテナ レジストリを共有します。  FlexGroupボリュームでホストされている場合、サブスクリプション データストアでFlexCache機能が利用できます。</block>
+  <block id="5a461c7900a0cc956f22f0726b924e49" category="admonition">FlexCacheデータストアでの VM のホスティングはサポートされていません。</block>
+  <block id="5f1b05906f88292b30016b23207f4d75" category="image-alt">単一サイトでのVCFフリート</block>
+  <block id="fd2d97cbb2b5784b89c16b0daa81cc3e" category="inline-link-macro">ONTAPツールの構成制限</block>
+  <block id="b0ca03346bc47fb1abae508acdfc942a" category="paragraph">HA モードのONTAPツールの単一インスタンスで、VCF フリート内のすべての vCenter を管理できます。参照<block ref="d9a797f78d63c3c01364e4f3a683c385" category="inline-link-macro-rx"></block>詳細については。  ONTAPツールは、VCF SSO および VCF OPS スマート グループ化と統合され、同じ UI で複数の vCenter にアクセスできます。</block>
+  <block id="8944254b90a60f33189bb9db573018c1" category="video-title">ONTAPツールを使用した VCF 補足データストア</block>
+  <block id="b6fc61200e278cac53ab8b7172493452" category="paragraph">VM およびデータストアの保護のために、各 vCenter インスタンスにSnapCenterプラグインを展開する必要があります。</block>
+  <block id="f86e9af5c15a4ce67ca3a90cf6be6d92" category="paragraph">ストレージ ポリシー ベースの管理は、vSphere Supervisor とともに使用され、VKS の制御 VM をホストします。タグは VCF Ops で集中管理されます。  NetApp Trident CSI は、ネイティブ アレイ機能を使用してアプリケーションのバックアップ保護を行うために VKS と併用されます。  vSphere CSI を使用すると、永続ボリュームの詳細が VCF Automation に表示されます。</block>
+  <block id="970551e49b7ff81699c935a37b6182a3" category="inline-link-macro">Broadcom の技術ドキュメントを単一サイトで VCF フリートに集約</block>
+  <block id="98e152eb2f5d95de0d1bf7726d46fda0" category="paragraph">このブループリントの詳細については、<block ref="cf85f297faf3a63207c30291d97fbb44" category="inline-link-macro-rx"></block> 。</block>
+  <block id="b2bdf254778179f9dc217a3def15b346" category="section-title">単一地域に複数の拠点を持つ VCF フリート</block>
+  <block id="a3820528f66ad4812ae6f2480ea1f090" category="paragraph">この設計は、ワークロードをさまざまな障害ドメインに分散することで、可用性の高いクラウドのようなサービスを提供する顧客向けです。</block>
+  <block id="04f6415c229fd7a2008e646578846a5e" category="paragraph">VMFS データストアの場合、 SnapMirrorアクティブ同期は、vSphere Metro Storage Cluster で使用するためのアクティブ/アクティブ ストレージ ユニットを提供します。均一アクセス モードでは透過的なストレージ フェイルオーバーが提供されますが、非均一アクセス モードでは障害ドメインの障害時に VM の再起動が必要になります。</block>
+  <block id="95959633abea4dd695b33419cf9e52a0" category="paragraph">NFS データストアの場合、vSphere Metro Storage Cluster を備えたONTAP MetroClusterにより高可用性が保証されます。メディエーターはスプリット ブレイン シナリオを回避し、 BlueXPでホストできるようになりました。</block>
+  <block id="b897d2f9072c14f2df9f080dd4680b8d" category="paragraph">VM 配置ルールは、管理ドメイン コンポーネントの同じ障害ドメイン内の VM を制御します。</block>
+  <block id="640398205e5c5d3e63b3fcd1c002c53e" category="image-alt">単一地域に複数の拠点を持つ VCF フリート</block>
+  <block id="73796bf64a7e9b9d1b41d047b8556009" category="paragraph">ONTAPツールは、 SnapMirrorアクティブ同期関係を設定するための UI を提供します。両方の障害ドメインのストレージ システムは、 ONTAPツールおよびSnapCenter Plug-in for VMware vSphereに登録する必要があります。</block>
+  <block id="542f8587ecf32ca958fbae5d4fd1a4ad" category="paragraph">SnapMirrorおよびSnapMirror to Cloud 経由でBlueXP Backup and Recovery for VMs を使用して、3-2-1 バックアップ ポリシーを実装できます。  3 つの場所のいずれからでも復元を実行できます。</block>
+  <block id="11cfd568dd78fe0098d5f36bf9676a1b" category="paragraph">Trident Protect またはBlueXP Backup and Recovery for Kubernetes は、VKS クラスター アプリケーションを保護します。</block>
+  <block id="f02fe719e1873adbd7cea7ccd4c777b9" category="inline-link-macro">単一地域内の複数のサイトを持つ VCF フリートに関する Broadcom の技術ドキュメント</block>
+  <block id="90f34a885ddfb22d4a676b54cc62c36c" category="paragraph">詳細については、<block ref="5415fcf8d0391007a73bfff7c6e43438" category="inline-link-macro-rx"></block> 。</block>
+  <block id="7f53f4071d0e5a82ef8e86cff41ffb79" category="section-title">複数の地域にまたがる複数の拠点を持つ VCF フリート</block>
+  <block id="80d3ea602e3c4a9536986495dd288775" category="paragraph">この設計は、世界中に広がる顧客を対象としており、近接したサービスと災害復旧ソリューションを提供します。</block>
+  <block id="b4617491da37db66b9471816f2654093" category="paragraph">VMware Live Site Recovery またはBlueXP Disaster Recovery as a Service を使用して、VM の災害復旧を管理できます。  ONTAPツールは、 ONTAPでストレージ操作を調整するための SRA (ストレージ レプリケーション アダプタ) を提供します。</block>
+  <block id="c0b79db5f258f0c991a383cbdbf001dd" category="cell">SnapMirrorアクティブ同期</block>
+  <block id="1749d12df3df2319d3eee218a277ff83" category="cell">MetroCluster</block>
+  <block id="fe180aee92ebefcfa83b485f6722e9d7" category="image-alt">複数の地域にまたがる複数の拠点を持つ VCF フリート</block>
+  <block id="54ae787adb65bf8930e964855b741e8c" category="paragraph">ONTAPツールは、データストアのレプリケーション設定用の UI を提供します。  BlueXP は、ストレージ アレイ間のレプリケーションにも使用できます。  SnapCenter Plug-in for VMware vSphereは、スナップショットに既存のSnapMirror関係を利用します。</block>
+  <block id="629a568c9d01e550bf36c9042dc80e51" category="inline-link-macro">複数の地域にまたがる複数の拠点を持つ VCF フリートに関する Broadcom の技術ドキュメント</block>
+  <block id="51d909943962ab7a57032828f795608a" category="paragraph">詳細については、<block ref="8398c667500ceea054eb6ecaafdcbc05" category="inline-link-macro-rx"></block> 。</block>
+  <block id="061001f508ad66b14119e8c2abe655d5" category="section-title">単一地域と追加地域に複数のサイトを持つ VCF フリート</block>
+  <block id="940d96642171e1e3fa8d8005ef4ffaa2" category="paragraph">この設計は、VM と VKS アプリケーションの可用性と災害復旧の両方に対応します。</block>
+  <block id="1a736d26ade0397c5d56910ace33e618" category="paragraph">ASA、 AFF、およびFAS はこの設計オプションをサポートしています。</block>
+  <block id="d3ee4a0fcd185bd9081f96c0778ac589" category="image-alt">単一地域と追加地域に複数のサイトを持つ VCF フリート</block>
+  <block id="8431f1e622f98349837eba3b9fd95b83" category="paragraph">レプリケーション関係を設定するには、 ONTAPツールまたはBlueXPを使用できます。</block>
+  <block id="5c99ff7f98b4498b19c458dd8de13442" category="inline-link-macro">単一地域および追加地域に複数のサイトを持つ VCF フリートに関する Broadcom の技術ドキュメント</block>
+  <block id="135208b317232813f97dea0a66efbf19" category="paragraph">詳細については、 <block ref="31eb8c8d9029a21fe9fa1aae2bff2d12" category="inline-link-macro-rx"></block> 。</block>
+  <block id="38c4a772e4657f7e070cb42e5d30bc10" category="sidebar">ONTAPを使用した VCF 9 設計オプション</block>
+  <block id="b38115bcd9d3089a288de6f78a3c66b8" category="sidebar">ONTAPを使用したVCF 9の導入</block>
+  <block id="a9f5271aaa2449b6c26e0ca16c29015c" category="sidebar">ONTAPを使用したVCF 9の導入</block>
 </blocks>

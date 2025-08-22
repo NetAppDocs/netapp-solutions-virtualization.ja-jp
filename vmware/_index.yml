@@ -10,6 +10,10 @@ indexpage:
       url: vmw-getting-started-overview.html
     - title: VMware向けNetAppプラットフォームについて
       url: vmw-getting-started-ntap-options.html
+    - title: ONTAPを使用した VCF 9 設計オプション
+      url: vmw-vcf-design.html
+    - title: ONTAPを使用したVCF 9の導入
+      url: vmw-vcf-deployment.html
     - title: ブログ
       url: "../blogs.html"
     - title: ビデオ

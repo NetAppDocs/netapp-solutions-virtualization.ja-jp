@@ -41,6 +41,10 @@ entries:
   entries:
   - title: VMware Cloud Foundation とONTAPについて
     url: "/vmware/vmw-vcf-overview.html"
+  - title: ONTAPを使用した VCF 9 設計オプション
+    url: "/vmware/vmw-vcf-design.html"
+  - title: ONTAPを使用したVCF 9の導入
+    url: "/vmware/vmw-vcf-deployment.html"
   - title: 既存の vSphere クラスタを VCF に変換する
     entries:
     - title: 既存の vSphere クラスタを VCF に変換する方法について

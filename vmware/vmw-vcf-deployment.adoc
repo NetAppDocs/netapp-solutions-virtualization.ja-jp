@@ -1,0 +1,162 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-deployment.html 
+keywords: netapp, vmware, cloud, foundation, vcf, flexpod 
+summary: ONTAPを使用して VMware Cloud Foundation 9 環境をデプロイ、統合、またはアップグレードします。新しい VCF 9.0 環境をセットアップし、既存の vCenter インスタンスとONTAPデータストアを統合し、以前の VCF 展開をアップグレードする方法を学習します。 
+---
+= VMware Cloud Foundation とONTAPを使用してプライベート クラウド環境をセットアップする
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAPを使用して VMware Cloud Foundation 9 環境を展開、統合、またはアップグレードします。新しい VCF 9.0 環境をセットアップし、既存の vCenter インスタンスとONTAPデータストアを統合し、以前の VCF 展開をアップグレードする方法を学習します。
+
+
+
+== 新しいVCF 9インスタンスをデプロイする
+
+このワークフローを使用して、クリーンな VMware Cloud Foundation (VCF) 9.0 環境をデプロイします。展開後は、ワークロードを移行したり、アプリケーションのプロビジョニングを開始したり、インフラストラクチャ サービスを提供したりできます。
+
+大まかな手順については、link:https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/assets/vmware-cis/vcf/vcf-9.0-vcf-deploy-journey.pdf["ビルドジャーニー – 新しい VMware Cloud Foundation デプロイメントのインストール"] 。
+
+.手順
+. フォローlink:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/deployment/deploying-a-new-vmware-cloud-foundation-or-vmware-vsphere-foundation-private-cloud-/preparing-your-environment.html["Broadcom VCF 9 の導入手順"]。
+. 展開準備手順で、プリンシパル ストレージ オプションのタスクを完了します。
+
+
+[role="tabbed-block"]
+====
+.FC 上の VMFS
+--
+. すべての ESXi ホストの WWPN を収集します。走れる `esxcli storage san fc list`ESXi ホスト クライアントを使用するか、PowerCLI を使用します。
+. ゾーニングを構成します。見るlink:https://docs.netapp.com/us-en/ontap/san-config/fc-fcoe-recommended-zoning-configuration.html#dual-fabric-zoning-configurations["ONTAPシステムに推奨されるFCゾーニング構成"] 。
++
+
+NOTE: 物理アダプタの WWPN ではなく、SVM 論理インターフェイス (LIF) の WWPN を使用します。
+
+. System Manager、 ONTAP CLI、または API を使用して、LUN を作成し、WWPN によってホストにマップします。
+. ESXi 上のストレージ アダプタを再スキャンし、VMFS データストアを作成します。
+
+
+--
+.NFSv3
+--
+. 1 台の ESXi ホストに VMkernel インターフェイスを作成します。
+. 確実にlink:https://docs.netapp.com/us-en/ontap/task_nas_enable_linux_nfs.html["SVMでNFSが有効になっています"]そしてlink:https://docs.netapp.com/us-en/ontap/nfs-admin/enable-disable-vmware-vstorage-over-nfs-task.html["NFS経由のvStorageが有効になっています"]。
+. ボリュームを作成し、ESXi ホストを許可するポリシーを使用してエクスポートします。
+. 必要に応じて権限を調整します。
+. ONTAP NFS VAAI VIB をデプロイし、vLCM イメージに含めます。例えば： `esxcli software vib install -d /NetAppNasPlugin2.0.1.zip` 。  ( NetAppサポート サイトから ZIP をダウンロードしてください。)
+. VMkernel インターフェイスを作成したホストに NFS ボリュームをマウントします。例えば： `esxcli storage nfs add -c 4 -H 192.168.122.210 -s /use1_m01_nfs01 -v use1-m01-cl01-nfs01` 。
++
+
+NOTE: その `nConnect`セッション数はホストごとです。必要に応じて、展開後に他のホストを更新します。
+
+
+
+--
+====
+. *VCF フリートの展開*フェーズの*展開の概要を確認し、次の手順を確認する*の最後に、次の操作を完了します。
++
+.. ONTAP Toolsの導入
++
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/ontap-tools-deployment.html["ONTAPツール10.xをダウンロード"]NetAppサポート サイトから。
+*** ONTAPツール マネージャー、ノード、および内部通信に使用される仮想 IP の DNS レコードを作成します。
+*** OVA を管理 vCenter Server にデプロイします。
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["管理ドメインvCenterを登録する"]ONTAPツール マネージャーを使用します。
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html["ストレージバックエンドを追加する"]vSphere Client UI を使用します。
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.html["補足データストアを作成する"](コンテンツ レジストリ用に 1 つ含めます)。
+*** HA 展開を計画している場合は、コンテンツ レジストリを作成します。
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/manage/edit-appliance-settings.html["HA を有効にする"]ONTAPツール マネージャーで。
+
+
+.. SnapCenterプラグインの導入
++
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_deploy_snapcenter_plug-in_for_vmware_vsphere_01.html["SnapCenter Plug-in for VMware vSphereの導入"] 。
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_add_storage.html["ストレージバックエンドを追加する"] 。
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_backup_policies.html["バックアップ ポリシーの作成"] 。
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_resource_groups.html["リソース グループの作成"] 。
+
+
+.. BlueXPコネクタをデプロイする
++
+*** link:https://docs.netapp.com/us-en/bluexp-setup-admin/concept-connectors.html#what-you-can-do-without-a-connector["コネクタなしで何ができるか確認する"] 。
+*** link:https://docs.netapp.com/us-en/bluexp-setup-admin/concept-modes.html#overview["コネクタをデプロイする"] 。
+
+
+.. バックアップとリカバリにはBlueXPを使用する
++
+*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/prev-vmware-protect-overview.html["VMワークロードを保護する"] 。
+*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/br-use-kubernetes-protect-overview.html["VKSワークロードを保護する"] 。
+
+
+
+
+. VCF インスタンスに vCenter をワークロード ドメインとしてインポートした後、次の手順を実行します。
++
+.. ONTAPツールを登録する
++
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["ワークロードドメインvCenterを登録する"]ONTAPツール マネージャーを使用します。
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html["ストレージバックエンドを追加する"]vSphere Client UI を使用します。
+*** link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.html["補足データストアを作成する"] 。
+
+
+.. SnapCenter Plug-in for VMware vSphereの導入
++
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_deploy_snapcenter_plug-in_for_vmware_vsphere_01.html["SnapCenter Plug-in for VMware vSphereの導入"] 。
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_add_storage.html["ストレージバックエンドを追加する"] 。
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_backup_policies.html["バックアップ ポリシーの作成"] 。
+*** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_resource_groups.html["リソース グループの作成"] 。
+
+
+.. バックアップとリカバリにはBlueXPを使用する
++
+*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/prev-vmware-protect-overview.html["VMワークロードを保護する"] 。
+*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/br-use-kubernetes-protect-overview.html["VKSワークロードを保護する"] 。
+
+
+
+
+
+
+新しいワークロード ドメインを作成するときはいつでも、これらの手順を再利用できます。
+
+
+
+== 既存のコンポーネントをVCF 9に統合
+
+VCF フリートのいくつかのコンポーネントをすでに所有しており、それを再利用したい場合があります。  vCenter インスタンスを再利用する場合、データストアはONTAPツールを使用して頻繁にプロビジョニングされ、VCF の主要ストレージとして機能します。
+
+.前提条件
+* 既存の vCenter インスタンスが機能していることを確認します。
+* ONTAPでプロビジョニングされたデータストアが利用可能であることを確認します。
+* アクセスを確保するlink:https://imt.netapp.com/imt/#welcome["Interoperability Matrix"]。
+
+
+.手順
+. レビューlink:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-/supported-scenarios-to-converge-to-vcf.html["VCFに収束するためのサポートされているシナリオ"]。
+. ONTAPでプロビジョニングされたデータストアを主ストレージとして vCenter インスタンスに統合します。
+. サポートされているバージョンを確認するには、link:https://imt.netapp.com/imt/#welcome["Interoperability Matrix"] 。
+. アップグレードlink:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/upgrade/upgrade-ontap-tools.html["ONTAPツール"]必要に応じて。
+. アップグレードlink:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_upgrade.html["VMware vSphere 用SnapCenterプラグイン"]必要に応じて。
+
+
+
+
+== 既存のVCF環境をVCF 9にアップグレードする
+
+標準のアップグレード プロセスを使用して、以前の VCF デプロイメントをバージョン 9.0 にアップグレードします。その結果、管理ドメインとワークロード ドメインがアップグレードされたバージョン 9.0 を実行する VCF 環境が実現します。
+
+.前提条件
+* 管理ドメインとワークロード ドメインをバックアップします。
+* ONTAPツールとSnapCenterプラグインと VCF 9.0 の互換性を確認します。フォローlink:https://imt.netapp.com/imt/#welcome["Interoperability Matrix"]にlink:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/upgrade/upgrade-ontap-tools.html["ONTAPツールのアップグレード"]そしてlink:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_upgrade.html["VMware vSphere 用SnapCenterプラグイン"]VCF 9 でサポートされています。
+
+
+.手順
+. VCF 管理ドメインをアップグレードします。見るlink:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/deployment/upgrading-cloud-foundation.html["VCF管理ドメインをVCF 9にアップグレード"]手順についてはこちらをご覧ください。
+. 任意の VCF 5.x ワークロード ドメインをアップグレードします。見るlink:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/lifecycle-management/lifecycle-management-of-vcf-core-components/upgrade-workload-domains-to-vcf-5-2.html["VCF 5.x ワークロード ドメインを VCF 9 にアップグレードする"]手順についてはこちらをご覧ください。
+

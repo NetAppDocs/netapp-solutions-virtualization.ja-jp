@@ -30,6 +30,8 @@ entries:
       url: "/vmware/vmw-getting-started-vmsc.html"
     - title: ONTAPによるセキュリティとランサムウェア対策
       url: "/vmware/vmw-getting-started-security.html"
+    - title: NFS および VMFS のランサムウェア保護
+      url: "/vmware/vmw-arp-nfs-vmfs.html"
   - title: バックアップおよび災害復旧ソリューション
     entries:
     - title: SnapCenter Plug-in for VMware vSphere
@@ -41,10 +43,12 @@ entries:
   entries:
   - title: VMware Cloud Foundation とONTAPについて
     url: "/vmware/vmw-vcf-overview.html"
-  - title: ONTAPを使用した VCF 9 設計オプション
+  - title: ONTAPを使用したVCF 9の設計オプション
     url: "/vmware/vmw-vcf-design.html"
   - title: ONTAPを使用したVCF 9の導入
     url: "/vmware/vmw-vcf-deployment.html"
+  - title: VCF 9 DR（ BlueXP搭載）
+    url: "/vmware/vmw-vcf-dr-bxp-nfs.html"
   - title: 既存の vSphere クラスタを VCF に変換する
     entries:
     - title: 既存の vSphere クラスタを VCF に変換する方法について

@@ -82,7 +82,7 @@ NOTE: NetApp は、FC LUN にマルチパスを推奨しています。
 
 === 管理ドメイン - 追加クラスター
 
-管理ドメイン上の追加の vSphere クラスタは、次のオプションを使用して展開できます。 * vSphere 環境に追加のクラスタを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html["ONTAP tools for VMware vSphere"] 、 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] VMFS データストアを vSphere クラスタにデプロイするために使用できます。  * SDDC API を使用して追加のクラスターを展開します。 vSphere ホストには VMFS データストアが設定されている必要があります。使用 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"]LUN を vSphere ホストに展開します。 * SDDC Manager UI を使用して追加のクラスターを展開します。ただし、このオプションはバージョン 5.2.x までの VSAN データストアのみを作成します。
+管理ドメイン上の追加の vSphere クラスタは、次のオプションを使用して展開できます。 * vSphere 環境に追加のクラスタを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.html["ONTAP tools for VMware vSphere"] 、 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] VMFS データストアを vSphere クラスタにデプロイするために使用できます。* SDDC API を使用して追加のクラスターを展開します。vSphere ホストには VMFS データストアが設定されている必要があります。使用 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"]LUN を vSphere ホストに展開します。* SDDC Manager UI を使用して追加のクラスターを展開します。ただし、このオプションはバージョン 5.2.x までの VSAN データストアのみを作成します。
 
 
 

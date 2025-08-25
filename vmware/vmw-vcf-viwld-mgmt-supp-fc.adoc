@@ -72,7 +72,7 @@ ONTAPツールを導入し、それを使用して VCF 管理ドメインに VMF
 
 * link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/ontap-tools-deployment.html["管理ドメインにONTAPツールを導入する"]
 * link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html["vSphere クライアント インターフェースを使用してストレージ バックエンドを定義する"]
-* link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html["FC 上で VMFS をプロビジョニングする"]
+* リンク:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.htmlProvision FC上のVMFS]
 
 
 

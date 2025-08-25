@@ -65,7 +65,7 @@ VCFの設定方法については、以下を参照してください。link:htt
 
 管理ドメイン上の追加の vSphere クラスタは、次のオプションを使用して展開できます。
 
-* vSphere 環境に追加のクラスターを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-vvols-datastore.html["ONTAP tools for VMware vSphere"] https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] NFS データストアを vSphere クラスタにデプロイするために使用できます。
+* vSphere 環境に追加のクラスターを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.html["ONTAP tools for VMware vSphere"] https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] NFS データストアを vSphere クラスタにデプロイするために使用できます。
 * SDDC API を使用して追加のクラスターを展開します。 vSphere ホストには NFS データストアが設定されている必要があります。使用 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"]LUN を vSphere ホストに展開します。
 * SDDC Manager UI を使用して追加のクラスターを展開します。ただし、このオプションでは、リリース 5.2.x より前の vSAN データストアのみが作成されます。
 

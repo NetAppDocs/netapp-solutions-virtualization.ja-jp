@@ -1,0 +1,61 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-nvme-storage.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
+summary: 'VI ワークロード ドメインで NVMe over TCP (NVMe/TCP) vVolsストレージを構成します。  ONTAPツールを導入し、ストレージ システムを登録し、ストレージ機能プロファイルを作成し、vSphere クライアントでvVolsデータストアをプロビジョニングします。' 
+---
+= VCF VIワークロードドメインでNVMe/TCP vVolsストレージを構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware Cloud Foundation VI ワークロード ドメインで NVMe/TCP vVolsストレージを構成します。  ONTAPツールを導入し、ストレージ システムを登録し、ストレージ機能プロファイルを作成し、vSphere クライアントでvVolsデータストアをプロビジョニングします。
+
+.手順
+. vSphere クライアントで、ワークロード ドメイン クラスタ内の ESXi ホストの 1 つに移動します。*アクション* メニューから *ストレージ > 新しいデータストア...* を選択します。
++
+image:vmware-vcf-asa-104.png["NVMe/TCPアダプタを追加する"]
+
++
+{nbsp}
+
+. *新しいデータストア*ウィザードで、タイプとして*VMFS*を選択します。続行するには、[次へ] をクリックします。
+. *名前とデバイスの選択*ページで、データストアの名前を入力し、使用可能なデバイスのリストから NVMe 名前空間を選択します。
++
+image:vmware-vcf-asa-105.png["名前とデバイスの選択"]
+
++
+{nbsp}
+
+. *VMFS バージョン* ページで、データストアの VMFS のバージョンを選択します。
+. *パーティション構成*ページで、デフォルトのパーティション スキームに必要な変更を加えます。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-asa-106.png["NVMeパーティション構成"]
+
++
+{nbsp}
+
+. *完了準備完了*ページで概要を確認し、*完了*をクリックしてデータストアを作成します。
+. インベントリ内の新しいデータストアに移動し、[ホスト] タブをクリックします。正しく構成されている場合、クラスター内のすべての ESXi ホストがリストされ、新しいデータストアにアクセスできるようになります。
++
+image:vmware-vcf-asa-107.png["データストアに接続されたホスト"]
+
++
+{nbsp}
+
+
+
+
+
+== 追加情報
+
+* SANの冗長構成の詳細については、link:https://docs.netapp.com/us-en/ontap/san-config/index.html["NetApp SAN 構成リファレンス"^] 。
+* ONTAPストレージシステムのNVMe設計に関する考慮事項の詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap/nvme/support-limitations.html["NVMeの構成、サポート、制限事項"^] 。
+* ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。
+* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"^] 。
+

@@ -60,7 +60,7 @@ NOTE: ONTAPシステム上の物理 FC ポートではなく、ゾーン構成�
 
 NetApp は、FC LUN にマルチパスを推奨しています。
 
-ONTAPストレージシステムでのファイバチャネルの設定に関する詳細については、以下を参照してください。 https://docs.netapp.com/us-en/ontap/san-management/index.html["SANストレージの管理"] ONTAP 9 のドキュメントを参照してください。
+ONTAPストレージシステムでのファイバチャネルの設定の詳細については、以下を参照してください。 https://docs.netapp.com/us-en/ontap/san-management/index.html["SANストレージの管理"] ONTAP 9 のドキュメントを参照してください。
 
 ONTAPストレージシステムでVMFSを使用する方法の詳細については、link:vmw-vmfs-deploy.html["VMFS の導入ガイド"] 。
 

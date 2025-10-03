@@ -1,0 +1,42 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-nvme-requirements.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
+summary: VMware Cloud Foundation VI ワークロード ドメインに NVMe vVolsをデプロイするには、完全に構成されたONTAP AFFまたはASAストレージ システム、完了した VCF 管理ドメイン、および既存の VI ワークロード ドメインが必要です。信頼性の高い高性能なストレージ統合を確実に実現するために、推奨されるネットワーク設計とインフラストラクチャの要件を確認します。 
+---
+= VIワークロードドメインにおけるNVMe vVolsの展開要件
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware Cloud Foundation VI ワークロード ドメインに NVMe vVolsをデプロイするために推奨されるネットワーク設計とインフラストラクチャ要件を確認します。完全に構成されたONTAP AFFまたはASAストレージ システム、展開された VCF 管理ドメイン、および既存の VI ワークロード ドメインが必要です。
+
+
+
+== インフラストラクチャ要件
+
+* ストレージ トラフィック専用のイーサネット スイッチ上に物理データ ポートを備えたONTAP AFFまたはASAストレージ システム。
+* VCF 管理ドメインの展開が完了し、vSphere クライアントにアクセスできるようになりました。
+* VI ワークロード ドメインは以前にデプロイされています。
+
+
+
+
+== 推奨されるNVMe/TCPネットワーク設計
+
+NetApp は、NVMe/TCP に完全に冗長化されたネットワーク設計を推奨しています。次の図は、ストレージ システム、スイッチ、ネットワーク アダプタ、およびホスト システムにフォールト トレランスを提供する冗長構成の例を示しています。
+
+image:vmware-vcf-asa-074.png["NVMe-tcp ネットワーク設計"]
+
+複数のパスにわたるマルチパスとフェイルオーバーを実現するには、NVMe/TCP 構成のすべての SVM に対して、個別のイーサネット ネットワークでストレージ ノードごとに少なくとも 2 つの LIF を構成します。
+
+
+
+== 次の手順
+
+展開要件を確認した後、link:vmw-vcf-viwld-supp-nvme-svm-lifs.html["SVMとLIFを作成する"] 。

@@ -1,0 +1,54 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-supplemental-iscsi-svm-lifs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, iscsi, deploy, ontap tools 
+summary: '複数の論理インターフェイス (LIF) を持つストレージ仮想マシン (SVM) を作成し、VMware Cloud Foundation 管理ドメインに iSCSI 接続を提供します。  iSCSI プロトコル サポートを使用して SVM を構成し、個別のイーサネット ネットワークにわたって複数の LIF をセットアップして、マルチパスとフェイルオーバーを有効にし、最適なパフォーマンスと可用性を実現します。' 
+---
+= VCF管理ドメイン内のiSCSIデータストア用のSVMとLIFを作成する
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+複数の論理インターフェイス (LIF) を持つストレージ仮想マシン (SVM) を作成し、VMware Cloud Foundation 管理ドメインに iSCSI 接続を提供します。  iSCSI プロトコル サポートを使用して SVM を構成し、個別のイーサネット ネットワークにわたって複数の LIF をセットアップして、マルチパスとフェイルオーバーを有効にし、最適なパフォーマンスと可用性を実現します。
+
+既存の SVM に新しい LIF を追加するには、 ONTAP のドキュメントを参照してください。link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["ONTAP LIFを作成する"^] 。
+
+.手順
+. ONTAP System Manager から、左側のメニューの *Storage VMs* に移動し、*+ Add* をクリックして開始します。
++
+image:vmware-vcf-asa-001.png["+追加をクリックしてSVMの作成を開始します"]
+
++
+{nbsp}
+
+. *ストレージ VM の追加* ウィザードで、SVM の *名前* を入力し、*IP スペース* を選択して、*アクセス プロトコル* の *iSCSI* タブをクリックし、*iSCSI を有効にする* チェックボックスをオンにします。
++
+image:vmware-vcf-asa-002.png["ストレージVMの追加ウィザード - iSCSIを有効にする"]
+
++
+{nbsp}
+
+. *ネットワーク インターフェイス* セクションで、最初の LIF の *IP アドレス*、*サブネット マスク*、および *ブロードキャスト ドメインとポート* を入力します。後続の LIF については、個別の設定を使用するか、チェックボックスをオンにして残りのすべての LIF で共通の設定を使用するかを選択できます。
++
+
+NOTE: 複数のパスにわたるマルチパスとフェイルオーバーを実現するには、iSCSI 構成内のすべての SVM に対して、個別のイーサネット ネットワークにストレージ ノードごとに少なくとも 2 つの LIF を作成します。
+
++
+image:vmware-vcf-asa-003.png["LIFのネットワーク情報を入力します"]
+
++
+{nbsp}
+
+. ストレージ VM 管理アカウント (マルチテナント環境の場合) を有効にするかどうかを選択し、[*保存*] をクリックして SVM を作成します。
++
+image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
+
+
+
+
+
+== 次の手順
+
+SVMとLIFを作成したら、link:vmw-vcf-mgmt-supplemental-iscsi-network.html["ESXiホスト上のiSCSIのネットワークを構成する"] 。

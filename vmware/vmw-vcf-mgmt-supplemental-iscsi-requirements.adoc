@@ -1,0 +1,46 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-supplemental-iscsi-requirements.html 
+keywords: netapp, vmware, cloud, foundation, vcf, iscsi, requirements 
+summary: VCF 管理ドメインに補助ストレージとして iSCSI データストアを追加するための要件を確認します。 
+---
+= VCF管理ドメインにiSCSIデータストアを追加するための展開要件
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware Cloud Foundation (VCF) 管理ドメインに補助ストレージとして iSCSI データストアを追加するための要件を確認します。  VMware Cloud Foundation 管理ドメインに iSCSI vVolsをデプロイするには、完全に構成されたONTAP AFFまたはASAストレージ システムと、デプロイされた VCF 管理ドメインが必要です。
+
+
+
+== インフラストラクチャ要件
+
+次のコンポーネントと構成が適切であることを確認してください。
+
+* ストレージ トラフィック専用のイーサネット スイッチ上に物理データ ポートを備えたONTAP AFFまたはASAストレージ システム。
+* VCF 管理ドメインの展開が完了し、vSphere クライアントにアクセスできるようになりました。
+
+
+
+
+== 推奨されるiSCSIネットワーク設計
+
+iSCSI には完全に冗長化されたネットワーク設計を構成する必要があります。次の図は、ストレージ システム、スイッチ、ネットワーク アダプタ、およびホスト システムにフォールト トレランスを提供する冗長構成の例を示しています。NetAppを参照してくださいlink:https://docs.netapp.com/us-en/ontap/san-config/index.html["SAN構成に関するリファレンス"]追加情報については。
+
+image:vmware-vcf-asa-074.png["iSCSIネットワーク設計"]{nbsp}
+
+複数のパスにわたるマルチパスとフェイルオーバーを実現するには、iSCSI 構成内のすべての SVM に対して、個別のイーサネット ネットワークにストレージ ノードごとに少なくとも 2 つの LIF を作成します。
+
+
+TIP: 複数の VMkernel アダプタが同じ IP ネットワーク上に構成されている場合は、アダプタ間で負荷分散が行われるように、ESXi ホストでソフトウェア iSCSI ポート バインディングを使用することをお勧めします。KB記事を参照してくださいlink:https://knowledge.broadcom.com/external/article?legacyId=2038869["ESX/ESXi におけるソフトウェア iSCSI ポート バインディングの使用に関する考慮事項"^]。
+
+
+
+== 次の手順
+
+展開要件を確認した後、link:vmw-vcf-mgmt-supplemental-iscsi-svm-lifs.html["SVMとLIFを作成する"] 。

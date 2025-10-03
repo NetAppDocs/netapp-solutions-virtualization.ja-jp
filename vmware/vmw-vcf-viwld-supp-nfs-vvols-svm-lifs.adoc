@@ -1,0 +1,36 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols-svm-lifs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
+summary: 'VMware Cloud Foundation VI ワークロード ドメイン内のvVolsデータストアの NFS トラフィックをサポートするには、 ONTAPシステム上にストレージ仮想マシン (SVM) と複数の論理インターフェイス (LIF) を作成します。' 
+---
+= VCF VIワークロードドメインにNFS vVolsデータストア用のSVMとLIFを作成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware Cloud Foundation VI ワークロード ドメイン内のvVolsデータストアの NFS トラフィックをサポートするには、 ONTAPシステム上にストレージ仮想マシン (SVM) と複数の論理インターフェイス (LIF) を作成します。
+
+既存の SVM に新しい LIF を追加するには、 ONTAP のドキュメントを参照してください。link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["ONTAP LIFを作成する"^] 。
+
+.手順
+. ONTAP System Manager で、左側のメニューの *Storage VMs* に移動し、*+ Add* をクリックして開始します。
+. *ストレージ VM の追加* ウィザードで、SVM の *名前* を入力し、*IP スペース* を選択して、*アクセス プロトコル* で *SMB/CIFS、NFS、S3* タブをクリックし、*NFS を有効にする* チェックボックスをオンにします。
++
+
+TIP: *NFS クライアント アクセスを許可する* チェックボックスをオンにする必要はありません。  ONTAP tools for VMware vSphereを使用して、ESXi ホストへのクライアント アクセスの提供を含むデータストアの展開プロセスを自動化します。
+
+. *ネットワーク インターフェース* セクションで、最初の LIF の *IP アドレス*、*サブネット マスク*、および *ブロードキャスト ドメインとポート* を入力します。後続の LIF については、個別の設定を使用するか、チェックボックスをオンにして残りのすべての LIF で共通の設定を使用するかを選択できます。
+. ストレージ VM 管理アカウント (マルチテナント環境の場合) を有効にするかどうかを選択し、[*保存*] をクリックして SVM を作成します。
+
+
+
+
+== 次の手順
+
+SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nfs-vvols-network.html["ESXiホスト上のNFSネットワークを構成する"] 。

@@ -1,0 +1,337 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-vm-dp-using-vgs.html 
+keywords: OpenShift, OCP, Trident, Trident protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization,Data Protection, Data Management for VMs, VM protection, Volume Group Snapshots 
+summary: Tridentボリューム グループ スナップショットを使用して Red Hat OpenShift Virtualization 内の VM を保護し、クラッシュ整合性のあるバックアップと迅速なリカバリを保証します。この手順では、Kubernetes とNetApp ONTAPを使用して複数の VM ディスクを構成、スナップショット、および復元する方法を示します。 
+---
+= Tridentボリューム グループ スナップショットを使用して Red Hat OpenShift Virtualization の VM を保護する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Trident 25.06 とNetApp ONTAPストレージを使用して、Red Hat OpenShift Virtualization 内の VM を保護するためにボリューム グループ スナップショットを構成します。この手順には、iSCSI サポート付きのTridentのインストール、 ONTAPバックエンドとストレージ クラスの構成、複数の永続ディスクを持つ VM の作成、信頼性の高いリカバリ操作のためにすべての VM ディスクのスナップショットが同時にキャプチャされるようにするボリューム グループ スナップショットの実装が含まれます。
+
+ボリューム グループ スナップショットは、コンテナーまたは VM の複数の PersistentVolumeClaim (PVC) のスナップショットを作成するときに発生する一貫性の問題に対処する Kubernetes 機能です。
+
+この機能を使用すると、複数の PVC のクラッシュ整合性のあるスナップショットを同時に作成できます。この機能は、Kubernetes バージョン v1.32 ではベータ版です。  Trident は、 Tridentバージョン 25.06 以降でこのベータ機能をサポートしています (現時点では iSCSI プロトコルのみ)。
+
+ボリューム グループ スナップショット機能をサポートするために、Kubernetes は次の 3 つの新しい API オブジェクトを導入しました。
+
+* *VolumeGroupSnapshotClass:* ボリューム グループのスナップショットを作成する方法を記述するためにクラスター管理者によって作成されます。
+* *VolumeGroupSnapshot:* Kubernetes ユーザーから、複数の PVC のボリューム グループ スナップショットを作成するよう要求されました。
+* *VolumeGroupSnapshotContent:* 動的に作成された VolumeGroupSnapshots のスナップショット コントローラーによって作成されます。
+
+
+Trident 25.06 は、新しい CRD (ボリューム グループ スナップショット機能用に指定) を自動的に検出し、 Trident CSI サイドカー内の関連する機能ゲートを有効にします。
+
+
+NOTE: Trident は、バージョン 25.06 では iSCSI プロトコルに対してのみボリューム グループ スナップショットをサポートします。
+
+
+
+== ステップ1: OpenShift 4.19をインストールし、ボリュームグループスナップショットのFeatureGateを有効にする
+
+Kubernetes バージョン 1.32 を使用して OpenShift 4.19 クラスターをインストールします。このバージョンでは、ボリューム グループ スナップショット機能がベータ ステータスに昇格します。  OpenShift の今後のリリースには、この機能をサポートする Kubernetes バージョン 1.32 以降が含まれる可能性があります。
+
+.手順
+. Red Hat ドキュメントの手順に従って、OpenShift Cluster バージョン 4.19 をインストールします。 https://docs.openshift.com/container-platform/4.19/installing/index.html["OpenShift Container Platform のインストール"] 。
+. OpenShift クラスター内の Kubernetes バージョンを確認します。
++
+次の画像は、Kubernetes v1.32 とともにインストールされた OpenShift Cluster v4.19 を示しています。
+
++
+image:redhat-openshift-ocpv-vgs-001.png["K8s V1.32 を使用した OpenShift クラスター"]
+
+. OpenShift Web コンソールを使用して、VolumeGroupSnapshot の FeatureGate をオンにします。*管理 -> カスタム リソース定義* に移動します。
+. *FeatureGate*を検索してクリックします。
+. *インスタンス*タブをクリックし、*クラスター*インスタンスを選択します。
+. *YAML* タブを選択し、FeatureGate/cluster オブジェクトを編集して、*customNoUpgrade* の下の有効リストに VolumeGroupSnapshot を含めます。
++
+image:redhat-openshift-ocpv-vgs-002.png["VolumeGroupSnapshot FeatureGate を有効にする"]
+
+
+
+
+
+== ステップ2:ボリュームグループスナップショット用にTrident 25.06をインストールして構成する
+
+ボリューム グループ スナップショット機能は、 Trident 25.06 の iSCSI プロトコルに対してのみTridentによってサポートされます。注意: OpenShift Cluster 4.19 で iSCSI プロトコルを有効にするには、 Tridentバージョン 25.06.1 をインストールする必要があります。
+
+Tridentをインストールし、VM のボリューム グループ スナップショットを有効にするために必要なストレージ インフラストラクチャを構成します。これには、 ONTAPへの iSCSI バックエンド接続の設定、VM 永続ボリュームのストレージ クラスの定義、個別スナップショット クラスとグループ スナップショット クラスの両方の構成が含まれます。
+
+
+NOTE: 新しい VM を作成するときに、ゴールデン イメージのスナップショットから高速 FlexCloning メカニズムを利用できるように、 Tridentストレージ クラスとスナップショット クラスの両方をデフォルトとして設定することがベスト プラクティスです。
+
+.開始する前に
+* VolumeGroupSnapshots の Feature Gate がオンになっていることを確認します。
+* iSCSI ツールをインストールするには、node-prep を使用します。
+
+
+.手順
+. 次のコマンドを使用してTridentをインストールします。
++
+image:redhat-openshift-ocpv-vgs-003.png["iscsi nodeprep でTridentをインストールする"]
+
+. VolumeGroupSnapshots に必要な CRD がインストールされていることを確認します。
++
+image:redhat-openshift-ocpv-vgs-004.png["必要なCRDが利用可能"]
+
+. 次の YAML 定義を使用してTrident iSCSI バックエンドを作成します。
++
+[source, yaml]
+----
+#tbc-iscsi.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tbc-iscsi-secret
+type: Opaque
+stringData:
+  username: admin
+  password: <passwd to log into ONTAP ClI>
+---
+apiVersion: trident.netapp.io/v1
+kind: TridentBackendConfig
+metadata:
+  name: tbc-iscsi
+spec:
+  version: 1
+  storageDriverName: ontap-san
+  managementLIF: <mgmt-lif>
+  backendName: tbc-iscsi
+  svm: openshift
+  storagePrefix: openshift-iscsi
+  defaults:
+    formatOptions: "-E nodiscard"
+    nameTemplate: "{{ .config.StoragePrefix }}_{{ .volume.Namespace }}_{{ .volume.RequestName }}"
+  credentials:
+    name: tbc-iscsi-secret
+----
+. 次の YAML 定義を使用して iSCSI ストレージ クラスを作成します。
++
+[source, yaml]
+----
+# sc-iscsi.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: sc-iscsi
+provisioner: csi.trident.netapp.io
+parameters:
+  backendType: "ontap-san"
+  provisioningType: "thin"
+  fsType: ext4
+  snapshots: "true"
+reclaimPolicy: "Delete"
+allowVolumeExpansion: true
+----
+. 次の YAML 定義を使用して VolumeSnapshotClass オブジェクトを作成します。
++
+[source, yaml]
+----
+# snapshotclass.yaml
+apiVersion: snapshot.storage.k8s.io/v1
+kind: VolumeSnapshotClass
+metadata:
+  name: trident-snapshotclass
+driver: csi.trident.netapp.io
+deletionPolicy: Retain
+----
++
+image:redhat-openshift-ocpv-vgs-005.png["Stoarge クラスとボリュームスナップショットクラス"]
+
+. クラスター内のストレージ クラスと VolumeSnapshotClass のデフォルトを設定します。
++
+[source, cli]
+----
+kubectl patch storageclass <storage-class-name> -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+----
++
+[source, cli]
+----
+kubectl patch volumesnapshotclass <volumesnapshotclass-name> --type=merge -p '{"metadata":{"annotations":{"snapshot.storage.kubernetes.io/is-default-class":"true"}}}'
+----
+. 次の YAML 定義を使用して VolumeGroupSnapshotClass オブジェクトを作成します。
++
+[source, cli]
+----
+apiVersion: groupsnapshot.storage.k8s.io/v1beta1
+kind: VolumeGroupSnapshotClass
+metadata:
+  name: trident-groupsnapshotclass
+  annotations:
+    kubernetes.io/description: "Trident group snapshot class"
+driver: csi.trident.netapp.io
+deletionPolicy: Delete
+----
++
+image:redhat-openshift-ocpv-vgs-006.png["ボリュームグループスナップショットクラス"]
+
+
+
+
+
+== ステップ3: OpenShift Virtualizationをインストールし、複数のディスクを持つテストVMを作成する
+
+クラスターで VM 管理機能を有効にするには、OpenShift Virtualization Operator をインストールします。インストール後、ボリューム グループのスナップショット機能をデモンストレーションするために、複数の永続ディスクを持つテスト VM を作成します。
+
+.手順
+. OpenShift Virtualization Operator をインストールします。
++
+
+NOTE: これは、 Tridentを使用してデフォルトのストレージ クラスとスナップショット クラスを設定した後に実行する必要があります。これにより、 Trident CSI を使用してクラスター内の VolumeSnapshot としてゴールデン イメージが使用できるようになります。
+
+. ゴールド イメージがボリューム スナップショットにあることを確認します。
++
+image:redhat-openshift-ocpv-vgs-007.png["ボリュームスナップショットのゴールデンイメージ"]
+
+. デフォルトのテンプレートから VM を作成します。  VM に 2 つのディスクを追加します。  (ルート ディスク 1 台と追加ディスク 2 台)。
++
+image:redhat-openshift-ocpv-vgs-008.png["3 つの PVC を持つ VM"]
+
+. ONTAPバックエンド内の対応するボリュームを確認します。
++
+ルート ディスク ボリュームは、ゴールデン イメージを含むスナップショットのフレックス クローン ボリュームです。  VM の追加 2 つのディスク用の他の 2 つのボリュームは、 FlexVolボリュームです。
+
+. virtctl ツールを使用して VM にログインします。
+. 以下に示すように 2 つのディスクをフォーマットしてマウントします。
++
+image:redhat-openshift-ocpv-vgs-009.png["VMディスク"]
+
+
+
+
+
+== ステップ4: グループスナップショット保護のためにVMディスクにラベルを付ける
+
+ボリューム グループ スナップショットは、ラベル セレクターを使用してどの PVC が一緒に属しているかを識別し、関連するすべての VM ディスクが同じ時点で同時にキャプチャされるようにします。
+
+.手順
+. 同じキー/値を使用して PVC にラベルを付け、検証します。
++
+[source, cli]
+----
+#oc label pvc fedora-vm1 consistencygroup=group1
+persistentvolumeclaim/fedora-vm1 labeled
+# oc label pvc dv-fedora-vm1-disk1-ulsgg2 consistencygroup=group1
+persistentvolumeclaim/dv-fedora-vm1-disk1-ulsgg2 labeled
+# oc label pvc dv-fedora-vm1-disk2-86oq76 consistencygroup=group1
+persistentvolumeclaim/dv-fedora-vm1-disk2-86oq76 labeled
+----
+. PVC のラベルを確認してください。
++
+[source, cli]
+----
+# oc get pvc fedora-vm1 -o jsonpath='{.metadata.labels.consistencygroup'}
+group1
+# oc get pvc dv-fedora-vm1-disk1-ulsgg2 -o jsonpath='{.metadata.labels.consistencygroup'}
+group1
+# oc get pvc dv-fedora-vm1-disk2-86oq76 -o jsonpath='{.metadata.labels.consistencygroup'}
+group1
+----
+. 次の YAML 定義を使用して、ラベルが付けられたすべての PVC を自動的に検出する VolumeGroupSnapshot を作成します。
++
+[source, yaml]
+----
+#vgs.yaml
+apiVersion: groupsnapshot.storage.k8s.io/v1beta1
+kind: VolumeGroupSnapshot
+metadata:
+  name: vgs1
+spec:
+  volumeGroupSnapshotClassName: trident-groupsnapshotclass
+  source:
+    selector:
+      matchLabels:
+        consistencygroup: group1
+----
++
+[source, cli]
+----
+# oc create -f vgs1.yaml
+volumegroupsnapshot.groupsnapshot.storage.k8s.io/vgs1 created
+----
++
+image:redhat-openshift-ocpv-vgs-010.png["VGS作成"]
+
++
+.結果
+ラベル キー/値ペア **consistencygroup: group1** を持つすべての PVC のスナップショットが作成されます。  Trident VolumeGroupSnapshots は、 ONTAPバックエンドのONTAP整合性グループを使用します。
+
+
+
+
+NOTE: Trident VolumeGroupSnapshots は、 ONTAPバックエンドでONTAP整合性グループ (CG) を使用します。 REST API を使用すると、VM に属するすべてのボリューム (ラベルでグループ化) を含む CG が作成され、各ボリュームのスナップショットが一貫した方法で取得された後、CG が削除されます。タイミングによっては、 ONTAPで作成および削除されるコンシステンシー グループが表示できる場合とできない場合があります。
+
+次の図は、 ONTAPで作成され、その後削除された整合性グループを示しています。
+
+image:redhat-openshift-ocpv-vgs-011.png["ONTAPコンシステンシグループ"]
+
+
+
+== ステップ5: スナップショットからVMディスクを復元する
+
+この手順では、必要に応じてスナップショットが VM データを正常に回復できることを検証します。仮に私たちが `sample.txt`2 つのデータ ディスクのそれぞれからファイルを取得します。
+
+image:redhat-openshift-ocpv-vgs-012.png["ファイルが失われた"]
+
+
+NOTE: ボリュームのグループのスナップショットを単一のユニットとして作成しましたが、復元できるのは個々のスナップショットからのみです。
+
+Trident は、*TridentActionSnapshotRestore (TASR) CR* を使用して、スナップショットからの迅速なインプレース ボリューム復元を提供します。この CR は命令型の Kubernetes アクションとして機能し、操作の完了後は保持されません。
+
+.手順
+. VM を停止します。
+. 以下に示すように、YAML を使用して、最初のディスク/PVC の内容を対応するスナップショットで復元します。
++
+[source, yaml]
+----
+# cat tasr1.yaml
+apiVersion: trident.netapp.io/v1
+kind: TridentActionSnapshotRestore
+metadata:
+  name: trident-snap-disk1
+  namespace: default
+spec:
+  pvcName: dv-fedora-vm1-disk1-ulsgg2
+  volumeSnapshotName: snapshot-4d47c9f45423bfca625a0f1b6c5a5ec456ac59d3e583157be919bb7237317c65
+----
++
+[source, cli]
+----
+# oc create -f tasr1.yaml
+tridentactionsnapshotrestore.trident.netapp.io/trident-snap created
+----
+. 同様に、PVC と対応するスナップショットを使用して、2 番目のディスクの別の TASR オブジェクトを作成します。
++
+[source, yaml]
+----
+# cat tasr2.yaml
+apiVersion: trident.netapp.io/v1
+kind: TridentActionSnapshotRestore
+metadata:
+  name: trident-snap-disk2
+  namespace: default
+spec:
+  pvcName: dv-fedora-vm1-disk2-86oq76
+  volumeSnapshotName: snapshot-afb4c4833460e233c4e86f1108c921b86a6f4d0eb182e99e579081ff6f743f56
+----
++
+[source, cli]
+----
+# oc create -f tasr2.yaml
+----
+. 復元操作が成功した状態を示していることを確認します。
++
+image:redhat-openshift-ocpv-vgs-013.png["TASRは成功した"]
+
+. 次に、VM を起動し、ログインして、sample.txt ファイルがディスクに戻っていることを確認します。
++
+image:redhat-openshift-ocpv-vgs-014.png["スナップショットが復元されました"]
+
+

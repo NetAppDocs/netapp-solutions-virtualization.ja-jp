@@ -71,18 +71,58 @@ entries:
       url: "/vmware/vmw-vcf-viwld-principal-nfs.html"
   - title: 補助ストレージでVCFを拡張
     entries:
-    - title: ストレージの拡張について
+    - title: ストレージの拡張について学ぶ
       url: "/vmware/vmw-vcf-expand.html"
     - title: iSCSIで管理ドメインを拡張
-      url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi.html"
+      entries:
+      - title: 展開ワークフロー
+        url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi.html"
+      - title: 要件の確認
+        url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi-requirements.html"
+      - title: SVMとLIFを作成する
+        url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi-svm-lifs.html"
+      - title: ネットワークの設定
+        url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi-network.html"
+      - title: ストレージを設定する
+        url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi-storage.html"
     - title: FCで管理領域を拡大
       url: "/vmware/vmw-vcf-mgmt-supplemental-fc.html"
     - title: vVols iSCSIでVIワークロードドメインを拡張
-      url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols.html"
+      entries:
+      - title: 展開ワークフロー
+        url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols.html"
+      - title: 要件の確認
+        url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols-requirements.html"
+      - title: SVMとLIFを作成する
+        url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols-svm-lifs.html"
+      - title: ネットワークの設定
+        url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols-network.html"
+      - title: ストレージを設定する
+        url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols-storage.html"
     - title: vVols NFSでVIワークロードドメインを拡張
-      url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols.html"
+      entries:
+      - title: 展開ワークフロー
+        url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols.html"
+      - title: 要件の確認
+        url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols-requirements.html"
+      - title: SVMとLIFを作成する
+        url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols-svm-lifs.html"
+      - title: ネットワークの設定
+        url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols-network.html"
+      - title: ストレージを設定する
+        url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols-storage.html"
     - title: NVMe/TCPでVIワークロードドメインを拡張
-      url: "/vmware/vmw-vcf-viwld-supp-nvme.html"
+      entries:
+      - title: 展開ワークフロー
+        url: "/vmware/vmw-vcf-viwld-supp-nvme.html"
+      - title: 要件の確認
+        url: "/vmware/vmw-vcf-viwld-supp-nvme-requirements.html"
+      - title: SVMとLIFを作成する
+        url: "/vmware/vmw-vcf-viwld-supp-nvme-svm-lifs.html"
+      - title: ネットワークの設定
+        url: "/vmware/vmw-vcf-viwld-supp-nvme-network.html"
+      - title: ストレージを設定する
+        url: "/vmware/vmw-vcf-viwld-supp-nvme-storage.html"
     - title: FCでVIワークロードドメインを拡張
       url: "/vmware/vmw-vcf-viwld-supp-fc.html"
   - title: SnapCenterでVCFを保護する

@@ -42,13 +42,15 @@ entries:
     url: "/openshift/osv-rosa-overview.html"
   - title: VMの再起動またはライブマイグレーション
     url: "/openshift/osv-rosa-vm-workflows.html"
-- title: Trident Protectを使用してデータを保護する
+- title: TridentとTrident Protect を使用して VM を保護する
   entries:
+  - title: ボリューム グループ スナップショットを使用して VM を保護する
+    url: "/openshift/osv-vm-dp-using-vgs.html"
   - title: スナップショットとバックアップでVMを保護する
     url: "/openshift/osv-vm-dp-using-tp.html"
   - title: フェイルオーバーとフェイルバックを設定する
     url: "/openshift/osv-vm-dr-using-tp.html"
-- title: サードパーティのツールを使用してデータを保護する
+- title: サードパーティのツールを使用してVMを保護する
   pdf-filename: Red Hat OpenShift 仮想化データ保護
   entries:
   - title: OADP と Velero を使用して VM を保護する

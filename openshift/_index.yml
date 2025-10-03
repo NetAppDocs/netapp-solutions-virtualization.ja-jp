@@ -36,15 +36,17 @@ indexpage:
       url: osv-workflow-vm-migration-mtv.html
     - title: 2つのクラスタノード間でVMを移行する
       url: osv-workflow-vm-live-migration.html
-  - title: Trident Protectを使用してデータを保護する
+  - title: TridentとTrident Protect を使用して VM を保護する
     links:
     - title: Tridentをインストールする
       url: osv-trident-install.html
+    - title: ボリューム グループ スナップショットを使用して VM を保護する
+      url: osv-vm-dp-using-vgs.html
     - title: スナップショットとバックアップでVMを保護する
       url: osv-vm-dp-using-tp.html
     - title: フェイルオーバーとフェイルバックを設定する
       url: osv-vm-dr-using-tp.html
-  - title: サードパーティのツールを使用してデータを保護する
+  - title: サードパーティのツールを使用してVMを保護する
     links:
     - title: OADP と Velero を使用して VM を保護する
       url: osv-vm-dp-using-velero-overview.html

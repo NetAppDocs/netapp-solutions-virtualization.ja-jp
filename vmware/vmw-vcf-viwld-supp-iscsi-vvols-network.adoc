@@ -1,0 +1,118 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-iscsi-vvols-network.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
+summary: VI ワークロード ドメイン内の ESXi ホスト上の iSCSI ストレージのネットワークを構成します。  iSCSI トラフィック用の分散ポート グループを作成し、vSphere クライアントを使用して VMkernel アダプタを設定し、信頼性の高い接続とマルチパスを有効にします。 
+---
+= VCF VIワークロードドメイン内のESXiホストでiSCSIのネットワークを構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VI ワークロード ドメイン内の ESXi ホスト上の iSCSI ストレージのネットワークを構成します。  iSCSI トラフィック用の分散ポート グループを作成し、vSphere クライアントを使用して VMkernel アダプタを設定し、信頼性の高い接続とマルチパスを有効にします。
+
+vCenter Single Sign-On を備えた vSphere クライアントを使用して、VI ワークロード ドメイン クラスタでこれらの手順を実行します。同じ vSphere クライアントが管理ドメインとワークロード ドメインの両方を管理します。
+
+
+
+== ステップ1: iSCSIトラフィック用の分散ポートグループを作成する
+
+各 iSCSI ネットワークに新しい分散ポート グループを作成するには、次の手順を実行します。
+
+.手順
+. vSphere クライアントから、ワークロード ドメインの *インベントリ > ネットワーク* に移動します。既存の分散スイッチに移動し、*新しい分散ポート グループ...*を作成するアクションを選択します。
++
+image:vmware-vcf-asa-022.png["新しいポートグループの作成を選択"]
+
++
+{nbsp}
+
+. *新しい分散ポート グループ* ウィザードで、新しいポート グループの名前を入力し、*次へ* をクリックして続行します。
+. *設定の構成*ページで、すべての設定を入力します。VLAN が使用されている場合は、正しい VLAN ID を必ず指定してください。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-asa-023.png["VLAN IDを入力してください"]
+
++
+{nbsp}
+
+. *完了準備完了*ページで変更を確認し、*完了*をクリックして新しい分散ポート グループを作成します。
+. このプロセスを繰り返して、使用されている 2 番目の iSCSI ネットワークの分散ポート グループを作成し、正しい *VLAN ID* を入力したことを確認します。
+. 両方のポート グループが作成されたら、最初のポート グループに移動し、[設定の編集...] アクションを選択します。
++
+image:vmware-vcf-asa-024.png["DPG - 設定の編集"]
+
++
+{nbsp}
+
+. *分散ポート グループ - 設定の編集* ページで、左側のメニューの *チーミングとフェイルオーバー* に移動し、 *uplink2* をクリックして *未使用のアップリンク* まで下に移動します。
++
+image:vmware-vcf-asa-025.png["アップリンク2を未使用に移動する"]
+
+. 2 番目の iSCSI ポート グループに対してこの手順を繰り返します。ただし、今回は *uplink1* を *Unused uplinks* まで下に移動します。
++
+image:vmware-vcf-asa-026.png["アップリンク1を未使用に移動する"]
+
+
+
+
+
+== ステップ2: 各ESXiホストにVMkernelアダプタを作成する
+
+vSphere クライアントを使用して、ワークロード ドメイン内の各 ESXi ホストで次の手順を実行します。
+
+.手順
+. vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。*構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
++
+image:vmware-vcf-asa-030.png["ネットワーク追加ウィザードを開始する"]
+
++
+{nbsp}
+
+. *接続タイプの選択* ウィンドウで *VMkernel ネットワーク アダプタ* を選択し、*次へ* をクリックして続行します。
++
+image:vmware-vcf-asa-008.png["VMkernelネットワークアダプタを選択"]
+
++
+{nbsp}
+
+. *ターゲット デバイスの選択* ページで、以前に作成した iSCSI の分散ポート グループの 1 つを選択します。
++
+image:vmware-vcf-asa-031.png["ターゲットポートグループを選択"]
+
++
+{nbsp}
+
+. *ポートのプロパティ*ページで、デフォルトのままにして*次へ*をクリックして続行します。
++
+image:vmware-vcf-asa-032.png["VMkernelポートのプロパティ"]
+
++
+{nbsp}
+
+. *IPv4 設定* ページで、*IP アドレス*、*サブネット マスク* を入力し、新しいゲートウェイ IP アドレスを指定します (必要な場合のみ)。続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-asa-033.png["VMkernel IPv4設定"]
+
++
+{nbsp}
+
+. *準備完了*ページで選択内容を確認し、*完了*をクリックして VMkernel アダプタを作成します。
++
+image:vmware-vcf-asa-034.png["VMkernelの選択を確認する"]
+
++
+{nbsp}
+
+. このプロセスを繰り返して、2 番目の iSCSI ネットワーク用の VMkernel アダプタを作成します。
+
+
+
+
+== 次の手順
+
+ワークロードドメイン内のすべてのESXiホストでiSCSIのネットワークを構成した後、link:vmw-vcf-viwld-supp-iscsi-vvols-storage.html["iSCSI vVolsのストレージを構成する"] 。

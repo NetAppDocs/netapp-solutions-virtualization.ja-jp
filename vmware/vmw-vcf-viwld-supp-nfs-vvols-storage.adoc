@@ -1,0 +1,162 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols-storage.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
+summary: VI ワークロード ドメインで NFS vVolsストレージを構成します。  ONTAP tools for VMware vSphereを導入した後、vSphere クライアント インターフェイスを使用してストレージ システムを追加し、ストレージ機能プロファイルを作成し、 vVolsデータストアをプロビジョニングします。 
+---
+= ONTAPツールを使用して VCF VI ワークロード ドメインで NFS vVolsストレージを構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VI ワークロード ドメインで NFS vVolsストレージを構成します。  ONTAP tools for VMware vSphereを導入した後、vSphere クライアント インターフェイスを使用してストレージ システムを追加し、ストレージ機能プロファイルを作成し、 vVolsデータストアをプロビジョニングします。
+
+
+
+== ステップ1: ONTAP tools for VMware vSphereを導入する
+
+VI ワークロード ドメインの場合、 ONTAPツールは VCF 管理クラスタにインストールされますが、VI ワークロード ドメインに関連付けられた vCenter に登録されます。
+
+ONTAP tools for VMware vSphereはVM アプライアンスとして導入され、 ONTAPストレージを管理するための統合された vCenter UI を提供します。
+
+.手順
+. ONTAPツールOVAイメージを以下から入手します。link:https://mysupport.netapp.com/site/products/all/details/otv/downloads-tab["NetApp サポート サイト"]ローカルフォルダーにダウンロードします。
+. VCF 管理ドメインの vCenter アプライアンスにログインします。
+. vCenter アプライアンス インターフェースから管理クラスタを右クリックし、[OVF テンプレートのデプロイ...] を選択します。
++
+image:vmware-vcf-aff-021.png["OVF テンプレートをデプロイします..."]
+
++
+{nbsp}
+
+. *OVF テンプレートのデプロイ*ウィザードで、*ローカル ファイル*ラジオ ボタンをクリックし、前の手順でダウンロードしたONTAPツール OVA ファイルを選択します。
++
+image:vmware-vcf-aff-022.png["OVAファイルを選択"]
+
++
+{nbsp}
+
+. ウィザードの手順 2 ～ 5 では、VM の名前とフォルダーを選択し、コンピューティング リソースを選択し、詳細を確認して、ライセンス契約に同意します。
+. 構成ファイルとディスク ファイルの保存場所として、VCF 管理ドメイン クラスタの vSAN データストアを選択します。
++
+image:vmware-vcf-aff-023.png["OVAファイルを選択"]
+
++
+{nbsp}
+
+. *ネットワークの選択*ページで、管理トラフィックに使用するネットワークを選択します。
++
+image:vmware-vcf-aff-024.png["ネットワークを選択"]
+
++
+{nbsp}
+
+. *テンプレートのカスタマイズ*ページで、必要な情報をすべて入力します。
++
+** ONTAPツールへの管理アクセスに使用するパスワード。
+** NTPサーバのIPアドレスを指定します。
+** ONTAPツール メンテナンス アカウントのパスワード。
+** ONTAPツール Derby DB パスワード。
+** *VMware Cloud Foundation (VCF) を有効にする* チェックボックスをオンにしないでください。補助ストレージを展開する場合、VCF モードは必要ありません。
+** *VI ワークロード ドメイン* の vCenter アプライアンスの FQDN または IP アドレス
+** *VI ワークロード ドメイン* の vCenter アプライアンスの認証情報
+** 必要なネットワーク プロパティ。
+
+
+. 続行するには、[次へ] をクリックします。
++
+image:vmware-vcf-aff-025.png["OTV テンプレート 1 をカスタマイズする"]
+
++
+image:vmware-vcf-asa-035.png["OTVテンプレート2をカスタマイズする"]
+
+. *完了準備完了* ページのすべての情報を確認し、*完了* をクリックしてONTAPツール アプライアンスの導入を開始します。
+
+
+
+
+== ステップ2: ストレージシステムを追加する
+
+ONTAPツールを使用してストレージ システムを追加するには、次の手順を実行します。
+
+
+NOTE: vVol には、SVM 認証情報ではなくONTAPクラスタ認証情報が必要です。詳細については、 ONTAP tools for VMware vSphereのドキュメントを参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/configure/task_add_storage_systems.html["ストレージシステムを追加する"^] 。
+
+.手順
+. vSphere クライアントでメイン メニューに移動し、* NetApp ONTAPツール* を選択します。
++
+image:vmware-vcf-asa-014.png["ONTAPツールに移動する"]
+
+. * ONTAPツール* に入ったら、[はじめに] ページ (または *ストレージ システム*) から [追加] をクリックして、新しいストレージ システムを追加します。
++
+image:vmware-vcf-asa-015.png["ストレージ システムの追加"]
+
++
+{nbsp}
+
+. ONTAPストレージ システムの IP アドレスと資格情報を入力し、[*追加*] をクリックします。
++
+image:vmware-vcf-asa-016.png["ONTAPシステムのIPと認証情報を提供する"]
+
++
+{nbsp}
+
+. クラスター証明書を承認し、ストレージ システムを追加するには、[*はい*] をクリックします。
++
+image:vmware-vcf-asa-017.png["クラスタ証明書を承認する"]
+
+
+
+
+
+== ステップ3: ONTAPツールでNFSデータストアを作成する
+
+NFS 上で実行されるONTAPデータストアを展開するには、次の手順を実行します。  ONTAPツールを使用します。
+
+.手順
+. ONTAPツールで *概要* を選択し、*開始* タブから *プロビジョニング* をクリックしてウィザードを開始します。
+. 新しいデータストア ウィザードの *全般* ページで、vSphere データセンターまたはクラスターの宛先を選択します。
+. データストアの種類として *NFS* を選択し、データストアの名前を入力して、プロトコルを選択します。
+. FlexGroupボリュームを使用するかどうか、およびプロビジョニングにストレージ機能ファイルを使用するかどうかを選択します。
+. 続行するには、[次へ] をクリックします。
++
+
+NOTE: *データストア データをクラスター全体に分散する* ことを選択すると、基盤となるボリュームがFlexGroupボリュームとして作成され、ストレージ機能プロファイルの使用ができなくなります。参照 https://docs.netapp.com/us-en/ontap/flexgroup/supported-unsupported-config-concept.html["FlexGroupボリュームでサポートされる機能とサポートされない機能"^]FlexGroupボリュームの使用に関する詳細については、こちらをご覧ください。
+
+. *ストレージ システム* ページで、ストレージ機能プロファイル、ストレージ システム、および SVM を選択します。続行するには、[次へ] をクリックします。
+. *ストレージ属性*ページで、使用するアグリゲートを選択し、*次へ*をクリックして続行します。
+. *概要*を確認し、*完了*をクリックして NFS データストアの作成を開始します。
+
+
+
+
+== ステップ4: ONTAPツールでvVolsデータストアを作成する
+
+ONTAPツールでvVolsデータストアを作成するには、次の手順を実行します。
+
+.手順
+. ONTAPツールで、[*概要*] を選択し、[*開始*] タブから [*プロビジョニング*] をクリックしてウィザードを開始します。
+. 新しいデータストア ウィザードの *全般* ページで、vSphere データセンターまたはクラスターの宛先を選択します。
+. データストアの種類として * vVols* を選択し、データストアの名前を入力して、プロトコルとして * NFS * を選択します。
+. 続行するには、[次へ] をクリックします。
+. *ストレージ システム* ページで、ストレージ機能プロファイル、ストレージ システム、および SVM を選択します。
+. 続行するには、[次へ] をクリックします。
+. *ストレージ属性*ページで、*新しいボリュームの作成*を選択し、作成するボリュームのストレージ属性を入力します。
+. *追加* をクリックしてボリュームを作成し、*次へ* をクリックして続行します。
+. *概要* ページを確認し、*完了* をクリックして vVol データストアの作成プロセスを開始します。
+
+
+
+
+== 追加情報
+
+* ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。
+* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"^] 。
+* 複数のvCenter環境でONTAPツールを導入して使用する方法については、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/configure/concept_requirements_for_registering_vsc_in_multiple_vcenter_servers_environment.html["複数の vCenter Server 環境でONTAPツールを登録するための要件"^] 。
+* このソリューションのビデオデモについては、以下を参照してください。link:../videos/vmware-videos.html#vmware-datastore-provisioning-with-ontap["VMware データストアのプロビジョニング"] 。
+

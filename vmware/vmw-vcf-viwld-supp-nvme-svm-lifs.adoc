@@ -1,0 +1,95 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-viwld-supp-nvme-svm-lifs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
+summary: '複数の論理インターフェイス (LIF) を持つストレージ仮想マシン (SVM) を作成し、VMware Cloud Foundation 管理ドメインに iSCSI 接続を提供します。  NVMe プロトコル サポートを備えた SVM を構成し、個別のイーサネット ネットワークにわたって複数の LIF をセットアップして、マルチパスとフェイルオーバーを有効にし、最適なパフォーマンスと可用性を実現します。' 
+---
+= VCF VIワークロードドメインにNVMe/TCP vVolsデータストア用のSVMとLIF、およびNVMeネームスペースを作成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+複数の論理インターフェイス (LIF) を持つストレージ仮想マシン (SVM) を作成し、VMware Cloud Foundation ワークロード ドメインに NVMe 接続を提供します。この手順では、NVMe/TCP 対応の SVM と LIF の設定と NVMe 名前空間の作成についてまとめています。
+
+
+
+== ステップ1: SVMとLIFを作成する
+
+NVMe/TCP トラフィック用の複数の LIF を持つ SVM を作成するには、次の手順を実行します。
+
+既存の SVM に新しい LIF を追加するには、 ONTAP のドキュメントを参照してください。link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["ONTAP LIFを作成する"^] 。
+
+.手順
+. ONTAP System Manager から、左側のメニューの *Storage VMs* に移動し、*+ Add* をクリックします。
++
+image:vmware-vcf-asa-001.png["+追加をクリックしてSVMの作成を開始します"]
+
++
+{nbsp}
+
+. *ストレージ VM の追加* ウィザードで、SVM の *名前* を入力し、*IP スペース* を選択して、*アクセス プロトコル* の *NVMe* タブをクリックし、*NVMe/TCP を有効にする* チェックボックスをオンにします。
++
+image:vmware-vcf-asa-075.png["ストレージVMの追加ウィザード - NVMe/TCPを有効にする"]
+
++
+{nbsp}
+
+. *ネットワーク インターフェース* セクションで、最初の LIF の *IP アドレス*、*サブネット マスク*、および *ブロードキャスト ドメインとポート* を入力します。後続の LIF については、個別の設定を使用するか、チェックボックスをオンにして残りのすべての LIF で共通の設定を使用するかを選択できます。
++
+
+NOTE: 複数のパスにわたるマルチパスとフェイルオーバーを実現するには、NVMe/TCP 構成のすべての SVM に対して、個別のイーサネット ネットワークにストレージ ノードごとに少なくとも 2 つの LIF を作成します。
+
+. ストレージ VM 管理アカウント (マルチテナント環境の場合) を有効にするかどうかを選択し、[*保存*] をクリックして SVM を作成します。
++
+image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
+
+
+
+
+
+== ステップ2: NVMe名前空間を作成する
+
+NVMe 名前空間は、iSCSI または FC の LUN に類似しています。vSphere Client から VMFS データストアを展開する前に、NVMe 名前空間を作成する必要があります。  NVMe 名前空間を作成するには、クラスター内の各 ESXi ホストから NVMe 修飾名 (NQN) を取得します。  ONTAP はNQN を使用してネームスペースへのアクセス制御を提供します。
+
+.手順
+. クラスター内の ESXi ホストとの SSH セッションを開き、その NQN を取得します。  CLI から次のコマンドを使用します。
++
+[source, cli]
+----
+esxcli nvme info get
+----
++
+次の例のような出力が表示されます。
+
++
+[source, cli]
+----
+Host NQN: nqn.2014-08.com.netapp.sddc:nvme:vcf-wkld-esx01
+----
+. クラスタ内の各 ESXi ホストの NQN を記録します。
+. ONTAP System Manager から、左側のメニューの *NVMe Namespaces* に移動し、*+ Add* をクリックして開始します。
++
+image:vmware-vcf-asa-093.png["+追加をクリックしてNVMe名前空間を作成します"]
+
++
+{nbsp}
+
+. *NVMe 名前空間の追加* ページで、名前のプレフィックス、作成する名前空間の数、名前空間のサイズ、名前空間にアクセスするホスト オペレーティング システムを入力します。
+. *ホスト NQN* セクションで、名前空間にアクセスする ESXi ホストから以前に収集された NQN のコンマ区切りリストを作成します。
+. スナップショット保護ポリシーなどの追加項目を構成するには、[*その他のオプション*] をクリックします。
+. 最後に、[*保存*] をクリックして NVMe 名前空間を作成します。
++
+image:vmware-vcf-asa-093.png["+追加をクリックしてNVMe名前空間を作成します"]
+
+
+
+
+
+== 次の手順
+
+SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nvme-network.html["NVMe/TCP (NVMe/TCP) vVolsのネットワークを構成する"] 。

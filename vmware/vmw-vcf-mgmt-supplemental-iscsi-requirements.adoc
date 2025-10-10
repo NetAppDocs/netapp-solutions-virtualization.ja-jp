@@ -14,7 +14,7 @@ summary: VCF 管理ドメインに補助ストレージとして iSCSI データ
 
 
 [role="lead"]
-VMware Cloud Foundation (VCF) 管理ドメインに補助ストレージとして iSCSI データストアを追加するための要件を確認します。  VMware Cloud Foundation 管理ドメインに iSCSI vVolsをデプロイするには、完全に構成されたONTAP AFFまたはASAストレージ システムと、デプロイされた VCF 管理ドメインが必要です。
+VMware Cloud Foundation (VCF) 管理ドメインに補助ストレージとして iSCSI データストアを追加するための要件を確認します。
 
 
 

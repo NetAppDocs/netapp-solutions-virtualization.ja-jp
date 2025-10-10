@@ -22,37 +22,41 @@ vSphere クライアントを使用して、VCF 管理ドメイン クラスタ�
 ONTAP tools for VMware vSphereは、 VM アプライアンスとして導入され、 ONTAPストレージを管理するための統合された vCenter UI を提供します。
 
 .手順
-. ONTAPツールOVAイメージを以下から入手します。link:https://mysupport.netapp.com/site/products/all/details/otv/downloads-tab["NetApp サポート サイト"]ローカルフォルダーにダウンロードします。
+. ONTAPツールOVAイメージを以下から取得します。link:https://mysupport.netapp.com/site/products/all/details/otv/downloads-tab["NetApp サポート サイト"]ローカルフォルダーにダウンロードします。
 . VCF 管理ドメインの vCenter アプライアンスにログインします。
 . vCenter アプライアンス インターフェースから管理クラスタを右クリックし、[OVF テンプレートのデプロイ...] を選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-021.png["OVF テンプレートをデプロイします..."]
 
-+
-{nbsp}
-
+====
 . *OVF テンプレートのデプロイ*ウィザードで、*ローカル ファイル*ラジオ ボタンをクリックし、前の手順でダウンロードしたONTAPツール OVA ファイルを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-022.png["OVAファイルを選択"]
 
-+
-{nbsp}
-
+====
 . ウィザードの手順 2 ～ 5 では、VM の名前とフォルダーを選択し、コンピューティング リソースを選択し、詳細を確認して、ライセンス契約に同意します。
 . 構成ファイルとディスク ファイルの保存場所として、VCF 管理ドメイン クラスタの vSAN データストアを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-023.png["OVAファイルを選択"]
 
-+
-{nbsp}
-
+====
 . *ネットワークの選択*ページで、管理トラフィックに使用するネットワークを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-024.png["ネットワークを選択"]
 
-+
-{nbsp}
-
+====
 . *テンプレートのカスタマイズ*ページで、必要な情報をすべて入力します。
 +
 ** ONTAPツールへの管理アクセスに使用するパスワード。
@@ -67,11 +71,14 @@ image:vmware-vcf-aff-024.png["ネットワークを選択"]
 
 . 続行するには、[次へ] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-025.png["OTV テンプレート 1 をカスタマイズする"]
 
-+
 image:vmware-vcf-asa-035.png["OTVテンプレート2をカスタマイズする"]
 
+====
 . *完了準備完了* ページのすべての情報を確認し、*完了* をクリックしてONTAPツール アプライアンスの導入を開始します。
 
 
@@ -84,26 +91,36 @@ ONTAPツールを使用してストレージ システムを追加するには�
 .手順
 . vSphere クライアントでメイン メニューに移動し、* NetApp ONTAPツール* を選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-014.png["ONTAPツールに移動する"]
 
+====
 . * ONTAPツール* に入ったら、[はじめに] ページ (または *ストレージ システム*) から [追加] をクリックして、新しいストレージ システムを追加します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-015.png["ストレージ システムの追加"]
 
-+
-{nbsp}
-
+====
 . ONTAPストレージ システムの IP アドレスと資格情報を入力し、[*追加*] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-016.png["ONTAPシステムのIPと認証情報を提供する"]
 
-+
-{nbsp}
-
+====
 . クラスター証明書を承認し、ストレージ システムを追加するには、[*はい*] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-017.png["クラスタ証明書を承認する"]
 
+====
 
 
 
@@ -116,30 +133,37 @@ ONTAPストレージを使用して VCF 管理 VM を保護する場合は、vMo
 . vSphere Client から管理ドメイン クラスタに移動し、[*VM*] タブをクリックします。
 . iSCSI データストアに移行する VM を選択し、右クリックして [移行] を選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-018.png["移行するVMを選択"]
 
-+
-{nbsp}
-
+====
 . *仮想マシン - 移行*ウィザードで、移行タイプとして*ストレージのみの変更*を選択し、*次へ*をクリックして続行します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-019.png["移行タイプを選択"]
 
-+
-{nbsp}
-
+====
 . *ストレージの選択*ページで、iSCSi データストアを選択し、*次へ*を選択して続行します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-020.png["宛先データストアを選択"]
 
-+
-{nbsp}
-
+====
 . 選択内容を確認し、「完了」をクリックして移行を開始します。
 . 移転ステータスは、[最近のタスク] ペインから確認できます。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-021.png["vSphere クライアントの最近のタスク ペイン"]
 
+====
 
 
 

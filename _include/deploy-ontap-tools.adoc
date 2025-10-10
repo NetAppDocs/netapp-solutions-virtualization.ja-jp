@@ -2,37 +2,41 @@
 :allow-uri-read: 
 
 
-. ONTAPツールOVAイメージを以下から入手します。link:https://mysupport.netapp.com/site/products/all/details/otv/downloads-tab["NetApp サポート サイト"]ローカルフォルダーにダウンロードします。
+. ONTAPツールOVAイメージを以下から取得します。link:https://mysupport.netapp.com/site/products/all/details/otv/downloads-tab["NetApp サポート サイト"]ローカルフォルダーにダウンロードします。
 . VCF 管理ドメインの vCenter アプライアンスにログインします。
 . vCenter アプライアンス インターフェースから管理クラスタを右クリックし、[OVF テンプレートのデプロイ...] を選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-021.png["OVF テンプレートをデプロイします..."]
 
-+
-{nbsp}
-
+====
 . *OVF テンプレートのデプロイ*ウィザードで、*ローカル ファイル*ラジオ ボタンをクリックし、前の手順でダウンロードしたONTAPツール OVA ファイルを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-022.png["OVAファイルを選択"]
 
-+
-{nbsp}
-
+====
 . ウィザードの手順 2 ～ 5 では、VM の名前とフォルダーを選択し、コンピューティング リソースを選択し、詳細を確認して、ライセンス契約に同意します。
 . 構成ファイルとディスク ファイルの保存場所として、VCF 管理ドメイン クラスタの vSAN データストアを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-023.png["OVAファイルを選択"]
 
-+
-{nbsp}
-
+====
 . *ネットワークの選択*ページで、管理トラフィックに使用するネットワークを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-024.png["ネットワークを選択"]
 
-+
-{nbsp}
-
+====
 . *テンプレートのカスタマイズ*ページで、必要な情報をすべて入力します。
 +
 ** ONTAPツールへの管理アクセスに使用するパスワード。
@@ -47,10 +51,13 @@ image:vmware-vcf-aff-024.png["ネットワークを選択"]
 
 . 続行するには、[次へ] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-aff-025.png["OTV テンプレート 1 をカスタマイズする"]
 
-+
 image:vmware-vcf-asa-035.png["OTVテンプレート2をカスタマイズする"]
 
+====
 . *完了準備完了* ページのすべての情報を確認し、*完了* をクリックしてONTAPツール アプライアンスの導入を開始します。
 

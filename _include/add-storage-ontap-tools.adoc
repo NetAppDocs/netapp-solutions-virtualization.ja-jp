@@ -5,24 +5,34 @@
 .手順
 . vSphere クライアントでメイン メニューに移動し、* NetApp ONTAPツール* を選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-014.png["ONTAPツールに移動する"]
 
+====
 . * ONTAPツール* に入ったら、[はじめに] ページ (または *ストレージ システム*) から [追加] をクリックして、新しいストレージ システムを追加します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-015.png["ストレージ システムの追加"]
 
-+
-{nbsp}
-
+====
 . ONTAPストレージ システムの IP アドレスと資格情報を入力し、[*追加*] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-016.png["ONTAPシステムのIPと認証情報を提供する"]
 
-+
-{nbsp}
-
+====
 . クラスター証明書を承認し、ストレージ システムを追加するには、[*はい*] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-017.png["クラスタ証明書を承認する"]
 
+====
 

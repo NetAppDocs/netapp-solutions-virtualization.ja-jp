@@ -1,0 +1,145 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-nfs-conversion.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
+summary: VCF インポート ツールを使用して、既存の vSphere 8 クラスタを VCF 5.2 管理ドメインに変換します。  vCenter アプライアンスを検証し、SDDC マネージャーを展開し、NSX 展開仕様を作成し、変換を実行します。 
+---
+= VCF インポート ツールを使用して vSphere クラスタを VCF 管理ドメインに変換する
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+VCF インポート ツールを使用して、既存の vSphere 8 クラスタを VCF 5.2 管理ドメインに変換します。  vCenter アプライアンスを検証し、SDDC マネージャーを展開し、NSX 展開仕様を作成し、変換を実行します。
+
+vCenter アプライアンスと SDDC マネージャの両方で VMware by Broadcom の VCF インポート ツールを使用して、構成を検証し、vSphere および VCF 環境の変換およびインポート サービスを提供します。
+
+必要に応じて、追加の手順については VMware のドキュメントが参照されます。
+
+
+
+== ステップ1: VCFインポートツールをコピーして事前チェックを実行する
+
+vCenter アプライアンスの VCF インポート ツールを使用して、vSphere クラスタが VCF 変換またはインポート プロセスに対して正常な状態にあることを確認します。
+
+.手順
+. VMware ドキュメントの手順に従って、VCF インポート ツールをターゲットの vCenter アプライアンスにコピーします。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/copy-the-vcf-import-tool-to-the-target-vcenter-appliance.html["VCFインポートツールをターゲットのvCenterアプライアンスにコピーします"] 。
+. 次のコマンドを使用してバンドルを抽出します。
++
+[listing]
+----
+tar -xvf vcf-brownfield-import-<buildnumber>.tar.gz
+----
+. VMware ドキュメントの指示に従って検証事前チェックを実行します。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/run-a-precheck-on-the-target-vcenter-before-conversion.html["変換前にターゲット vCenter で事前チェックを実行する"] 。
+. 次の出力は、vCenter アプライアンスが事前チェックに合格したことを示しています。
++
+image:../media/vmware-vcf-import-nfs-011.png["vcfインポートツールの事前チェック"]
+
+
+
+
+
+== ステップ2: SDDCマネージャを展開し、NSX展開仕様を作成する
+
+VCF 管理ドメインに変換する予定の同じ vSphere クラスタに SDDC Manager アプライアンスをデプロイし、変換プロセス用の NSX デプロイ仕様を作成します。
+
+.手順
+. VMware ドキュメントの手順に従って、SDDC Manager アプライアンスをデプロイします。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/deploy-the-sddc-manager-appliance-on-the-target-vcenter.html["ターゲットvCenterにSDDC Managerアプライアンスを展開する"] 。
+. VMware ドキュメントの手順に従って、SDDC Manager インベントリにホストを追加します。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-1/commission-hosts.html["委員会ホスト"] 。
++
+以下は、NSX デプロイメント用の JSON ファイルの例です。
+
++
+[listing]
+----
+{
+  "license_key": "xxxxx-xxxxx-xxxxx-xxxxx-xxxxx",
+  "form_factor": "medium",
+  "admin_password": "************************",
+  "install_bundle_path": "/tmp/vcfimport/bundle-133764.zip",
+  "cluster_ip": "172.21.166.72",
+  "cluster_fqdn": "vcf-m02-nsx01.sddc.netapp.com",
+  "manager_specs": [{
+    "fqdn": "vcf-m02-nsx01a.sddc.netapp.com",
+    "name": "vcf-m02-nsx01a",
+    "ip_address": "172.21.166.73",
+    "gateway": "172.21.166.1",
+    "subnet_mask": "255.255.255.0"
+  },
+  {
+    "fqdn": "vcf-m02-nsx01b.sddc.netapp.com",
+    "name": "vcf-m02-nsx01b",
+    "ip_address": "172.21.166.74",
+    "gateway": "172.21.166.1",
+    "subnet_mask": "255.255.255.0"
+  },
+  {
+    "fqdn": "vcf-m02-nsx01c.sddc.netapp.com",
+    "name": "vcf-m02-nsx01c",
+    "ip_address": "172.21.166.75",
+    "gateway": "172.21.166.1",
+    "subnet_mask": "255.255.255.0"
+  }]
+}
+----
+. JSON ファイルを SDDC マネージャー上のディレクトリにコピーします。
+
+
+
+NOTE: 変換またはインポート操作で NSX Manager クラスタを展開する場合、NSX-VLAN ネットワークが使用されます。  NSX-VLAN ネットワークの制限については、VMware のドキュメントを参照してください。 https://techdocs.broadcom.com/fr/fr/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
+
+
+
+== ステップ3: SDDCマネージャーにソフトウェアをアップロードする
+
+VMware ドキュメントの手順に従って、VCF インポート ツール バンドルと NSX デプロイメント バンドルを SDDC Manager にアップロードします。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/seed-software-on-sddc-manager.html["必要なソフトウェアを SDDC Manager アプライアンスにアップロードする"] 。
+
+VCF インポート ツールと NSX デプロイメント バンドルを SDDC Manager の次のディレクトリにコピーしてください。 `/home/vcf/vcfimport` 。
+
+
+
+== ステップ4: vSphereクラスタをVCF管理ドメインに変換する
+
+VMware ドキュメントの手順に従って、vSphere クラスターを VCF 管理ドメインに変換します。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/import-workload-domain-into-sddc-manager-inventory.html["vSphere 環境を SDDC Manager インベントリに変換またはインポートする"] 。
+
+次のコマンドを使用して、vSphere クラスタを VCF 管理ドメインに変換し、NSX クラスタをデプロイします。
+
+[listing]
+----
+python3 vcf_brownfield.py convert --vcenter '<vcenter-fqdn>' --sso-user '<sso-user>' --domain-name '<wld-domain-name>' --nsx-deployment-spec-path '<nsx-deployment-json-spec-path>'
+----
+各値の意味は次のとおりです。
+
+* `<vcenter-fqdn>`vCenter Serverの完全修飾ドメイン名です
+* `<sso-user>`シングルサインオンユーザーアカウントです
+* `<wld-domain-name>`ワークロードドメインの希望する名前です
+* `<nsx-deployment-json-spec-path>`手順2で作成したNSXデプロイメントJSONファイルへのパスです。
+
+
+
+TIP: 利用可能なすべてのVCFインポートツール機能を確認するには、以下を実行します。 `python3 vcf_brownfield.py --help`から `/home/vcf/vcf-import-package/vcf-brownfield-import-<version>/vcf-brownfield-toolset`ディレクトリ。
+
+
+
+== ステップ5: VCFにライセンスを追加する
+
+変換が完了したら、VCF 環境にライセンスを追加します。
+
+.手順
+. SDDC Manager UI にログインします。
+. ナビゲーション ペインで *管理 > ライセンス* に移動します。
+. *+ ライセンス キー* をクリックします。
+. ドロップダウンメニューから製品を選択します。
+. ライセンスキーを入力してください。
+. ライセンスの説明を入力します。
+. *[追加]*をクリックします。
+. ライセンスごとにこれらの手順を繰り返します。
+
+
+
+
+== 追加情報
+
+* VCF インポート ツールの詳細については、VMware のドキュメントを参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/vcf-import-tool-options-and-parameters-admin.html["VCFインポートツールのオプションとパラメータ"] 。
+

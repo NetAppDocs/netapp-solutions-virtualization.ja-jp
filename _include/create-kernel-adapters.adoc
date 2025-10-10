@@ -4,45 +4,51 @@
 
 . vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。*構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-030.png["ネットワーク追加ウィザードを開始する"]
 
-+
-{nbsp}
-
+====
 . *接続タイプの選択* ウィンドウで *VMkernel ネットワーク アダプタ* を選択し、*次へ* をクリックして続行します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-008.png["VMkernelネットワークアダプタを選択"]
 
-+
-{nbsp}
-
+====
 . *ターゲット デバイスの選択* ページで、以前に作成した iSCSI の分散ポート グループの 1 つを選択します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-031.png["ターゲットポートグループを選択"]
 
-+
-{nbsp}
-
+====
 . *ポートのプロパティ*ページで、デフォルトのままにして*次へ*をクリックして続行します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-032.png["VMkernelポートのプロパティ"]
 
-+
-{nbsp}
-
+====
 . *IPv4 設定* ページで、*IP アドレス*、*サブネット マスク* を入力し、新しいゲートウェイ IP アドレスを指定します (必要な場合のみ)。続行するには、[次へ] をクリックします。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-033.png["VMkernel IPv4設定"]
 
-+
-{nbsp}
-
+====
 . *準備完了*ページで選択内容を確認し、*完了*をクリックして VMkernel アダプタを作成します。
 +
+.例を表示
+[%collapsible]
+====
 image:vmware-vcf-asa-034.png["VMkernelの選択を確認する"]
 
-+
-{nbsp}
-
+====
 . このプロセスを繰り返して、2 番目の iSCSI ネットワーク用の VMkernel アダプタを作成します。
 

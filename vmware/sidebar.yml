@@ -51,12 +51,28 @@ entries:
     url: "/vmware/vmw-vcf-dr-bxp-nfs.html"
   - title: 既存の vSphere クラスタを VCF に変換する
     entries:
-    - title: 既存の vSphere クラスタを VCF に変換する方法について
+    - title: vSphere クラスタの変換について学ぶ
       url: "/vmware/vmw-vcf-migrate.html"
-    - title: 既存の vSphere クラスタを NFS データストアに変換する
-      url: "/vmware/vmw-vcf-mgmt-nfs.html"
-    - title: FCデータストアを持つ既存のvSphereクラスタを変換する
-      url: "/vmware/vmw-vcf-mgmt-fc.html"
+    - title: NFS データストアを使用して vSphere クラスタを変換する
+      entries:
+      - title: 展開ワークフロー
+        url: "/vmware/vmw-vcf-mgmt-nfs.html"
+      - title: 要件の確認
+        url: "/vmware/vmw-vcf-mgmt-nfs-requirements.html"
+      - title: ONTAPツールを導入し、NFSデータストアをプロビジョニングする
+        url: "/vmware/vmw-vcf-mgmt-nfs-deploy.html"
+      - title: vSphere クラスタを VCF に変換する
+        url: "/vmware/vmw-vcf-mgmt-nfs-conversion.html"
+    - title: FCデータストアを使用してvSphereクラスタを変換する
+      entries:
+      - title: 展開ワークフロー
+        url: "/vmware/vmw-vcf-mgmt-fc.html"
+      - title: 要件の確認
+        url: "/vmware/vmw-vcf-mgmt-fc-requirements.html"
+      - title: ONTAPツールを導入し、FCデータストアをプロビジョニングする
+        url: "/vmware/vmw-vcf-mgmt-fc-deploy.html"
+      - title: vSphere クラスタを VCF に変換する
+        url: "/vmware/vmw-vcf-mgmt-fc-conversion.html"
   - title: VCFにプリンシパルストレージをプロビジョニングする
     entries:
     - title: プリンシパルストレージのプロビジョニングについて

@@ -1,0 +1,50 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-fc-requirements.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, aff, all-flash, fc, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
+summary: 'NetApp ONTAPファイバ チャネル (FC) データストアを備えた vSphere 8 クラスタを VMware Cloud Foundation 管理ドメインに変換するための要件を確認します。' 
+---
+= vCenter Server インスタンスをファイバ チャネル データストアを備えた VCF 管理ドメインに変換するための展開要件
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAP FC データストアを含む vSphere 8 クラスタを VMware Cloud Foundation 管理ドメインに変換するための要件を確認します。
+
+
+
+== インフラストラクチャ要件
+
+次のコンポーネントと構成が適切であることを確認してください。
+
+* FC トラフィックを許可するように構成されたストレージ仮想マシン (SVM) を備えたNetApp ASA R2/ ASA/ AFFストレージ システム。
+* FC トラフィックを伝送するために作成され、SVM に関連付けられた論理インターフェイス (LIF)。
+* FC トラフィックを伝送するように指定されたスイッチに FC ゾーニングが設定されます。
+* 4 台の ESXi ホストと、クラスター上に共存する vCenter アプライアンスを備えた vSphere 8 クラスター。
+* この目的のために確立された VLAN またはネットワーク セグメント上の vMotion 用に構成された分散ポート グループ。
+* VCF 変換に必要なソフトウェアをダウンロードしました。必要なソフトウェアについては、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/download-software-for-converting-or-importing-existing-vsphere-environments-admin.html["既存の vSphere 環境を変換またはインポートするためのソフトウェアをダウンロードする"] 。
+* ONTAPツールの前提条件が満たされています。
++
+ONTAPツールの前提条件の詳細については、以下を参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/prerequisites.html#system-requirements["ONTAP tools for VMware vSphereの前提条件"] 。
+
++
+ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれにもインストールできます。
+
+
+
+
+
+== その他のリソース
+
+* vSphere を VCF 5.2 に変換またはインポートする際にサポートされるストレージおよびその他の考慮事項については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
+* ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"] 。
+* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation 5.2 のドキュメント"] 。
+
+
+
+
+== 次の手順
+
+展開要件を確認した後、link:vmw-vcf-mgmt-fc-deploy.html["ONTAPツールを導入し、FCデータストアをプロビジョニングする"] 。

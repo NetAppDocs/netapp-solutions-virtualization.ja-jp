@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-NetApp Shift Toolkitは、VMware ESXiやMicrosoft Hyper-Vなどのハイパーバイザー間でのVMの移行を簡素化・高速化するために設計されたスタンドアロン製品です。また、さまざまな仮想ディスクフォーマット間でのディスクレベルの変換もサポートしています。
+NetApp Shift Toolkit は、VMware ESXi、Microsoft Hyper-V、Oracle Linux Virtualization Manager、Redhat OpenShift などのハイパーバイザー間での VM の移行を簡素化および高速化するように設計されたスタンドアロン製品です。また、さまざまな仮想ディスク形式間のディスク レベルの変換もサポートします。
 
 
 
@@ -28,27 +28,31 @@ NetApp Shift ツールキットを使用すると、仮想マシン (VM) の移�
 
 == ツールキットの概要
 
-NetApp Shift ツールキットは、異なるハイパーバイザー間で仮想マシン (VM) を移行したり、仮想ディスク形式を変換したりできる、使いやすいグラフィカル ユーザー インターフェイス (GUI) ソリューションです。 NetApp FlexCloneテクノロジーを利用して、VM ハード ディスクを迅速に変換します。さらに、ツールキットは宛先 VM の作成と構成を管理します。
+NetApp Shift ツールキットは、異なるハイパーバイザー間で仮想マシン (VM) を移行したり、仮想ディスク形式を変換したりできる、使いやすいグラフィカル ユーザー インターフェイス (GUI) ソリューションです。NetApp FlexClone® テクノロジーを利用して、VM ハード ディスクを迅速に変換します。さらに、ツールキットは宛先 VM の作成と構成を管理します。
 
 Shift ツールキットは、次のハイパーバイザー間の双方向変換をサポートすることで、マルチハイパーバイザー環境に柔軟性を提供します。
 
 * VMware ESXi から Microsoft Hyper-V へ
-* Microsoft Hyper-V から VMware ESXi (近日リリース)
+* Microsoft Hyper-V から VMware ESXi へ
+* VMWare ESXi から Oracle Linux Virtualization Manager (OLVM) へ
+* VMWare ESXi から Red Hat OpenShift Virtualization へ
 
 
 Shift ツールキットは、次のディスク形式のハイパーバイザー間での仮想ディスクのディスク レベルの変換をサポートします。
 
 * VMware ESX から Microsoft Hyper-V (仮想マシン ディスク [VMDK] から仮想ハード ディスク形式 [VHDX])
+* Microsoft Hyper-V から VMware ESX (仮想ハード ディスク フォーマット [VHDX] から仮想マシン ディスク [VMDK])
 * VMware ESX から KVM 互換ハイパーバイザー (VMDK から QCOW2)
+* VMware ESX から KVM 互換ハイパーバイザー (VMDK から RAW)
 
 
-image:shift-toolkit-001.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+image::shift-toolkit-001.png[NetApp Shift Toolkit の概要]
 
-Shiftツールキットをダウンロードできますlink:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["ここをクリックしてください。"]Windows システムでのみ利用可能です。
+Shiftツールキットはダウンロードできますlink:https://mysupport.netapp.com/site/tools/tool-eula/vm-data-collector["ここをクリックしてください。"]Windows システムでのみ利用可能です。
 
 
 
-=== VMポータビリティの利点
+== VMポータビリティの利点
 
 ONTAP は、あらゆるハイパーバイザーおよびあらゆるハイパースケーラに最適です。 FlexCloneテクノロジーを搭載。長時間のダウンタイムを待ったり、パススルー オプションで落ち着いたりするよりも、数分で VM を移植することが現実的です。
 
@@ -62,29 +66,20 @@ ONTAP は、あらゆるハイパーバイザーおよびあらゆるハイパ�
 
 
 
-=== Shiftツールキットの仕組み
+== Shiftツールキットの仕組み
 
 変換時に、Shift ツールキットは VMware ESXi および Microsoft Hyper-V ホストと共有NetAppストレージに接続します。  Shift ツールキットは、 FlexCloneを活用して、3 つの主要なNetAppテクノロジーを使用して、VM ハード ドライブを 1 つのハイパーバイザーから別のハイパーバイザーに変換します。
 
-* 単一ボリュームと複数のプロトコル
-+
-NetApp ONTAP を使用すると、複数のプロトコルを使用して単一のボリュームに簡単にアクセスできます。たとえば、VMware ESXi は、ネットワーク ファイル システム (NFS) プロトコルが有効になっているボリュームにアクセスでき、Microsoft Hyper-V は、CIFS/SMB プロトコルを使用して同じボリュームにアクセスできます。
+* 単一ボリュームと複数のプロトコルNetApp ONTAPを使用すると、複数のプロトコルを使用して単一ボリュームに簡単にアクセスできます。たとえば、VMware ESXi は、ネットワーク ファイル システム (NFS) プロトコルが有効になっているボリュームにアクセスでき、Microsoft Hyper-V は、CIFS/SMB プロトコルを使用して同じボリュームにアクセスできます。
+* FlexCloneテクノロジーFlexClone を使用すると、データのコピーなしでファイル全体またはボリューム全体を迅速に複製できます。ストレージ システム上の共通ブロックは、複数のファイルまたはボリューム間で共有されます。その結果、大規模な VM ディスクのクローンを非常に迅速に作成できます。
+* VM ディスク変換NetApp PowerShell ツールキットと Shift ツールキットには、 NetAppストレージ コントローラでさまざまなアクションを実行するために使用できる多数のワークフローが含まれています。仮想ディスクをさまざまな形式に変換する PowerShell コマンドレットが含まれています。たとえば、VMware VMDK は Microsoft VHDX に変換でき、その逆も可能です。これらの変換はFlexCloneを使用して実行され、非常に高速なクローン作成とディスク形式の変換を 1 つの手順で実行できます。
 
-* FlexCloneテクノロジー
-+
-FlexClone を使用すると、データのコピーなしでファイル全体またはボリューム全体を迅速に複製できます。ストレージ システム上の共通ブロックは、複数のファイルまたはボリューム間で共有されます。その結果、大規模な VM ディスクのクローンを非常に迅速に作成できます。
 
-* VMディスク変換
-+
-NetApp PowerShell ツールキットと Shift ツールキットには、 NetAppストレージ コントローラでさまざまなアクションを実行するために使用できる多数のワークフローが含まれています。仮想ディスクをさまざまな形式に変換する PowerShell コマンドレットが含まれています。たとえば、VMware VMDK は Microsoft VHDX に変換でき、その逆も可能です。これらの変換はFlexCloneを使用して実行され、非常に高速なクローン作成とディスク形式の変換を 1 つの手順で実行できます。
+image::shift-toolkit-002.png[NetApp Shift Toolkit の動作図]
 
 
 
-image:shift-toolkit-002.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
-
-
-
-==== プロトコルと通信方法
+=== プロトコルと通信方法
 
 Shift ツールキットは、変換または移行操作中に次のプロトコルを使用します。
 
@@ -92,3 +87,25 @@ Shift ツールキットは、変換または移行操作中に次のプロト�
 * VI Java (openJDK)、VMware PowerCLI - VMware ESXi との通信に使用されます。
 * Windows PowerShell モジュール - Microsoft Hyper-V との通信に使用されます。
 
+
+ファイアウォールは、次のポート経由のトラフィックを有効にする必要があります。
+
+[cols="20%, 10%, 25%, 20%, 25%"]
+|===
+| ポート | プロトコル | ソース | デスティネーション | 目的 
+
+
+| 443 | TCP | Shiftツールキットノード | VMware vCenter | VMware インベントリ 
+
+
+| 443 | TCP | Shiftツールキットノード | VMware ESXi ノード | Invoke-vmscript 依存関係 (ルーティング) 
+
+
+| 443 | TCP | Shiftツールキットノード | ターゲットハイパーバイザー | ターゲット在庫 
+
+
+| 443 | TCP | Shiftツールキットノード | ONTAP システムを入力 | ONTAPアクセス 
+
+
+| 5985/5986 | HTTP | Shiftツールキットノード | Hyper-V ホスト | ウィンRM 
+|===

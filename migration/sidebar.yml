@@ -4,7 +4,7 @@ title: VM移行ソリューション
 url: "/migration/index.html"
 entries:
 - title: Shift Toolkit を使用して VM を移行または変換する
-  pdf-filename: Shift Toolkit を使用して VM を移行または変換する
+  pdf-filename: Shift Toolkit ユーザーガイド
   entries:
   - title: Shift Toolkitについて
     url: "/migration/shift-toolkit-overview.html"
@@ -13,9 +13,25 @@ entries:
   - title: Shift Toolkit を構成する
     url: "/migration/shift-toolkit-ui.html"
   - title: Shift Toolkit を使用して VM を移行する
-    url: "/migration/shift-toolkit-migration.html"
+    entries:
+    - title: 概要
+      url: "/migration/shift-toolkit-migration.html"
+    - title: VMware ESXi から Microsoft Hyper-V への VM の移行
+      url: "/migration/shift-toolkit-migrate-esxi2hyperv.html"
+    - title: Microsoft Hyper-V から VMware ESXi への VM の移行
+      url: "/migration/shift-toolkit-migrate-hyperv2esxi.html"
+    - title: VMware ESXi から Red Hat OpenShift Virtualization への VM の移行
+      url: "/migration/shift-toolkit-migrate-esxi2osv.html"
+    - title: VMware ESXi から Oracle Linux Virtualization Manager (OLVM) に VM を移行する
+      url: "/migration/shift-toolkit-migrate-esxi2olvm.html"
   - title: Shift Toolkit を使用して VM を変換する
     url: "/migration/shift-toolkit-conversion.html"
+  - title: 監視とダッシュボード
+    url: "/migration/shift-toolkit-monitor.html"
+  - title: 詳細設定
+    url: "/migration/shift-toolkit-settings.html"
+  - title: SAN環境からの移行
+    url: "/migration/shift-toolkit-san.html"
   - title: 次の手順
     url: "/migration/shift-toolkit-summary.html"
 - title: VMをONTAPに移行する

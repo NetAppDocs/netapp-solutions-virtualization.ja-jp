@@ -14,7 +14,7 @@ summary: Shift Toolkit で変換する前に、VMware Storage vMotion と Hyper-
 
 
 [role="lead"]
-Shift Toolkit で変換する前に、VMware Storage vMotion と Hyper-V Storage Live Migration を使用して、SAN ベースのデータストアから NAS に VM を移行し、ビジネスの継続性を維持します。
+Shift Toolkit で変換する前に、VMware Storage vMotion と Storage Live Migration を使用して VM を SAN ベースのデータストアから NAS に移行し、ビジネスの継続性を維持します。
 
 
 
@@ -32,14 +32,14 @@ image::shift-toolkit-260.png[SAN から NAS へ、そして再び SAN へ VM を
 
 移行プロセスは主に 3 つのフェーズで構成されます。
 
-.SAN から NAS (VMware 環境) への移行*
+.SAN から NAS (VMware 環境) への移行
 VMware vSphere Storage vMotion を使用して、VM とそのディスクを SAN データストアから NFS データストアに移行します。この操作は、VM のダウンタイムなしで実行できます。
 
-.Shift Toolkit を使用して VM を変換する*
-VMがNFSデータストアに配置された後、Shift ToolkitはNetApp FlexCloneテクノロジーを使用してVMをVMware ESXiからHyper-Vに変換します。変換されたVMとそのディスクは、Hyper-Vホストからアクセス可能なCIFS共有に配置されます。
+.Shift Toolkit を使用して VM を変換する
+VM が NFS データストアに配置された後、Shift Toolkit はNetApp FlexCloneテクノロジーを使用して VM を VMware ESXi から任意のハイパーバイザーに変換します。変換された VM とそのディスクは、それぞれのハイパーバイザー ホストからアクセス可能な qtree に配置されます。
 
-.SAN（Hyper-V 環境）への移行*
-変換後、Hyper-V ストレージ ライブ マイグレーションを使用して、変換された VM とそのディスクを CIFS 共有から SAN 対応のクラスター共有ボリューム (CSV) に移動します。これにより、Hyper-V 環境で SAN インフラストラクチャを維持できます。
+.SANへの移行
+変換後、ストレージ移行を使用して、変換された VM とそのディスクを qtree から SAN 対応ボリュームに移動します。これにより、それぞれのハイパーバイザー環境で SAN インフラストラクチャを維持できます。
 
 
 

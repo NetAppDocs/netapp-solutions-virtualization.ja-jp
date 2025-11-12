@@ -26,7 +26,6 @@ Shift Toolkit は、次のハイパーバイザー間の双方向の移行をサ
 * link:shift-toolkit-migrate-hyperv2esxi.html["Microsoft Hyper-V から VMware ESXi へ"]
 * link:shift-toolkit-migrate-esxi2olvm.html["VMware ESXi から Oracle Linux Virtualization Manager (OLVM) へ"]
 * link:shift-toolkit-migrate-esxi2osv.html["VMware ESXi から Red Hat OpenShift Virtualization へ"]
-* link:shift-toolkit-migrate-esxi2osv.html["VMware ESXi から Red Hat OpenShift Virtualization へ"]
 
 
 
@@ -45,22 +44,6 @@ Shift Toolkit は移行中に次の手順を実行します。
 . 各VMにネットワークを登録する
 . VMware Tools を削除し、OS の種類に応じてトリガー スクリプトまたは cron ジョブを使用して IP アドレスを割り当てます。
 
-
-
-
-== 前提条件
-
-計画されたメンテナンス期間中は、VM の電源を正常にオフにする必要があります。移行を開始する前に、すべての前提条件が満たされていることを確認してください。
-
-* Shift Toolkit VMがドメインの一部であることを確認する
-* CIFS共有が適切な権限で設定されていることを確認する
-* 移行または変換に使用されるqtreeのセキュリティスタイルが正しいことを確認します
-* クラスタ内の任意の Hyper-V ホストから Hyper-V マネージャーを使用して VM の作成をテストし、VHDx を CIFS 共有に配置します。
-* プログラムと機能または PowerShell を使用して Hyper-V 管理ツールを追加し、Shift Toolkit VM からの VM の作成をテストします。 `add-windowsfeature rsat-hyper-v-tools`
-
-
-
-NOTE: 失敗があった場合、link:https://learn.microsoft.com/en-us/windows-server/virtualization/hyper-v/manage/remotely-manage-hyper-v-hosts["任意の認証プロトコルを使用して委任を有効にする"] 。
 
 
 

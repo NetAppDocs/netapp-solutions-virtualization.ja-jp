@@ -15,6 +15,21 @@ summary: NetApp仮想化ソリューション資料への最近の変更のロ�
 
 
 
+== 2025年11月12日
+
+* NetApp Shift Toolkit の正しいダウンロード リンクを提供しました
+* NetApp Shift Toolkit の移行ソリューションを追加しました
++
+** link:migration/shift-toolkit-migrate-esxi2hyperv.html["Shift Toolkit を使用して VMware ESXi から Microsoft Hyper-V に VM を移行する"]
+** link:migration/shift-toolkit-migrate-esxi2olvm.html["VMware ESXiからOracle Linux Virtualization ManagerへのVMの移行"]
+** link:migration/shift-toolkit-migrate-esxi2osv.html["VMware ESXi から Red Hat OpenShift Virtualization への VM の移行"]
+** link:migration/shift-toolkit-migrate-hyperv2esxi.html["Shift Toolkit を使用して Microsoft Hyper-V から VMware ESXi に VM を移行する"]
+
+
+
+
+
+
 == 2025年8月18日
 
 NetAppソリューションサイトは、link:https://docs.netapp.com/us-en/netapp-solutions-family/index.html["NetAppソリューションファミリー"^]これには次のサイトが含まれます。

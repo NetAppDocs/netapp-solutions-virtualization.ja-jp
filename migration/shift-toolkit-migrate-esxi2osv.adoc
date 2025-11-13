@@ -405,7 +405,7 @@ image::shift-toolkit-115.png[Red Hat OpenShift VM 移行]
 
 * OpenShift Virtualization オペレーターとNetApp Trident CSI ドライバーがインストールされた OpenShift クラスター
 * MTV 2.9.4（変換モードを含む）
-* link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit/download["シフトツールキット"]インストール済み
+* link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["シフトツールキット"]インストール済み
 +
 
 NOTE: Shift Toolkit API のみを使用するため、Shift Toolkit リソース グループまたはブループリントを構成する必要はありません。

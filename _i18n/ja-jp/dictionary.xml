@@ -7392,7 +7392,6 @@
   <block id="3173e5dfb176e66e58d8dd7221d713ae" category="paragraph">変換された qcow2 ファイルは、どの KVM ハイパーバイザーとも互換性があります。たとえば、qcow2 ファイルは、virt-manager を使用して VM を作成する RHEL ベースの KVM のほか、ubuntu KVM、Rocky Linux ベースの KVM などでも利用できます。同じものを、微調整を加えた Oracle Linux 仮想化マネージャーでも、またNetApp Tridentを使用してインポートした後の OpenShift 仮想化でも使用できます。目標は、ディスク（秒単位から分単位に変換）を提供し、それを組織が VM をプロビジョニングしてネットワークを割り当てるために使用する既存の自動化スクリプトに統合できるようにすることです。このアプローチは、ディスク変換が Shift ツールキット API によって処理され、残りのスクリプトで VM が起動されるため、全体的な移行時間を短縮するのに役立ちます。</block>
   <block id="4d407050aa86ad48312affa8e43a67d7" category="paragraph">Shift ツールキットは、VMware から他の互換性のある KVM ハイパーバイザーへのエンドツーエンドの移行をサポートします。ただし、変換オプションにより、移行管理者はこれらの変換および移行 API を実行できるようになります。</block>
   <block id="623c44ac4b1228e38622f3eedc5061a8" category="list-text">ハイパーバイザーとして KVM (変換のみ) を指定して、宛先サイト タイプを作成します。</block>
-  <block id="7988bc3b706c65b838400d38c7373d3f" category="paragraph">注: KVM の場合、ハイパーバイザーの詳細は必要ありません。</block>
   <block id="6fed993333f213fd751fe952dd9a1c6b" category="image-alt">宛先サイトの作成手順のダイアログ</block>
   <block id="8d05ac343d9e8675e947c40b11207891" category="image-alt">リソース グループの作成手順のダイアログ</block>
   <block id="2df1e028b15b06c600d5c22031c432c4" category="image-alt">ブループリント作成ステップのダイアログ</block>
@@ -7403,9 +7402,7 @@
   <block id="e38469c1fc68ca83ddada045beacbb44" category="image-alt">VMの電源をオフにする手順の検証ダイアログ</block>
   <block id="f2470fd9acfc01b9d830d498196090dc" category="image-alt">VM変換ステップの結果のダイアログ</block>
   <block id="f89321da95ef8c5c384ca202700624c4" category="image-alt">ディスクを手動で変換する手順のダイアログ</block>
-  <block id="50ac124a54b0bb7ea8520a81095d4d0f" category="paragraph">注: Shift ツールキットは、qcow2 形式のディスク変換のみをサポートします。VM の作成または登録はサポートされていません。変換されたディスクを使用するには、手動で VM を作成し、ディスクを接続します。</block>
   <block id="4e175b4a0600a5af4a37d4c3b532492f" category="image-alt">変換ステップのダイアログ</block>
-  <block id="130b7c31b80e0a57e3cb85e6585d497d" category="paragraph">注: 変換された VHDX ディスクを VM で使用するには、Hyper-V マネージャーまたは PowerShell コマンドを使用して VM を手動で作成し、ディスクを VM に接続する必要があります。これに加えて、ネットワークも手動でマッピングする必要があります。</block>
   <block id="5000274a2d3250acac3a676012898380" category="section-title">RAW形式に変換する</block>
   <block id="17bce200723c9c733ec906c2e322e0cd" category="paragraph">NetApp Shift ツールキットを使用して仮想ディスクを RAW 形式に変換するには、次の大まかな手順に従います。</block>
   <block id="50e8a71367194ed752207c6119258412" category="list-text">ハイパーバイザーとして OpenShift または OLVM を指定して、宛先サイト タイプを作成します。</block>
@@ -7414,50 +7411,31 @@
   <block id="83f66f08bf60fa09db9963b155860b84" category="list-text">手動で VM を作成して、変換されたディスクを使用します。</block>
   <block id="b0de87156ffe112f5f8166152cae5519" category="list-text">OpenShift の場合、tridentctl を使用してボリュームを PVC としてインポートし、インポートしたディスクを使用して VM を作成します。</block>
   <block id="a92b8813eb165b3c43549058ce1fa8db" category="list-text">OLVM の場合は、ovirt エンジン URL にアクセスし、Shift ツールキットで変換された RAW ファイルを OS ディスクとして接続して新しい VM を作成します。適切なインターフェースを選択してください。</block>
-  <block id="9eeb2626626241fa30880b2de8304572" category="paragraph">注: OLVM の場合、qcow2 ファイル形式も使用できます。この選択はブループリントの作成中に行うことができます。</block>
   <block id="6e9a29234e1028e876f938bdd5681bc1" category="image-alt">変換プラン編集ステップのダイアログ</block>
-  <block id="2437c64c84dd38b17fc189250ddf7cab" category="paragraph">注意: 変換された RAW ディスク イメージを VM で使用するには、OpenShift コンソール、OpenShift の YAML 経由の OC コマンド、または OLVM の OLVM REST API/UI を使用して VM を手動で作成し、ディスクを接続する必要があります。これに加えて、ネットワークも手動でマッピングする必要があります。</block>
-  <block id="4c819ee19ebd0991fa0314f20d36a548" category="paragraph">注: VM を手動で作成するときは、適切なブート タイプ (EFI または BIOS) が指定されていることを確認してください。</block>
   <block id="2821fbb86c99471cbce6ecd8b3c1687d" category="doc">ONTAPストレージ用のNetApp Shift Toolkitをインストールする</block>
   <block id="bc4e03f0d73b062d4fb7ae1f6a827d4c" category="paragraph">ツールキットの使用を開始するには、指定された仮想マシンで Windows オペレーティング システムを使用し、前提条件を満たしていることを確認してから、パッケージをインストールします。</block>
-  <block id="67ce7b132a7144fc8cbaea4fad51e24f" category="paragraph">Shift ツールキットは、Windows 2019、2022、2025 バージョンで実行できます。  Shiftツールキットパッケージを以下からダウンロードしてください。<block ref="dd181abce2974d0dae870cc1951c581b" category="inline-link-macro-rx"></block>パッケージを解凍し、exe を実行してインストールし、サービスを開始します。 Shift ツールキットは、オンライン (サイズ約 130 MB) とオフライン (サイズ約 1.2 GB) の 2 つのパッケージを提供します。名前が示すように、オンライン インストーラー パッケージは、必要な前提条件をインターネットからダウンロードしてインストールします。</block>
   <block id="92f4abdcd256d7df6e79a1ad93294e19" category="image-alt">Shift Toolkit のダウンロード選択を示す図</block>
-  <block id="bf009931d4fdadd17dd14d83a27f2a21" category="paragraph">ヒント: 展開には適切なパッケージを使用してください。オフライン モードでは、必要な前提条件とファイルがすべてバンドルされているため、プロキシ設定を変更する必要はありません。</block>
-  <block id="2ae052fbbc764cd4eeaebe29c1aba7c5" category="paragraph">注: Shift ツールキットを専用の VM にインストールします。</block>
   <block id="e11da9afe91d381489a365c86cc614ab" category="section-title">前提条件</block>
   <block id="84089c84fe635e93a571c8d2078685e2" category="list-text">CPU – 4 つの vCPU</block>
   <block id="c25de1656f530fa9c0e02e589a99b0b2" category="list-text">メモリ – 最低8GB</block>
   <block id="01a9b91ccede03f628fdc87d2dadd2ca" category="list-text">ディスク容量 – 最低100 GB</block>
-  <block id="282e13fea6054e5c4d616c6fa05dc945" category="paragraph">注意: インストールには 900 MB のディスク容量が必要です。</block>
   <block id="211fbf3c943803d1e8ee2d9028d397c8" category="list-text">Hyper-V ベースの移行の場合、Shift サーバー、 Data ONTAP CIFS サーバー、および Hyper-V サーバーは同じ Windows Active Directory ドメイン上に存在している必要があります。</block>
   <block id="5ee9ac4214347b231d90ec0fe04ec7da" category="list-text">VM 変換時に、Storage Virtual Machine で使用するために、CIFS および NFS 用の複数の LIF がサポートされています。Hyper-V サーバーおよび ESXi ホストは、これらの LIF の IP アドレスを使用してストレージ仮想マシン (SVM) にアクセスします。</block>
   <block id="1a08679970ec521864f514134592b9e3" category="paragraph">NFS と SMB プロトコルの両方を許可する新しい SVM をプロビジョニングするには、このリンクで提供されている手順に従います。</block>
-  <block id="3347f6bf3e8cab9408274a227d3c72f3" category="paragraph">注: 運用中の SVM を混乱を招くような方法で変更することなく、SVM が Shift ツールキットの要件を満たしていることを確認するために、新しい SVM を作成することをお勧めします。</block>
-  <block id="e2dbf54fe0eb6dc74487bee43ad08766" category="paragraph">注: VMware から Hyper-V への双方向移行の場合、新しい SVM で NFS プロトコルと SMB プロトコルの両方が有効になっている必要があります。プロビジョニングされたボリュームでは、NFS と SMB の両方が有効になっている必要があります。</block>
   <block id="e4747dacfdeaf64a9f1da8c1e983cb88" category="list-text">ESX から Hyper-V への変換では、Shift ツールキットは変換された VHDX を同じボリューム内の qtree (NTFS セキュリティ スタイル) に配置します。</block>
   <block id="3c9fc53f2afbc9694a4df01009b70d37" category="list-text">Hyper-V から ESX への変換では、Shift ツールキットは変換された VMDK を同じボリューム内の qtree (UNIX セキュリティ スタイル) に配置します。</block>
   <block id="5b8cf77d4e68f3259aec8c8c523c07af" category="list-text">ESX VMDK から RAW への変換では、UNIX セキュリティ スタイルの qtree を使用する必要があります。</block>
   <block id="782281c56b4e89829f430b0e3a5be151" category="paragraph">Shift ツールキットは、qtree のセキュリティ スタイルを検証しません。したがって、ターゲットのハイパーバイザーとディスク タイプに基づいて適切なセキュリティ スタイルで qtree を作成することが重要です。</block>
-  <block id="8b4ce025817faabaa0617e7aa13e4cf2" category="paragraph">注: 宛先パスは、ソース VM と同じボリューム上にある必要があります。</block>
-  <block id="e426197e5ed7b611e44b6946ced57d2e" category="paragraph">注: ターゲットのハイパーバイザーのタイプとディスク形式に応じて、qtree に適切なセキュリティ スタイルを割り当てます。</block>
-  <block id="0960a401a7c74ce515f31aa33ba7f6bd" category="paragraph">注意: 変換された qcow2 ファイルを OpenShift 仮想化で使用する場合は例外があり、これらのファイルは qtree を使用せずにボリュームに直接配置できます。これを実現するには、Shift ツールキット GUI を使用するか、Shift ツールキット API を使用して VMDK ファイルを qcow2 形式に変換し、ボリューム内に直接配置します。</block>
   <block id="e3d5a5ace968edfbd09962cfa0dee29f" category="image-alt">移行タイプに基づいて作成する q-tree のタイプの図</block>
   <block id="05e28166a1f92c3a776cf8a97a6b6ee9" category="image-alt">作成するq-treeの種類を示すダイアログ</block>
   <block id="51f228208bf35769cace217e2c75b361" category="section-title">CIFS共有の要件</block>
   <block id="4d191110824bda8df8aeb1a6e7b18c8e" category="paragraph">Hyper-V 移行の場合、変換された VM データが保存される共有を作成します。NFS 共有 (変換する VM を保存するために使用) と宛先共有 (変換された VM を保存するために使用) が同じボリューム上にあることを確認します。</block>
   <block id="495c34aa343437cb8f198cd862f90c81" category="image-alt">作成するCIFS共有を示すダイアログ</block>
   <block id="ba3fb9aceb0ac7c1eb94ffbeb452a225" category="image-alt">CIFS共有の作成結果を示すダイアログ</block>
-  <block id="55e50708d5593637dc5ac91cd853b0f7" category="paragraph">注: SMB 3.0 を有効にする必要があります。これはデフォルトで有効になっています。</block>
-  <block id="728ab136002a6dc74f473e416573b625" category="paragraph">注: 継続的に利用可能なプロパティが有効になっていることを確認してください。</block>
-  <block id="682675114425e9735aa2e70a47f8ce30" category="paragraph">注: SMBのエクスポートポリシーは、ストレージ仮想マシン（SVM）で無効にする必要があります。</block>
-  <block id="b4d8d61dfa520ade1afa686010c3e960" category="paragraph">注: CIFS サーバーと Hyper-V サーバーが属するドメインでは、Kerberos 認証と NTLMv2 認証の両方を許可する必要があります。</block>
-  <block id="192e3564614d93f8d5df4d9058dbbe24" category="paragraph">注: ONTAP は、 Windows のデフォルトの共有権限である Everyone / フル コントロールを使用して共有を作成します。</block>
   <block id="7eab521ce07e2b1655041dc55cbbeede" category="section-title">サポートされているVMゲストオペレーティングシステム</block>
   <block id="e87637b4c5507d05f5ab40e9b4f2ebeb" category="list-text">アルマ Linux 7.x</block>
   <block id="61ae957360cbb9e779b4770da0706e03" category="list-text">SuSe 12</block>
   <block id="d0a61b5dcacd7a98d6ea9528d63dcb93" category="list-text">SuSe 15</block>
-  <block id="eaa4eab53048f73b6261960ce0c2f1af" category="paragraph">注意: Red Hat Enterprise Linux 5 および 6 用の CentOS Linux/RedHat はサポートされていません。</block>
-  <block id="2e8696e7652fb7511860b42ad6311740" category="paragraph">注: Windows Server 2008 はサポートされていませんが、変換プロセスは正常に動作するはずです。自己責任で進めてください。ただし、Shift ツールキットを使用して Windows 2008 VM を正常に変換したというお客様からの報告を受けています。IP 割り当ての自動化に使用される PowerShell のバージョンは、Windows Server 2008 で実行されている古いバージョンと互換性がないため、移行後に IP アドレスを更新することが重要です。</block>
   <block id="6ad3fd15b4ece95a97a7bcb31427bec1" category="section-title">サポートされているONTAPのバージョン</block>
   <block id="01e9975649f2ec16d824f96c4fa7aeb8" category="section-title">サポートされているハイパーバイザーのバージョン</block>
   <block id="95546e9760981229487527d6cf9a3d52" category="list-text">VMware - Shift ツールキットは vSphere 7.0.3 以降で検証されています</block>
@@ -7465,15 +7443,10 @@
   <block id="4548015f6d00a7f977186d6acc5f7902" category="list-text">OpenShift - 4.17 以降を実行している Red Hat OpenShift および OpenShift Virtualization</block>
   <block id="0d7435375bda68258e789bb228f91ebc" category="list-text">Oracle Linux KVM - Oracle Linux Virtualization Manager は 4.5 以上です</block>
   <block id="367c1e1c1b0fed55126cd44edcd92a67" category="list-text">Oracle Linux Virtualization Manager ホストに ovirt-engine-4.5.4-1.el8 RPM 以上がインストールされている</block>
-  <block id="da2ac70bce2d0ec6af2002c75cccc8d8" category="paragraph">注: 現在のリリースでは、エンドツーエンドの仮想マシンの移行は、Hyper-V、VMware、OpenShift、Oracle Virtualization でのみサポートされています。</block>
-  <block id="4c209b67ccc456b479fb83032a682caf" category="paragraph">注: 現在のリリースでは、KVM を宛先とする場合、VMDK から qcow2 または RAW への変換がサポートされているワークフローのみです。したがって、ドロップダウンから KVM を選択した場合、ハイパーバイザーの詳細は必要ありません。qcow2 ディスクは、KVM バリアント上の仮想マシンのプロビジョニングに使用できます。</block>
-  <block id="0201d970862cf35319ea23520c58226a" category="list-text">ダウンロード<block ref="007da9a550a8944648c282b612decf50" category="inline-link-macro-rx"></block>パッケージ化して解凍します。</block>
   <block id="6572eb27b5c6086cdd5bcbc4d1667e7b" category="image-alt">Shift Toolkit のダウンロード オプションを示すダイアログ</block>
   <block id="4ec292c048e8a4f9e319c6cb0de2483d" category="image-alt">実行するShift Toolkitパッケージを表示するダイアログ</block>
-  <block id="9ba651c3c5f2463d30951495821d85c6" category="paragraph">注: すべての事前チェックが実行され、最小要件が満たされていない場合は、適切なエラー メッセージまたは警告メッセージが表示されます。</block>
   <block id="c2892c9148b18c2c3e6d5b86db11172d" category="image-alt">Shift Toolkit の保存先フォルダを表示するダイアログ</block>
   <block id="e60c7bb55f0d3c05c05bae40b25ce40d" category="image-alt">Shift Toolkit を起動するための IP アドレスを表示するダイアログ</block>
-  <block id="4318bd8cdde40d55306f3502c0865b2b" category="paragraph">注: VM に複数の NIC が割り当てられている場合、セットアップ プロセスでは、ドロップダウン オプションを使用して適切な IP アドレスを選択できます。</block>
   <block id="dcae96231bba4c35e94accf7724b8cea" category="paragraph">[Next]をクリックします。</block>
   <block id="7fa1f523d44084aabc1cd576f9320be1" category="image-alt">インストールするパッケージを表示するダイアログ</block>
   <block id="ee579445f71f17020d064463efed8355" category="image-alt">Javaライセンス情報を表示するダイアログ</block>
@@ -7481,12 +7454,9 @@
   <block id="422250d12ac22829224f1b621e63ac68" category="image-alt">Shift Toolkit のインストール オプションを示すダイアログ</block>
   <block id="58cebf544833d2d2babd5e50c91061b1" category="image-alt">Shift Toolkit のインストールの進行状況を示すダイアログ</block>
   <block id="9051840a1f4fd4f2bad1fc8681b84cad" category="list-text">Shift ツールキットはデフォルトで自己署名証明書を使用します。証明書のプロンプトに同意し、「次へ」をクリックします。</block>
-  <block id="52de851295c6c158e4cb3c652c91ab8d" category="paragraph">注: 証明書は、サードパーティまたは CA が生成した証明書に簡単に置き換えることができます。  certs フォルダ内の証明書を置き換えるだけです。  certs フォルダーは、&lt;インストール ディレクトリ&gt;Storage&gt;Certs 内にあります。</block>
   <block id="b5cff33795d09607abcdb31ac9df352a" category="image-alt">Shift Toolkit SSL証明書の選択を示すダイアログ</block>
   <block id="99e092ab9321d3856d51f3e4e55af66a" category="list-text">完了すると、インストールが完了します。</block>
-  <block id="0199e0f110ed08f00ecaa17084564276" category="paragraph">注: Shift ツールキット VM にインターネットがない場合、オフライン インストーラーは同じ手順を実行しますが、実行可能ファイルに含まれるパッケージを使用してコンポーネントをインストールします。</block>
   <block id="e63765367148f418cf687a4778e70038" category="image-alt">Shift Toolkit ウィザードを表示するダイアログ</block>
-  <block id="aee686fe73ad9a385c756152fb9cd868" category="paragraph">注意: インストールには 10 ～ 15 分かかる場合があります。</block>
   <block id="16807519541f6a0f84b273fd8a3e9b70" category="paragraph">アップグレードは完全に自動化され、ワンクリックで完了できるようになりました。追加サービスにより、アップグレードがシームレスになります。ポート 3002 をリッスンする Shit ツールキット アップデータ サービスは、次の手順を実行します。</block>
   <block id="38243a8449ba1b8388f98f8617180f9a" category="list-text">アップグレード パッケージをダウンロードします。</block>
   <block id="d7696bad80895fa3cb6a1f79064ac9e1" category="list-text">Shiftツールキットサービスを停止する</block>
@@ -7494,7 +7464,6 @@
   <block id="0d83db94a6f793e24bc275947796d6ad" category="list-text">更新を実行し、同じ IP アドレスを使用します (メタデータはそのまま保持されます)。</block>
   <block id="a081c9f4fbebfea5f37497319eeb3147" category="list-text">完了すると、UIはポート3001でリッスンしているShiftツールキットUIにリダイレクトされます。</block>
   <block id="8c57096463233c48527a2884538dc643" category="image-alt">Shift Toolkit のアップグレード オプションを示すダイアログ</block>
-  <block id="f8b3364d2c3529025a5164f050b187ef" category="paragraph">注: インターネット接続のない展開の場合は、 NetApp Toolchest から「update」で始まるアップグレード パッケージを手動でダウンロードし、指定されたフォルダー (C:\NetApp_Shift) に配置します。このフォルダー パスは、更新プロセス中に作成および指定する必要があります。その他のすべての手順は、オンライン アップグレード手順と同じです。</block>
   <block id="000738c77e4719c5ca7216b3b1fd318c" category="summary">Shift Toolkit を使用して VM を準備し、ディスク形式を変換し、ターゲット環境を構成し、VM を VMware ESXi から Microsoft Hyper-V に移行します。</block>
   <block id="7c087000969c41966e005710d6aebb90" category="doc">Shift Toolkit を使用して VMware ESXi から Microsoft Hyper-V に VM を移行する</block>
   <block id="82f049c181190bec5fa5f8b4f44c198a" category="paragraph">Shift Toolkit は、ディスク形式の変換と移行先環境でのネットワーク再構成を通じて、仮想化プラットフォーム間での VM の移行を可能にします。</block>
@@ -7779,7 +7748,6 @@
   <block id="dd4ee610bd1d035c73bc0cbcd80e46da" category="paragraph">次の前提条件が満たされていることを確認してください。</block>
   <block id="075351692a1e60c7c93efefcf8f202b4" category="list-text">OpenShift Virtualization オペレーターとNetApp Trident CSI ドライバーがインストールされた OpenShift クラスター</block>
   <block id="62af718dafdac747b9a8c93d244cebef" category="list-text">MTV 2.9.4（変換モードを含む）</block>
-  <block id="a669ea3f3f12cea8753fbb52402583c4" category="list-text"><block ref="8f9f1b51cb31c428b1d20d42b996bda1" category="inline-link-macro-rx"></block>インストール済み</block>
   <block id="57d46182fb8d2a9fa64eac5d3f9d9da4" category="admonition">Shift Toolkit API のみを使用するため、Shift Toolkit リソース グループまたはブループリントを構成する必要はありません。</block>
   <block id="69a64b9f7cc895c19adf78a298196575" category="list-text">OpenShift クラスターの管理者レベルの権限</block>
   <block id="89cdbaecbf44555ee5d12d57b8ed5562" category="list-text">tridentctlとOCコマンドラインツールがインストールされたLinuxインスタンス</block>
@@ -8018,7 +7986,6 @@
   <block id="825860267b7a5d90b93823d783710214" category="list-text">Microsoft Hyper-V から VMware ESX (仮想ハード ディスク フォーマット [VHDX] から仮想マシン ディスク [VMDK])</block>
   <block id="52567f9a4b927b569287a168c92c53e5" category="list-text">VMware ESX から KVM 互換ハイパーバイザー (VMDK から RAW)</block>
   <block id="0866755dc8e08dc4c5c4e9013f9d8dca" category="image-alt">NetApp Shift Toolkit の概要</block>
-  <block id="ac755b6de8efaf835ed5faa2810bf8f9" category="paragraph">Shiftツールキットはダウンロードできます<block ref="ce1999e8d7d946ea35ded70e868c8173" category="inline-link-macro-rx"></block>Windows システムでのみ利用可能です。</block>
   <block id="bad8794305fb794d7aac928ae93d8996" category="list-text">単一ボリュームと複数のプロトコルNetApp ONTAPを使用すると、複数のプロトコルを使用して単一ボリュームに簡単にアクセスできます。たとえば、VMware ESXi は、ネットワーク ファイル システム (NFS) プロトコルが有効になっているボリュームにアクセスでき、Microsoft Hyper-V は、CIFS/SMB プロトコルを使用して同じボリュームにアクセスできます。</block>
   <block id="928fe00758f1c39ffbdb44e3a26ea74d" category="list-text">FlexCloneテクノロジーFlexClone を使用すると、データのコピーなしでファイル全体またはボリューム全体を迅速に複製できます。ストレージ システム上の共通ブロックは、複数のファイルまたはボリューム間で共有されます。その結果、大規模な VM ディスクのクローンを非常に迅速に作成できます。</block>
   <block id="b9ad3bd7739d623f3eb74f8191b44759" category="list-text">VM ディスク変換NetApp PowerShell ツールキットと Shift ツールキットには、 NetAppストレージ コントローラでさまざまなアクションを実行するために使用できる多数のワークフローが含まれています。仮想ディスクをさまざまな形式に変換する PowerShell コマンドレットが含まれています。たとえば、VMware VMDK は Microsoft VHDX に変換でき、その逆も可能です。これらの変換はFlexCloneを使用して実行され、非常に高速なクローン作成とディスク形式の変換を 1 つの手順で実行できます。</block>
@@ -8176,18 +8143,14 @@
   <block id="a73927c8751b2ee647fe31a8ed32f235" category="paragraph">Shift Toolkit はソース VM を一切変更しないため、ロールバックは簡単で、ソース VM の電源をオンにするだけです。その他のロールバックアクションは必要ありません。</block>
   <block id="a2bbba53223387a421234d9342ccc733" category="doc">NetApp Shift Toolkit を構成する</block>
   <block id="ec708a42a9ff28123eaadaed0db59204" category="list-text">ブラウザを使用してShiftツールキットUIにアクセスするには、<block ref="fa2a7ebf8fb904eb6f7c5d874576f5d4" prefix=" " category="inline-code"></block></block>
-  <block id="bf88709461043d4da8838007e1d75655" category="paragraph">注: 最適なエクスペリエンスを得るには、Google Chrome または Internet Explorer を使用してください。</block>
   <block id="8cfa087cb4994e870de3db6612fc7d74" category="list-text">以下のデフォルトの資格情報を使用して UI にアクセスします: ユーザー名: admin パスワード: admin</block>
   <block id="e0c6326cab09b0415bb3265571d7ea76" category="image-alt">NetApp Shift Toolkit ログイン画面の図</block>
-  <block id="b1cbe4f7d738373c18af705412d9932f" category="paragraph">注: 管理者は最初のログイン時に資格情報を変更する必要があります。</block>
-  <block id="d54c8b222c5fcccaab0d5b0fe1c81b73" category="paragraph">注: 必須のパスワード変更後、GUI にログインした後、「パスワードの変更」オプションを使用して管理者の資格情報を変更することもできます。</block>
   <block id="5e9ca049373bbf5988030ed386e7437e" category="image-alt">NetApp Shift Toolkit のパスワード変更画面の図</block>
   <block id="a51355c80fb19c33f35c7c179f8c4859" category="paragraph">完了したら、「同意して続行」をクリックして法的EULAに同意します。</block>
   <block id="2884ceffaf25b250c9354e098be5d19e" category="image-alt">NetAppエンドユーザー使用許諾契約 (EULA) のスクリーンショット</block>
   <block id="2a26b62413a9e4c4be91fb7f6b394fe4" category="paragraph">ソース ハイパーバイザーと宛先ハイパーバイザーの両方へのストレージと接続が適切に構成されたら、 FlexClone機能を活用して仮想マシンの適切な形式への移行または変換を自動化するように Shift ツールキットの構成を開始します。</block>
   <block id="972f20fcebf79202d265cc4f29958724" category="paragraph">最初のステップは、ソースとターゲットのハイパーバイザーの詳細 (ハイパーバイザーとストレージの両方) を検出して Shift ツールキットに追加することです。サポートされているブラウザで Shift ツールキットを開き、デフォルトのユーザー名とパスワードを使用して、「サイトの追加」をクリックします。</block>
   <block id="1f1c16f6b1640df2ea3645c8db1d347a" category="image-alt">Shift Toolkit のサイト追加ダイアログのダイアログ</block>
-  <block id="91fd9090c3e4a55c5e35a7409fe51482" category="paragraph">注: サイトは、Discover オプションを使用して追加することもできます。</block>
   <block id="5b1423e0889bd5cfb73324db7ae51737" category="list-text">ハイパーバイザー – ソースとしてVMwareまたはHyper-Vを選択</block>
   <block id="c4d23706529fa00f5f93137bd32185f3" category="image-alt">Shift Toolkit の「新しいサイトの追加」ダイアログ</block>
   <block id="65c98bc08a137025b38319eaea8bee1f" category="list-text">VMware を選択した場合は、ソース vCenter の詳細を入力します。</block>
@@ -8196,8 +8159,6 @@
   <block id="e176331f87fbc1be1aae2537ff661b85" category="list-text">Hyper-V ユーザー名 - Hyper-V にアクセスするためのユーザー名 (ダウンレベル ログイン (ドメイン\ユーザー名) または UPN 形式)</block>
   <block id="78d2d0eb32308ae30092873f0b0250e0" category="list-text">Hyper-V パスワード – リソースのインベントリを実行するために Hyper-V にアクセスするためのパスワード。</block>
   <block id="b72787ab7b5b0367786710c20b96fcf6" category="paragraph">追加されると、Shift ツールキットは自動検出を実行し、関連するメタデータ情報とともに VM を表示します。Shift ツールキットは、VM で使用されるネットワークと vLAN を自動的に検出し、それらを入力します。</block>
-  <block id="8ab8d096b39e8bc95dc520c2e4af1b50" category="paragraph">注意: ソース サイトに変更を加えた場合は、必ず検出を実行して最新の情報を取得してください。これを行うには、サイト名の横にある 3 つのドットをクリックし、「サイトの検出」をクリックします。</block>
-  <block id="a43c6f7b8e4f71b9cad7b004adfdeada" category="paragraph">注: VM インベントリは 24 時間ごとに自動更新されます。</block>
   <block id="b6f22cf039b9f68af3ff1eefe06be0cb" category="image-alt">Shift Toolkit のダイアログ 新しいサイトを追加してサイトを検出します</block>
   <block id="bb84f51b5f803ce39d67a2e8e3ffa1c3" category="paragraph">特定のソース ハイパーバイザーの検出データを表示するには、ダッシュボードに移動し、適切なサイト名に対して [VM リストの表示] をクリックします。このページには、VM インベントリと VM 属性が表示されます。</block>
   <block id="f7bb07bfcc2c0abfa4745aef3541eb28" category="image-alt">Shift Toolkitのダイアログで検出されたサイト</block>
@@ -8215,25 +8176,16 @@
   <block id="cc6f6f0ee55ab7a7604dc20284de1e8a" category="list-text">ユーザー名 - アクセスするためのユーザー名 (UPN 形式: username@domain.com または domain\administrator) パスワード - リソースのインベントリを実行するためのアクセス用のパスワード。</block>
   <block id="efe335e5b4298c43ef6dfc89924726b7" category="paragraph">「自己署名証明書を受け入れる」を選択します。</block>
   <block id="e8d8be3a6b7678c0e66e18c75eb9b3c5" category="list-text">完了したら、「サイトを作成」をクリックします。</block>
-  <block id="9f1f35bffc262c91c77f29b315fe54ae" category="paragraph">注意: ディスク形式の変換はボリューム レベルで同じボリューム内で行われるため、ソースと宛先のストレージ システムは同じである必要があります。</block>
-  <block id="6efc6df08a0ce190c362537e7eefbd5a" category="paragraph">注: リソース グループを作成する前に、Qtree がプロビジョニングされていることを確認してください (前提条件のセクションで説明されているとおり)。</block>
   <block id="e8ecd8bb6fceb72a871da3f301a5f756" category="paragraph">リソース グループの作成を開始するには、「新しいリソース グループの作成」メニュー項目をクリックします。</block>
   <block id="67ecef0f6e2ca24138f8f486a68fb404" category="list-text">リソース グループにアクセスし、「新しいリソース グループの作成」をクリックします。</block>
   <block id="f20a56ede8550c8ce29de20acdbb9141" category="image-alt">新しいリソース グループの作成ユーザー インターフェースのダイアログ</block>
   <block id="cde5646828c35d0e5a97983cd133a8d1" category="list-text">「新しいリソース グループ」で、ドロップダウンからソース サイトを選択し、「作成」をクリックします。</block>
   <block id="e0644dc4bde5b77f3f4f458429bc4336" category="list-text">「続行」をクリックします</block>
   <block id="61bb60929fd4c9396d2a8431800d34a4" category="list-text">検索オプションを使用して適切な VM を選択します。デフォルトのフィルター オプションは「データストア」です。</block>
-  <block id="3a3e61d2badf7d7016e681dea5480519" category="paragraph">注: 変換する前に、変換または移行する VM を、新しく作成されたONTAP SVM 上の指定されたデータストアに移動します。これにより、本番環境の NFS データストアを分離することができ、指定されたデータストアを仮想マシンのステージングに使用できるようになります。</block>
-  <block id="a670ce289a181d0b410025eec5cd08b8" category="paragraph">注: OpenShift 環境の場合、 ONTAP NAS ストレージ ドライバーを使用して PVC (永続ボリューム要求) 構造を複製するには、VMDK を対応するボリュームに再配置する必要があります。今後のリリースでは、 ONTAP NAS エコノミー ドライバーを活用するための追加の機能強化が組み込まれる予定です。</block>
-  <block id="c1848bd79b15595617b2f9103c8a2456" category="paragraph">注: このコンテキストのデータストア ドロップダウンには、NFSv3 データストアのみが表示されます。NFSv4 データストアは表示されません。</block>
   <block id="93241e3f4b91e553e0bb780fc10137fa" category="list-text">「宛先サイト」、「宛先ハイパーバイザー エントリ」、およびデータストアから Qtree またはストレージ クラスへのマッピングを選択して、移行の詳細を更新します。</block>
-  <block id="bdebe6642cc49dd34d9ec69535bf4d59" category="paragraph">注意: VM を変換するときは、変換先のパス (変換された VM が保存される場所) が qtree に設定されていることを確認してください。適切な qtree への宛先パスを設定します。</block>
-  <block id="4f17428d60ddbcbf6698947b7565c1ef" category="paragraph">注: 複数の qtree を作成し、それに応じて変換された VM ディスクを保存するために使用できます。</block>
-  <block id="a665af903725c840d8255d1d9526de9a" category="paragraph">注意: 仮想マシンはスパンされたデータストア上で実行でき、Shit ツールキットはそれを自動的に検出しますが、ボリュームごとに qtree をマップする必要があります。</block>
   <block id="f82c4417135bcf1ea9ac114ca6bc5627" category="paragraph">複数のボリュームにまたがるスパンされた VMDK を持つ VM を移行する機能 Shift ツールキット UI は、特定の RG に対して選択された VM または VM の一部であるすべてのスパンされたボリュームを自動的に選択します。これにより、データストアと qtree のマッピングを実行する RG ページ内のすべてのボリュームが一覧表示されます。</block>
   <block id="7923419d5a4b20b90b38a39229e75d68" category="list-text">選択したすべての VM のブート順序とブート遅延 (秒) を選択します。各仮想マシンを選択し、その優先順位を設定することで、電源オンシーケンスの順序を設定します。3 はすべての仮想マシンのデフォルト値です。オプションは次のとおりです: 1 – 最初にパワーオンする仮想マシン 3 – デフォルト 5 – 最後にパワーオンする仮想マシン</block>
   <block id="9b2aa8da7dacbd4da4b8326b026b4d40" category="list-text">「リソース グループの作成」をクリックします。</block>
-  <block id="cebe40079363ad85c9e00e8e380da918" category="paragraph">注: 仮想マシンを追加または削除するためにリソース グループを変更する必要がある場合は、リソース グループ名に対してこのオプションを使用し、「リソース グループの編集」を選択します。</block>
   <block id="b8008a125d23cd3fe064457bfac88688" category="paragraph">仮想マシンを移行または変換するには、計画が必要です。ドロップダウンからソースおよび宛先のハイパーバイザー プラットフォームを選択し、このブループリントに含めるリソース グループと、アプリケーションの電源をオンにする方法のグループ化 (ドメイン コントローラー、次に Tier-1、次に Tier-2 など) を選択します。これらは移行計画とも呼ばれることがあります。ブループリントを定義するには、「ブループリント」タブに移動し、「新しいブループリントの作成」をクリックします。</block>
   <block id="ec5750e44d9a1c9271d3c75402b0583c" category="paragraph">ブループリントの作成を開始するには、「新しいブループリントを作成」をクリックします。</block>
   <block id="214c49fbbbcbf5078732bf17494b0bfa" category="list-text">ブループリントにアクセスし、「新しいブループリントを作成」をクリックします。</block>
@@ -8243,8 +8195,6 @@
   <block id="e7542fa0c1b66a6c656b019b76fba3ca" category="image-alt">新しいブループリントの作成ユーザーインターフェースのダイアログ</block>
   <block id="b25d6492372ce6afc7b60c6d28829b7f" category="list-text">リソース グループの詳細を選択し、「続行」をクリックします。</block>
   <block id="1aa59c506e4ddafe74406a5fba0b2589" category="list-text">前の手順を完了したら、[ネットワーク マッピング] を選択し、適切なネットワーク マップに割り当てます。仮想スイッチ、ネットワーク プロファイル、またはオペレーターがターゲット ハイパーバイザーにすでにプロビジョニングされていることを確認します。</block>
-  <block id="e76e59ef3ac79fa6845aff23abbc868a" category="paragraph">注: テスト移行の場合、「ネットワークを構成しない」がデフォルトで選択されており、Shift ツールキットは IP アドレスの割り当てを実行しません。ディスクが変換され、それぞれのハイパーバイザー側で仮想マシンが購入されたら、実稼働ネットワークとの衝突を避けるためにバブル ネットワーク スイッチを手動で割り当てます。</block>
-  <block id="ed08affc931c014ed8fc1841a953b0e6" category="paragraph">注: 仮想マシンを作成してパワーオンできるように、qtree が事前にプロビジョニングされ、必要な権限が割り当てられていることを確認してください。注: OpenShift の場合、PVC はTrident CSI を使用して作成されるため、qtree を事前に作成する必要はありません。</block>
   <block id="7e9900298f29110f6aff4be593bf2d30" category="list-text">Windows ベースの OS の場合は、ローカル管理者権限を持つユーザーを使用することをお勧めします。ドメイン資格情報も使用できますが、変換前に VM にユーザー プロファイルが存在することを確認してください。そうでない場合、ネットワークが接続されていないときにドメイン認証が検索されるため、ドメイン資格情報は機能しません。</block>
   <block id="459a5b60d16fe5574414a30d02f67ca1" category="list-text">Linux ディストリビューション ベースのゲスト VM の場合、パスワードなしで sudo コマンドを実行できるユーザーを指定します。つまり、そのユーザーは sudoers リストの一部であるか、/etc/sudoers.d/ フォルダーに新しい構成ファイルとして追加されている必要があります。</block>
   <block id="681b2ae21be7c2d31c78c3e4759bd4f8" category="paragraph">最近のリリースでは、Shift Toolkit により仮想マシンの準備の柔軟性が向上しました。デフォルトでは、ツールキットはOS固有のスクリプトを展開してVMの準備を自動化し、次の操作を実行します。* VMware Toolsを削除する * 選択したブループリントに基づいて再割り当て用のIP設定をバックアップする</block>
@@ -8259,10 +8209,7 @@
   <block id="479102a123aa909325a356e45ed16505" category="image-alt">リソース グループ ユーザー インターフェイスのダイアログ</block>
   <block id="308c34c22f59ad98cf6151e5a1153d64" category="list-text">「続行」をクリックします。</block>
   <block id="11dfbeb04ea5f6393403e0fbbf9dec26" category="list-text">次のステップでは、チェックボックスを選択して日時を設定し、移行をスケジュールします。予定日までにすべての仮想マシン (VM) が準備され、電源がオフになっていることを確認します。完了したら、「ブループリントを作成」をクリックします。</block>
-  <block id="5874f6880c924e1aff0dc4802958a185" category="paragraph">注: スケジュールを設定するときは、現在の Shift VM 時間より少なくとも 30 分先の日付を選択してください。これは、ワークフローがリソース グループ内の VM を準備するのに十分な時間を確保するためです。</block>
   <block id="3b6771871906cf26dcebde8f4caaab1f" category="list-text">Windows ベースのオペレーティング システムの場合、準備スクリプトが保存されるデフォルトの場所は「C:\ NetApp」フォルダーです。</block>
-  <block id="c56f7467ffeebd26f8c1df1883c72f30" category="paragraph">注: CentOS または Red Hat を実行している Linux ソース VM の場合、Shift ツールキットは必要な Hyper-V ドライバーを自動的にインストールするインテリジェントな機能を備えています。変換後に VM が正常に起動できるようにするには、ディスク変換前にこれらのドライバーがソース VM に存在している必要があります。</block>
-  <block id="b27f456e9a958e2c2303d8d093f25292" category="paragraph">注: 詳細については、<block ref="1c434828099aa70753997347cfb22762" category="inline-link-macro-rx"></block> 。</block>
   <block id="1fb0d1b74e516b59121dd7a5a6455843" category="sidebar">Shift Toolkit ユーザーガイド</block>
   <block id="1642c5824792f34a9c9b218c8fbf6864" category="sidebar">VMware ESXi から Microsoft Hyper-V への VM の移行</block>
   <block id="d7f9de7cb5fe22a40ff549c178d80480" category="sidebar">Microsoft Hyper-V から VMware ESXi への VM の移行</block>
@@ -8275,4 +8222,63 @@
   <block id="b03b448779a771783f7b05ae88457a85" category="paragraph">VM が NFS データストアに配置された後、Shift Toolkit はNetApp FlexCloneテクノロジーを使用して VM を VMware ESXi から任意のハイパーバイザーに変換します。変換された VM とそのディスクは、それぞれのハイパーバイザー ホストからアクセス可能な qtree に配置されます。</block>
   <block id="28bed22cb4d0030cf58eb18a11ba3f8e" category="paragraph-title">SANへの移行</block>
   <block id="8fb14a772174f772115b35707d3c4a41" category="paragraph">変換後、ストレージ移行を使用して、変換された VM とそのディスクを qtree から SAN 対応ボリュームに移動します。これにより、それぞれのハイパーバイザー環境で SAN インフラストラクチャを維持できます。</block>
+  <block id="13b6fa536eb1d6a6ac45cf21bd047eb5" category="admonition">KVM ではハイパーバイザーの詳細は必要ありません。</block>
+  <block id="9661bb934c0e256029f562980b5e3357" category="admonition">Shift ツールキットは、qcow2 形式のディスク変換のみをサポートします。VM の作成または登録はサポートされていません。変換されたディスクを使用するには、手動で VM を作成し、ディスクを接続します。</block>
+  <block id="09421c49154abf7d91874fd7cf6f2085" category="admonition">変換された VHDX ディスクを VM で使用するには、Hyper-V マネージャーまたは PowerShell コマンドを使用して VM を手動で作成し、ディスクを VM に接続する必要があります。これに加えて、ネットワークも手動でマッピングする必要があります。</block>
+  <block id="e2d38bb0205a8ef9aba696cee5c3aa28" category="admonition">OLVM の場合、qcow2 ファイル形式も使用できます。この選択はブループリントの作成中に行うことができます。</block>
+  <block id="63c1e7779d95e612b6d229b69472c6f2" category="admonition">変換された RAW ディスク イメージを VM で使用するには、OpenShift コンソール、OpenShift の YAML 経由の OC コマンド、または OLVM の OLVM REST API/UI を使用して VM を手動で作成し、ディスクを接続する必要があります。これに加えて、ネットワークも手動でマッピングする必要があります。</block>
+  <block id="3bf99fda67690f8472ac3105914e8f75" category="admonition">VM を手動で作成するときに、適切なブート タイプ (EFI または BIOS) が指定されていることを確認します。</block>
+  <block id="7d76d555f2a35e2e68785f77730e4223" category="paragraph">Shift ツールキットは、Windows 2019、2022、2025 バージョンで実行できます。Shiftツールキットパッケージを以下からダウンロードしてください。<block ref="0e93fa2610e18308a429b8e37bff0fca" category="inline-link-macro-rx"></block>パッケージを解凍し、exe を実行してインストールし、サービスを開始します。Shift ツールキットは、オンライン (サイズ約 130 MB) とオフライン (サイズ約 1.2 GB) の 2 つのパッケージを提供します。名前が示すように、オンライン インストーラー パッケージは、必要な前提条件をインターネットからダウンロードしてインストールします。</block>
+  <block id="50bf380243c95c9173da44b1e6c6c318" category="admonition">展開には適切なパッケージを使用します。オフライン モードでは、必要な前提条件とファイルがすべてバンドルされているため、プロキシ設定を変更する必要はありません。</block>
+  <block id="5676f7ccd02e9341b1f0dc22219d49c2" category="admonition">専用の VM に Shift ツールキットをインストールします。</block>
+  <block id="0a5f187a38c5b17faf05a92c3c55a264" category="admonition">インストールには 900 MB のディスク容量が必要です。</block>
+  <block id="51408e5e3b25fc5a811d161d4ec11813" category="admonition">運用中の SVM を混乱を招くような方法で変更することなく、SVM が Shift ツールキットの要件を満たしていることを確認するために、新しい SVM を作成することをお勧めします。</block>
+  <block id="e38734739368fedf7716d8f6ef5616d2" category="admonition">VMware から Hyper-V への双方向移行の場合、新しい SVM で NFS プロトコルと SMB プロトコルの両方が有効になっている必要があります。プロビジョニングされたボリュームでは、NFS と SMB の両方が有効になっている必要があります。</block>
+  <block id="d77eaf1ead0dd10191f74771949651f6" category="admonition">宛先パスはソース VM と同じボリューム上にある必要があります。</block>
+  <block id="086928e9e6a367446b6ac38269430e43" category="admonition">ターゲットのハイパーバイザー タイプとディスク フォーマットに応じて、qtree に適切なセキュリティ スタイルを割り当てます。</block>
+  <block id="103001c0162eb90ec3c33b6d9c5c0324" category="admonition">変換された qcow2 ファイルを OpenShift 仮想化で使用することを目的としている場合は例外があり、これらのファイルは qtree を使用せずにボリュームに直接配置できます。これを実現するには、Shift ツールキット GUI を使用するか、Shift ツールキット API を使用して VMDK ファイルを qcow2 形式に変換し、ボリューム内に直接配置します。</block>
+  <block id="0311ee0cf7fe887f90c9f918533a9096" category="admonition">SMB 3.0 を有効にする必要があります。これはデフォルトで有効になっています。</block>
+  <block id="d3525ee733a0a9400de3b9c51c569106" category="admonition">継続的に利用可能なプロパティが有効になっていることを確認します。</block>
+  <block id="de63bc7e3957393b95cabe1066c8d6e5" category="admonition">SMBのエクスポートポリシーは、ストレージ仮想マシン（SVM）で無効にする必要があります。</block>
+  <block id="4871af42b5e6993a6b64636300ff3583" category="admonition">CIFS サーバーと Hyper-V サーバーが属するドメインは、Kerberos 認証と NTLMv2 認証の両方を許可する必要があります。</block>
+  <block id="875e7b2516d12003e4697ae14eb19d7e" category="admonition">ONTAP は、Windows のデフォルトの共有権限である Everyone / フル コントロールを使用して共有を作成します。</block>
+  <block id="4de2d7564d5e43d51fa02f3b66a88e08" category="admonition">Red Hat Enterprise Linux 5 および 6 用の CentOS Linux/RedHat はサポートされていません。</block>
+  <block id="e3b527bb151566ab2590c93db56acad7" category="admonition">Windows Server 2008 はサポートされていませんが、変換プロセスは正常に動作するはずです。自己責任で進めてください。ただし、Shift ツールキットを使用して Windows 2008 VM を正常に変換したというお客様からの報告を受けています。IP 割り当ての自動化に使用される PowerShell のバージョンは、Windows Server 2008 で実行されている古いバージョンと互換性がないため、移行後に IP アドレスを更新することが重要です。</block>
+  <block id="f872e6d836b90234d3cc68973622aded" category="admonition">現在のリリースでは、エンドツーエンドの仮想マシン移行は、Hyper-V、VMware、OpenShift、Oracle Virtualization でのみサポートされています。</block>
+  <block id="13139e0a28c4eeaac6c0835c087cc79e" category="admonition">現在のリリースでは、宛先が KVM の場合、VMDK から qcow2 または RAW への変換がサポートされているワークフローのみです。したがって、ドロップダウンから KVM を選択した場合、ハイパーバイザーの詳細は必要ありません。qcow2 ディスクは、KVM バリアント上の仮想マシンのプロビジョニングに使用できます。</block>
+  <block id="249ab02ca8a32d830ad496e0da5b54c2" category="list-text">ダウンロード<block ref="9aa914d37cf6457f3666d93aedcfa60f" category="inline-link-macro-rx"></block>パッケージ化して解凍します。</block>
+  <block id="ffee295c0d98b6d41b18fd5077be0984" category="admonition">すべての事前チェックが実行され、最小要件が満たされていない場合は、適切なエラー メッセージまたは警告メッセージが表示されます。</block>
+  <block id="f9496371491d8eaef3321581f8037d2b" category="admonition">セットアップ プロセスでは、VM に複数の NIC が割り当てられている場合、ドロップダウン オプションを使用して適切な IP アドレスを選択できます。</block>
+  <block id="2f9f3f418527bcc896531c079afd73bd" category="admonition">証明書は、サードパーティまたは CA が生成した証明書に簡単に置き換えることができます。certs フォルダ内の証明書を置き換えるだけです。certs フォルダーは、&lt;インストール ディレクトリ&gt;Storage&gt;Certs 内にあります。</block>
+  <block id="7dff5687c881c53f6351151dc7bce114" category="admonition">Shift ツールキット VM にインターネットがない場合、オフライン インストーラーは同じ手順を実行しますが、実行可能ファイルに含まれるパッケージを使用してコンポーネントをインストールします。</block>
+  <block id="272f6dc09b503783174135e096ac86d3" category="admonition">インストールには10〜15分かかります。</block>
+  <block id="2e7ecf46edd82001af03972ca0b514a7" category="admonition">インターネット接続のない展開の場合は、 NetApp Toolchest から「update」で始まるアップグレード パッケージを手動でダウンロードし、指定されたフォルダー (C:\NetApp_Shift) に配置します。このフォルダー パスは、更新プロセス中に作成および指定する必要があります。その他のすべての手順は、オンライン アップグレード手順と同じです。</block>
+  <block id="39c656d738218c6eb00356f3d2348871" category="list-text"><block ref="4e0f141d6a23d78411e5d5d5543923fe" category="inline-link-macro-rx"></block>インストール済み</block>
+  <block id="24a15b3ec265849869b510313ad80608" category="paragraph">Shiftツールキットはダウンロードできます<block ref="01c0f6eea4563eff35284d1f57df8f3e" category="inline-link-macro-rx"></block>Windows システムでのみ利用可能です。</block>
+  <block id="663525d60f2ca3fc21271786f8feba4c" category="admonition">最適なエクスペリエンスを得るには、Google Chrome または Internet Explorer を使用してください。</block>
+  <block id="1ec95d193661969a0c72564a8b42e176" category="admonition">管理者は最初のログイン時に資格情報を変更する必要があります。</block>
+  <block id="d3103db3dbf3189e21d87a30a4123876" category="admonition">必須のパスワード変更後、GUI にログインした後、「パスワードの変更」オプションを使用して管理者の資格情報も変更できます。</block>
+  <block id="e960c2d1f3f95cc2c7b3d44523937731" category="admonition">検出オプションを使用してサイトを追加することもできます。</block>
+  <block id="12fd9161f9b8affc77ccfdd6e824ec98" category="admonition">ソース サイトに変更が加えられた場合は、必ず検出を実行して最新の情報を取得してください。これを行うには、サイト名の横にある 3 つのドットをクリックし、「サイトの検出」をクリックします。</block>
+  <block id="9970dbc208d6e5391ad2e2f692912546" category="admonition">VM インベントリは 24 時間ごとに自動更新されます。</block>
+  <block id="b9d88d63dcb6a8283e1a7ce07c771f03" category="admonition">リソース グループを作成する前に、Qtree がプロビジョニングされていることを確認します (前提条件のセクションで説明されているとおり)。</block>
+  <block id="c9a892196731a16f2944923ee0f2375f" category="admonition">変換前に、変換または移行する VM を、新しく作成されたONTAP SVM 上の指定されたデータストアに移動します。これにより、本番環境の NFS データストアを分離することができ、指定されたデータストアを仮想マシンのステージングに使用できるようになります。</block>
+  <block id="ddaac8fa4e4bb58c874edd93de9aa136" category="admonition">OpenShift 環境では、 ONTAP NAS ストレージ ドライバーを使用して PVC (永続ボリューム要求) 構造を複製するには、VMDK を対応するボリュームに再配置する必要があります。今後のリリースでは、 ONTAP NAS エコノミー ドライバーを活用するための追加の機能強化が組み込まれる予定です。</block>
+  <block id="ea4862a38abceacc93e6a8c0ac59b7a4" category="admonition">このコンテキストのデータストア ドロップダウンには、NFSv3 データストアのみが表示されます。NFSv4 データストアは表示されません。</block>
+  <block id="4d6125b7659509f808ca88b6053a1bc2" category="admonition">VM を変換するときに、宛先パス (変換された VM が保存される場所) が qtree に設定されていることを確認します。適切な qtree への宛先パスを設定します。</block>
+  <block id="0edd32787a1b42438f3d70bb7ffb20bb" category="admonition">複数の qtree を作成し、それに応じて変換された VM ディスクを保存するために使用できます。</block>
+  <block id="a4a5028abf5480a3973e8d53acce33c2" category="admonition">仮想マシンはスパンされたデータストア上で実行でき、Shit ツールキットはそれを自動的に検出しますが、ボリュームごとに qtree をマップする必要があります。</block>
+  <block id="eebe94d5593846ae2669a7255449a63c" category="admonition">仮想マシンを追加または削除するためにリソース グループを変更する必要がある場合は、リソース グループ名に対してこのオプションを使用し、「リソース グループの編集」を選択します。</block>
+  <block id="6306be86bc6b7e3d88368376b48fa3d2" category="admonition">テスト移行の場合、「ネットワークを構成しない」がデフォルトで選択されており、Shift ツールキットは IP アドレスの割り当てを実行しません。ディスクが変換され、それぞれのハイパーバイザー側で仮想マシンが購入されたら、実稼働ネットワークとの衝突を避けるためにバブル ネットワーク スイッチを手動で割り当てます。</block>
+  <block id="a0dd3c30553893efdf8609396ada8869" category="admonition">仮想マシンを作成してパワーオンできるように、qtree が事前にプロビジョニングされ、必要な権限が割り当てられていることを確認してください。注: OpenShift の場合、PVC はTrident CSI を使用して作成されるため、qtree を事前に作成する必要はありません。</block>
+  <block id="76ae0a5fc2946f5657c1d3244c65ca41" category="admonition">スケジュールを設定するときは、現在の Shift VM 時間より少なくとも 30 分先の日付を選択します。これは、ワークフローがリソース グループ内の VM を準備するのに十分な時間を確保するためです。</block>
+  <block id="4bb8c792f2a084a1a8a33fe6cb8d1e0c" category="admonition">CentOS または Red Hat を実行している Linux ソース VM の場合、Shift ツールキットは必要な Hyper-V ドライバーを自動的にインストールするインテリジェントな機能を備えています。変換後に VM が正常に起動できるようにするには、ディスク変換前にこれらのドライバーがソース VM に存在している必要があります。</block>
+  <block id="9326eb3a5f54d5a3e5a0a53d000e5fc4" category="admonition">詳細については、<block ref="1c434828099aa70753997347cfb22762" category="inline-link-macro-rx"></block> 。</block>
+  <block id="ba6af9e4a46c6c9c5542891d417327e8" category="section-title">2025年11月12日</block>
+  <block id="fdb49635ac02e5a3421c1b77c8a71777" category="list-text">NetApp Shift Toolkit の正しいダウンロード リンクを提供しました</block>
+  <block id="1fc9523ad511c30a857d40caab013cf9" category="list-text">NetApp Shift Toolkit の移行ソリューションを追加しました</block>
+  <block id="3b5814b83e68d7f86544c622a69233b8" category="list-text"><block ref="3b5814b83e68d7f86544c622a69233b8" category="inline-link-macro-rx"></block></block>
+  <block id="9626af62825ff7da30100c4281b6756f" category="list-text"><block ref="9626af62825ff7da30100c4281b6756f" category="inline-link-macro-rx"></block></block>
+  <block id="657c6ccf2c868e721dd192abfde01a8c" category="list-text"><block ref="657c6ccf2c868e721dd192abfde01a8c" category="inline-link-macro-rx"></block></block>
+  <block id="6c3fdb8607979cc3d040eab9498bfdbe" category="list-text"><block ref="6c3fdb8607979cc3d040eab9498bfdbe" category="inline-link-macro-rx"></block></block>
 </blocks>

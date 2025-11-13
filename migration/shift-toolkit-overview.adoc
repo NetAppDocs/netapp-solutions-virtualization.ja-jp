@@ -48,7 +48,7 @@ Shift ツールキットは、次のディスク形式のハイパーバイザ�
 
 image::shift-toolkit-001.png[NetApp Shift Toolkit の概要]
 
-Shiftツールキットはダウンロードできますlink:https://mysupport.netapp.com/site/tools/tool-eula/vm-data-collector["ここをクリックしてください。"]Windows システムでのみ利用可能です。
+Shiftツールキットはダウンロードできますlink:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["ここをクリックしてください。"]Windows システムでのみ利用可能です。
 
 
 

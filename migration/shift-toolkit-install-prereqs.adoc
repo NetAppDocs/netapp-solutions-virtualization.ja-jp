@@ -1,0 +1,116 @@
+---
+sidebar: sidebar 
+permalink: migration/shift-toolkit-install-prereqs.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox, install, shift, toolkit, prereqs 
+summary: Shift Toolkit をインストールする前に、環境がハードウェア、接続、およびONTAPストレージの要件を満たしていることを確認してください。 
+---
+= NetApp Shift Toolkit をインストールするための要件
+:allow-uri-read: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Shift Toolkit をインストールする前に、環境がハードウェア、接続、およびONTAPストレージの要件を満たしていることを確認してください。
+
+
+
+== ハードウェア要件
+
+Shift Toolkit サーバーが次の最小ハードウェア要件を満たしていることを確認します。
+
+* *CPU*: 4 つの vCPU
+* *メモリ*: 最低8GB
+* *ディスク容量*: 最低 100 GB (インストールには 900 MB 使用可能)
+
+
+
+
+== 接続要件
+
+次の接続要件が満たされていることを確認します。
+
+* Shift Toolkit はスタンドアロンの Windows サーバー (物理または仮想) にインストールする必要があります。
+* ハイパーバイザーとストレージ環境は、Shift Toolkitがすべてのコンポーネントと対話できるように構成する必要があります。
+* Hyper-V 移行の場合、Shift サーバー、 ONTAP CIFS サーバー、および Hyper-V サーバーは同じ Windows Active Directory ドメイン上に存在する必要があります。
+* VM 変換中にストレージ仮想マシン (SVM) で使用するために、CIFS および NFS 用の複数の LIF がサポートされています。
+* CIFS操作の場合、WindowsドメインコントローラとONTAPストレージコントローラ間で時間設定を同期する必要があります。
+
+
+
+
+== ONTAPストレージ構成
+
+Shift Toolkit の移行をサポートするために、SVM、qtree、CIFS 共有などのONTAPストレージ コンポーネントを構成します。
+
+
+
+=== 新しいSVMを作成する（推奨）
+
+Shift Toolkit では既存の SVM の使用が許可されていますが、 NetApp移行操作専用の SVM を作成することを推奨しています。
+
+新しい SVM を作成すると、次の利点があります。
+
+* 移行操作を本番環境のワークロードから分離します
+* 運用構成を変更することなく、SVM が Shift Toolkit の要件を満たしていることを保証します。
+* VMware と Hyper-V 間の双方向移行の構成を簡素化します
+
+
+Storage vMotion を使用して、ダウンタイムなしで VM を専用 SVM 上の新しい指定された NFSv3 データストアに移動します。このアプローチにより、移行された VM が本番 SVM 上に存在しないことが保証されます。
+
+新しい SVM を作成するには、 ONTAP CLI、 NetApp PowerShell Toolkit、またはONTAP System Manager を使用します。詳細な手順については、 ONTAPのドキュメントを参照してください。 link:https://docs.netapp.com/us-en/ontap/smb-config/create-svms-data-access-task.html["新しいSVMのプロビジョニング"] NFS プロトコルと SMB プロトコルの両方が有効になっています。
+
+
+NOTE: VMware と Hyper-V 間の双方向移行の場合、SVM とプロビジョニングされたボリュームで NFS プロトコルと SMB プロトコルの両方を有効にします。
+
+
+
+=== Qtree の要件
+
+変換された VM をホストするボリュームに qtree を作成します。Qtree は、ターゲット ハイパーバイザーに基づいて、変換されたディスク ファイルを分離して保存します。
+
+*移行タイプ別のセキュリティスタイル:*
+
+* *ESXi から Hyper-V*: NTFS セキュリティ スタイル (変換された VHDX を保存)
+* *Hyper-V から ESXi*: UNIX セキュリティ スタイル (変換された VMDK を保存)
+* *ESXiからOpenShift Virtualization (QCOW2)へ*: UNIXセキュリティスタイル
+* *ESXiからOLVM（RAWまたはQCOW2）へ*: UNIXセキュリティスタイル
+
+
+image::shift-toolkit-011.png[移行タイプ別のQtreeセキュリティスタイル]
+
+Shift Toolkit は qtree セキュリティ スタイルを検証しません。ターゲットのハイパーバイザーとディスク形式に適したセキュリティ スタイルで qtree を作成します。
+
+詳細な手順については、 link:https://docs.netapp.com/us-en/ontap/nfs-config/create-qtree-task.html["qtreeを作成する"] ONTAP のドキュメントに記載されています。
+
+image::shift-toolkit-012.png[セキュリティスタイルでqtreeを作成する]
+
+
+IMPORTANT: 宛先パスはソース VM と同じボリューム上にある必要があります。
+
+
+NOTE: OpenShift Virtualization の場合、変換された QCOW2 ファイルは、オプションで qtree を使用せずにボリュームに直接配置できます。この変換を実行するには、Shift Toolkit GUI または API を使用します。
+
+
+
+=== CIFS共有の要件
+
+Hyper-V 移行の場合、変換された VM データを保存するための CIFS 共有を作成します。NFS 共有 (ソース VM) と CIFS 共有 (変換された VM) の両方が同じボリューム上に存在している必要があります。
+
+次のプロパティを使用して CIFS 共有を構成します。
+
+* SMB 3.0 が有効（デフォルトで有効）
+* 継続的に利用可能なプロパティが有効
+* SVM で SMB のエクスポート ポリシーが無効になっています
+* ドメインでKerberosおよびNTLMv2認証が許可されている
+
+
+詳細な手順については、 link:https://docs.netapp.com/us-en/ontap/smb-config/create-share-task.html["SMB共有を作成する"] ONTAP のドキュメントに記載されています。継続的な可用性プロパティとその他のデフォルト プロパティを選択します。
+
+image::shift-toolkit-013.png[CIFS共有の作成]
+
+image::shift-toolkit-014.png[CIFS共有作成の確認]
+
+
+NOTE: ONTAP は、Windows のデフォルトの共有権限である Everyone / フル コントロールを使用して共有を作成します。

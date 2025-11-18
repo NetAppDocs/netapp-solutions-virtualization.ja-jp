@@ -1,0 +1,90 @@
+---
+sidebar: sidebar 
+permalink: migration/shift-toolkit-supported-versions.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox, software, support, shift, toolkit 
+summary: Windows および Linux ゲスト オペレーティング システム、 ONTAPバージョン、ハイパーバイザーがNetApp Shift Toolkit でサポートされていることを確認します。 
+---
+= NetApp Shift Toolkit のサポート対象バージョン
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Windows および Linux ゲスト オペレーティング システム、 ONTAPバージョン、ハイパーバイザーがNetApp Shift Toolkit でサポートされていることを確認します。
+
+
+
+== サポートされているVMゲストオペレーティングシステム
+
+Shift Toolkit は、VM 変換用に次の Windows および Linux ゲスト オペレーティング システムをサポートしています。
+
+.Windows オペレーティング システム
+* Windows Server 10
+* Windows Server 11
+* Windows Server 2016
+* Windows Server 2019
+* Windows Server 2022
+* Windows Server 2025
+
+
+.Linuxオペレーティングシステム
+* CentOS Linux 7.x
+* アルマ Linux 7.x
+* Red Hat Enterprise Linux 7.2 以降
+* Red Hat エンタープライズ Linux 8.x
+* Red Hat エンタープライズ Linux 9.x
+* Ubuntu 2018
+* ウブントゥ 2022
+* ウブントゥ 2024
+* Debian 12
+* SUSE Linux Enterprise Server 12
+* SUSE Linux Enterprise Server 15
+
+
+
+NOTE: CentOS Linux および Red Hat Enterprise Linux バージョン 5 および 6 はサポートされていません。
+
+
+NOTE: Windows Server 2008 は公式にはサポートされていません。ただし、変換プロセスは機能する可能性があり、一部の顧客は Windows Server 2008 VM を正常に変換しています。IP 割り当ての自動化に使用される PowerShell バージョンは Windows Server 2008 と互換性がないため、移行後に IP アドレスを手動で更新します。
+
+
+
+== サポートされるONTAPバージョン
+
+Shift Toolkit はONTAP 9.14.1 以降をサポートしています。
+
+
+
+== サポートされているハイパーバイザー
+
+Shift Toolkit は、VM の移行と変換のために次のハイパーバイザー プラットフォームをサポートしています。
+
+
+NOTE: 現在のリリースでは、エンドツーエンドの仮想マシンの移行は、Hyper-V、VMware、OpenShift、Oracle Virtualization でのみサポートされています。KVM 宛先の場合、ディスク変換のみがサポートされます。
+
+.VMware vSphere
+Shift ツールキットは、vSphere 7.0.3 以降に対して検証されています。
+
+.Microsoft Hyper-V
+Shift ツールキットは、次の Hyper-V ロールに対して検証されます。
+
+* Windows Server 2019 で実行されている Hyper-V ロール
+* Windows Server 2022 で実行される Hyper-V ロール
+* Windows Server 2025 で実行される Hyper-V ロール
+
+
+.レッドハット オープンシフト
+Shift ツールキットは、4.17 以降を実行している Red Hat OpenShift および OpenShift Virtualization に対して検証されています。
+
+.Oracle Linux仮想化マネージャー
+Shift ツールキットは、次の Oracle Linux Virtualization Manager バージョンに対して検証されます。
+
+* Oracle Linux Virtualization Manager 4.5 以降
+* Oracle Linux Virtualization Managerホストにはovirt-engine-4.5.4-1.el8 RPM以降がインストールされている必要があります。
+
+
+.KVM
+KVM 宛先の場合、Shift Toolkit はディスク形式の変換 (VMDK から QCOW2 または RAW) のみをサポートします。宛先ドロップダウンから KVM を選択する場合、ハイパーバイザー接続の詳細は必要ありません。変換後、QCOW2 ディスクを使用して、KVM ベースのプラットフォームで VM をプロビジョニングします。

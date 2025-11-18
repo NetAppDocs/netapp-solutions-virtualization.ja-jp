@@ -1,0 +1,57 @@
+---
+sidebar: sidebar 
+permalink: migration/shift-toolkit-install-prepare.html 
+keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, hyper-v, proxmox, install, shift, toolkit 
+summary: 環境が前提条件を満たしていることを確認し、展開シナリオに適したインストール パッケージを選択して、 NetApp Shift Toolkit のインストールを準備します。 
+---
+= ONTAPストレージ用のNetApp Shift Toolkitのインストール準備
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+環境が前提条件を満たしていることを確認し、展開シナリオに適したインストール パッケージを選択して、 NetApp Shift Toolkit のインストールを準備します。
+
+
+
+== 開始する前に
+
+環境が次の要件を満たしていることを確認してください。
+
+* Windows Server 2019、2022、または2025
+* Shift Toolkit インストール専用の仮想マシン
+* ソース環境とターゲット環境間のネットワーク接続
+* VMware vSphere または Microsoft Hyper-V 上で実行される仮想マシン
+
+
+
+NOTE: 専用の VM に Shift Toolkit をインストールすると、単一のサーバーから複数のソースおよびターゲット ハイパーバイザーを管理できるようになります。
+
+
+
+== インストールパッケージを選択してください
+
+Shift Toolkitは、以下の2つのインストールパッケージで提供されています。 link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["NetAppツールチェスト"]:
+
+*オンラインインストーラー (~130 MB)*
+
+* インストール中にインターネットから前提条件をダウンロードしてインストールします
+* インストール中にインターネット接続が必要です
+* パッケージサイズが小さくなり、ダウンロードが高速化
+
+
+*オフライン インストーラー (~1.2 GB)*
+
+* パッケージ内にバンドルされているすべての前提条件が含まれています
+* インターネットにアクセスできないVMへのインストールをサポート
+* プロキシ設定は不要
+* インストールプロセスをより細かく制御できます
+
+
+image::shift-toolkit-010.png[Shift Toolkit インストール パッケージ オプション]
+
+
+TIP: エアギャップ環境の場合、または外部の依存関係なしにインストール プロセスを完全に制御する必要がある場合は、オフライン インストーラーを使用します。

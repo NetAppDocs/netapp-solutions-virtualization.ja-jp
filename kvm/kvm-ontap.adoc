@@ -63,7 +63,7 @@ KVM ホストには、スイッチにケーブル接続された FC、イーサ�
 
 *サン*
 
-* SnapMirrorアクティブ同期を使用して、障害ドメイン全体にクラスターを拡張します。
+* SnapMirrorアクティブ同期を使用して、障害ドメイン全体にクラスターを拡張します。常に確認する https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"] サポートされている構成の場合。
 * ASAモデルは、アクティブ/アクティブ マルチパスと高速パス フェールオーバーを提供します。
 * FC、iSCSI、NVMe-oF プロトコルのサポート。
 * iSCSI CHAP 相互認証のサポート。

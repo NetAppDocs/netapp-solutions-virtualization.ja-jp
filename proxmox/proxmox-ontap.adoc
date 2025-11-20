@@ -60,7 +60,7 @@ Proxmox VE ホストには、スイッチにケーブル接続された FC、イ
 
 *サン*
 
-* SnapMirrorアクティブ同期を使用して、障害ドメイン全体にクラスターを拡張します。
+* SnapMirrorアクティブ同期を使用して、障害ドメイン全体にクラスターを拡張します。常に確認する https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"] サポートされている構成の場合。
 * ASAモデルは、アクティブ/アクティブ マルチパスと高速パス フェールオーバーを提供します。
 * FC、iSCSI、NVMe-oF プロトコルのサポート。
 * iSCSI CHAP 相互認証のサポート。
@@ -237,14 +237,7 @@ image:proxmox-ontap-009.png["NFSストレージナビゲーション"]
 +
 image:proxmox-ontap-010.png["NFSストレージの追加"]
 
-. セッション トランキングの場合、すべての Proxmox VE ホストで /etc/fstab ファイルを更新し、max_connect および NFS バージョン オプションとともに異なる lif アドレスを使用して同じ NFS エクスポートをマウントします。
-+
-image:proxmox-ontap-011.png["セッショントランクのfstabエントリ"]
-
-. 以下は NFS の /etc/pve/storage.cfg の内容です。
-+
-image:proxmox-ontap-012.png["NFSのストレージ構成ファイル"]
-
+. nConnect オプションを有効にするには、クラスターのいずれかのノードでシェルに移動し、「pvesm set pvenfs01 --options nconnect=4」と入力します。ここで、pvenfs01 は上記の手順で作成したストレージ ID です。トランキング機能を使用する場合は、少なくともNFS v4.1が使用されていることを確認し、オプションtrunkdiscoveryを設定してください。pvesm set pvenfs01 --options vers=4.1,trunkdiscovery
 
 
 ====

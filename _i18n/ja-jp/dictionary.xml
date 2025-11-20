@@ -831,7 +831,6 @@
   <block id="a7e944e3b289a0cc40fa523d2f309b3d" category="list-text">自律的なランサムウェア保護。</block>
   <block id="e349d95af5f86ccf74a9346800e3f55d" category="list-text">ファイル システム分析。</block>
   <block id="54d1b3917151f3d89ddbd7aef9f811dd" category="paragraph">*サン*</block>
-  <block id="3f1ebac34c257ad0e2052f6fe693b898" category="list-text">SnapMirrorアクティブ同期を使用して、障害ドメイン全体にクラスターを拡張します。</block>
   <block id="b307eeff4972f33ddee68641c599e7fd" category="list-text">ASAモデルは、アクティブ/アクティブ マルチパスと高速パス フェールオーバーを提供します。</block>
   <block id="717b83d4b077b1876a8833779607ac19" category="list-text">FC、iSCSI、NVMe-oF プロトコルのサポート。</block>
   <block id="f7c9512e8b2751806d55c35032ad9c1b" category="list-text">iSCSI CHAP 相互認証のサポート。</block>
@@ -2572,12 +2571,6 @@
   <block id="806aaadb95e3a8393823ebee62a2be27" category="list-text">詳細を入力します。サーバー情報を提供すると、NFS エクスポートが入力され、リストから選択できるようになります。コンテンツ オプションを選択することを忘れないでください。</block>
   <block id="b6713e4a099d16458859b6f724dd584f" category="inline-image-macro">NFSストレージの追加</block>
   <block id="9f359905197ffa4ab648a9185a236838" category="paragraph"><block ref="9f359905197ffa4ab648a9185a236838" category="inline-image-macro-rx" type="image"></block></block>
-  <block id="089679585327c9a752c54982a68a19e1" category="list-text">セッション トランキングの場合、すべての Proxmox VE ホストで /etc/fstab ファイルを更新し、max_connect および NFS バージョン オプションとともに異なる lif アドレスを使用して同じ NFS エクスポートをマウントします。</block>
-  <block id="e0368c95980a497a397d1ba864ef07c6" category="inline-image-macro">セッショントランクのfstabエントリ</block>
-  <block id="310cfc3952419b0bce4cefdb2dd56f4b" category="paragraph"><block ref="310cfc3952419b0bce4cefdb2dd56f4b" category="inline-image-macro-rx" type="image"></block></block>
-  <block id="56210fc6ca5cd165a3679bdc3f9aed5b" category="list-text">以下は NFS の /etc/pve/storage.cfg の内容です。</block>
-  <block id="b53457dfc571fe98017812a0f84ef394" category="inline-image-macro">NFSのストレージ構成ファイル</block>
-  <block id="82de9417812917d25da3862eb8206ebb" category="paragraph"><block ref="82de9417812917d25da3862eb8206ebb" category="inline-image-macro-rx" type="image"></block></block>
   <block id="21b3bf9403041f9d09b0e69368b9b151" category="section-title">iSCSI を使用した LVM</block>
   <block id="37eed020511d831c82db16bf1a62cce6" category="video-title">ONTAPを使用した iSCSI による LVM 共有プール</block>
   <block id="ab39921a24a29c2606bf32bd0ebece00" category="paragraph">Proxmox ホスト間で共有されるストレージ用に論理ボリューム マネージャを構成するには、次のタスクを実行します。</block>
@@ -8322,4 +8315,6 @@
   <block id="f76aaf3aaa7b30238e7a3e2b1a04493b" category="sidebar">インストールの準備</block>
   <block id="beec6318942ca08bdda507299633ce3d" category="sidebar">インストール要件を確認する</block>
   <block id="b6eec573aa3c42f73db5c0d756b8af5a" category="sidebar">Shift Toolkit をインストールまたはアップグレードする</block>
+  <block id="752e67a6b4916807acf40a3d0f4d607d" category="list-text">SnapMirrorアクティブ同期を使用して、障害ドメイン全体にクラスターを拡張します。常に確認する<block ref="8d006c87830f7172fd7400f1c17c0928" category="inline-link-rx"></block> サポートされている構成の場合。</block>
+  <block id="0fa5490665357157f44ef8e560981bff" category="list-text">nConnect オプションを有効にするには、クラスターのいずれかのノードでシェルに移動し、「pvesm set pvenfs01 --options nconnect=4」と入力します。ここで、pvenfs01 は上記の手順で作成したストレージ ID です。トランキング機能を使用する場合は、少なくともNFS v4.1が使用されていることを確認し、オプションtrunkdiscoveryを設定してください。pvesm set pvenfs01 --options vers=4.1,trunkdiscovery</block>
 </blocks>

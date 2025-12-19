@@ -171,7 +171,7 @@ image:vmware-vcf-asa-021.png["vSphere クライアントの最近のタスク �
 == 追加情報
 
 * ONTAPストレージシステムの設定については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。
-* VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us-en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"^] 。
+* VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"^] 。
 * VMwareでVMFS iSCSIデータストアを使用する方法については、以下を参照してください。link:vmw-vmfs-iscsi.html["vSphere VMFS データストア - ONTAPを使用した iSCSI ストレージ バックエンド"] 。
 * このソリューションのビデオデモについては、以下を参照してください。link:../videos/vmware-videos.html#vmware-datastore-provisioning-with-ontap["VMware データストアのプロビジョニング"] 。
 

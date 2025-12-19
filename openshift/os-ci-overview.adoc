@@ -18,7 +18,7 @@ NetApp Data Infrastructure Insights (旧称Cloud Insights) は OpenShift Virtual
 
 NetApp Cloud Insightsは、インフラストラクチャ全体を可視化するクラウド インフラストラクチャ監視ツールです。Cloud Insightsを使用すると、パブリック クラウドやプライベート データセンターを含む、すべてのリソースの監視、トラブルシューティング、最適化を実行できます。  NetApp Cloud Insightsの詳細については、 https://docs.netapp.com/us-en/cloudinsights["Cloud Insightsドキュメント"] 。
 
-Cloud Insightsの使用を開始するには、 link:https://www.netapp.com/console["NetApp Console"]。詳細については、 link:https://docs.netapp.com/us-en/cloudinsights/task_cloud_insights_onboarding_1.html["Cloud Insightsオンボーディング"]
+Data Infrastructure Insightsの使用を開始するには、次の場所でサインアップしてください。link:https://www.netapp.com/forms/dii-free-trial/["Data Infrastructure Insights無料トライアル"] 。詳細については、 link:https://docs.netapp.com/us-en/cloudinsights/task_cloud_insights_onboarding_1.html["Data Infrastructure Insightsインサイトオンボーディング"]
 
 Cloud Insights には、データをすばやく簡単に見つけたり、問題をトラブルシューティングしたり、環境に関する分析情報を提供したりできる機能がいくつか用意されています。強力なクエリを使用してデータを簡単に見つけたり、ダッシュボードでデータを視覚化したり、設定したデータしきい値について電子メールアラートを送信したりできます。参照link:https://docs.netapp.com/us-en/cloudinsights/concept_feature_tutorials.html#introduction["ビデオチュートリアル"]これらの機能を理解するのに役立ちます。
 

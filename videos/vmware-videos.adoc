@@ -46,7 +46,7 @@ video::8df4ad1f-83ad-448b-9405-b01200fb2567[panopto,width=360]
 
 == 3-2-1データ保護ソリューション
 
-.SnapCenter Plug-in for VMware vSphereと仮想マシン向けBlueXP backup and recoveryVMFS データストアの 3-2-1 データ保護
+.SnapCenter Plug-in for VMware vSphereと仮想マシン向けNetApp Backup and Recoveryを使用した VMFS データストアの 3-2-1 データ保護
 video::7c21f3fc-4025-4d8f-b54c-b0e001504c76[panopto,width=360]
 
 

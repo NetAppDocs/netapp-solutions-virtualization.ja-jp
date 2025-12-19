@@ -108,7 +108,7 @@ image:why-ontap-for-vmware-002.png["ONTAPがVCFに選ばれる理由"]
 * link:vmw-getting-started-hmc.html["VMware とNetAppによるハイブリッド マルチクラウド"]
 * link:vmw-getting-started-security.html["セキュリティとランサムウェア対策"]
 * link:vmw-getting-started-migration.html["VMwareワークロードをNetAppに簡単に移行"]
-* link:vmw-dr-gs.html["BlueXP災害復旧"]
+* link:vmw-dr-gs.html["NetApp Disaster Recovery"]
 * link:vmw-getting-started-dii.html["データインフラストラクチャの洞察"]
 * link:vmw-getting-started-vmdc.html["VMデータコレクター"]
 

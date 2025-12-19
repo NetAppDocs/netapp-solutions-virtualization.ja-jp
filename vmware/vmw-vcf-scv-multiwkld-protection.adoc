@@ -42,7 +42,7 @@ ONTAP FAS、 AFF、または All SAN Array (ASA) プライマリ システム上
 
 image:vmware-vcf-aff-050.png["SCV を使用した VCF マルチワークロード ドメイン"]
 
-3-2-1 バックアップ ルールは、データのコピーを 3 つ作成し、それらを 2 種類の異なるメディアに保存し、1 つのコピーをオフサイトに保管するというデータ保護戦略です。BlueXP backup and recoveryは、オンプレミスとクラウド環境の両方にわたる幅広いバックアップおよびリカバリ操作に対して単一のコントロール プレーンを提供する、クラウド ベースのデータ管理ツールです。 NetApp BlueXP backup and recoveryスイートの一部は、SCV (オンプレミス) と統合してデータのコピーをクラウド内のオブジェクト ストレージに拡張する機能です。これにより、プライマリまたはセカンダリ ストレージ バックアップから取得されたデータの 3 番目のコピーがオフサイトに作成されます。BlueXP backup and recoveryを使用すると、オンプレミスのこれら 2 つの場所のいずれかからデータのコピーを転送するストレージ ポリシーを簡単に設定できます。詳細については、link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"^] 。
+3-2-1 バックアップ ルールは、データのコピーを 3 つ作成し、それらを 2 種類の異なるメディアに保存し、1 つのコピーをオフサイトに保管するというデータ保護戦略です。NetApp Backup and Recovery は、オンプレミスとクラウド環境の両方にわたる幅広いバックアップおよびリカバリ操作に単一のコントロール プレーンを提供する、クラウド ベースのデータ管理ツールです。詳細については、link:https://docs.netapp.com/us-en/data-services-backup-recovery/index.html["NetApp Backup and Recoveryのドキュメント"^] 。
 
 
 

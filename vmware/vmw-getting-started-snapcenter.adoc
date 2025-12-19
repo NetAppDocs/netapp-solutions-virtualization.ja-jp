@@ -29,11 +29,11 @@ SnapCenter Plug-in for VMware vSphereを使用すると、VM、データスト�
 
 == ソリューションリソース
 
-SnapCenter Plug-in for VMware vSphereと、VM 用のBlueXP backup and recoveryを備えた次の 3-2-1 バックアップ ソリューションを参照してください。
+SnapCenter Plug-in for VMware vSphereと、VM 用のNetAppバックアップおよびリカバリを特徴とする次の 3-2-1 バックアップ ソリューションを参照してください。
 
-技術レポート:link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"^]
+技術レポート:link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとNetApp Backup and Recoveryを使用した VMware 向け 3-2-1 データ保護"^]
 
-Tech ONTAPブログ:link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/3-2-1-Data-Protection-for-VMware-with-SnapCenter-Plug-in-and-BlueXP-backup-and/ba-p/446180["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"]
+Tech ONTAPブログ:link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/3-2-1-Data-Protection-for-VMware-with-SnapCenter-Plug-in-and-BlueXP-backup-and/ba-p/446180["SnapCenterプラグインとNetApp Backup and Recoveryを使用した VMware 向け 3-2-1 データ保護"]
 
 
 

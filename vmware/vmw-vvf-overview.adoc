@@ -199,9 +199,9 @@ SnapCenterプラグインは、 NetAppストレージ アレイ上のハード�
 
 詳細については、 https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere["SnapCenter Plug-in for VMware vSphereのドキュメント"] 。
 
-BlueXP の統合により、データのコピーをクラウド内のオブジェクト ストレージに拡張する 3-2-1 バックアップ戦略が可能になります。
+NetApp Backup and Recovery は、データのコピーをクラウド内のオブジェクト ストレージに拡張するバックアップ戦略を実現します。
 
-BlueXPの3-2-1バックアップ戦略の詳細については、以下をご覧ください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-321-dp-scv.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"^] 。
+NetApp Backup and Recoveryを使用したバックアップ戦略の詳細については、以下をご覧ください。link:https://docs.netapp.com/us-en/data-services-backup-recovery/index.html["NetApp Backup and Recoveryのドキュメント"^] 。
 
 SnapCenterプラグインの導入手順については、ソリューションを参照してください。link:vmw-vcf-scv-viwld.html["SnapCenter Plug-in for VMware vSphereを使用して、VCF ワークロード ドメイン上の VM を保護します。"] 。
 
@@ -249,9 +249,9 @@ NetApp は、地球上で最も安全なストレージを提供します。  Ne
 
 完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。link:vmw-nfs-vlsr.html["NFSストレージ向けの自律型ランサムウェア防御"]
 
-* BlueXP DRaaS* (Disaster Recovery as a Service) for NFS は、NFS データストアを備えたオンプレミスのONTAPシステムで実行される VMware ワークロード向けに設計された、コスト効率の高いディザスタ リカバリ ソリューションです。 NetApp SnapMirrorレプリケーションを活用して、サイトの停止やランサムウェア攻撃などのデータ破損イベントから保護します。このサービスはNetApp BlueXPコンソールと統合されており、VMware vCenter およびONTAPストレージの容易な管理と自動検出を可能にします。組織は災害復旧計画を作成およびテストし、ブロックレベルのレプリケーションを通じて最大 5 分の復旧ポイント目標 (RPO) を達成できます。 BlueXP DRaaS は、ONTAP のFlexCloneテクノロジーを活用して、実稼働リソースに影響を与えることなく、スペース効率の高いテストを実行します。このサービスは、フェイルオーバーとフェイルバックのプロセスを調整し、最小限の労力で保護された仮想マシンを指定された災害復旧サイトに起動できるようにします。  BlueXP DRaaS は、他のよく知られている代替製品と比較して、わずかなコストでこれらの機能を提供するため、組織がONTAPストレージ システムを使用して VMware 環境の災害復旧操作をセットアップ、テスト、および実行するための効率的なソリューションとなります。
+* NetApp Disaster Recovery は、NFS データストアを備えたオンプレミスのONTAPシステムで実行される VMware ワークロード向けに設計された、コスト効率の高い災害復旧ソリューションです。 このサービスはNetApp Consoleと統合されており、VMware vCenter およびONTAPストレージの管理と自動検出を容易にします。  NetApp Disaster Recovery は、ONTAP のFlexCloneテクノロジーを活用して、実稼働リソースに影響を与えることなく、スペース効率の高いテストを実行します。  NetApp Disaster Recovery は、他のよく知られた代替製品と比較して、わずかなコストでこれらの機能を提供するため、組織がONTAPストレージ システムを使用して VMware 環境の災害復旧操作をセットアップ、テスト、および実行するための効率的なソリューションとなります。NetApp SnapMirrorレプリケーションを活用して、サイトの停止やランサムウェア攻撃などのデータ破損イベントから保護します。このサービスはNetApp Consoleと統合されており、VMware vCentersとONTAPストレージの管理と自動検出を容易にします。組織は災害復旧計画を作成およびテストし、ブロックレベルのレプリケーションを通じて最大 5 分の復旧ポイント目標 (RPO) を達成できます。NetApp Disaster Recoveryは、ONTAPのFlexCloneテクノロジを利用して、本番環境のリソースに影響を与えることなく、スペース効率に優れた方法でテストを行います。このサービスは、フェイルオーバーとフェイルバックのプロセスを調整し、最小限の労力で保護された仮想マシンを指定された災害復旧サイトに起動できるようにします。NetApp Disaster Recoveryは、他のよく知られた代替手段と比較して、これらの機能を数分の1のコストで提供します。そのため、組織はONTAPストレージ システムを使用するVMware環境のディザスタ リカバリ オペレーションを効率的にセットアップ、テスト、実行できます。
 
-完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["NFS データストア向けBlueXP DRaaS を使用した DR"^]
+完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。 link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["NetApp Disaster RecoveryNFS データストアを使用した DR"^]
 
 
 

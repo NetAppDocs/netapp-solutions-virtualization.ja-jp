@@ -88,7 +88,7 @@ NetAppオールフラッシュ SAN アレイは、両方のコントローラを
 
 詳細については、 https://www.netapp.com/pdf.html?item=/media/85671-tr-4968.pdf["TR-4968、 NetApp All-SASアレイ – NetApp ASAによるデータの可用性と整合性"] 。{nbsp}
 
-詳細については、 https://www.netapp.com/data-storage/all-flash-san-storage-array["NetApp ASAランディングページ"] 。{nbsp}
+詳細については、 https://www.netapp.com/asa/["NetApp ASAランディングページ"]。{nbsp}
 
 
 

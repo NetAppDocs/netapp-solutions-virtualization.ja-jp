@@ -49,7 +49,7 @@ summary:
 iSCSI VMFSデータストアを補助ストレージとして構成する方法については、以下を参照してください。link:vmw-vcf-mgmt-supplemental-iscsi.html["*VMware 向けONTAPツールを使用した管理ドメインの補助ストレージとしての iSCSI*"]このドキュメントでは。  OTV を使用してデータストアを展開するプロセスは、管理ドメインとワークロード ドメインで同じです。
 
 
-TIP: SCV で取得したバックアップをセカンダリ ストレージに複製するだけでなく、VM 用のNetApp BlueXP backup and recoveryを使用して、3 大クラウド プロバイダーのいずれかのオブジェクト ストレージにデータのオフサイト コピーを作成することもできます。詳細についてはソリューションを参照してくださいlink:vmw-vcf-321-data-protection.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"]。
+TIP: SCV で取得したバックアップをセカンダリ ストレージに複製するだけでなく、 NetApp Backup and Recovery for VMs を使用して、3 大クラウド プロバイダーのいずれかのオブジェクト ストレージにデータのオフサイト コピーを作成することもできます。詳細については、このオファーを参照してください。link:https://docs.netapp.com/us-en/data-services-backup-recovery/index.html["NetApp Backup and Recoveryのドキュメント"] 。
 
 image:vmware-vcf-asa-108.png["3-2-1バックアップ戦略"]
 

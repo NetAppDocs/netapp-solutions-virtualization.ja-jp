@@ -158,4 +158,29 @@ ONTAP System Manager で次の手順を実行します。
 
 Shift ツールキットを使用して VMware vSphere から仮想マシンを移行するには、[管理] > [アクセス制御] > [ロール] を使用して、以下の権限を持つ RBAC ユーザーを作成します。
 
-image:shift-toolkit-085.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
+*権限*タブを選択します。
+
+[listing]
+----
+Datastore
+•	Browse datastore
+•	Update virtual machine files
+
+Virtual machine
+•	Edit inventory
+    o	Register
+    o	Unregister
+•	Interaction
+    o	Answer question
+    o	Console interaction
+    o	Power off
+    o	Power on
+•	Snapshot management
+    o	Create snapshot
+    o	Remove snapshot
+    o	Rename snapshot
+•	Guest operations
+    o	Guest operation modifications
+    o	Guest operation program execution
+    o	Guest operation queries
+----

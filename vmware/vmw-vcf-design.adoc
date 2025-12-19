@@ -100,7 +100,7 @@ VM およびデータストアの保護のために、各 vCenter インスタ�
 
 VMFS データストアの場合、 SnapMirrorアクティブ同期は、vSphere Metro Storage Cluster で使用するためのアクティブ/アクティブ ストレージ ユニットを提供します。均一アクセス モードでは透過的なストレージ フェイルオーバーが提供されますが、非均一アクセス モードでは障害ドメインの障害時に VM の再起動が必要になります。
 
-NFS データストアの場合、vSphere Metro Storage Cluster を備えたONTAP MetroClusterにより高可用性が保証されます。メディエーターはスプリット ブレイン シナリオを回避し、 BlueXPでホストできるようになりました。
+NFS データストアの場合、vSphere Metro Storage Cluster を備えたONTAP MetroClusterにより高可用性が保証されます。メディエーターはスプリット ブレイン シナリオを回避し、 NetApp Consoleでホストできるようになりました。
 
 VM 配置ルールは、管理ドメイン コンポーネントの同じ障害ドメイン内の VM を制御します。
 
@@ -108,9 +108,9 @@ image::vmw-vcf-design-003.png[単一地域に複数の拠点を持つ VCF フリ
 
 ONTAPツールは、 SnapMirrorアクティブ同期関係を設定するための UI を提供します。両方の障害ドメインのストレージ システムは、 ONTAPツールおよびSnapCenter Plug-in for VMware vSphereに登録する必要があります。
 
-SnapMirrorおよびSnapMirror to Cloud 経由でBlueXP Backup and Recovery for VMs を使用して、3-2-1 バックアップ ポリシーを実装できます。  3 つの場所のいずれからでも復元を実行できます。
+SnapMirrorおよびSnapMirror to Cloud 経由でNetApp Backup and Recovery for VMs を使用して、3-2-1 バックアップ ポリシーを実装できます。3 つの場所のいずれからでも復元を実行できます。
 
-Trident Protect またはBlueXP Backup and Recovery for Kubernetes は、VKS クラスター アプリケーションを保護します。
+Trident Protect またはNetApp Backup and Recovery for Kubernetes は、VKS クラスター アプリケーションを保護します。
 
 詳細については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/design/blueprints/vsphere-only-to-vcf-fleet-upgrade-blueprint.html["単一地域内の複数のサイトを持つ VCF フリートに関する Broadcom の技術ドキュメント"] 。
 
@@ -120,7 +120,7 @@ Trident Protect またはBlueXP Backup and Recovery for Kubernetes は、VKS ク
 
 この設計は、世界中に広がる顧客を対象としており、近接したサービスと災害復旧ソリューションを提供します。
 
-VMware Live Site Recovery またはBlueXP Disaster Recovery as a Service を使用して、VM の災害復旧を管理できます。  ONTAPツールは、 ONTAPでストレージ操作を調整するための SRA (ストレージ レプリケーション アダプタ) を提供します。
+VMware Live Site Recovery またはNetApp Disaster Recoveryを使用して、VM の災害復旧を管理できます。ONTAPツールは、 ONTAPでストレージ操作を調整するための SRA (ストレージ レプリケーション アダプタ) を提供します。
 
 [cols="4,2,2"]
 |===
@@ -137,7 +137,7 @@ VMware Live Site Recovery またはBlueXP Disaster Recovery as a Service を使�
 |===
 image::vmw-vcf-design-004.png[複数の地域にまたがる複数の拠点を持つ VCF フリート]
 
-ONTAPツールは、データストアのレプリケーション設定用の UI を提供します。  BlueXP は、ストレージ アレイ間のレプリケーションにも使用できます。  SnapCenter Plug-in for VMware vSphereは、スナップショットに既存のSnapMirror関係を利用します。
+ONTAPツールは、データストアのレプリケーション設定用の UI を提供します。NetApp Consoleは、ストレージ アレイ間のレプリケーションにも使用できます。SnapCenter Plug-in for VMware vSphereは、スナップショットに既存のSnapMirror関係を利用します。
 
 詳細については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/design/blueprints/blueprint-4.html["複数の地域にまたがる複数の拠点を持つ VCF フリートに関する Broadcom の技術ドキュメント"] 。
 
@@ -151,6 +151,6 @@ ASA、 AFF、およびFAS はこの設計オプションをサポートしてい
 
 image::vmw-vcf-design-005.png[単一地域と追加地域に複数のサイトを持つ VCF フリート]
 
-レプリケーション関係を設定するには、 ONTAPツールまたはBlueXPを使用できます。
+レプリケーション関係を設定するには、 ONTAPツールまたはNetApp Consoleを使用できます。
 
 詳細については、 link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-0/design/blueprints/blueprint-5.html["単一地域および追加地域に複数のサイトを持つ VCF フリートに関する Broadcom の技術ドキュメント"] 。

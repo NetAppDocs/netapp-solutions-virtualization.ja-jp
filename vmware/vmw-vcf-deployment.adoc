@@ -82,16 +82,16 @@ NOTE: その `nConnect`セッション数はホストごとです。必要に応
 *** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_resource_groups.html["リソース グループの作成"] 。
 
 
-.. BlueXPコネクタをデプロイする
+.. NetApp Consoleエージェントを導入する
 +
-*** link:https://docs.netapp.com/us-en/bluexp-setup-admin/concept-connectors.html#what-you-can-do-without-a-connector["コネクタなしで何ができるか確認する"] 。
-*** link:https://docs.netapp.com/us-en/bluexp-setup-admin/concept-modes.html#overview["コネクタをデプロイする"] 。
+*** link:https://docs.netapp.com/us-en/console-setup-admin/concept-agents.html["コンソールエージェントなしで何ができるか確認する"]。
+*** link:https://docs.netapp.com/us-en/console-setup-admin/concept-modes.html#overview["エージェントの展開モード"]。
 
 
-.. バックアップとリカバリにはBlueXPを使用する
+.. NetApp Backup and Recoveryを使用する
 +
-*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/prev-vmware-protect-overview.html["VMワークロードを保護する"] 。
-*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/br-use-kubernetes-protect-overview.html["VKSワークロードを保護する"] 。
+*** link:https://docs.netapp.com/us-en/data-services-backup-recovery/prev-vmware-protect-overview.html["VMワークロードを保護する"]。
+*** link:https://docs.netapp.com/us-en/data-services-backup-recovery/br-use-kubernetes-protect-overview.html["VKSワークロードを保護する"]。
 
 
 
@@ -113,10 +113,10 @@ NOTE: その `nConnect`セッション数はホストごとです。必要に応
 *** link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/scpivs44_create_resource_groups.html["リソース グループの作成"] 。
 
 
-.. バックアップとリカバリにはBlueXPを使用する
+.. NetApp Backup and Recoveryを使用する
 +
-*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/prev-vmware-protect-overview.html["VMワークロードを保護する"] 。
-*** link:https://docs.netapp.com/us-en/bluexp-backup-recovery/br-use-kubernetes-protect-overview.html["VKSワークロードを保護する"] 。
+*** link:https://docs.netapp.com/us-en/data-services-backup-recovery/prev-vmware-protect-overview.html["VMワークロードを保護する"]。
+*** link:https://docs.netapp.com/us-en/data-services-backup-recovery/br-use-kubernetes-protect-overview.html["VKSワークロードを保護する"]。
 
 
 

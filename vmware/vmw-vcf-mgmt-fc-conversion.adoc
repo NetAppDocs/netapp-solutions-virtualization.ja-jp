@@ -94,7 +94,7 @@ VCF 管理ドメインに変換する予定の同じ vSphere クラスタに SDD
 . JSON ファイルを SDDC マネージャー上のディレクトリにコピーします。
 +
 
-NOTE: 変換またはインポート操作で NSX Manager クラスタを展開する場合、NSX-VLAN ネットワークが利用されます。NSX-VLANネットワークの制限については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
+NOTE: 変換またはインポート操作で NSX Manager クラスタを展開する場合、NSX-VLAN ネットワークが利用されます。NSX-VLANネットワークの制限については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"]。
 
 
 

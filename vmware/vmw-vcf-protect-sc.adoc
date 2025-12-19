@@ -23,5 +23,4 @@ vSphere クライアントとのシームレスな統合を提供しながら、
 * link:vmw-vcf-scv-viwld.html["VCFワークロードドメインの保護"]
 * link:vmw-vcf-scv-multiwkld-protection.html["VCFの複数のワークロードドメインを保護"]
 * link:vmw-vcf-scv-nvme.html["NVMeでVCFワークロードドメインを保護する"]
-* link:vmw-vcf-321-data-protection.html["SnapCenterプラグインとBlueXP backup and recoveryによる VMware の 3-2-1 データ保護"]
 

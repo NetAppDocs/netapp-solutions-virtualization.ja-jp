@@ -425,7 +425,7 @@ MAVとその保護機能の設定方法の詳細については、link:https://d
 
 === オンプレミスサイト間の災害復旧
 
-詳細については、link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-vmfs.html["VMFS データストア向けBlueXP DRaaS を使用した DR"^]
+詳細については、 link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-vmfs.html["VMFSデータストア向けNetApp Disaster Recoveryを使用したDR"^]
 
 
 

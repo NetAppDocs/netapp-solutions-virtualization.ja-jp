@@ -39,7 +39,7 @@ KVM ホストには、スイッチにケーブル接続された FC、イーサ�
 * 改ざん防止スナップショットコピーロック
 * 暗号化サポート
 * コールド データをオブジェクト ストアに階層化するFabricPool 。
-* BlueXPとData Infrastructure Insights の統合。
+* NetApp ConsoleとData Infrastructure Insights の統合。
 * Microsoft オフロード データ転送 (ODX)
 
 

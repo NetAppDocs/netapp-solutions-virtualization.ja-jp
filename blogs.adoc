@@ -24,8 +24,7 @@ ONTAPストレージとNetApp仮想化ソリューションを統合するため
 ** link:https://www.netapp.com/blog/netapp-vmware-cloud-foundation-supplemental-storage["パート4: VMwareと補助ストレージ用のONTAPツール"]
 
 
-* link:https://cloud.netapp.com/blog/azure-blg-optimize-storage-for-cloud-based-vmware-deployments["クラウドベースの VMware 展開向けにストレージを最適化"]
-* link:https://cloud.netapp.com/blog/azure-blg-netapp-cloud-offerings-with-azure-vmware-solution["NetAppベースのクラウド サービスを使用して Azure VMware ソリューションを開始する"]
+* link:https://www.netapp.com/blog/vmware-optimize-storage-workloads/["あらゆるクラウドでストレージとデータ集約型の VMware ワークロードを最適化"]
+* link:https://www.netapp.com/blog/vmware-migrate-workloads-azure/["ストレージを大量に消費する VMware ワークロードを Azure VMware Solution に移行しますか? まずこれを読んでください。"]
 * link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/NetApp-and-VMware-Better-than-ever/ba-p/445780["NetAppとVMware – これまで以上に優れた"]
-* link:https://community.netapp.com/t5/Tech-ONTAP-Blogs/3-2-1-Data-Protection-for-VMware-with-SnapCenter-Plug-in-and-BlueXP-Backup-and/ba-p/446180["SnapCenterプラグインとBlueXP のVM バックアップおよびリカバリを使用した VMware 向け 3-2-1 データ保護"]
 

@@ -46,15 +46,18 @@ image:nfs-arp-004.png["入出力ダイアログまたは書かれたコンテン
 
 詳細については、以下のガイダンスをご覧ください。link:https://www.netapp.com/media/7334-tr4572.pdf["ランサムウェアに対するNetAppソリューション"] 。
 
-これらすべてを SIEM ツールと調整して統合する必要がある場合は、 BlueXP ransomware protectionなどのオフタップ サービスを使用できます。ランサムウェアからデータを保護するように設計されたサービスです。このサービスは、Oracle、MySQL、VM データストア、オンプレミスの NFS ストレージ上のファイル共有などのアプリケーションベースのワークロードを保護します。
+これらすべてを SIEM ツールと調整して統合する必要がある場合は、 NetApp Ransomware Resilienceなどのオフタップ サービスを使用できます。ランサムウェアからデータを保護するように設計されたサービスです。このサービスは、Oracle、MySQL、VM データストア、オンプレミスの NFS ストレージ上のファイル共有などのアプリケーションベースのワークロードを保護します。
 
-この例では、NFS データストア「Src_NFS_DS04」はBlueXP ransomware protectionを使用して保護されています。
+この例では、NFS データストア「Src_NFS_DS04」はNetApp Ransomware Resilienceを使用して保護されています。
+
+
+NOTE: 以下に概説する手順はBlueXPを使用したものです。ワークフローはNetApp Consoleと同様です。
 
 image:nfs-arp-005.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
 
 image:nfs-arp-006.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
 
-BlueXP ransomware protectionの設定の詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/bluexp-ransomware-protection/rp-start-setup.html["BlueXP ransomware protectionを設定する"]そしてlink:https://docs.netapp.com/us-en/bluexp-ransomware-protection/rp-use-settings.html#add-amazon-web-services-as-a-backup-destination["BlueXP ransomware protection設定を構成する"]。
+NetApp Ransomware Resilienceの設定の詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/data-services-ransomware-resilience/rp-start-setup.html["NetAp ランサムウェア耐性のセットアップ"]そしてlink:https://docs.netapp.com/us-en/data-services-ransomware-resilience/rp-use-settings.html#add-amazon-web-services-as-a-backup-destination["NetAp ランサムウェア耐性設定を構成する"]。
 
 例を挙げてこれを詳しく説明してみましょう。このチュートリアルでは、データストア「Src_NFS_DS04」が影響を受けます。
 
@@ -66,16 +69,16 @@ image:nfs-arp-008.png["入出力ダイアログまたは書かれたコンテン
 
 image:nfs-arp-009.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
 
-フォレンジック分析が完了すると、 SnapCenterまたはBlueXP ransomware protectionを使用して、復元を迅速かつシームレスに実行できます。  SnapCenterを使用して、影響を受ける仮想マシンに移動し、復元する適切なスナップショットを選択します。
+フォレンジック分析が完了すると、 SnapCenterまたはNetApp Ransomware Resilienceを使用して、復元を迅速かつシームレスに実行できます。SnapCenterを使用して、影響を受ける仮想マシンに移動し、復元する適切なスナップショットを選択します。
 
 image:nfs-arp-010.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
 
-このセクションでは、 BlueXP ransomware protectionが、 VM ファイルが暗号化されたランサムウェア インシデントからの回復をどのように調整するかについて説明します。
+このセクションでは、 NetApp Ransomware Resilience が、 VM ファイルが暗号化されたランサムウェア インシデントからのリカバリをどのように調整するかについて説明します。
 
 
-NOTE: VM がSnapCenterによって管理されている場合、 BlueXP ransomware protectionはVM 整合性プロセスを使用して VM を以前の状態に復元します。
+NOTE: VM がSnapCenterによって管理されている場合、 NetApp Ransomware Resilience はVM 整合性プロセスを使用して VM を以前の状態に復元します。
 
-. BlueXP ransomware protectionにアクセスすると、 BlueXP ransomware protectionダッシュボードにアラートが表示されます。
+. NetApp Ransomware Resilienceにアクセスすると、 NetApp Ransomware Resilienceダッシュボードにアラートが表示されます。
 . アラートをクリックすると、生成されたアラートの特定のボリューム上のインシデントを確認できます。
 +
 image:nfs-arp-011.png["入出力ダイアログまたは書かれたコンテンツを示す図"]

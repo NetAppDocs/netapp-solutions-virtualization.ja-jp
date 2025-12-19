@@ -24,8 +24,8 @@ indexpage:
       url: vmw-vcf-deployment.html
     - title: SnapCenterでVCFワークロードを保護する
       url: vmw-vcf-protect-sc.html
-    - title: BlueXPでVMwareデータストアを保護する
-      url: vmw-vcf-disaster-recovery.html
+    - title: NetApp Disaster Recoveryで VMware データストアを保護する
+      url: vmw-vcf-disaster-recovery-nfs.html
     - title: ONTAPの高可用性をvMSCと統合する
       url: vmw-vcf-protect-vmsc.html
     - title: ランサムウェアからデータを保護および回復する

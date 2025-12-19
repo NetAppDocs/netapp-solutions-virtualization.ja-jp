@@ -72,7 +72,7 @@ image:hyperv-deploy-011.png["IntelliSnap を有効にするオプションを表
 
 
 
-アレイの構成に関する詳細な手順については、link:https://documentation.commvault.com/11.20/configuring_netapp_array_using_array_management.html["NetAppアレイの構成"]そしてlink:https://documentation.commvault.com/11.20/configure_storage_virtual_machine_on_netapp_storage_array.html["NetAppアレイ上のストレージ仮想マシンの構成"]
+アレイの構成に関する詳細な手順については、 link:https://documentation.commvault.com/v11/commcell-console/configuring_netapp_array_using_array_management.html["NetAppアレイの構成"] そして link:https://documentation.commvault.com/v11/commcell-console/configure_storage_virtual_machine_on_netapp_storage_array.html["NetAppアレイ上のストレージ仮想マシンの構成"]
 
 *ハイパーバイザーとしてHyper-Vを追加する*
 

@@ -51,7 +51,7 @@ image:vmware-dii.png["Data Infrastructure Insights"]
 
 . ONTAP 9.13 を搭載したNetApp All-Flash SAN アレイ A400。
 . VMware vSphere 8.0 クラスター。
-. NetApp BlueXPアカウント。
+. NetApp Consoleアカウント。
 . データ収集用の資産へのネットワーク接続を備えたローカル VM にインストールされたNetApp Data Infrastructure Insights Acquisition Unit ソフトウェア。
 
 
@@ -253,6 +253,7 @@ image:vmware-asa-053.png["ONTAPエッセンシャル - VMware"]
 
 このソリューションで紹介されているテクノロジーの詳細については、次の追加情報を参照してください。
 
-* https://bluexp.netapp.com/cloud-insights["NetApp BlueXPとData Infrastructure Insightsのランディング ページ"]
+* https://www.netapp.com/console/["NetApp Consoleのランディングページ"]
+* https://www.netapp.com/data-infrastructure-insights/["NetApp Data Infrastructure Insightsランディング ページ"]
 * https://docs.netapp.com/us-en/data-infrastructure-insights/index.html/["NetApp Data Infrastructure Insightsドキュメント"]
 

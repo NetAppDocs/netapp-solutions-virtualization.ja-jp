@@ -387,7 +387,7 @@ $targetvm, $targetvmdisk | Get-SPBMEntityConfiguration
 * https://docs.vmware.com/en/Site-Recovery-Manager/index.html["Site Recovery Manager（SRM）"]通常は災害復旧を目的としており、ストレージ アレイ ベースのレプリケーションを利用した計画的な移行にもよく使用されます。
 * 継続的データ保護（CDP）製品では、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/filtering-virtual-machine-i-o-in-vsphere/about-i-o-filters/classes-of-vaio-filters.html["vSphere API for IO (VAIO)"]データを傍受し、そのコピーをリモート ロケーションに送信して、RPO がほぼゼロのソリューションを実現します。
 * バックアップおよびリカバリ製品も利用できます。しかし、多くの場合、RTO が長くなります。
-* https://docs.netapp.com/us-en/bluexp-disaster-recovery/get-started/dr-intro.html["BlueXP災害復旧サービス (DRaaS)"]ストレージ アレイ ベースのレプリケーションを利用し、特定のタスクを自動化してターゲット サイトで VM を回復します。
+* https://docs.netapp.com/us-en/data-services-disaster-recovery/get-started/dr-intro.html["NetApp災害復旧"] ストレージ アレイ ベースのレプリケーションを利用し、特定のタスクを自動化してターゲット サイトで VM を回復します。
 
 
 ====
@@ -402,7 +402,7 @@ $targetvm, $targetvmdisk | Get-SPBMEntityConfiguration
 ** link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-gcp-gcve-migrate-hcx.html["VMware HCX を使用して Google Cloud VMware Engine 上の Google Cloud Google Cloud NetApp Volumesデータストアにワークロードを移行する - クイックスタート ガイド"^]
 
 
-* https://docs.netapp.com/us-en/bluexp-disaster-recovery/get-started/dr-intro.html["BlueXP災害復旧サービス (DRaaS)"]ストレージ アレイ ベースのレプリケーションを利用し、特定のタスクを自動化してターゲット サイトで VM を回復します。
+* https://docs.netapp.com/us-en/data-services-disaster-recovery/get-started/dr-intro.html["NetApp Disaster Recovery"] ストレージ アレイ ベースのレプリケーションを利用し、特定のタスクを自動化してターゲット サイトで VM を回復します。
 * サポートされている継続的データ保護（CDP）製品では、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/filtering-virtual-machine-i-o-in-vsphere/about-i-o-filters/classes-of-vaio-filters.html["vSphere API for IO (VAIO)"]データを傍受し、そのコピーをリモート ロケーションに送信して、RPO がほぼゼロのソリューションを実現します。
 
 
@@ -534,5 +534,5 @@ NOTE: ソース vCenter 上の他のクラスタにある既存の VM とのネ�
 * https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-2/administration-guide/managing-nsx-t-in-multiple-locations/nsx-t-federation/networking-topologies-in-nsx-federation/tier-0-in-federation.html["NSXフェデレーションにおけるTier-0ゲートウェイ構成"]
 * https://techdocs.broadcom.com/us/en/vmware-cis/hcx/vmware-hcx/4-11/vmware-hcx-user-guide-4-11.html["HCX 4.8 ユーザーガイド"]
 * https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery.html["VMware Live Recovery ドキュメント"]
-* https://docs.netapp.com/us-en/bluexp-disaster-recovery/get-started/dr-intro.html["VMware 向けBlueXP disaster recovery"]
+* https://docs.netapp.com/us-en/data-services-disaster-recovery/get-started/dr-intro.html["VMware 向けNetApp Disaster Recovery"]
 

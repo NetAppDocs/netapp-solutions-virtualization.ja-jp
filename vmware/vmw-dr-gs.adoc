@@ -1,10 +1,10 @@
 ---
 sidebar: sidebar 
 permalink: vmware/vmw-dr-gs.html 
-keywords: vmware, getting, started, overview, netapp, bluexp, disaster, recovery, draas 
+keywords: vmware, getting, started, overview, netapp, console, disaster, recovery 
 summary:  
 ---
-= BlueXP disaster recoveryを使用した仮想マシンの災害復旧について学習します
+= NetApp Disaster Recoveryを使用した仮想マシンの災害復旧について学習します
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-BlueXP disaster recoveryは、 ONTAPストレージを使用して VMware 仮想マシンのレプリケーションとリカバリを自動化します。  Amazon FSx for NetApp ONTAPまたはその他のオンプレミス VMware 環境を使用したオンプレミスセットアップから VMware Cloud on AWS へのリカバリをサポートします。
+NetApp Disaster Recovery は、 ONTAPストレージを使用して VMware 仮想マシンのレプリケーションとリカバリを自動化します。オンプレミスセットアップから、 Amazon FSx for NetApp ONTAPまたは別のオンプレミス VMware 環境を使用した VMware Cloud on AWS へのリカバリをサポートします。
 
 
 
@@ -22,9 +22,9 @@ BlueXP disaster recoveryは、 ONTAPストレージを使用して VMware 仮想
 
 適切な計画とテクノロジの組み合わせにより、重要なデータ、アプリケーション、VM を確実に保護できます。  DR の課題は、適切な保護レベルと関連コストを決定することです。
 
-ONTAPアレイには、ボリューム データ、および指定されたデータストア LUN 上に存在する仮想マシンをあるサイトから別のサイトに転送するための組み込みレプリケーション機能が備わっています。BlueXP DRaaS は vSphere と統合し、災害発生時にシームレスなフェイルオーバーとフェイルバックを実現するためにワークフロー全体を自動化します。
+ONTAPアレイには、ボリューム データ、および指定されたデータストア LUN 上に存在する仮想マシンをあるサイトから別のサイトに転送するための組み込みレプリケーション機能が備わっています。NetApp Disaster Recovery はvSphere と統合され、災害発生時にシームレスなフェイルオーバーとフェイルバックを実現するためにワークフロー全体を自動化します。
 
-BlueXP DRaaSの詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-overview.html["BlueXP DRaaSの概要"^] 。
+NetApp Disaster Recoveryの詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-overview.html["NetApp Disaster Recoveryの概要"^] 。
 
 
 
@@ -41,6 +41,6 @@ DR ソリューションを設計するには、次の要素を考慮してく�
 
 利用可能なソリューションに関する詳細な技術情報については、以下を参照してください。
 
-* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["NFS データストア向けBlueXP DRaaS を使用した DR"^]
-* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-vmfs.html["VMFS データストア向けBlueXP DRaaS を使用した DR"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-nfs.html["NFSデータストア向けNetApp Disaster Recoveryを使用したDR"^]
+* link:https://docs.netapp.com/us-en/netapp-solutions-cloud/vmware/vmw-hybrid-dr-vmfs.html["VMFSデータストア向けNetApp Disaster Recoveryを使用したDR"^]
 

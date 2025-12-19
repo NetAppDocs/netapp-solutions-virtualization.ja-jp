@@ -36,7 +36,7 @@ entries:
     entries:
     - title: SnapCenter Plug-in for VMware vSphere
       url: "/vmware/vmw-getting-started-snapcenter.html"
-    - title: BlueXP disaster recovery
+    - title: NetApp Disaster Recovery
       url: "/vmware/vmw-dr-gs.html"
 - title: NetApp上の VMware Cloud Foundation
   pdf-filename: NetApp上の VMware Cloud Foundation
@@ -47,32 +47,16 @@ entries:
     url: "/vmware/vmw-vcf-design.html"
   - title: ONTAPを使用したVCF 9の導入
     url: "/vmware/vmw-vcf-deployment.html"
-  - title: VCF 9 DR（ BlueXP搭載）
-    url: "/vmware/vmw-vcf-dr-bxp-nfs.html"
+  - title: VCF 9 DRとNetApp Disaster Recovery
+    url: "/vmware/vmw-vcf-disaster-recovery-nfs.html"
   - title: 既存の vSphere クラスタを VCF に変換する
     entries:
-    - title: vSphere クラスタの変換について学ぶ
+    - title: 既存の vSphere クラスタを VCF に変換する方法について
       url: "/vmware/vmw-vcf-migrate.html"
-    - title: NFS データストアを使用して vSphere クラスタを変換する
-      entries:
-      - title: 展開ワークフロー
-        url: "/vmware/vmw-vcf-mgmt-nfs.html"
-      - title: 要件の確認
-        url: "/vmware/vmw-vcf-mgmt-nfs-requirements.html"
-      - title: ONTAPツールを導入し、NFSデータストアをプロビジョニングする
-        url: "/vmware/vmw-vcf-mgmt-nfs-deploy.html"
-      - title: vSphere クラスタを VCF に変換する
-        url: "/vmware/vmw-vcf-mgmt-nfs-conversion.html"
-    - title: FCデータストアを使用してvSphereクラスタを変換する
-      entries:
-      - title: 展開ワークフロー
-        url: "/vmware/vmw-vcf-mgmt-fc.html"
-      - title: 要件の確認
-        url: "/vmware/vmw-vcf-mgmt-fc-requirements.html"
-      - title: ONTAPツールを導入し、FCデータストアをプロビジョニングする
-        url: "/vmware/vmw-vcf-mgmt-fc-deploy.html"
-      - title: vSphere クラスタを VCF に変換する
-        url: "/vmware/vmw-vcf-mgmt-fc-conversion.html"
+    - title: NFSデータストアを使用して既存のvSphereクラスタを変換する
+      url: "/vmware/vmw-vcf-mgmt-nfs.html"
+    - title: FCデータストアを使用して既存のvSphereクラスタを変換する
+      url: "/vmware/vmw-vcf-mgmt-fc.html"
   - title: VCFにプリンシパルストレージをプロビジョニングする
     entries:
     - title: プリンシパルストレージのプロビジョニングについて
@@ -151,16 +135,6 @@ entries:
       url: "/vmware/vmw-vcf-scv-multiwkld-protection.html"
     - title: NVMeでVCFワークロードドメインを保護する
       url: "/vmware/vmw-vcf-scv-nvme.html"
-  - title: BlueXPでVMwareデータストアを保護する
-    entries:
-    - title: BlueXPによる VMware データストアの保護について
-      url: "/vmware/vmw-vcf-disaster-recovery.html"
-    - title: SnapCenterとBlueXPでデータ保護を構成する
-      url: "/vmware/vmw-vcf-321-data-protection.html"
-    - title: VMFSデータストアの災害復旧を設定する
-      url: "/vmware/vmw-disaster-recovery-vmfs.html"
-    - title: NFSデータストアの災害復旧を設定する
-      url: "/vmware/vmw-disaster-recovery-nfs.html"
   - title: vSphere Metro Storage Clusterでワークロードを保護する
     entries:
     - title: ONTAP高可用性の統合について

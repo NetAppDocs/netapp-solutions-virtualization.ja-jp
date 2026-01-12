@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: videos/vmware-videos.html 
 summary: VMwareソリューションとNetAppストレージテクノロジーの統合を紹介するビデオとデモ 
-keywords: vmware, vsphere, vcf, tanzu, snapcenter, ontap tools, videos, demos 
+keywords: vmware, vsphere, vcf, snapcenter, ontap tools, videos, demos 
 ---
 = NetAppによる VMware 仮想化に関するビデオを見る
 :hardbreaks:
@@ -14,7 +14,7 @@ keywords: vmware, vsphere, vcf, tanzu, snapcenter, ontap tools, videos, demos
 
 
 [role="lead"]
-VMware とNetAppストレージ ソリューションの統合を紹介するビデオとデモをご覧ください。  NetApp ONTAP Tools for VMware vSphere、 SnapCenter Plug-in for VMware vSphere、3-2-1 データ保護の使用方法、およびNetApp がVMware Cloud Foundation および Tanzu と連携する仕組みについて説明します。
+VMware とNetAppストレージ ソリューションの統合を紹介するビデオとデモをご覧ください。NetApp ONTAP Tools for VMware vSphere、 SnapCenter Plug-in for VMware vSphere、3-2-1 データ保護の使用方法、およびNetApp がVMware Cloud Foundation およびVMware vSphere Foundation と連携する仕組みについて説明します。
 
 
 
@@ -88,16 +88,6 @@ video::255640f5-4dff-438c-8d50-b01200f017d1[panopto,width=360]
 video::9b66ac8d-d2b1-4ac4-a33c-b16900f67df6[panopto]
 .VCF管理ドメインの補助ストレージとしてのiSCSIデータストア
 video::1d0e1af1-40ae-483a-be6f-b156015507cc[panopto]
-
-
-== NetAppと VMware Tanzu
-
-.NetAppと VMware Tanzu Basic でvVolsを使用する方法 (パート 1)
-video::ZtbXeOJKhrc[youtube,width=360]
-.NetAppと VMware Tanzu Basic でvVolsを使用する方法 (パート 2)
-video::FVRKjWH7AoE[youtube,width=360]
-.NetAppと VMware Tanzu Basic でvVolsを使用する方法、パート 3
-video::Y-34SUtTTtU[youtube,width=360]
 
 
 == NetAppCloud Insights

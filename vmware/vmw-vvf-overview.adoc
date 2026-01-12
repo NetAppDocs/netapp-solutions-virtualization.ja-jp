@@ -65,7 +65,7 @@ VVF ソリューションは、ネイティブ Kubernetes と仮想マシンベ�
 * VMware vSphere
 * VMware vSAN
 * アリアスタンダード
-* vSphere 向け VMware Tanzu Kubernetes グリッド サービス
+* VMware vSphere Kubernetes vSphere
 * vSphere 分散スイッチ
 
 

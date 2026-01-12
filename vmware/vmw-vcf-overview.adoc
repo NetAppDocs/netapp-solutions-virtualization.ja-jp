@@ -32,7 +32,7 @@ NetApp ONTAPは、幅広い製品ラインにわたって高度なストレー�
 
 == VMware Cloud Foundation の概要
 
-VCF は、コンピューティング、ネットワーク、ストレージ オファリングを VMware 製品およびサードパーティ統合と統合し、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方を容易にします。このソフトウェア プラットフォームには、VMware vSphere、NSX、Aria Suite Enterprise、Tanzu Kubernetes Grid、HCX Enterprise、SDDC Manager などの主要コンポーネントと、vSAN 経由でホスト CPU コアにリンクされたストレージ容量が含まれています。  NetApp ONTAP は、オンプレミスとパブリック クラウドの両方で、さまざまな VCF 導入モデルとシームレスに統合されます。
+VCF は、コンピューティング、ネットワーク、ストレージ オファリングを VMware 製品およびサードパーティ統合と統合し、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方を容易にします。このソフトウェア プラットフォームには、VMware vSphere、NSX、Aria Suite Enterprise、Vmware vSphere Kubernetes Service、HCX Enterprise、SDDC Manager などの主要コンポーネントと、vSAN 経由でホストCPUコアにリンクされたストレージ容量が含まれています。NetApp ONTAP は、オンプレミスとパブリック クラウドの両方で、さまざまな VCF 導入モデルとシームレスに統合されます。
 
 image:vmware-vcf-overview-components.png["VMware Cloud Foundation コンポーネント"]
 

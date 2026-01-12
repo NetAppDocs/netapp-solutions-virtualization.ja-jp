@@ -17,7 +17,6 @@
   <block id="fcc257d7549568e3c425f55212efb787" category="paragraph">お客様は、Cloud Insightsまたは Aria Operations、あるいはその両方の組み合わせ、あるいはONTAP API を使用してトラブルシューティング、パフォーマンス監視、レポート、アラート通知機能を実行するその他のサードパーティ ツールを柔軟に選択できます。</block>
   <block id="b819a27fdd8e2f9eaa3407b548fe624b" category="paragraph">お客様は、 ONTAP Tools vCenter Plug-in またはその API を使用してデータストアを簡単にプロビジョニングでき、電源がオンの状態でも VM をONTAPデータストアに移行できます。</block>
   <block id="d575fdff38ded5a1af1364bef9f2e801" category="inline-link">遅延に敏感なアプリケーション向けの vSphere vMotion 通知</block>
-  <block id="c7f20ef06353fbc5598bd4f28a82d2f8" category="admonition">Aria Automation、Tanzu (またはその他の Kubernetes フレーバー) などの外部管理ツールでデプロイされる一部の VM は通常、VM ストレージ ポリシーに依存します。同じ VM ストレージ ポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなります。アプリケーション所有者に確認して、これらのVMを新しいデータストアに適切に移行してください。vSphere 8が導入されました<block ref="93b1662a0e02ee47ec3732d52d7b075f" category="inline-link-rx"></block>vMotion 用にアプリケーションを準備します。</block>
   <block id="a1003c791b34c3785b58d9768efcbf03" category="example-title">vMotion による VM 移行</block>
   <block id="a7652fc6c491d79b3c3c4a99cb76962e" category="paragraph">接続性、フォールト トレランス、およびパフォーマンスの向上を実現するために、 ONTAPデータストアにはデュアル ストレージ ネットワークがすでに導入されているものと想定されています。</block>
   <block id="dde61dad088e88e4aabbeee9c78dfca1" category="paragraph">vSphere ホスト間での VM の移行も、vSphere ホストの VMKernel インターフェイスによって処理されます。ホット マイグレーション (VM の電源がオン) の場合、vMotion 対応サービスを備えた VMKernel インターフェイスが使用され、コールド マイグレーション (VM の電源がオフ) の場合、プロビジョニング サービスが有効な VMKernel インターフェイスがデータの移動に使用されます。有効なインターフェースが見つからない場合は、管理インターフェースを使用してデータを移動しますが、これは特定のユースケースでは望ましくない可能性があります。</block>
@@ -2711,7 +2710,6 @@
   <block id="f572afcba8a95128ddd328e44a23a189" category="video-title">OpenShift Virtualization のインストール - Red Hat OpenShift とNetApp</block>
   <block id="d25de3166ea89d9d8ede7d5c09ff8904" category="summary">VMwareソリューションとNetAppストレージテクノロジーの統合を紹介するビデオとデモ</block>
   <block id="445d3be063526d137d083e7afa2acb1c" category="doc">NetAppによる VMware 仮想化に関するビデオを見る</block>
-  <block id="d2344972bd0b0b0954b26bc5048545c5" category="paragraph">VMware とNetAppストレージ ソリューションの統合を紹介するビデオとデモをご覧ください。  NetApp ONTAP Tools for VMware vSphere、 SnapCenter Plug-in for VMware vSphere、3-2-1 データ保護の使用方法、およびNetApp がVMware Cloud Foundation および Tanzu と連携する仕組みについて説明します。</block>
   <block id="57e13ece1fb5392ade809cfe158253e3" category="section-title">ONTAPを使用した VMware データストアのプロビジョニング</block>
   <block id="f83bc0ebbeff6798c7394f8638db2695" category="video-title">VMware 向けONTAPツール - 概要</block>
   <block id="b315b87166434fac675545ce42a3c8c2" category="video-title">ONTAPを使用した VMware iSCSI データストアのプロビジョニング</block>
@@ -2740,10 +2738,6 @@
   <block id="634a39984b6bd9120081d40b9aa095c4" category="section-title">VMware Cloud Foundation とNetApp ONTAP</block>
   <block id="fbd39e293492648eacb192098d2caa83" category="video-title">VCF ワークロード ドメインの主要ストレージとしての NFS データストア</block>
   <block id="e314749e67192d0076cd0543baed5a56" category="video-title">VCF管理ドメインの補助ストレージとしてのiSCSIデータストア</block>
-  <block id="4267881eb271396086a3cc1387da9a3a" category="section-title">NetAppと VMware Tanzu</block>
-  <block id="526cee55e2936716b5481f8a933bd217" category="video-title">NetAppと VMware Tanzu Basic でvVolsを使用する方法 (パート 1)</block>
-  <block id="2e933c421900ce4ed68883bfdf00a487" category="video-title">NetAppと VMware Tanzu Basic でvVolsを使用する方法 (パート 2)</block>
-  <block id="4c1c4ad5c7782eafb30ad4704dbf4419" category="video-title">NetAppと VMware Tanzu Basic でvVolsを使用する方法、パート 3</block>
   <block id="a1722ee1a41c4364dfc3dcf1cca5c81b" category="section-title">NetAppCloud Insights</block>
   <block id="93a31c2d8bd53682f99f570fbf24e946" category="video-title">NetApp Cloud Insights - 最新データセンターの可観測性</block>
   <block id="dbe4818fa56e8086248bd47f2f806c8a" category="summary">このドキュメントでは、仮想化ソリューションに関係なく、 NetApp が仮想化環境に最適なプラットフォームである理由の概要を説明します。</block>
@@ -3029,9 +3023,6 @@
   <block id="914c1d4cdf840b7b030978f1b07915d8" category="video-title">VMware HCX による AVS および ANF の一括移行のデモ</block>
   <block id="b46d2e27ef712b8851dadcf6c46f239b" category="video-title">VCF ワークロード ドメインの主要ストレージとしての NFS データストア</block>
   <block id="ac5bbca0aa062edc7bbdb24f026c5183" category="video-title">VCF管理ドメインの補助ストレージとしてのiSCSIデータストア</block>
-  <block id="2dd739333b022cfeccd93e19c8c39d83" category="paragraph">VMware Tanzu を使用すると、顧客は vSphere または VMware Cloud Foundation を通じて Kubernetes 環境を展開、管理できます。  VMware のこの製品ポートフォリオにより、お客様はニーズに最適な VMware Tanzu エディションを選択することで、関連するすべての Kubernetes クラスターを単一のコントロール プレーンから管理できます。</block>
-  <block id="f8d0723a562ed498a977795477b75cb0" category="inline-link">VMware Tanzu の概要</block>
-  <block id="2d3e9ef8ae693e8ff80c4d6e70f0a876" category="paragraph">VMware Tanzuの詳細については、<block ref="1951d4038519ab642a1c0f8898cecfe0" category="inline-link-rx"></block> 。このレビューでは、VMware Tanzu のユースケース、利用可能な追加機能などについて説明します。</block>
   <block id="9dca55ac55f13f701765725f8cf5c985" category="paragraph">NetApp Cloud Insights は、オンプレミスとクラウド インフラストラクチャの可視性と制御を提供するように設計された包括的な監視および分析プラットフォームです。</block>
   <block id="d71669f888f646987e9ca6bc9b77a47a" category="doc">Data Infrastructure Insightsでオンプレミス ストレージを監視する</block>
   <block id="420952c6584332656ca77fe5981cc597" category="paragraph">NetApp Data Infrastructure Insights (旧称Cloud Insights) は、オンプレミスとクラウドの両方における IT インフラストラクチャのパフォーマンス、健全性、コストを監視および分析するために設計されたクラウドベースのプラットフォームです。データ コレクターを展開し、パフォーマンス メトリックを分析し、ダッシュボードを使用して問題を特定し、リソースを最適化する方法を学習します。</block>
@@ -4044,7 +4035,6 @@
   <block id="f4a199c9facad6b3409a91cffc5e50a2" category="section-title">NetApp ONTAPの紹介</block>
   <block id="56d99f22530d9bf2de17528eddb4e173" category="paragraph">NetApp ONTAPは、幅広い製品ラインにわたって高度なストレージ機能を提供する包括的なデータ管理ソフトウェアです。  ONTAP は、ソフトウェア定義ストレージとして、主要なクラウド プロバイダーによるファースト パーティ サービスとして、またNetApp ASA (All San Array)、 AFF (All-flash FAS)、 FAS (Fabric-Attached Storage) プラットフォームのストレージ OS として利用できます。  ONTAP は、サイロを作成することなく、VMware 仮想化を含むさまざまなユース ケースで高パフォーマンスと低レイテンシを実現します。</block>
   <block id="4a65907d71090ec738deaee0771079ad" category="section-title">VMware Cloud Foundation の概要</block>
-  <block id="a58fd43866f698c25b1e869fc9719f38" category="paragraph">VCF は、コンピューティング、ネットワーク、ストレージ オファリングを VMware 製品およびサードパーティ統合と統合し、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方を容易にします。このソフトウェア プラットフォームには、VMware vSphere、NSX、Aria Suite Enterprise、Tanzu Kubernetes Grid、HCX Enterprise、SDDC Manager などの主要コンポーネントと、vSAN 経由でホスト CPU コアにリンクされたストレージ容量が含まれています。  NetApp ONTAP は、オンプレミスとパブリック クラウドの両方で、さまざまな VCF 導入モデルとシームレスに統合されます。</block>
   <block id="bb2a9967e95544f2dcce1f3a26c9cab0" category="inline-image-macro">VMware Cloud Foundation コンポーネント</block>
   <block id="2a791e5f8795c68265d87241a76be590" category="paragraph"><block ref="2a791e5f8795c68265d87241a76be590" category="inline-image-macro-rx" type="image"></block></block>
   <block id="3b467974d75aabe52aba735bb0c17f7d" category="section-title">VCF ドメイン</block>
@@ -5423,7 +5413,6 @@
   <block id="6e9f50792478bd84a9f3fd0f76663ff1" category="paragraph">VVF ソリューションは、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方をサポートします。主なコンポーネントは次のとおりです。</block>
   <block id="b614c74d2cb757efa92f133270c9370e" category="list-text">VMware vSAN</block>
   <block id="26cf8a4b15a52a40980ea68133e64cb0" category="list-text">アリアスタンダード</block>
-  <block id="ad827a9f8bf173762e23c18232ba6f71" category="list-text">vSphere 向け VMware Tanzu Kubernetes グリッド サービス</block>
   <block id="b39a91386427d500b8a265328806c3b7" category="list-text">vSphere 分散スイッチ</block>
   <block id="bafd8cb0bba021b87dbd77b7f823399a" category="inline-link">VMware vSphere 製品のライブ比較</block>
   <block id="dacfd67a4365a057819d3e06ca3fcd0a" category="paragraph">VVFに含まれるコンポーネントの詳細については、アーキテクチャと計画を参照してください。<block ref="4d48a48ece1be15a949dedff89a71464" category="inline-link-rx"></block> 。</block>
@@ -5518,7 +5507,6 @@
   <block id="f7c4be1ce8f09619caffa86ff60c6241" category="list-text">*NFS ストレージ向けの自律型ランサムウェア保護*。クリック<block ref="2874c56debcc384625b6100f5cb5f20e" category="inline-link-macro-rx"></block>展開手順については。</block>
   <block id="ac47369dc21c153e86da5b1bc9448f3d" category="doc">ONTAPストレージで VMware 仮想ボリューム ( vVols ) を使用する方法について学習します。</block>
   <block id="d7f118a7db52472accab75acfe07e2b8" category="paragraph">VMware Virtual Volumes (vVols) の利点、 ONTAP tools for VMware vSphereのプロビジョニング、データ保護戦略、および VM 移行ガイドラインについて説明します。</block>
-  <block id="1b1e61df85ae1da91fe32ec97e7c13e7" category="paragraph">vSphere API for Storage Awareness (VASA) を使用すると、VM 管理者はストレージ チームとやり取りすることなく、VM のプロビジョニングに必要なあらゆるストレージ機能を簡単に使用できるようになります。  VASA 以前は、VM 管理者は VM ストレージ ポリシーを定義できましたが、多くの場合、ドキュメントや命名規則を使用して、ストレージ管理者と協力して適切なデータストアを特定する必要がありました。  VASA を使用すると、適切な権限を持つ vCenter 管理者は、vCenter ユーザーが VM のプロビジョニングに使用できるさまざまなストレージ機能を定義できます。 VM ストレージ ポリシーとデータストア ストレージ機能プロファイル間のマッピングにより、vCenter は選択可能な互換性のあるデータストアのリストを表示できるようになり、また、Aria (旧称 vRealize) Automation や Tanzu Kubernetes Grid などの他のテクノロジーが割り当てられたポリシーからストレージを自動的に選択できるようになります。このアプローチは、ストレージ ポリシー ベースの管理として知られています。ストレージ機能プロファイルとポリシーは従来のデータストアでも使用できますが、ここではvVolsデータストアに焦点を当てます。  ONTAP用の VASA プロバイダーは、ONTAP tools for VMware vSphereの一部として含まれています。</block>
   <block id="9b1b912996f336d89924a9ec7d6edec5" category="paragraph">ストレージ アレイ外で VASA プロバイダーを使用する利点は次のとおりです。</block>
   <block id="dfe16ca745299ae3cfbae5a9be342a8c" category="list-text">単一インスタンスで複数のストレージ アレイを管理できます。</block>
   <block id="d97fe9dbb8392bf7fe5c12e3b569064b" category="list-text">リリース サイクルは、ストレージ OS のリリースに依存する必要はありません。</block>
@@ -7949,4 +7937,9 @@
   <block id="72c2cb3a1c4fe511d4aa5e485a6894c5" category="sidebar">既存の vSphere クラスタを VCF に変換する方法について</block>
   <block id="29f9284e7442c54b5708da5878ed3103" category="sidebar">NFSデータストアを使用して既存のvSphereクラスタを変換する</block>
   <block id="4a8a09e26d16c2590e0cd3a06a7ecedf" category="sidebar">FCデータストアを使用して既存のvSphereクラスタを変換する</block>
+  <block id="692e72fae6c399adbb59208873ea33df" category="admonition">VCF Automation、vSphere Supervisor (またはその他の Kubernetes フレーバー) などの外部管理ツールでデプロイされる一部の VM は通常、VM ストレージ ポリシーに依存します。同じ VM ストレージ ポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなります。アプリケーション所有者に確認して、これらのVMを新しいデータストアに適切に移行してください。vSphere 8が導入されました<block ref="93b1662a0e02ee47ec3732d52d7b075f" category="inline-link-rx"></block> vMotion 用にアプリケーションを準備します。</block>
+  <block id="3b931785f36217e9f4d53e2ba2286fe1" category="paragraph">VMware とNetAppストレージ ソリューションの統合を紹介するビデオとデモをご覧ください。NetApp ONTAP Tools for VMware vSphere、 SnapCenter Plug-in for VMware vSphere、3-2-1 データ保護の使用方法、およびNetApp がVMware Cloud Foundation およびVMware vSphere Foundation と連携する仕組みについて説明します。</block>
+  <block id="fb1e3bc5ab58ae3d4480d4354223e858" category="paragraph">VCF は、コンピューティング、ネットワーク、ストレージ オファリングを VMware 製品およびサードパーティ統合と統合し、ネイティブ Kubernetes と仮想マシンベースのワークロードの両方を容易にします。このソフトウェア プラットフォームには、VMware vSphere、NSX、Aria Suite Enterprise、Vmware vSphere Kubernetes Service、HCX Enterprise、SDDC Manager などの主要コンポーネントと、vSAN 経由でホストCPUコアにリンクされたストレージ容量が含まれています。NetApp ONTAP は、オンプレミスとパブリック クラウドの両方で、さまざまな VCF 導入モデルとシームレスに統合されます。</block>
+  <block id="d9b568558c3f68007c62a09b36720af3" category="list-text">VMware vSphere Kubernetes vSphere</block>
+  <block id="dea7b388e6618290a6273870588a73d9" category="paragraph">vSphere API for Storage Awareness (VASA) を使用すると、VM 管理者はストレージ チームとやり取りすることなく、VM のプロビジョニングに必要なあらゆるストレージ機能を簡単に使用できるようになります。VASA 以前は、VM 管理者は VM ストレージ ポリシーを定義できましたが、多くの場合、ドキュメントや命名規則を使用して、ストレージ管理者と協力して適切なデータストアを特定する必要がありました。VASA を使用すると、適切な権限を持つ vCenter 管理者は、vCenter ユーザーが VM のプロビジョニングに使用できるさまざまなストレージ機能を定義できます。VM ストレージ ポリシーとデータストア ストレージ機能プロファイル間のマッピングにより、vCenter は選択可能な互換性のあるデータストアのリストを表示できるようになり、また、VCF Automation (旧称 Aria または vRealize) Automation やVMware vSphere Kubernetes Service などの他のテクノロジが割り当てられたポリシーからストレージを自動的に選択できるようになります。このアプローチは、ストレージ ポリシー ベースの管理として知られています。ストレージ機能プロファイルとポリシーは従来のデータストアでも使用できますが、ここではvVolsデータストアに焦点を当てます。ONTAP用の VASA プロバイダーは、 ONTAP tools for VMware vSphereの一部として含まれています。</block>
 </blocks>

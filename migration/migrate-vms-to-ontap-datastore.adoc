@@ -27,7 +27,7 @@ ONTAPデータストアでホストされている VM は、 SnapCenter Plugin f
 お客様は、 ONTAP Tools vCenter Plug-in またはその API を使用してデータストアを簡単にプロビジョニングでき、電源がオンの状態でも VM をONTAPデータストアに移行できます。
 
 
-NOTE: Aria Automation、Tanzu (またはその他の Kubernetes フレーバー) などの外部管理ツールでデプロイされる一部の VM は通常、VM ストレージ ポリシーに依存します。同じ VM ストレージ ポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなります。アプリケーション所有者に確認して、これらのVMを新しいデータストアに適切に移行してください。vSphere 8が導入されました https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/how-to-prepare-an-application-for-vsphere-vmotion.html#:~:text=vSphere%208.0%20introduces%20a%20notification,the%20necessary%20steps%20to%20prepare.["遅延に敏感なアプリケーション向けの vSphere vMotion 通知"]vMotion 用にアプリケーションを準備します。
+NOTE: VCF Automation、vSphere Supervisor (またはその他の Kubernetes フレーバー) などの外部管理ツールでデプロイされる一部の VM は通常、VM ストレージ ポリシーに依存します。同じ VM ストレージ ポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなります。アプリケーション所有者に確認して、これらのVMを新しいデータストアに適切に移行してください。vSphere 8が導入されました https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/how-to-prepare-an-application-for-vsphere-vmotion.html#:~:text=vSphere%208.0%20introduces%20a%20notification,the%20necessary%20steps%20to%20prepare.["遅延に敏感なアプリケーション向けの vSphere vMotion 通知"] vMotion 用にアプリケーションを準備します。
 
 
 

@@ -94,20 +94,6 @@ video::9b66ac8d-d2b1-4ac4-a33c-b16900f67df6[panopto]
 .VCF管理ドメインの補助ストレージとしてのiSCSIデータストア
 video::1d0e1af1-40ae-483a-be6f-b156015507cc[panopto]
 ====
-.NetAppと VMware Tanzu
-[%collapsible%open]
-====
-VMware Tanzu を使用すると、顧客は vSphere または VMware Cloud Foundation を通じて Kubernetes 環境を展開、管理できます。  VMware のこの製品ポートフォリオにより、お客様はニーズに最適な VMware Tanzu エディションを選択することで、関連するすべての Kubernetes クラスターを単一のコントロール プレーンから管理できます。
-
-VMware Tanzuの詳細については、 https://tanzu.vmware.com/tanzu["VMware Tanzu の概要"^] 。このレビューでは、VMware Tanzu のユースケース、利用可能な追加機能などについて説明します。
-
-.NetAppと VMware Tanzu Basic でvVolsを使用する方法 (パート 1)
-video::ZtbXeOJKhrc[youtube,width=360]
-.NetAppと VMware Tanzu Basic でvVolsを使用する方法 (パート 2)
-video::FVRKjWH7AoE[youtube,width=360]
-.NetAppと VMware Tanzu Basic でvVolsを使用する方法、パート 3
-video::Y-34SUtTTtU[youtube,width=360]
-====
 .NetAppCloud Insights
 [%collapsible%open]
 ====

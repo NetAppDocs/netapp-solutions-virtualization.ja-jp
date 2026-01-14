@@ -1,0 +1,358 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-wkld-dp-pbs.html 
+keywords: netapp, proxmox, proxmox ve, all-flash, nfs, iscsi, nvme, fc, ontap, storage, aff, asa, virtual machines, vm, containers, proxmox backup server 
+summary: NetApp ONTAPストレージを備えた Proxmox Backup Server を使用して、Proxmox VE ワークロードを保護します。この手順では、データストアの構成、バックアップ操作、復元手順、およびSnapMirrorレプリケーションを使用した災害復旧のセットアップについて説明します。 
+---
+= Proxmox Backup ServerとNetApp ONTAPを使用してProxmox VEワークロードを保護する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPストレージと統合された Proxmox Backup Server (PBS) を使用して、Proxmox 仮想環境 (VE) ワークロードを保護します。この手順では、 ONTAP SnapMirrorレプリケーションを使用したデータストアの構成、バックアップ操作、復元手順、および災害復旧のセットアップについて説明します。
+
+ProxmoxバックアップサーバのアーキテクチャとONTAPの統合については、以下を参照してください。 link:proxmox-pbs-architecture.html["NetApp ONTAPを使用したProxmoxバックアップサーバアーキテクチャについて学ぶ"]。
+
+
+
+== 開始する前に
+
+* 高可用性とパフォーマンスを実現するために、PBS とONTAPストレージ間の冗長ネットワーク パスを確保します。
+* 帯域幅と冗長性を高めるには、リンク アグリゲーション (LACP) を検討してください。
+* ストレージ トラフィックのパフォーマンスを向上させるには、すべてのネットワーク デバイスでジャンボ フレーム (MTU 9000) を構成します。
+* NFS の場合、適切な権限を持つ PBS データストア専用のエクスポートを作成します。
+* ブロック プロトコルの場合は、適切なゾーニングとLUNマスキングを確保して、承認された PBS ホストへのアクセスを制限します。
+
+
+
+
+== データストアの設定
+
+NetApp ONTAPストレージを使用して Proxmox バックアップ サーバー データストアを構成します。これには、PBS ホストへのONTAPストレージのマウント、PBS Web インターフェイスでのローカル データストアの作成、およびオプションでオフサイト バックアップと長期保存用のONTAP S3 ストレージの構成が含まれます。
+
+ONTAPストレージ バックエンドを準備し、PBS ホストにマウントします。準備手順は、ファイルベース (NFS) プロトコルを使用するか、ブロックベース (SAN/NVMe-oF) プロトコルを使用するかによって異なります。
+
+PBS は、ローカル ストレージにマウントされた任意のフォルダーをデータストアとして使用できます。PBS はカタログ、インデックス、チャンク ファイルをデータストアに保存します。最適なパフォーマンスとスケーラビリティを得るには、PBSデータストアとしてNetApp ONTAP SAN（iSCSI/FC/NVMe-oF）またはNFSストレージ（nConnectまたはセッショントトランキング、pNFSが有効）を使用してください。
+
+.-> PBSホストにストレージをマウントする
+. SAN または NVMe-oF プロトコルの場合は、 ONTAP上に LUN または名前空間を作成し、それを PBS ホストに接続します。
+. LUN または名前空間を適切なファイルシステム (ext4 または xfs) でフォーマットし、PBS ホストにマウントします。
+. NFS の場合、NFS エクスポートを PBS ホストにマウントします。
+. システムの再起動時にデータストアが自動的にマウントされるようにするには、fstab または automount を使用します。
+
+
+.-> PBSにデータストアを作成する
+ストレージをマウントした後、PBS Web インターフェースで新しいデータストアを作成します。
+
+. [データストア] > [データストアの追加] に移動します。
+. 名前を指定し、データストアの種類としてローカルを選択し、マウントされたフォルダーをバッキング パスとして指定します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-002.png[PBS のローカル データストア構成]
+
+====
+
+
+.-> ONTAP S3ストレージでデータストアを構成する
+S3 ストレージは通常、オフサイト バックアップと長期保存に使用されます。Proxmox Backup Server は、Tech Preview 機能として S3 ストレージをサポートしています。
+
+. ONTAP S3 サービスが有効になっており、適切に設定されていることを確認します。
+. PBS データストア用にONTAP上に S3 バケットを作成します。
+. S3 バケットのアクセスキーとシークレットキーを取得します。
+. S3 エンドポイント URL と証明書のフィンガープリント情報を収集します。
+. PBS Web インターフェイスで、[構成] > [S3 エンドポイント] に移動し、収集した情報を使用して新しい S3 エンドポイントを追加します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-003.png[PBS での S3 エンドポイント設定]
+
+====
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-004.png[PBS の S3 エンドポイント設定ファイル]
+
+====
+. 次に、「データストア」→「データストアの追加」に移動します。名前を指定し、データストアの種類として S3 を選択し、構成された S3 エンドポイントを選択します。ローカル キャッシュとして使用するローカル データストア上のフォルダー名を指定し、バケットを選択します。.例を表示
+
+
+[]
+====
+image::proxmox-wkld-dp-pbs-005.png[PBS での S3 データストアの構成]
+
+image::proxmox-wkld-dp-pbs-006.png[PBS の S3 データストア設定ファイル]
+
+====
+
+
+== ONTAP S3 ストレージへのローカル同期ジョブを作成します。
+
++ PBS でローカル同期ジョブを作成して、ローカル PBS データストアからONTAP S3 ストレージにデータを移行します。このジョブは、オフサイトストレージおよび長期保存のために、ローカル データストアから S3 データストアにバックアップ データをコピーします。
+
+. PBS Web インターフェースで、「S3 データストア」>「同期ジョブ」に移動し、「追加」をクリックします。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-007.png[PBSにローカル同期ジョブを追加する]
+
+====
+. 場所として「ローカル」を選択し、ソースのローカル データストアを選択して、必要な名前空間と深度を指定します。同期ジョブのスケジュールと追加オプションを構成します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-008.png[PBSでのローカル同期ジョブの設定]
+
+====
+. 同期ジョブの構成を保存します。同期ジョブは定義されたスケジュールに従って実行され、ローカル PBS データストアからONTAP S3 ストレージにコピー バックアップ。
+
+
+
+NOTE: ONTAPストレージによるオフサイト ストレージと長期保存の場合、管理およびデータ サービスに Netapp コンソールを利用できます。
+
+
+
+== Proxmox VE クラスタに Proxmox バックアップ サーバを追加する
+
+Proxmox Backup Server をストレージ ターゲットとして追加し、VM およびコンテナのバックアップ操作を有効にします。
+
+. Proxmox VE Web インターフェースで、「データセンター」>「ストレージ」に移動し、「追加」>「Proxmox バックアップ サーバー」をクリックします。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-009.png[Proxmox VEにPBSストレージを追加する]
+
+====
+. 安全な通信のために PBS サーバー証明書のフィンガープリントを提供します。フィンガープリントは、PBS Web インターフェースから取得するか、PBS で次のコマンドを実行して取得できます。 `proxmox-backup-manager cert info`。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-010.png[ProxmoxバックアップサーバUIでのPBS証明書のフィンガープリント設定]
+
+====
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-011.png[ProxmoxバックアップサーバCLIでのPBS証明書フィンガープリントの設定]
+
+====
+. バックアップ保持ポリシーや暗号化などの追加オプションを構成します。
+. 「追加」をクリックして、PBS ストレージ構成を保存します。
+
+
+Proxmox VE クラスターは、VM およびコンテナのバックアップおよび復元操作に PBS データストアを使用できるようになりました。
+
+
+
+== バックアップを実行する
+
+Proxmox VE ワークロードを Proxmox バックアップ サーバーにバックアップします。これには、オンデマンドバックアップの実行、スケジュールされたバックアップ ジョブの構成、ホスト構成ファイルのバックアップ、カスタム アクション用のバックアップ前後のスクリプトの使用が含まれます。
+
+.->オンデマンドバックアップを実行する
+Proxmox Backup Server を使用して、VM またはコンテナの即時バックアップを作成します。
+
+. Proxmox VE Web インターフェースで、VM またはコンテナに移動します。
+. [バックアップ] タブをクリックし、[今すぐバックアップ] をクリックします。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-012.png[Proxmox VEのオンデマンドバックアップ]
+
+====
+. バックアップターゲットとして Proxmox バックアップ サーバー ストレージを選択します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-013.png[Proxmox VE で PBS ターゲット ストレージを選択するオンデマンド バックアップ]
+
+====
+. 圧縮、通知、スナップショット モードなどの追加のバックアップ オプションを構成します。
+. バックアッププロセスを開始するには、「バックアップ」をクリックします。
+
+
+.-> スケジュールされたバックアップを構成する
+Proxmox Backup Server を使用して、VM およびコンテナのスケジュールされたバックアップを設定します。
+
+. Proxmox VE Web インターフェースで、「データセンター」>「バックアップ」に移動します。
+. 新しいバックアップ ジョブを作成するには、[追加] をクリックします。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-014.png[Proxmox VEでスケジュールされたバックアップジョブを追加する]
+
+====
+. ターゲットとして PBS ストレージを選択し、バックアップ スケジュール (毎日、毎週など) を選択します。選択モードを「すべて」、「含める/除外する選択した VM/CT」、または「プール ベース」に設定します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-015.png[Proxmox VEでのスケジュールバックアップジョブの設定]
+
+====
+. 保持ポリシー、圧縮、スナップショット モードなどの追加オプションを構成します。
+. スケジュールされたバックアップ ジョブの構成を保存するには、[作成] をクリックします。
++
+.結果
+Proxmox VE クラスターは、Proxmox Backup Server をストレージ ターゲットとして使用し、定義されたスケジュールに従って指定された VM とコンテナーのバックアップを自動的に実行します。
+
++
+スケジュールされたジョブの構成は、Proxmox VE ホストの /etc/pve/job.cfg ファイルに保存されます。
+
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-016.png[Proxmox VEのスケジュールバックアップジョブ設定ファイル]
+
+====
+
+
+.-> Proxmox VEホストファイルをPBSにバックアップする
+Proxmox VE ホスト構成ファイル、システム設定、およびその他の重要なデータを Proxmox バックアップ サーバーにバックアップします。
+
+. Proxmox VEシェルまたはSSHセッションで、 `proxmox-backup-client` ホスト バックアップを作成するコマンド:
++
+[source]
+----
+proxmox-backup-client backup <backupspec> --repository <pbs-storage>:<datastore> --ns <namespace>
+----
++
+交換する `<backupspec>` バックアップ仕様（例： `backupname and backuptype/<directory or files to backup>`）、 `<pbs-storage>` PBSのFQDNで、 `<datastore>` PBSデータストア名と `<namespace>` 名前空間を使用します。これは、認証と指紋の環境変数が設定されていることを前提としています。
+
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-017.png[Proxmox VEホストバックアップコマンド]
+
+====
+. バックアップ プロセスでは、Proxmox VE ホストのバックアップが作成され、指定された PBS データストアに保存されます。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-018.png[ProxmoxバックアップサーバUIからファイルを表示する]
+
+====
+. バックアップからProxmox VEホストファイルを復元するには、 `proxmox-backup-client restore` 適切なパラメータを指定したコマンド。
+
+
+Proxmox VE は、バックアップ プロセスの前後にカスタム アクションを実行するためのバックアップ前スクリプトとバックアップ後スクリプトをサポートしています。これらのスクリプトを使用して、バックアップ用の VM またはコンテナを準備したり、追加のタスクを実行したり、バックアップの完了後にクリーンアップしたりします。
+
+. Proxmox VE ホストでバックアップ スクリプトを作成します。スクリプトが実行可能であり、必要な権限を持っていることを確認します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-020.png[バックアップ スクリプトのスクリプト引数の詳細]
+
+====
+. バックアップ ジョブが存在することを確認します。
+. Proxmox VEシェルまたはSSHセッションで、 `pvesh` コマンドを `--script` 実行するスクリプトを指定するオプション。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-019.png[Proxmox VEでバックアップスクリプトを設定する]
+
+====
+. オプションとして、バックアップ用のスナップショットを取得する前に、QEMU ゲスト エージェントを使用してワークロード内のファイル システムを静止させます。QEMU ゲスト エージェントがインストールされ、実行されていることを確認します。VM またはコンテナ内の /etc/qemu/fsfreeze-hook.d/ または /etc/qemu-ga/fsfreeze-hook.d/ にスクリプトを配置します。
+
+
+
+NOTE: フックスクリプトは、VMまたはコンテナレベルで設定することもできます。 `qm set` または `pct set` コマンドを `--hookscript` オプション。サンプルフックスクリプトについては、Proxmox VE ホストの /usr/share/pve-docs/examples/guest-example-hookscript.pl を参照してください。
+
+
+
+== VMとコンテナを復元する
+
+Proxmox VE Web インターフェースまたは PBS ストレージから VM とコンテナを直接復元します。
+
+. 既存の VM またはコンテナを復元するには、Proxmox VE Web インターフェイスでその VM またはコンテナに移動し、[バックアップ] タブをクリックして、PBS ストレージからバックアップを選択し、[復元] をクリックします。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-021.png[Proxmox VEでPBSからVMを復元する]
+
+====
++
+ベアメタル リカバリまたは別のProxmox VEホストへの復元には、 `proxmox-backup-client` 指示。
+
+. 現在 Proxmox VE で利用できない VM またはコンテナを復元するには、PBS ストレージのバックアップ セクションに移動し、バックアップを選択して、「復元」をクリックします。復元を完了するには、ターゲット ストレージおよびその他の必要な情報を指定します。
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-022.png[Proxmox VE UIでPBSストレージから失われたVMを復元する]
+
+====
+
+
+
+
+== SnapMirrorで災害復旧を構成する
+
+災害復旧のためにSnapMirrorを使用して、 ONTAPストレージ上の PBS データストアを別のONTAPシステムに複製します。これにより、バックアップ データが保護され、サイト障害後の復元が可能になります。
+
+. PBS データストア ボリュームのSnapMirrorレプリケーションを構成します。
+. 災害が発生した場合は、複製された PBS データストアをセカンダリ PBS インスタンスにマウントします。
++
+PBS にデータストアを追加するときは、データストアの再初期化を回避するために、「既存のデータストアを再利用する」詳細オプションを有効にします。
+
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-023.png[PBS の既存のデータストアを再利用]
+
+====
++
+ONTAP S3 ストレージの場合、PBS にデータストアを追加するときに、「既存のデータストアを再利用する」オプションと「使用中マーカーを上書きする」オプションの両方を有効にします。
+
++
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-024.png[PBS で既存の S3 データストアを再利用する]
+
+====
++
+.結果
+データストアを追加すると、バックアップ データにアクセスして復元操作を実行できるようになります。
+
+
+
+
+
+== Proxmox Datacenter Managerで複数のクラスターを監視する
+
+Proxmox Datacenter Manager (PDM) を使用して、複数の Proxmox VE および Proxmox Backup Server インスタンスを監視および管理します。PDM は、複数の Proxmox VE クラスターと PBS インスタンスの健全性、パフォーマンス、ステータスを監視するための集中管理インターフェイスを提供します。
+
+.例を表示
+[%collapsible]
+====
+image::proxmox-wkld-dp-pbs-025.png[Proxmox Datacenter Managerの概要]
+
+====
+
+
+== まとめ
+
+NetApp ONTAPストレージと統合された Proxmox Backup Server は、Proxmox VE ワークロードに対して強力かつ効率的なデータ保護を提供します。組織は、ONTAP の高度なデータ管理機能と PBS のバックアップ機能を活用することで、仮想化されたワークロードの可用性と整合性を確保できます。

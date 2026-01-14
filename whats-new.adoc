@@ -15,6 +15,29 @@ summary: NetApp仮想化ソリューション資料への最近の変更のロ�
 
 
 
+== 2026年1月15日
+
+* Proxmox VE 9 リリースを反映するように Proxmox VE ソリューション コンテンツを更新しました。
+* Proxmox VE ストレージに使用されるボリュームでランサムウェア対策を有効にするための手順を追加しました。
+* Proxmox VE のストレージ プロトコルとして FC および NVMe/FC を使用する手順を追加しました。
++
+** link:proxmox/proxmox-ontap.html["Proxmox仮想環境用のONTAPストレージのプロビジョニング"]
+
+
+* Proxmox バックアップ サーバーにONTAP統合を追加しました。
++
+** link:proxmox/proxmox-wkld-dp-pbs.html["Proxmox Backup ServerとNetApp ONTAPを使用してProxmox VEで実行されるワークロードを保護します。"]
+
+
+* Proxmox VE とのONTAP統合の展開ガイドラインを追加しました。
++
+** link:proxmox/proxmox-deploy-guidelines.html["Proxmox仮想環境向けNetApp ONTAP導入ガイドライン"]
+
+
+
+
+
+
 == 2025年11月12日
 
 * NetApp Shift Toolkit の正しいダウンロード リンクを提供しました

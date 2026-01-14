@@ -6,17 +6,37 @@ indexpage:
   tiles:
   - title: 始めましょう
     links:
-    - title: Proxmox VEについて
+    - title: Proxmox VEについて学ぶ
       url: proxmox-overview.html
-    - title: Proxmox VE 用のONTAPストレージのプロビジョニング
+  - title: Proxmox VE 用のONTAPストレージのプロビジョニング
+    links:
+    - title: Proxmox VEとONTAPアーキテクチャ
+      url: proxmox-ontap-architecture.html
+    - title: サポートされているストレージ タイプ
+      url: proxmox-storage-types.html
+    - title: 展開ガイドライン
+      url: proxmox-deploy-guidelines.html
+    - title: ストレージプロトコルを構成する
       url: proxmox-ontap.html
+  - title: Proxmox VE ワークロードを保護する
+    links:
+    - title: Proxmoxバックアップサーバーのアーキテクチャ
+      url: proxmox-pbs-architecture.html
+    - title: 展開要件と考慮事項
+      url: proxmox-pbs-requirements.html
+    - title: Proxmoxバックアップサーバーでデータ保護を構成する
+      url: proxmox-wkld-dp-pbs.html
   - title: その他のリソース
     links:
     - title: Proxmox仮想化環境で画期的なパフォーマンスを実現するNetAppストレージとNVMe-oF
       url: https://www.credativ.de/en/blog/credativ-inside/netapp-storage-and-nvme-of-for-breakthrough-performance-in-proxmox-virtualization-environments/
+    - title: Proxmox VE の Linux Bridge と Open vSwitch の比較
+      url: https://community.netapp.com/t5/Tech-ONTAP-Blogs/Networking-with-Proxmox-VE/ba-p/465060
     - title: Proxmox VE ドキュメント
       url: https://pve.proxmox.com/pve-docs/chapter-sysadmin.html#external_metric_server
     - title: Proxmox VEのバックアップと復元
       url: https://pve.proxmox.com/pve-docs/chapter-vzdump.html
     - title: Proxmox VE のストレージ
       url: https://pve.proxmox.com/pve-docs/chapter-pvesm.html
+    - title: SolidFireストレージを搭載したProxmox VE
+      url: https://community.netapp.com/t5/SolidFire-and-HCI/Proxmox-VE-with-SolidFire-NetApp-HCI/td-p/461937

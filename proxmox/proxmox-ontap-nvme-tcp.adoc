@@ -1,0 +1,129 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-nvme-tcp.html 
+keywords: netapp, proxmox, proxmox ve, nvme, nvme-tcp, lvm, ontap, storage 
+summary: 'ONTAPを使用して、Proxmox 仮想環境用の NVMe over TCP を備えた論理ボリューム マネージャー (LVM) を構成します。この手順には、nvme-cli のインストール、検出構成、名前空間のプロビジョニング、サブシステムのセットアップ、共有ストレージのボリューム グループの作成が含まれます。' 
+---
+= Proxmox VE 用に NVMe/TCP で LVM を構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPで NVMe over TCP プロトコルを使用して、Proxmox 仮想環境 (VE) ホスト間で共有ストレージ用の論理ボリューム マネージャー (LVM) を構成します。この構成では、最新の NVMe プロトコルを使用して、標準のイーサネット ネットワーク経由でハイパフォーマンスブロック レベルのストレージ アクセスが提供されます。
+
+.ONTAPを使用した NVMe/TCP による LVM 共有プール
+video::80164fe4-06db-4c21-a25d-b22e0179c3d2[panopto,width=360]
+
+
+== 仮想化管理者の初期タスク
+
+これらの初期タスクを完了して、Proxmox VE ホストを NVMe/TCP 接続用に準備し、ストレージ管理者に必要な情報を収集します。
+
+. 2 つの Linux VLAN インターフェイスが使用可能であることを確認します。
+. クラスター内のすべての Proxmox ホストで次のコマンドを実行して、ホスト イニシエーター情報を収集します。
++
+[source, shell]
+----
+nvme show-hostnqn
+----
+. 収集したホスト NQN 情報をストレージ管理者に提供し、必要なサイズの NVMe 名前空間を要求します。
+
+
+
+
+== ストレージ管理者のタスク
+
+ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
+
+. NVMe プロトコルが有効になっている SVM が使用可能であることを確認します。参照 link:https://docs.netapp.com/us-en/ontap/san-admin/create-nvme-namespace-subsystem-task.html["ONTAP 9のNVMeタスクに関するドキュメント"]。
+. NVMe 名前空間を作成します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-tcp-001.png["nvme名前空間の作成"]
+
+====
+. サブシステムを作成し、ホスト NQN を割り当てます (CLI を使用している場合)。上記の参照リンクに従ってください。
+. セキュリティ タブでランサムウェア対策が有効になっていることを確認します。
+. NVMe 名前空間が作成されたことを仮想化管理者に通知します。
+
+
+
+
+== 最終的な仮想化管理者のタスク
+
+Proxmox VE で NVMe 名前空間を共有 LVM ストレージとして構成するには、これらのタスクを完了します。
+
+. クラスター内の各 Proxmox VE ホストのシェルに移動し、/etc/nvme/discovery.conf ファイルを作成します。ご使用の環境に固有のコンテンツを更新します。
++
+[source, shell]
+----
+root@pxmox01:~# cat /etc/nvme/discovery.conf
+# Used for extracting default parameters for discovery
+#
+# Example:
+# --transport=<trtype> --traddr=<traddr> --trsvcid=<trsvcid> --host-traddr=<host-traddr> --host-iface=<host-iface>
+
+-t tcp -l 1800 -a 172.21.118.153
+-t tcp -l 1800 -a 172.21.118.154
+-t tcp -l 1800 -a 172.21.119.153
+-t tcp -l 1800 -a 172.21.119.154
+----
+. NVMe サブシステムにログインします。
++
+[source, shell]
+----
+nvme connect-all
+----
+. デバイスの詳細を検査して収集します。
++
+[source, shell]
+----
+nvme list
+nvme netapp ontapdevices
+nvme list-subsys
+lsblk -l
+----
+. ボリューム グループを作成します。
++
+[source, shell]
+----
+vgcreate pvens02 /dev/mapper/<device id>
+----
+. 管理UIを使用する `https:<proxmox node>:8006`をクリックし、[データセンター] をクリックして、[ストレージ] を選択し、[追加] をクリックして、[LVM] を選択します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-tcp-002.png["LVM ストレージナビゲーション"]
+
+====
+. ストレージ ID 名を指定し、既存のボリューム グループを選択して、CLI で作成したボリューム グループを選択します。共有オプションを確認してください。Proxmox VE 9以降では、 `Allow Snapshots as Volume-Chain` このオプションは、[詳細設定] チェック ボックスが有効になっている場合に表示されます。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-tcp-003.png["既存の vg 上の lvm"]
+
+====
+. 以下は、NVMe/TCP を使用する LVM のサンプル ストレージ構成ファイルを示しています。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-tcp-004.png["NVME 上の LVM TCP 構成"]
+
+====
++
+Proxmox VE 9以降では、ストレージ設定ファイルに以下の追加オプションが含まれています。 `snapshot-as-volume-chain 1` いつ `Allow Snapshots as Volume-Chain` が有効になります。
+
+
+
+
+NOTE: nvme-cli パッケージには nvmef-autoconnect.service が含まれており、これを有効にすると起動時にターゲットに自動的に接続できます。詳細については、nvme-cli のドキュメントを参照してください。

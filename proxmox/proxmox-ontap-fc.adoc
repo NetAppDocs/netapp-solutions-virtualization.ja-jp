@@ -1,0 +1,123 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-fc.html 
+keywords: netapp, proxmox, proxmox ve, fc, fibre channel, lvm, ontap, storage 
+summary: 'ONTAPを使用して、Proxmox 仮想環境用のファイバ チャネルを備えた論理ボリューム マネージャ (LVM) を構成します。この手順には、マルチパス構成、LUN プロビジョニング、igroup セットアップ、共有ストレージのボリューム グループの作成が含まれます。' 
+---
+= Proxmox VE 用の FC を使用した LVM の設定
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPでファイバー チャネル プロトコルを使用して、Proxmox 仮想環境 (VE) ホスト間で共有ストレージ用の論理ボリューム マネージャー (LVM) を構成します。この構成により、高パフォーマンスと低レイテンシでブロックレベルのストレージ アクセスが可能になります。
+
+
+
+== 仮想化管理者の初期タスク
+
+これらの初期タスクを完了して、Proxmox VE ホストを FC 接続用に準備し、ストレージ管理者に必要な情報を収集します。
+
+. 2 つの HBA インターフェイスが使用可能であることを確認します。
+. すべての Proxmox VE ホストに multipath-tools がインストールされ、起動時に起動することを確認します。
++
+[source, shell]
+----
+apt list | grep multipath-tools
+# If need to install, execute the following line.
+apt-get install multipath-tools
+systemctl enable multipathd
+----
+. すべての Proxmox VE ホストの WWPN を収集し、ストレージ管理者に提供します。
++
+[source, shell]
+----
+cat /sys/class/fc_host/host*/port_name
+----
+
+
+
+
+== ストレージ管理者のタスク
+
+ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
+
+. FC プロトコルが有効になっている状態で SVM が使用可能であることを確認します。フォローする link:https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["ONTAP 9 ドキュメント"]。
+. FC 専用のコントローラごとに 2 つの LIF を作成します。
++
+image:proxmox-ontap-fc-001.png["FCインターフェースの詳細"]
+
+. igroup を作成し、ホスト FC イニシエーターを追加します。
+. SVM 上に希望のサイズの LUN を作成し、前の手順で作成した igroup に提示します。ASAシステムのセキュリティ タブとAFF/ FASシステムのボリューム セキュリティ タブで、ランサムウェア対策保護が有効になっていることを確認します。
++
+image:proxmox-ontap-fc-002.png["lunの詳細"]
+
+. LUN が作成されたことを仮想化管理者に通知します。
+
+
+
+
+== 最終的な仮想化管理者のタスク
+
+これらのタスクを完了して、LUN を Proxmox VE の共有 LVM ストレージとして構成します。
+
+. クラスター内の各 Proxmox VE ホストのシェルに移動し、ディスクが表示されていることを確認します。
++
+[source, shell]
+----
+lsblk -S
+rescan-scsi-bus.sh
+lsblk -S
+----
+. デバイスがマルチパス リストに表示されていることを確認します。
++
+[source, shell]
+----
+multipath -ll
+multipath -a /dev/sdX  # replace sdX with the device name
+multipath -r
+multipath -ll
+----
+. ボリューム グループを作成します。
++
+[source, shell]
+----
+vgcreate <volume group name> /dev/mapper/<device id>
+# Where <volume group name> is the desired name for the volume group and <device id> is the multipath device id.
+pvs
+# Verify the physical volume is part of the volume group.
+vgs
+# Verify the volume group is created.
+----
+. 管理UIを使用する `https:<proxmox node>:8006`をクリックし、[データセンター] をクリックして、[ストレージ] を選択し、[追加] をクリックして、[LVM] を選択します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-fc-003.png["LVM ストレージナビゲーション"]
+
+====
+. ストレージ ID 名を指定し、既存のボリューム グループを選択して、CLI で作成したボリューム グループを選択します。共有オプションを確認してください。Proxmox VE 9以降では、 `Allow Snapshots as Volume-Chain` このオプションは、[詳細設定] チェック ボックスが有効になっている場合に表示されます。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-fc-004.png["LVMストレージの作成"]
+
+====
+. 以下に、FC を使用する LVM のサンプル ストレージ構成ファイルを示します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-fc-005.png["LVM FC 構成"]
+
+====
++
+Proxmox VE 9以降では、ストレージ設定ファイルに以下の追加オプションが含まれています。 `snapshot-as-volume-chain 1` いつ `Allow Snapshots as Volume-Chain` が有効になります。
+
+

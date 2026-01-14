@@ -1,0 +1,35 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-pbs-architecture.html 
+keywords: netapp, proxmox, proxmox ve, proxmox backup server, ontap, storage, architecture, backup, data protection, snapmirror, s3 
+summary: Proxmox Backup Server はNetApp ONTAPストレージと統合され、Proxmox 仮想環境ワークロード向けのエンタープライズ バックアップ機能を提供します。このアーキテクチャは、 ONTAP SnapMirrorレプリケーションを使用して、増分バックアップ、重複排除、圧縮、および災害復旧を提供します。 
+---
+= NetApp ONTAPを使用したProxmoxバックアップサーバアーキテクチャについて学ぶ
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+Proxmox Backup Server (PBS) はNetApp ONTAPストレージと統合され、Proxmox 仮想環境 (VE) ワークロード向けのエンタープライズ バックアップ機能を提供します。このアーキテクチャは、 ONTAP SnapMirrorレプリケーションを使用して、増分バックアップ、重複排除、圧縮、暗号化、および災害復旧を提供します。
+
+Proxmox Backup Server は、Proxmox 仮想環境向けに設計されたエンタープライズ バックアップ機能を提供します。PBS は、増分バックアップ、重複排除、圧縮、暗号化などの機能を備え、VM およびコンテナの効率的で信頼性の高いバックアップおよび復元操作を提供します。
+
+PBS は、ローカル ストレージ、NFS、iSCSI、S3 互換オブジェクト ストレージなど、さまざまなストレージ バックエンドをサポートしています。PBS をNetApp ONTAPストレージと統合すると、バックアップ データストアとオフサイト バックアップ ターゲットにハイパフォーマンスでスケーラブルなストレージを活用できます。
+
+
+
+== ソリューションアーキテクチャ
+
+ソリューションには次のコンポーネントが含まれます。
+
+* *Proxmox VE クラスター* - 仮想化機能を提供し、複数のノードにわたって仮想マシン (VM) とコンテナーを管理します。
+* *Proxmox バックアップ サーバー* - ONTAPストレージとの統合により、Proxmox VE ワークロード専用のバックアップおよび復元機能を提供します。
+* * NetApp ONTAPストレージ* - Proxmox VE クラスターおよび PBS バックアップ データストアにハイパフォーマンスでスケーラブルなストレージを提供します。
+* *ネットワーク インフラストラクチャ* - Proxmox VE ノード、PBS、 ONTAPストレージ間の低レイテンシ、高スループットの接続を保証します。
+* * NetApp Console* - 複数のNetAppストレージ システムとデータ サービスの集中管理を提供します。
+
+
+次の図は、 ONTAPストレージを使用した Proxmox バックアップ サーバーのセットアップの概要アーキテクチャを示しています。
+
+image::proxmox-pbs-architecture-001.png[PBSとNetApp ONTAPアーキテクチャによるProxmox VEワークロードデータ保護]

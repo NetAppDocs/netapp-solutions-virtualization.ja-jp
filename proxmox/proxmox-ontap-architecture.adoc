@@ -1,0 +1,89 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-architecture.html 
+keywords: netapp, proxmox, proxmox ve, ontap, storage, architecture, nas, san, nfs, smb, iscsi, fc, nvme, flexgroup, flexcache, snapmirror 
+summary: NetApp ONTAP はProxmox Virtual Environment と統合され、NAS および SAN プロトコルを通じてエンタープライズクラスのストレージ機能を提供します。ONTAP は、仮想化されたワークロードのスナップショット、クローン作成、レプリケーション、ランサムウェア保護などの高度なデータ管理機能を提供します。 
+---
+= Proxmox仮想環境のONTAPストレージ アーキテクチャについて学ぶ
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAP はProxmox Virtual Environment (VE) と統合され、NAS および SAN プロトコルを通じてエンタープライズクラスのストレージ機能を提供します。ONTAP は、Proxmox VE クラスターで実行される仮想化ワークロードに対して、スナップショット、クローン作成、レプリケーション、ランサムウェア保護などの高度なデータ管理機能を提供します。
+
+
+
+== ソリューションアーキテクチャ
+
+ソリューション アーキテクチャには、次の主要コンポーネントが含まれます。
+
+* *Proxmox VE クラスター:* 仮想化機能を提供し、仮想マシン (VM) とコンテナーを管理する Proxmox VE ノードのクラスター。
+* * NetApp ONTAPストレージ:* Proxmox VE クラスターに共有ストレージを提供する、ハイパフォーマンスでスケーラブルなストレージ システム。
+* *ネットワーク インフラストラクチャ:* Proxmox VE ノードとONTAPストレージ間の低レイテンシかつ高スループットの接続を保証する堅牢なネットワーク セットアップ。
+* * NetApp Console:* 複数のNetAppストレージ システムとデータ サービスを管理するための集中管理インターフェイス。
+* *Proxmox バックアップ サーバー:* ONTAPストレージと統合して効率的なデータ保護を実現する Proxmox VE 専用のバックアップ ソリューションです。
+
+
+次の図は、ラボ セットアップの概要アーキテクチャを示しています。
+
+image::proxmox-deploy-guidelines-001.png[NetApp ONTAPアーキテクチャを採用したProxmox VE]
+
+
+
+== Proxmox VE のONTAP機能
+
+ONTAP は、Proxmox VE の導入を強化する包括的なエンタープライズ ストレージ機能を提供します。これらの機能は、NAS と SAN の両方のストレージ アーキテクチャにわたるデータ管理、保護、効率、プロトコル サポートにわたります。
+
+
+
+=== コアデータ管理機能
+
+* スケールアウトクラスタアーキテクチャ
+* 安全な認証とRBACのサポート
+* ゼロトラストのマルチ管理者サポート
+* 安全なマルチテナント
+* SnapMirrorによるデータ複製
+* スナップショットによるポイントインタイムコピー
+* スペース効率の高いクローン
+* 重複排除や圧縮などのストレージ効率機能
+* Kubernetes のTrident CSI サポート
+* コンプライアンスのためのSnapLock
+* 改ざん防止スナップショットコピーロック
+* 自動脅威検出によるランサムウェア対策
+* 保存データと転送中データの暗号化
+* FabricPoolを使用してコールド データをオブジェクト ストレージに階層化します
+* NetApp ConsoleとData Infrastructure Insightsサイトの統合
+* Microsoftオフロード データ転送（ODX）
+
+
+
+
+=== NASプロトコルの機能
+
+* FlexGroupボリュームは、高いパフォーマンス、負荷分散、拡張性を備えたスケールアウトNASコンテナを提供します。
+* FlexCacheは、ローカルでの読み取りおよび書き込みアクセスを提供しながら、データをグローバルに分散します。
+* マルチプロトコルのサポートにより、SMBとNFSの両方から同じデータにアクセス可能
+* NFS nConnect は、接続ごとに複数の TCP セッションを許可し、ネットワーク スループットを向上させ、高速NIC を活用します。
+* NFSセッショントランキングは、データ転送速度の向上、高可用性、フォールトトレランスを実現します。
+* SMBマルチチャネルは、データ転送速度の向上、高可用性、フォールトトレランスを実現します。
+* ファイル権限のための Active Directory および LDAP との統合
+* TLS 経由の NFS による安全な接続
+* NFS Kerberos認証のサポート
+* 低レイテンシアクセスを実現する RDMA 経由の NFS
+* Windows と Unix の ID 間の名前マッピング
+* 脅威検出機能を内蔵した自律型ランサムウェア保護
+* 容量と使用状況の分析のためのファイルシステム分析
+
+
+
+
+=== SANプロトコルの機能
+
+* SnapMirror Active Syncを使用して障害ドメイン間でクラスタを拡張します（常に https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"] サポートされている構成の場合
+* ASAモデルはアクティブ / アクティブマルチパスと高速パスフェイルオーバーを提供します
+* FC、iSCSI、NVMe-oFのプロトコルサポート
+* iSCSI CHAP相互認証
+* セキュリティ強化のための選択的LUNマッピングとポートセット
+

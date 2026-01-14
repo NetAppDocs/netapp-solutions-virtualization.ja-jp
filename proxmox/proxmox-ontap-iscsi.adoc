@@ -1,0 +1,97 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-iscsi.html 
+keywords: netapp, proxmox, proxmox ve, iscsi, lvm, ontap, storage 
+summary: 'ONTAPを使用して Proxmox 仮想環境用の iSCSI を備えた論理ボリューム マネージャ (LVM) を構成します。この手順には、マルチパス構成、LUN プロビジョニング、igroup セットアップ、共有ストレージのボリューム グループの作成が含まれます。' 
+---
+= Proxmox VE 用の iSCSI を使用した LVM の設定
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPで iSCSI プロトコルを使用して、Proxmox 仮想環境 (VE) ホスト間の共有ストレージ用に論理ボリューム マネージャー (LVM) を構成します。この構成により、マルチパスをサポートする標準イーサネット ネットワーク上でブロックレベルのストレージ アクセスが可能になります。
+
+.ONTAPを使用した iSCSI による LVM 共有プール
+video::d66ef67f-bcc2-4ced-848e-b22e01588e8c[panopto,width=360]
+
+
+== 仮想化管理者の初期タスク
+
+これらの初期タスクを完了して、Proxmox VE ホストを iSCSI 接続用に準備し、ストレージ管理者に必要な情報を収集します。
+
+. 2 つの Linux VLAN インターフェイスが使用可能であることを確認します。
+. すべての Proxmox VE ホストに multipath-tools がインストールされ、起動時に起動することを確認します。
++
+[source, shell]
+----
+apt list | grep multipath-tools
+# If need to install, execute the following line.
+apt-get install multipath-tools
+systemctl enable multipathd
+----
+. すべての Proxmox VE ホストの iSCSI ホスト IQN を収集し、ストレージ管理者に提供します。
++
+[source, shell]
+----
+cat /etc/iscsi/initiator.name
+----
+
+
+
+
+== ストレージ管理者のタスク
+
+ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
+
+. iSCSI プロトコルが有効になっている SVM が使用可能であることを確認します。フォローする link:https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["ONTAP 9 ドキュメント"]。
+. コントローラごとに iSCSI 専用の LIF を 2 つ作成します。
++
+image:proxmox-ontap-iscsi-001.png["iSCSIインターフェースの詳細"]
+
+. igroup を作成し、ホスト iSCSI イニシエーターを追加します。
+. SVM 上に希望のサイズの LUN を作成し、前の手順で作成した igroup に提示します。ASAシステムのセキュリティ タブでランサムウェア対策が有効になっていることを確認します。AFF/ FASシステムの場合、ボリュームのセキュリティ タブでランサムウェア対策が有効になっていることを確認します。
++
+image:proxmox-ontap-iscsi-002.png["iSCSI LUNの詳細"]
+
+. LUN が作成されたことを仮想化管理者に通知します。
+
+
+
+
+== 最終的な仮想化管理者のタスク
+
+Proxmox VE で iSCSI LUN を共有 LVM ストレージとして構成するには、これらのタスクを完了します。
+
+. 管理UIを使用する `https:<proxmox node>:8006`をクリックし、[データセンター] をクリックして、[ストレージ] を選択し、[追加] をクリックして、[iSCSI] を選択します。
++
+image:proxmox-ontap-iscsi-003.png["iSCSIストレージナビゲーション"]
+
+. ストレージ ID 名を指定します。通信の問題がない場合、 ONTAPからの iSCSI LIF アドレスはターゲットを選択できるはずです。ゲスト VM に LUN アクセスを直接提供しない場合は、そのオプションのチェックを外します。
++
+image:proxmox-ontap-iscsi-004.png["iSCSIストレージタイプの作成"]
+
+. [追加]をクリックし、LVM を選択します。
++
+image:proxmox-ontap-iscsi-005.png["LVM ストレージナビゲーション"]
+
+. ストレージ ID 名を指定し、前の手順で作成した iSCSI ストレージに一致するベース ストレージを選択します。ベース ボリュームの LUN を選択し、ボリューム グループ名を指定します。共有オプションが選択されていることを確認します。Proxmox VE 9以降では、 `Allow Snapshots as Volume-Chain` このオプションは、[詳細設定] チェック ボックスが有効になっている場合に表示されます。
++
+image:proxmox-ontap-iscsi-006.png["LVMストレージの作成"]
+
+. 以下に、iSCSI を使用する LVM のサンプル ストレージ構成ファイルを示します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-iscsi-007.png["LVM iSCSI 構成"]
+
+====
++
+Proxmox VE 9以降では、ストレージ設定ファイルに以下の追加オプションが含まれています。 `snapshot-as-volume-chain 1` いつ `Allow Snapshots as Volume-Chain` が有効になります。
+
+

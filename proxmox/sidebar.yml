@@ -8,4 +8,35 @@ entries:
   url: "/proxmox/proxmox-overview.html"
 - title: Proxmox VE 用のONTAPストレージのプロビジョニング
   pdf-filename: Proxmox VE 向けNetAppストレージ
-  url: "/proxmox/proxmox-ontap.html"
+  entries:
+  - title: ソリューションアーキテクチャ
+    url: "/proxmox/proxmox-ontap-architecture.html"
+  - title: サポートされているストレージ タイプ
+    url: "/proxmox/proxmox-storage-types.html"
+  - title: 展開ガイドライン
+    url: "/proxmox/proxmox-deploy-guidelines.html"
+  - title: Proxmox VE 用のONTAPでストレージ プロトコルを構成する
+    entries:
+    - title: ストレージプロトコルの概要
+      url: "/proxmox/proxmox-ontap.html"
+    - title: SMB/CIFSストレージを構成する
+      url: "/proxmox/proxmox-ontap-smb.html"
+    - title: NFSストレージの設定
+      url: "/proxmox/proxmox-ontap-nfs.html"
+    - title: FCでLVMを構成する
+      url: "/proxmox/proxmox-ontap-fc.html"
+    - title: iSCSIでLVMを構成する
+      url: "/proxmox/proxmox-ontap-iscsi.html"
+    - title: NVMe/FC で LVM を構成する
+      url: "/proxmox/proxmox-ontap-nvme-fc.html"
+    - title: NVMe/TCP で LVM を構成する
+      url: "/proxmox/proxmox-ontap-nvme-tcp.html"
+- title: Proxmox VE ワークロードを保護する
+  pdf-filename: Proxmox VE ワークロードデータ保護（Proxmox バックアップサーバとNetApp ONTAP を使用）
+  entries:
+  - title: ソリューションアーキテクチャ
+    url: "/proxmox/proxmox-pbs-architecture.html"
+  - title: 導入の要件
+    url: "/proxmox/proxmox-pbs-requirements.html"
+  - title: Proxmoxバックアップサーバーでデータ保護を構成する
+    url: "/proxmox/proxmox-wkld-dp-pbs.html"

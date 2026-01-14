@@ -1,0 +1,113 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-smb.html 
+keywords: netapp, proxmox, proxmox ve, smb, cifs, ontap, storage 
+summary: ONTAPを使用して Proxmox 仮想環境用の SMB/CIFS ストレージを構成します。この手順には、SVM の有効化、LIF の作成、Active Directory の構成、ボリュームの作成、フォールト トレランスとパフォーマンス強化のためのマルチチャネルのセットアップが含まれます。 
+---
+= Proxmox VEのSMB/CIFSストレージを構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPを使用して、Proxmox 仮想環境 (VE) の SMB/CIFS ストレージを構成します。SMB マルチチャネルは、ストレージ システムへの複数のネットワーク接続によりフォールト トレランスを提供し、パフォーマンスを向上させます。
+
+SMB/CIFS ファイル共有では、ストレージ管理者と仮想化管理者の両方による構成タスクが必要です。詳細については、 link:https://www.netapp.com/pdf.html?item=/media/17136-tr4740.pdf["TR4740 - SMB 3.0 マルチチャネル"]。
+
+
+NOTE: パスワードはクリアテキストファイルに保存され、root ユーザーのみがアクセスできます。参照 link:https://pve.proxmox.com/pve-docs/chapter-pvesm.html#storage_cifs["Proxmox VE ドキュメント"]。
+
+.ONTAPを使用した SMB 共有ストレージ プール
+video::5b4ae54a-08d2-4f7d-95ec-b22d015f6035[panopto,width=360]
+
+
+== ストレージ管理者のタスク
+
+ONTAPを初めて使用する場合は、System Manager インターフェイスを使用してこれらのタスクを完了してください。
+
+. SMB 用に SVM を有効にします。フォローする link:https://docs.netapp.com/us-en/ontap/smb-config/configure-access-svm-task.html["ONTAP 9 ドキュメント"] 詳細についてはこちらをご覧ください。
+. コントローラごとに少なくとも 2 つの LIF を作成します。ドキュメントの手順に従ってください。参考までに、このソリューションで使用される LIF のスクリーンショットを以下に示します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-001.png["NASインターフェースの詳細"]
+
+====
+. Active Directory またはワークグループベースの認証を構成します。ドキュメントの手順に従ってください。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-002.png["ドメイン情報に参加"]
+
+====
+. ボリュームを作成します。FlexGroupを使用するには、クラスター全体にデータを分散するオプションをオンにします。ボリューム上でランサムウェア対策が有効になっていることを確認します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-003.png["FlexGroupオプション"]
+
+====
+. SMB 共有を作成し、権限を調整します。フォローするlink:https://docs.netapp.com/us-en/ontap/smb-config/configure-client-access-shared-storage-concept.html["ONTAP 9 ドキュメント"]詳細についてはこちらをご覧ください。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-004.png["SMB共有情報"]
+
+====
+. 仮想化管理者に SMB サーバー、共有名、および資格情報を提供します。
+
+
+
+
+== 仮想化管理者のタスク
+
+これらのタスクを完了すると、SMB 共有が Proxmox VE のストレージとして追加され、マルチチャネルが有効になり、パフォーマンスとフォールト トレランスが向上します。
+
+. SMB サーバー、共有名、および共有認証の資格情報を収集します。
+. フォールト トレランスのために、少なくとも 2 つのインターフェイスが異なる VLAN に設定されていることを確認します。NIC が RSS をサポートしていることを確認します。
+. 管理UIを使用する `https:<proxmox-node>:8006`をクリックし、[データセンター] をクリックして、[ストレージ] を選択し、[追加] をクリックして、[SMB/CIFS] を選択します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-005.png["SMBストレージナビゲーション"]
+
+====
+. 詳細を入力してください。共有名は自動的に入力されます。すべてのコンテンツ タイプを選択し、[追加] をクリックします。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-006.png["SMBストレージの追加"]
+
+====
+. マルチチャネルオプションを有効にするには、任意のクラスタノードでシェルを開き、次のコマンドを実行します。 `<storage id>` 前の手順で作成したストレージ ID です。
++
+[source, shell]
+----
+pvesm set <storage id> --options multichannel,max_channels=16
+----
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-007.png["マルチチャンネル設定"]
+
+====
+. 以下は、構成されたストレージの /etc/pve/storage.cfg の内容を示しています。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-smb-008.png["SMBのストレージ構成ファイル"]
+
+====
+

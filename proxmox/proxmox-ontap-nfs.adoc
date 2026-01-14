@@ -1,0 +1,109 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-nfs.html 
+keywords: netapp, proxmox, proxmox ve, nfs, ontap, storage, nconnect, session trunking 
+summary: ONTAPを使用して Proxmox 仮想環境用の NFS ストレージを構成します。この手順には、SVM の有効化、LIF の作成、エクスポート ポリシーの設定、ボリュームの作成、フォールト トレランスとパフォーマンスのための nConnect またはセッション トトランキングのセットアップが含まれます。 
+---
+= Proxmox VEのNFSストレージを構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPを使用して Proxmox 仮想環境 (VE) の NFS ストレージを構成します。ストレージ システムへの複数のネットワーク接続によるフォールト トレランスとパフォーマンス強化を実現するには、NFS v4.1 以降でセッショントランキングを使用します。
+
+ONTAP は、Proxmox VE でサポートされているすべての NFS バージョンをサポートします。使用 link:https://docs.netapp.com/us-en/ontap/nfs-trunking/index.html["セッショントランキング"] フォールトトレランスとパフォーマンスの向上を実現します。セッショントランキングには NFS v4.1 以降が必要です。
+
+ONTAPを初めて使用する場合は、System Manager インターフェイスを使用してこれらのタスクを完了してください。
+
+.ONTAPの NFS nconnect オプション
+video::f6c9aba3-b070-45d6-8048-b22e001acfd4[panopto,width=360]
+
+
+== ストレージ管理者のタスク
+
+Proxmox VE で使用するためにONTAP上の NFS ストレージをプロビジョニングするには、これらのタスクを完了します。
+
+. NFS 用に SVM を有効にします。参照 link:https://docs.netapp.com/us-en/ontap/nfs-config/verify-protocol-enabled-svm-task.html["ONTAP 9 ドキュメント"]。
+. コントローラごとに少なくとも 2 つの LIF を作成します。ドキュメントの手順に従ってください。参考までに、ラボで使用されている LIF のスクリーンショットを以下に示します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nfs-001.png["NASインターフェースの詳細"]
+
+====
+. Proxmox VE ホストの IP アドレスまたはサブネットへのアクセスを提供するために、NFS エクスポート ポリシーを作成または更新します。参照 link:https://docs.netapp.com/us-en/ontap/nfs-config/create-export-policy-task.html["輸出ポリシーの作成"] そして link:https://docs.netapp.com/us-en/ontap/nfs-config/add-rule-export-policy-task.html["エクスポートポリシーにルールを追加する"]。
+. link:https://docs.netapp.com/us-en/ontap/nfs-config/create-volume-task.html["ボリュームの作成"]。大容量のニーズ (> 100 TB) の場合は、 FlexGroupを使用するためにクラスター全体にデータを分散するオプションをオンにします。FlexGroupを使用する場合は、以下の手順でSVM上でpNFSを有効にしてパフォーマンスを向上させることを検討してください。 link:https://docs.netapp.com/us-en/ontap/pnfs/pnfs-commands.html#enable-nfsv4-1["SVMでpNFSを有効にする"]。pNFS を使用する場合は、Proxmox VE ホストがすべてのコントローラ (データ LIF) にデータアクセスできることを確認してください。ボリューム上でランサムウェア対策が有効になっていることを確認します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nfs-002.png["FlexGroupオプション"]
+
+====
+. link:https://docs.netapp.com/us-en/ontap/nfs-config/associate-export-policy-flexvol-task.html["ボリュームにエクスポートポリシーを割り当てる"]。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nfs-003.png["NFSボリューム情報"]
+
+====
+. NFS ボリュームの準備ができたことを仮想化管理者に通知します。
+
+
+
+
+== 仮想化管理者のタスク
+
+これらのタスクを完了して、NFS ボリュームを Proxmox VE のストレージとして追加し、パフォーマンスを向上させるために nConnect またはセッショントランキングを構成します。
+
+. フォールト トレランスのために、少なくとも 2 つのインターフェイスが異なる VLAN に設定されていることを確認します。NIC ボンディングを使用します。
+. 管理UIを使用する `https:<proxmox-node>:8006`をクリックし、[データセンター] をクリックして、[ストレージ] を選択し、[追加] をクリックして、[NFS] を選択します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nfs-004.png["NFSストレージナビゲーション"]
+
+====
+. 詳細を入力してください。サーバー情報を提供すると、NFS エクスポートが入力されます。リストから選択し、コンテンツ オプションを選択します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nfs-005.png["NFSストレージの追加"]
+
+====
+. nConnectオプションを有効にするには、任意のクラスタノードでシェルを開き、次のコマンドを実行します。 `<storage id>` 前の手順で作成したストレージ ID です。
++
+[source, shell]
+----
+pvesm set <storage id> --options nconnect=4
+----
++
+セッショントランキングを使用するには、NFS v4.1 が使用されていることを確認し、trunkdiscovery および max_connect オプションを設定します。
+
++
+[source, shell]
+----
+pvesm set <storage id> --options vers=4.1,trunkdiscovery,max_connect=16
+----
+. 以下は、構成されたストレージの /etc/pve/storage.cfg の内容を示しています。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nfs-006.png["NFSのストレージ構成ファイル"]
+
+====
+. nConnectオプションが設定されていることを確認するには、以下を実行します。 `ss -an | grep :2049` 任意の Proxmox VE ホストで、 NFSサーバIP への複数の接続を確認します。pNFSが有効になっていることを確認するには、以下を実行します。 `nfsstat -c` レイアウト関連のメトリックを確認します。データ トラフィックに基づいて、データ LIF への複数の接続が表示されるはずです。
+
+
+
+NOTE: セッショントランキングでは、nconnect オプションはトランク インターフェイスの 1 つにのみ設定されます。pNFS では、メタデータおよびデータ インターフェイスに nconnect オプションが設定されます。実稼働環境では、nConnect またはセッション トトランキングのいずれかを使用し、両方は使用しないでください。

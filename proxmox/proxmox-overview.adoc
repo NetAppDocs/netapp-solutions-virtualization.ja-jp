@@ -20,7 +20,7 @@ Proxmox 仮想環境 (VE) は、Debian Linux をベースにしたオープン�
 
 == 概要
 
-Proxmox 仮想環境 (VE) は、同じホスト上で完全な VM とコンテナ ベースの仮想化の両方をサポートします。完全な VM 仮想化には、カーネルベースの仮想マシン (KVM) とクイック エミュレーター (QEMU) が使用されます。  QEMU はオープンソースのマシン エミュレーターおよび仮想化ツールであり、KVM カーネル モジュールを使用してゲスト コードをホスト CPU 上で直接実行します。  Linux Containers (LXC) を使用すると、コンテナを VM のように管理でき、再起動後もデータが保持されます。
+Proxmox 仮想環境 (VE) は、同じホスト上で完全な VM とコンテナ ベースの仮想化の両方をサポートします。完全な VM 仮想化には、カーネルベースの仮想マシン (KVM) とクイック エミュレーター (QEMU) が使用されます。QEMU はオープンソースのマシン エミュレーターおよび仮想化ツールであり、KVM カーネル モジュールを使用してゲスト コードをホストCPU上で直接実行します。Linux Containers (LXC) を使用すると、コンテナを VM のように管理でき、再起動後もデータが保持されます。Proxmox VE 9 以降では、パブリック レジストリとプライベート レジストリからコンテナ イメージをプルするための OCI レジストリ サポートが含まれています。アプリケーション コンテナのサポートは、Proxmox VE 9 でテクノロジー プレビューとして追加されました。
 
 image:proxmox-overview-001.png["Proxmoxホスト上のVMとLXC"]
 
@@ -34,7 +34,7 @@ Web ベースの管理ポータルは、Proxmox VE ノードのポート 8006 �
 
 image:proxmox-overview-002.png["管理インターフェース"]
 
-クラスターを使用すると、VM とコンテナを監視し、ホスティング ノードに障害が発生した場合に他のノードで再起動できるようになります。 VM とコンテナは高可用性 (HA) 用に構成する必要があります。グループを作成することにより、VM とコンテナを特定のホストのサブセットでホストできます。 VM またはコンテナは、最も優先度の高いホストでホストされます。詳細については、link:https://pve.proxmox.com/wiki/High_Availability["HAマネージャー"]
+クラスターを使用すると、VM とコンテナを監視し、ホスティング ノードに障害が発生した場合に他のノードで再起動できるようになります。VM とコンテナは高可用性 (HA) 用に構成する必要があります。アフィニティ グループを作成することにより、VM とコンテナを特定のホストのサブセットでホストできます。VM またはコンテナは、優先度が最も高いホストでホストされます。詳細については、 link:https://pve.proxmox.com/wiki/High_Availability["HAマネージャー"]
 
 image:proxmox-overview-003.png["HAグループの優先順位"]
 
@@ -42,6 +42,10 @@ image:proxmox-overview-003.png["HAグループの優先順位"]
 
 
 TIP: LDAP/Microsoft AD の接続資格情報は、クリアテキストで、ホスト ファイル システムによって保護される必要があるファイルに保存される場合があります。
+
+複数の Proxmox VE クラスターを管理するには、Proxmox Datacenter Manager 製品を個別のインストールとして利用できます。複数の Proxmox VE クラスターと Proxmox バックアップ サーバーを単一の画面で管理できます。VM とコンテナをクラスター間で移行できます。
+
+Proxmox リモートの有効な Basic、Standard、または Premium サブスクリプションを持つお客様は、Proxmox Datacenter Manager Enterprise Repository とテクニカル サポートにアクセスできます。
 
 
 
@@ -69,16 +73,18 @@ image:proxmox-overview-004.png["VMディスクフォーマット"]
 
 iSCSI LUN を VM に raw デバイスとして提示するオプションがあります。
 
+Proxmox VE 9 以降では、iSCSI および FC ストレージ タイプによるシン プロビジョニングとスペース再利用 (UNMAP) をサポートしています。詳細については、 link:https://pve.proxmox.com/pve-docs/chapter-pvesm.html#thin_provisioning_and_space_reclamation_support["Proxmox VE ストレージ"]
+
 LXCには独自の設定ファイルもあり、 `/etc/pve/lxc/<container id>.conf` 、およびコンテナ ディスク コンポーネント。データ ボリュームは、サポートされているストレージ タイプからマウントできます。
 
 image:proxmox-overview-005.png["コンテナ追加マウント"]
 
 サポートされているストレージ タイプには、ローカル ディスク、NAS (SMB および NFS)、SAN (FC、iSCSI、NVMe-oF など) が含まれます。詳細については、link:https://pve.proxmox.com/pve-docs/chapter-pvesm.html["Proxmox VE ストレージ"]
 
-すべてのストレージ ボリュームは、許可されたコンテンツ タイプで構成されます。  NAS ボリュームはすべてのコンテンツ タイプをサポートしますが、SAN サポートは VM およびコンテナ イメージに制限されます。
+すべてのストレージ ボリュームは、許可されたコンテンツ タイプで構成されます。NAS ボリュームはすべてのコンテンツ タイプをサポートしますが、SAN サポートは VM およびコンテナ イメージに制限されます。ディレクトリ ストレージ タイプもすべてのコンテンツ タイプをサポートします。
 
 
-NOTE: ディレクトリ ストレージ タイプもすべてのコンテンツ タイプをサポートします。  SMB 接続資格情報はクリアテキストで保存され、ルートのみがアクセスできます。
+NOTE: SMB 接続資格情報はクリアテキストで保存され、ルートのみがアクセスできます。
 
 image:proxmox-overview-006.png["NASのコンテンツタイプ"]
 
@@ -90,11 +96,11 @@ Broadcom vSphere 環境から VM をインポートするには、vSphere ホス
 
 == ネットワーク
 
-Proxmox VE は、Linux ブリッジや Open vSwitch などのネイティブ Linux ネットワーク機能をサポートし、ソフトウェア定義ネットワーク (SDN) を実装します。ホスト上のイーサネット インターフェイスを結合して、冗長性と高可用性を実現できます。その他のオプションについては、link:https://pve.proxmox.com/pve-docs/chapter-sysadmin.html#_choosing_a_network_configuration["Proxmox VE ドキュメント"]
+Proxmox VE は、Linux ブリッジや Open vSwitch などのネイティブ Linux ネットワーク機能を使用して、ホストベースのネットワークとクラスター全体の VNet の両方をサポートし、ソフトウェア定義ネットワーク (SDN) を実装します。ホスト上のイーサネット インターフェイスを結合して、フォールト トレランスと高可用性を実現できます。その他のオプションについては、 link:https://pve.proxmox.com/pve-docs/chapter-sysadmin.html#_choosing_a_network_configuration["Proxmox VE ドキュメント"]
 
 image:proxmox-overview-008.png["結合ネットワーク"]
 
-ゲスト ネットワークはクラスター レベルで構成でき、変更はメンバー ホストにプッシュされます。分離はゾーン、VNet、サブネットによって管理されます。link:https://pve.proxmox.com/pve-docs/chapter-pvesdn.html["ゾーン"]シンプル、VLAN、VLAN スタッキング、VXLAN、EVPN などのネットワーク タイプを定義します。
+ゲスト ネットワークはクラスター レベルで構成でき、変更はメンバー ホストにプッシュされます。分離はゾーン、VNet、サブネットによって管理されます。link:https://pve.proxmox.com/pve-docs/chapter-pvesdn.html["ゾーン"] シンプル (ソース NAT で分離)、VLAN (802.1Q - 外部スイッチ依存)、VLAN スタッキング (802.1ad - プライベート VLAN)、VXLAN (レイヤー 3 上のレイヤー 2) などのネットワーク タイプを定義します。VPC のようなネットワークの場合、EVPN (レイヤー 3 マルチクラスター ネットワークを作成するための BGP を使用した VXLAN) など。
 
 ゾーンの種類に応じて、ネットワークの動作が異なり、特定の機能、利点、制限が提供されます。
 

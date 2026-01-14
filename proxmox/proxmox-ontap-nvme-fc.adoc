@@ -1,0 +1,122 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-ontap-nvme-fc.html 
+keywords: netapp, proxmox, proxmox ve, nvme, nvme-fc, lvm, ontap, storage 
+summary: 'ONTAPを使用して、Proxmox 仮想環境用の NVMe over Fibre Channel を備えた論理ボリューム マネージャー (LVM) を構成します。この手順には、nvme-cli のインストール、名前空間のプロビジョニング、サブシステムのセットアップ、共有ストレージのボリューム グループの作成が含まれます。' 
+---
+= Proxmox VE 用に NVMe/FC で LVM を構成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPで NVMe over Fibre Channel プロトコルを使用して、Proxmox 仮想環境 (VE) ホスト間で共有ストレージ用の論理ボリューム マネージャー (LVM) を構成します。この構成では、最新の NVMe プロトコルを使用して、低レイテンシでハイパフォーマンスブロックレベルのストレージ アクセスが提供されます。
+
+
+
+== 仮想化管理者の初期タスク
+
+これらの初期タスクを完了して、Proxmox VE ホストを NVMe/FC 接続用に準備し、ストレージ管理者に必要な情報を収集します。
+
+. 2 つの HBA インターフェイスが使用可能であることを確認します。
+. クラスター内のすべての Proxmox ホストで次のコマンドを実行して WWPN 情報を収集し、nvme-cli パッケージがインストールされていることを確認します。
++
+[source, shell]
+----
+apt update
+apt install nvme-cli
+cat /sys/class/fc_host/host*/port_name
+nvme show-hostnqn
+----
+. 収集したホスト NQN および WWPN 情報をストレージ管理者に提供し、必要なサイズの NVMe 名前空間を要求します。
+
+
+
+
+== ストレージ管理者のタスク
+
+ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
+
+. NVMe プロトコルが有効になっている SVM が使用可能であることを確認します。参照 link:https://docs.netapp.com/us-en/ontap/san-admin/create-nvme-namespace-subsystem-task.html["ONTAP 9のNVMeタスクに関するドキュメント"]。
+. NVMe 名前空間を作成します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-fc-001.png["nvme名前空間の作成"]
+
+====
+. サブシステムを作成し、ホスト NQN を割り当てます (CLI を使用している場合)。上記の参照リンクに従ってください。
+. セキュリティ タブでランサムウェア対策が有効になっていることを確認します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-fc-002.png["ランサムウェア対策ステータス"]
+
+====
+. NVMe 名前空間が作成されたことを仮想化管理者に通知します。
+
+
+
+
+== 最終的な仮想化管理者のタスク
+
+Proxmox VE で NVMe 名前空間を共有 LVM ストレージとして構成するには、これらのタスクを完了します。
+
+. クラスター内の各 Proxmox VE ホストのシェルに移動し、新しい名前空間が表示されていることを確認します。
+. 名前空間の詳細を確認します。
++
+[source, shell]
+----
+nvme list
+----
+. デバイスの詳細を検査して収集します。
++
+[source, shell]
+----
+nvme list
+nvme netapp ontapdevices
+nvme list-subsys
+lsblk -N
+----
+. ボリューム グループを作成します。
++
+[source, shell]
+----
+vgcreate <volume group name> /dev/mapper/<device id>
+# Where <volume group name> is the desired name for the volume group and <device id> is the nvme device id.
+pvs
+# Verify the physical volume is part of the volume group.
+vgs
+# Verify the volume group is created.
+----
+. 管理UIを使用する `https:<proxmox node>:8006`をクリックし、[データセンター] をクリックして、[ストレージ] を選択し、[追加] をクリックして、[LVM] を選択します。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-fc-003.png["LVM ストレージナビゲーション"]
+
+====
+. ストレージ ID 名を指定し、既存のボリューム グループを選択して、CLI で作成したボリューム グループを選択します。共有オプションを確認してください。Proxmox VE 9以降では、 `Allow Snapshots as Volume-Chain` このオプションは、[詳細設定] チェック ボックスが有効になっている場合に表示されます。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-fc-004.png["既存の vg 上の lvm"]
+
+====
+. 以下は、NVMe/FC を使用する LVM のサンプル ストレージ構成ファイルを示しています。
++
+.例を表示
+[%collapsible]
+====
+image:proxmox-ontap-nvme-fc-005.png["NVME FC 構成上の LVM"]
+
+====
+

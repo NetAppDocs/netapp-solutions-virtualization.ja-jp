@@ -541,5 +541,5 @@ NOTE: この特定の統合を開始する前に、Red Hat アカウント チ�
 
 次のビデオでは、このソリューションで概説されているプロセスを説明します。
 
-.ESX から Oracle Linux Virtualization Manager (OLVM) へのゼロタッチ移行
+.ESX から Red Hat OpenShift Virtualization (OSV) へのゼロタッチ移行
 video::7e2abc5e-2919-43d6-a5c2-b3760100adaf[panopto]

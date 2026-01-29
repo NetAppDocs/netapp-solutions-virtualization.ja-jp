@@ -8285,4 +8285,5 @@
   <block id="33944cf48dae6085e379419638e7f045" category="sidebar">Proxmox VE 用のONTAPでストレージ プロトコルを構成する</block>
   <block id="00e4880b550e40d823bf3e2f64737181" category="sidebar">ストレージプロトコルの概要</block>
   <block id="df98233fcbd5f7d34a38d94575306755" category="sidebar">Proxmox VE ワークロードデータ保護（Proxmox バックアップサーバとNetApp ONTAP を使用）</block>
+  <block id="7b5595669a13f02ed040dc13960eabba" category="video-title">ESX から Red Hat OpenShift Virtualization (OSV) へのゼロタッチ移行</block>
 </blocks>

@@ -10,6 +10,18 @@ indexpage:
       url: kvm-overview.html
     - title: KVM仮想化環境向けNetApp ONTAPストレージ
       url: kvm-ontap.html
+  - title: KVM用のOpenNebulaリソース
+    links:
+    - title: OpenNebulaについて学ぶ
+      url: "../opennebula/opennebula-overview.html"
+    - title: OpenNebulaのインストール
+      url: https://docs.opennebula.io/7.0/software/installation_process/
+    - title: OpenNebulaとNetAppのアーキテクチャ
+      url: "../opennebula/opennebula-netapp-architecture.html"
+    - title: サポートされているストレージ タイプ
+      url: "../opennebula/opennebula-storage-types.html"
+    - title: ストレージプロトコルを構成する
+      url: "../opennebula/opennebula-netapp-protocols.html"
   - title: その他のリソース
     links:
     - title: Rocky Linuxでlibvirtを設定する

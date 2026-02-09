@@ -1,0 +1,92 @@
+---
+sidebar: sidebar 
+permalink: opennebula/opennebula-netapp-architecture.html 
+keywords: netapp, opennebula, ontap, storage, architecture, nas, san, nfs, smb, iscsi, fc, nvme, flexgroup, flexcache, snapmirror 
+summary: NetAppはOpenNebulaと統合し、NASおよびSANプロトコルを介してエンタープライズクラスのストレージ機能を提供します。ONTAPは、仮想化されたワークロードのスナップショット、クローニング、レプリケーション、ランサムウェア保護などの高度なデータ管理機能を提供します。 
+---
+= OpenNebula向けのONTAPストレージアーキテクチャについて
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp製品はOpenNebulaと統合され、NASおよびSANプロトコルを介してエンタープライズクラスのストレージ機能を提供します。ONTAPは、OpenNebulaクラスタで実行される仮想化ワークロード向けに、Snapshot、クローニング、レプリケーション、ランサムウェア対策などの高度なデータ管理機能を提供します。
+
+
+
+== ソリューションアーキテクチャ
+
+ソリューション アーキテクチャには、次の主要コンポーネントが含まれます。
+
+* *OpenNebula フロントエンドサーバー：*仮想マシン（VM）と Kubernetes クラスターを管理するためのクラウド管理機能を提供する OpenNebula フロントエンド サーバーのセット。
+* *OpenNebulaコンピューティングノード：* OpenNebulaによって管理される仮想マシンとKubernetesクラスターをホストするコンピューティングノードのセット。
+* *NetApp ONTAPストレージ：*OpenNebulaクラスタに共有ストレージを提供する、ハイパフォーマンスでスケーラブルなストレージシステム。
+* *ネットワークインフラストラクチャ：* OpenNebulaノードとONTAPストレージ間の低レイテンシで高スループットの接続を実現する堅牢なネットワーク設定。
+* * NetApp Console:* 複数のNetAppストレージ システムとデータ サービスを管理するための集中管理インターフェイス。
+
+
+次の図は、OpenNebulaがNetApp ONTAPストレージと統合された概要アーキテクチャを示しています：
+
+image::opennebula-netapp-architecture-001.png[OpenNebulaとNetApp ONTAPアーキテクチャ]
+
+
+
+== OpenNebula向けのONTAP機能
+
+ONTAPは、OpenNebulaの導入を強化する包括的なエンタープライズクラスのストレージ機能を提供します。これらの機能は、NASとSANの両方のストレージ アーキテクチャにわたるデータ管理、保護、効率性、プロトコル サポートに及びます。
+
+
+
+=== コアデータ管理機能
+
+* スケールアウトクラスタアーキテクチャ
+* 安全な認証とRBACのサポート
+* ゼロトラストのマルチ管理者サポート
+* 安全なマルチテナント
+* SnapMirrorによるデータ複製
+* スナップショットによるポイントインタイムコピー
+* スペース効率の高いクローン
+* 重複排除や圧縮などのストレージ効率機能
+* Kubernetes のTrident CSI サポート
+* コンプライアンスのためのSnapLock
+* 改ざん防止スナップショットコピーロック
+* 自動脅威検出によるランサムウェア対策
+* 保存データと転送中データの暗号化
+* FabricPoolを使用してコールド データをオブジェクト ストレージに階層化します
+* NetApp ConsoleとData Infrastructure Insightsサイトの統合
+* Microsoftオフロード データ転送（ODX）
+
+
+
+
+=== NASプロトコルの機能
+
+* FlexGroupボリュームは、高いパフォーマンス、負荷分散、拡張性を備えたスケールアウトNASコンテナを提供します。
+* FlexCacheは、ローカルでの読み取りおよび書き込みアクセスを提供しながら、データをグローバルに分散します。
+* マルチプロトコルのサポートにより、SMBとNFSの両方から同じデータにアクセス可能
+* NFS nConnect は、接続ごとに複数の TCP セッションを許可し、ネットワーク スループットを向上させ、高速NIC を活用します。
+* NFSセッショントランキングは、データ転送速度の向上、高可用性、フォールトトレランスを実現します。
+* SMBマルチチャネルは、データ転送速度の向上、高可用性、フォールトトレランスを実現します。
+* ファイル権限のための Active Directory および LDAP との統合
+* TLS 経由の NFS による安全な接続
+* NFS Kerberos認証のサポート
+* 低レイテンシアクセスを実現する RDMA 経由の NFS
+* Windows と Unix の ID 間の名前マッピング
+* 脅威検出機能を内蔵した自律型ランサムウェア保護
+* 容量と使用状況の分析のためのファイルシステム分析
+
+
+
+
+=== SANプロトコルの機能
+
+* SnapMirror Active Syncを使用して障害ドメイン間でクラスタを拡張します（常に https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"] サポートされている構成の場合
+* ASAモデルはアクティブ / アクティブマルチパスと高速パスフェイルオーバーを提供します
+* FC、iSCSI、NVMe-oFのプロトコルサポート
+* iSCSI CHAP相互認証
+* セキュリティ強化のための選択的LUNマッピングとポートセット
+

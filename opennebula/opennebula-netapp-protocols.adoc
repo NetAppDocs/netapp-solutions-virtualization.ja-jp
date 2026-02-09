@@ -1,0 +1,42 @@
+---
+sidebar: sidebar 
+permalink: opennebula/opennebula-netapp-protocols.html 
+keywords: netapp, opennebula, all-flash, nfs, iscsi, ontap, storage, aff 
+summary: NAS プロトコル（NFS、SMB）および SAN プロトコル（FC、iSCSI、NVMe）を使用して、OpenNebula 用の ONTAP ストレージをプロビジョニングします。OpenNebula 環境用の共有ストレージを設定するために、適切なプロトコル固有の手順を選択します。 
+---
+= NetApp ONTAPとOpenNebulaのストレージプロトコルについて学ぶ
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NAS プロトコル（NFS、SMB）および SAN プロトコル（FC、iSCSI、NVMe）を使用して、OpenNebula 用の ONTAP ストレージをプロビジョニングします。OpenNebula 環境用の共有ストレージを設定するために、適切なプロトコル固有の手順を選択します。
+
+OpenNebulaフロントエンドとハイパーバイザーホストに、FC、イーサネット、またはその他のサポートされているインターフェースがスイッチにケーブル接続されており、ONTAP論理インターフェースと通信できることを確認します。サポートされている構成については、必ず https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"]を確認してください。サンプルシナリオは、各OpenNebulaホストに2つの高速ネットワークインターフェースカードが使用可能であり、それらが相互に接続されてフォールトトレランスとパフォーマンスのためのボンディングインターフェースを作成することを前提に作成されています。ホスト管理、VM/コンテナトラフィック、ストレージ アクセスを含むすべてのネットワーク トラフィックに同じアップリンク接続が使用されます。より多くのネットワークインターフェースが使用可能な場合は、ストレージ トラフィックを他の種類のトラフィックから分離することを検討してください。
+
+ONTAP ストレージ アーキテクチャとサポートされているストレージの種類については、link:opennebula-netapp-architecture.html["OpenNebula向けのNetAppストレージ アーキテクチャについて学ぶ"]およびlink:opennebula-storage-types.html["OpenNebulaでサポートされているストレージタイプについて学ぶ"]を参照してください。
+
+
+NOTE: SAN プロトコル (FC、iSCSI、NVMe-oF) で LVM を使用する場合、ボリューム グループには複数の LUN または NVMe 名前空間を含めることができます。その場合、データの整合性を確保するために、すべての LUN または名前空間が同じ整合性グループの一部である必要があります。複数のONTAP SVM にまたがるボリューム グループはサポートされていません。各ボリューム グループは、同じ SVM の LUN または名前空間から作成する必要があります。
+
+
+
+== ストレージ プロトコルを選択する
+
+環境と要件に一致するプロトコルを選択します。
+
+* link:opennebula-netapp-iscsi.html["iSCSIを使用したNetAppドライバの設定"] - 標準イーサネットネットワーク上でマルチパスサポート付きのブロックストレージ アクセスを実現するために、OpenNebula NetAppドライバーをiSCSIで構成します。これはEnterprise Editionのみの機能です。VMの効率的なプロビジョニングのためにONTAPネイティブクローンを活用します。
+* link:opennebula-ontap-smb.html["SMB/CIFSストレージを構成する"] - OpenNebulaのSMB/CIFSファイル共有を構成し、マルチチャネル サポートにより、フォールト トレランスと複数のネットワーク接続での強化されたパフォーマンスを実現します。
+* link:opennebula-ontap-nfs.html["NFSストレージの設定"] - 複数のネットワーク接続を使用して、フォールトトレランスとパフォーマンス向上のために、nConnect またはセッショントランキングを利用して OpenNebula 用のNFSストレージを構成します。
+* link:opennebula-ontap-fc.html["FCでLVM Thinを構成する"] - ファイバーチャネルで論理ボリュームマネージャ（LVM）を構成し、OpenNebulaホスト全体でハイパフォーマンス、低レイテンシのブロックストレージアクセスを実現します。
+* link:opennebula-ontap-iscsi.html["iSCSI で LVM Thin を設定する"] - マルチパスをサポートする標準イーサネット ネットワーク経由のブロック ストレージ アクセス用に、iSCSIで論理ボリューム マネージャ（LVM）を設定します。
+* link:opennebula-ontap-nvme-fc.html["NVMe/FC で LVM Thin を設定する"] - 最新のNVMeプロトコルを使用したハイパフォーマンスブロックストレージ向けに、NVMe over Fibre Channelで論理ボリュームマネージャ（LVM）を設定します。
+* link:opennebula-ontap-nvme-tcp.html["NVMe/TCP で LVM Thin を構成する"] - 最新のNVMeプロトコルを使用して、標準イーサネット ネットワーク経由でハイパフォーマンスなブロック ストレージを実現するために、NVMe over TCPで論理ボリュームマネージャ（LVM）を設定します。
+
+
+
+NOTE: EシリーズまたはEFシリーズストレージプロトコルについてサポートが必要な場合は、リンク https://docs.netapp.com/us-en/e-series/config-linux/index.html["NetApp EシリーズおよびEFシリーズのLinux環境でのLVM設定に関するドキュメント"]とLVM Thinドキュメントのいずれかを参照してください。

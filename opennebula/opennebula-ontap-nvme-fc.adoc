@@ -1,0 +1,192 @@
+---
+sidebar: sidebar 
+permalink: opennebula/opennebula-ontap-nvme-fc.html 
+keywords: netapp, opennebula, lvm thin, nvme, nvme-fc, lvm, ontap, storage 
+summary: ONTAPを使用して、NVMe over Fibre ChannelでLogical Volume Manager（LVM）データストアをOpenNebula用に設定します。この手順には、nvme-cliのインストール、ネームスペースのプロビジョニング、サブシステムのセットアップ、共有データストア用のボリュームグループの作成が含まれます。 
+---
+= OpenNebula用のONTAP NVMe/FCでLVM Thinを設定
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NVMe over Fibre Channelプロトコルを使用して、NetApp ONTAPとともに、OpenNebulaホスト間で共有データストア用のLogical Volume Manager（LVM）を構成します。この構成により、最新のNVMeプロトコルを使用して、低レイテンシでハイパフォーマンスなブロックレベルのストレージ アクセスが提供されます。
+
+
+
+== 仮想化管理者の初期タスク
+
+NVMe/FC 接続用に OpenNebula ホストを準備し、ストレージ管理者に必要な情報を収集するために、これらの初期タスクを完了してください。
+
+. 2 つの HBA インターフェイスが使用可能であることを確認します。
+. クラスター内のすべてのOpenNebulaホストで、次のコマンドを実行して WWPN 情報を収集し、nvme-cli パッケージがインストールされていることを確認します。
++
+[role="tabbed-block"]
+====
+.Debian/Ubuntu
+--
+[source, shell]
+----
+apt update
+apt install nvme-cli
+cat /sys/class/fc_host/host*/port_name
+nvme show-hostnqn
+----
+--
+.RHEL／AlmaLinux
+--
+[source, shell]
+----
+dnf update
+dnf install nvme-cli
+cat /sys/class/fc_host/host*/port_name
+nvme show-hostnqn
+----
+--
+====
+. 収集したホストNQNおよびWWPN情報をストレージ管理者に提供し、必要なサイズのNVMe名前空間を要求します。ファブリック ゾーニングにはWWPNが必要です。これらの情報を、ファブリック ゾーニングを担当する管理者に提供します。
+
+
+
+
+== ストレージ管理者のタスク
+
+ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
+
+. NVMe プロトコルが有効になっている SVM が使用可能であることを確認します。参照 link:https://docs.netapp.com/us-en/ontap/san-admin/create-nvme-namespace-subsystem-task.html["ONTAP 9のNVMeタスクに関するドキュメント"]。
+. コントローラごとに 2 つの LIF が作成され、NVMe/FC 専用になっていることを確認します。作成された NVMe/FC LIF の WWPN アドレスを収集し、ファブリック ゾーニングを担当する管理者に提供します。
+. NVMe 名前空間を作成します。
+. サブシステムを作成し、ホストNQNを割り当てます。
+. セキュリティ タブでランサムウェア対策が有効になっていることを確認します。
+. NVMe 名前空間が作成されたことを仮想化管理者に通知します。
+
+
+
+
+== 最終的な仮想化管理者のタスク
+
+これらのタスクを完了して、NVMe名前空間をOpenNebulaで共有LVMストレージとして構成します。
+
+. クラスタ内の各OpenNebulaホストのシェルに移動し、新しいネームスペースが表示されていることを確認します。
+. 名前空間の詳細を確認します。
++
+[source, shell]
+----
+nvme list
+----
+. デバイスの詳細を検査して収集します。
++
+[source, shell]
+----
+nvme list
+nvme netapp ontapdevices
+nvme list-subsys
+lsblk -N
+----
+. フロントエンド サーバーの 1 つに SSH で接続し、必要なデータストア タイプに基づいて構成ファイルを作成します。完全な属性リストについては、 https://docs.opennebula.io/7.0/product/cluster_configuration/san_storage/lvm_drivers/["OpenNebula LVMドキュメント"]を参照してください。サンプルファイルを以下に示します：
++
+[role="tabbed-block"]
+====
+.バックアップ
+--
+.. Resticの場合、
+
+
+[listing]
+----
+$cat nvmefc-restic.conf
+NAME = "Backup-Restic-NVMEFC"
+TYPE = "BACKUP_DS"
+
+DS_MAD = "restic"
+TM_MAD = "-"
+
+RESTIC_PASSWORD = "<restic_password>"
+RESTIC_SFTP_SERVER = "<backup server>"
+----
+.. Rsyncの場合、
+
+
+[listing]
+----
+$cat nvmefc-rsync.conf
+NAME = "Backup-Rsync-NVMEFC"
+TYPE = "BACKUP_DS"
+
+DS_MAD = "rsync"
+TM_MAD = "-"
+
+RSYNC_USER = "<rsync_user>"
+RSYNC_HOST = "<backup server>"
+----
+--
+.ファイル
+[source, shell]
+----
+$cat nvmefc-kernel.conf
+NAME = "File-Kernel-NVMEFC"
+TYPE = "FILE_DS"
+DS_MAD = "fs"
+TM_MAD = "local"
+SAFE_DIRS = "/var/tmp/files"
+----
+.イメージ
+[source, shell]
+----
+$cat nvmefc-image.conf
+NAME = "Image-NVMEFC01"
+TYPE = "IMAGE_DS"
+DS_MAD = "fs"
+TM_MAD = "fs_lvm_ssh"
+DISK_TYPE = "block"
+LVM_THIN_ENABLE = "yes"
+----
+.システム
+[source, shell]
+----
+$cat nvmefc-system.conf
+NAME = "System-NVMEFC02"
+TYPE = "SYSTEM_DS"
+TM_MAD = "fs_lvm_ssh"
+DISK_TYPE = "block"
+BRIDGE_LIST = "<space-separated list of OpenNebula hosts>" # If NVMe namespace not presented to frontend hosts
+LVM_THIN_ENABLE = "yes"
+----
+====
+. 実行 `onedatastore create <configuration file>`。作成後に返されるデータストア ID をメモします。
++
+[]
+====
+onedatastore create nvmefc-system.conf ID：108
+
+====
+.  `vgcreate <vg_name> <nvme_device>`コマンドを使用して、NVMe名前空間にボリュームグループを作成します。イメージデータストアの場合、ボリュームグループ名には任意の名前を付けることができます。システムデータストアの場合、ボリュームグループ名は `vg-one-<datastore id>`の形式にする必要があります。これは、OpenNebulaがシステムデータストアの正しいボリュームグループを識別するために必要です。バックアップ/ファイル/イメージデータストアを作成する場合は、次の手順に進みます。システムデータストアの場合は、ここで停止します。
+.  `lvcreate -l 100%FREE -n <logical volume name> <volume group name>`コマンドを使用して論理ボリュームシンプールを作成します。システムデータストアの場合、OpenNebulaは必要に応じてLVMシンプールを自動的に作成します。
+.  `mkfs.ext4 /dev/<volume group>/<logical volume>`コマンドを使用して、論理ボリューム上にファイルシステムを作成します。システムデータストアでは、ファイルシステムの作成は必要ありません。
+. /etc/fstab または automount 設定を更新して、必要なマウント オプションでデータストアをマウントします。デフォルトのデータストアの場所は /var/lib/one/datastores とします。 `onedatastore show <datastore_id>`で検証できます。そうでない場合は、/etc/one/oned.conf の DATASTORE_LOCATION パラメータを確認してください。データストアの場所の下に<datastore_id>フォルダが存在することを確認してください。サンプル エントリを以下に示します：
++
+[role="tabbed-block"]
+====
+./etc/fstab の使用
+--
+[source, shell]
+----
+/dev/<vg name>/<logical volume> /var/lib/one/datastores/<datastore_id> ext4 _netdev,noauto,x-systemd.automount,nofail 0 2
+----
+--
+.自動マウントの使用
+--
+[source, shell]
+----
+/var/lib/one/datastores/<datastore_id> -fstype=ext4,_netdev,noauto,x-systemd.automount,nofail,rw :/dev/<vg name>/<logical volume>
+----
+--
+====
+.  `mount -a`または `systemctl reload autofs`コマンドを使用してデータストアをマウントします。
+. マウントコマンドでデータストアがマウントされていることを確認し、 `onedatastore show <datastore_id>`コマンドでデータストアの容量を確認します。
+. oneadmin ユーザーとグループがデータストア フォルダーを所有していることを確認します。 `chown -R oneadmin:oneadmin /var/lib/one/datastores/<datastore_id>`コマンドを使用して権限を調整します。
+

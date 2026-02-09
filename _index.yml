@@ -30,6 +30,8 @@ indexpage:
       url: "/proxmox/index.html"
     - title: KVMとlibvirt
       url: "/kvm/index.html"
+    - title: OpenNebula
+      url: "/opennebula/index.html"
   - title: VMの移行と変換
     links:
     - title: Shift Toolkit を使用して VM を移行する

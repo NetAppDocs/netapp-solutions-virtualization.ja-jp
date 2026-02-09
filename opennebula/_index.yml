@@ -1,0 +1,34 @@
+---
+indexpage:
+  title: NetApp OpenNebulaソリューション
+  summary: NetApp OpenNebula ソリューションは、OpenNebula を使用した仮想化のための NetApp ストレージの機能を示す一連のテクノロジー機能です。
+  lead: NetApp OpenNebula ソリューションは、OpenNebula を使用した仮想化のための NetApp ストレージの機能を示す一連のテクノロジー機能です。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: OpenNebulaについて学ぶ
+      url: opennebula-overview.html
+    - title: OpenNebulaのインストール
+      url: https://docs.opennebula.io/7.0/software/installation_process/
+  - title: OpenNebula 用の NetApp ストレージをプロビジョニングする
+    links:
+    - title: OpenNebulaとNetAppのアーキテクチャ
+      url: opennebula-netapp-architecture.html
+    - title: サポートされているストレージ タイプ
+      url: opennebula-storage-types.html
+    - title: ストレージプロトコルを構成する
+      url: opennebula-netapp-protocols.html
+  - title: その他のリソース
+    links:
+    - title: OpenNebula 7.0 ドキュメント
+      url: https://docs.opennebula.io/7.0/getting_started/
+    - title: NetApp SAN データストアを OpenNebula Enterprise Edition 用に設定
+      url: https://docs.opennebula.io/7.0/integrations/storage_extensions/netapp/
+    - title: OpenNebulaドキュメント（以前のバージョン - 4.x から 6.x）
+      url: https://docs.opennebula.io/6.10/
+    - title: OpenNebula YouTubeチャネル
+      url: https://www.youtube.com/@OpenNebula/playlists
+    - title: OpenNebulaフォーラム
+      url: https://forum.opennebula.io/
+    - title: OpenNebula GitHubリポジトリ
+      url: https://github.com/OpenNebula/

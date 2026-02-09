@@ -1,0 +1,33 @@
+---
+section: opennebula
+title: OpenNebula
+url: "/opennebula/index.html"
+entries:
+- title: OpenNebulaについて
+  pdf-filename: NetApp 上での OpenNebula の概要
+  url: "/opennebula/opennebula-overview.html"
+- title: OpenNebula 用の NetApp ストレージをプロビジョニングする
+  pdf-filename: OpenNebula 向け NetApp ストレージ
+  entries:
+  - title: ソリューションアーキテクチャ
+    url: "/opennebula/opennebula-netapp-architecture.html"
+  - title: サポートされているストレージ タイプ
+    url: "/opennebula/opennebula-storage-types.html"
+  - title: OpenNebula 用に NetApp でストレージ プロトコルを構成する
+    entries:
+    - title: ストレージプロトコルの概要
+      url: "/opennebula/opennebula-netapp-protocols.html"
+    - title: SMB/CIFSストレージを構成する
+      url: "/opennebula/opennebula-ontap-smb.html"
+    - title: NFSストレージの設定
+      url: "/opennebula/opennebula-ontap-nfs.html"
+    - title: NetApp ONTAP iSCSIストレージを設定
+      url: "/opennebula/opennebula-netapp-iscsi.html"
+    - title: FCでLVMを構成する
+      url: "/opennebula/opennebula-ontap-fc.html"
+    - title: iSCSIでLVMを構成する
+      url: "/opennebula/opennebula-ontap-iscsi.html"
+    - title: NVMe/FC で LVM を構成する
+      url: "/opennebula/opennebula-ontap-nvme-fc.html"
+    - title: NVMe/TCP で LVM を構成する
+      url: "/opennebula/opennebula-ontap-nvme-tcp.html"

@@ -30,8 +30,12 @@ NetApp ONTAPでファイバー チャネル プロトコルを使用して、Pro
 apt list | grep multipath-tools
 # If need to install, execute the following line.
 apt-get install multipath-tools
-systemctl enable multipathd
+systemctl enable --now multipathd
 ----
++
+
+NOTE: ONTAP デバイスマルチパスの希望する構成はすでにパッケージに含まれています。詳細については、link:https://docs.netapp.com/us-en/ontap-sanhost/hu-proxmox-ve-9x.html#step-1-confirm-the-multipath-configuration-for-your-host["ONTAPストレージを使用したProxmox VE 9.xでのFCPおよびiSCSIに関するONTAP 9ドキュメント"]を参照してください。
+
 . すべての Proxmox VE ホストの WWPN を収集し、ストレージ管理者に提供します。
 +
 [source, shell]

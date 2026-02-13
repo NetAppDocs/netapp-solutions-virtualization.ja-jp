@@ -75,6 +75,7 @@ ONTAP は、Proxmox VE の導入を強化する包括的なエンタープライ
 * Windows と Unix の ID 間の名前マッピング
 * 脅威検出機能を内蔵した自律型ランサムウェア保護
 * 容量と使用状況の分析のためのファイルシステム分析
+* 高可用性を実現する MetroCluster のサポート。
 
 
 
@@ -82,6 +83,7 @@ ONTAP は、Proxmox VE の導入を強化する包括的なエンタープライ
 === SANプロトコルの機能
 
 * SnapMirror Active Syncを使用して障害ドメイン間でクラスタを拡張します（常に https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"] サポートされている構成の場合
+* 高可用性を実現する MetroCluster のサポート。
 * ASAモデルはアクティブ / アクティブマルチパスと高速パスフェイルオーバーを提供します
 * FC、iSCSI、NVMe-oFのプロトコルサポート
 * iSCSI CHAP相互認証

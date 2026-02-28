@@ -1,10 +1,10 @@
 ---
 sidebar: sidebar 
 permalink: openshift/osv-vm-dr-using-tp.html 
-keywords: OpenShift, OCP, Trident, Trident protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, Red Hat OpenShift Virtualization 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, ROSA, Red Hat OpenShift Virtualization 
 summary: ROSA 上の Red Hat OpenShift Virtualization 
 ---
-= Trident Protect を使用して Red Hat OpenShift Virtualization の VM のフェイルオーバーとフェイルバックを設定する
+= Trident Protectを使用したRed Hat OpenShift VirtualizationのVM向けフェイルオーバーとフェイルバックの設定
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -21,10 +21,10 @@ Trident Protect を使用して OpenShift Virtualization 内の VM の災害復�
 == 前提条件
 
 * Tridentをインストールする必要があります。  OpenShift Virtualization オペレーターを使用してクラスターに OpenShift Virtualization をインストールする前に、バックエンド クラスとストレージ クラスを作成する必要があります。
-* OpenShift VM のフェイルオーバーおよびフェイルバック操作を実装するには、 Trident Protect をインストールする必要があります。こちらの説明を参照してくださいlink:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["トライデントプロテクトをインストールする"]
+* OpenShift VMのフェイルオーバーおよびフェイルバック操作を実装するには、Trident Protectをインストールする必要があります。こちらの手順を参照してくださいlink:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["Trident Protectをインストールする"]
 
 
-image:redhat-openshift-ocpv-tp-001.png["OCP-v trident protect が trident-protect 名前空間にインストールされました"]
+image:redhat-openshift-ocpv-tp-001.png["OCP-v Trident Protect は trident-protect 名前空間にインストールされています"]
 
 VM は OpenShift Virtualization で利用可能である必要があります。新しい VM をデプロイする方法、または既存の VM を OpenShift Virtualization に移行する方法の詳細については、ドキュメントの適切なセクションを参照してください。
 
@@ -97,7 +97,7 @@ image:redhat-openshift-ocpv-tp-002.png["trident-protect 名前空間の OCP-v ap
 
 
 
-== VM用のTrident保護アプリを作成する
+== VM用のTrident Protectアプリを作成する
 
 VM が配置されている名前空間にアプリのカスタム リソースを作成します。
 
@@ -111,7 +111,7 @@ image:redhat-openshift-ocpv-tp-004.png["source-ns 名前空間の OCP-v アプ�
 
 
 
-== 新しい名前空間に災害復旧 VM 用のTrident保護アプリを作成する
+== 新しいネームスペースでディザスタリカバリ VM 用の Trident Protect アプリを作成する
 
 [source, CLI]
 ----

@@ -1,10 +1,10 @@
 ---
 sidebar: sidebar 
 permalink: openshift/osv-vm-dp-using-tp.html 
-keywords: OpenShift, OCP, Trident, Trident protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization,Data Protection, Data Management for VMs, VM protection 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization, Data Protection, Data Management for VMs, VM protection 
 summary: NetApp ONTAPを使用した Red Hat OpenShift Virtualization のデータ保護 
 ---
-= Trident Protect を使用して Red Hat OpenShift Virtualization の VM を保護する
+= Trident Protectを使用してRed Hat OpenShift VirtualizationのVMを保護
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -18,18 +18,18 @@ summary: NetApp ONTAPを使用した Red Hat OpenShift Virtualization のデー�
 
 OpenShift Virtualization 環境の仮想マシンは、OpenShift Container プラットフォームのワーカーノードで実行されるコンテナー化されたアプリケーションです。VM のメタデータと永続ディスクを保護して、それらが失われたり破損したりした場合に回復できるようにすることが重要です。
 
-OpenShift Virtualization VMの永続ディスクは、OpenShift Clusterに統合されたONTAPストレージによってバックアップできます。link:https://docs.netapp.com/us-en/trident/["TridentCSI"] 。このセクションではlink:https://docs.netapp.com/us-en/trident/trident-protect/learn-about-trident-protect.html["Tridentプロテクト"]データボリュームを含む VM のスナップショットとバックアップをONTAPオブジェクト ストレージに作成します。
+OpenShift Virtualization VMの永続ディスクは、link:https://docs.netapp.com/us-en/trident/["TridentCSI"]を使用してOpenShiftクラスタに統合されたONTAPストレージによってバックアップできます。このセクションでは、link:https://docs.netapp.com/us-en/trident/trident-protect/learn-about-trident-protect.html["Trident Protect"]を使用して、データボリュームを含むVMのスナップショットとバックアップをONTAPオブジェクトストレージに作成します。
 
 必要に応じてスナップショットまたはバックアップから復元します。
 
-Trident Protect は、OpenShift クラスター上のアプリケーションと VM のスナップショット、バックアップ、復元、および災害復旧を可能にします。OpenShift Virtualization VM の場合、 Trident Protect で保護できるデータには、VM に関連付けられた Kubernetes リソース オブジェクト、永続ボリューム、内部イメージが含まれます。
+Trident Protectは、OpenShiftクラスタ上のアプリケーションとVMのスナップショット、バックアップ、リストア、ディザスタリカバリを可能にします。OpenShift Virtualization VMの場合、Trident Protectで保護できるデータには、VMに関連付けられたKubernetesリソースオブジェクト、永続ボリューム、および内部イメージが含まれます。
 
 **以下は、このセクションの例で使用されているさまざまなコンポーネントのバージョンです**
 
 * link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/installing_on_bare_metal/index["OpenShift クラスター 4.17"]
 * link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/virtualization/getting-started#tours-quick-starts_virt-getting-started["Red Hat が提供する OpenShift Virtualization Operator 経由でインストールされた OpenShift Virtualization"]
 * link:https://docs.netapp.com/us-en/trident/trident-get-started/kubernetes-deploy.html["Trident25.02"]
-* link:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["Tridentプロテクト 25.02"]
+* link:https://docs.netapp.com/us-en/trident/trident-protect/trident-protect-installation.html["Trident Protect 25.02"]
 * link:https://docs.netapp.com/us-en/ontap/["ONTAP 9.16"]
 
 
@@ -40,11 +40,11 @@ Trident Protect は、OpenShift クラスター上のアプリケーションと
 .AppVaultを作成する
 [%collapsible%open]
 ====
-アプリケーションまたは VM のスナップショットとバックアップを作成する前に、スナップショットとバックアップを保存するためにTrident Protect でオブジェクト ストレージを構成する必要があります。これはバケット CR を使用して行われます。バケット CR を作成して構成できるのは管理者のみです。バケット CR は、 Trident Protect では AppVault と呼ばれます。AppVault オブジェクトは、ストレージ バケットの宣言型 Kubernetes ワークフロー表現です。AppVault CR には、バックアップ、スナップショット、復元操作、 SnapMirrorレプリケーションなどの保護操作でバケットを使用するために必要な構成が含まれています。
+アプリケーションまたはVMのスナップショットとバックアップを作成する前に、スナップショットとバックアップを保存するために、Trident Protectでオブジェクトストレージを設定する必要があります。これはバケットCRを使用して行われます。バケットCRを作成して設定できるのは管理者のみです。バケットCRは、Trident ProtectではAppVaultとして知られています。AppVaultオブジェクトは、ストレージバケットの宣言的なKubernetesワークフロー表現です。AppVault CRには、バックアップ、スナップショット、リストア操作、SnapMirrorレプリケーションなどの保護操作でバケットを使用するために必要な設定が含まれています。
 
 この例では、 ONTAP S3 をオブジェクト ストレージとして使用する方法を示します。ONTAP S3 用の AppVault CR を作成するワークフローは次のとおりです。1.ONTAPクラスタの SVM に S3 オブジェクト ストア サーバを作成します。2.オブジェクト ストア サーバーにバケットを作成します。3.SVM に S3 ユーザーを作成します。アクセス キーとシークレット キーを安全な場所に保管してください。4.OpenShift で、 ONTAP S3 認証情報を保存するシークレットを作成します。5.ONTAP S3用のAppVaultオブジェクトを作成する
 
-** ONTAP S3 用にTrident Protect AppVault を構成する**
+**ONTAP S3用のTrident Protect AppVaultを設定**
 
 [source, yaml]
 ----

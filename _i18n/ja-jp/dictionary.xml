@@ -8606,4 +8606,75 @@
   <block id="f7e80f1783a43b249090b162d24eea2c" category="list-text">デフォルトのTrident VolumeSnapshotClassを設定します。</block>
   <block id="571d665b9a28f3b3c6d1a45d55491578" category="paragraph">TridentベースのVolumeSnapshotClassをクラスタのデフォルトとして設定し、永続ボリュームのスナップショットベースの操作を有効にします。これにより、スナップショットクラスが指定されていない場合、VolumeSnapshotsは自動的にTrident CSIドライバを使用し、OpenShift Virtualizationがゴールデンイメージのスナップショットを作成できるようになります。</block>
   <block id="27e9d9aa3e804e13ad6e9fd40486a99e" category="paragraph">1つのVolumeSnapshotClassのみがデフォルトとして設定されていることを確認してください。別のVolumeSnapshotClassが既にデフォルトに設定されている場合は、そのアノテーションをfalseに設定してください。</block>
+  <block id="4af3fe57a1c87e7a23768b6f4ed1b530" category="summary">Shift Toolkitを使用してVMware ESXiからProxmox VEへVMを移行するには、VMの準備、ディスクフォーマットの変換、およびターゲット環境の設定を行います。</block>
+  <block id="223e68066579ca3b50850d29277d5158" category="doc">Shift Toolkitを使用してVMware ESXiからProxmox VEへVMを移行する</block>
+  <block id="57e13573114577b3af8a0a24aa24d576" category="list-title">Proxmox VE</block>
+  <block id="a20c9efbe4fc687660840bb12400e19e" category="list-text">Proxmox VE 9.x 以降を使用したクォーラムを備えた、動作に必要な最小ノード 3 個以上のクラスタ。ONTAP NFS ストレージがストレージプールとして追加されました。</block>
+  <block id="3c10f8538271b0bbf5b0e6aad5547885" category="list-text">Proxmoxリリースは9.x以上です</block>
+  <block id="3370e032ea4d765dac8075c8e33030c2" category="list-text">Proxmoxノードはネットワークでアクセス可能です</block>
+  <block id="fc8a13c7ea360b2bb6cc441b35f94c32" category="list-text">適切なボリュームとqtreeで構成されたNFSv3ストレージプール</block>
+  <block id="912dd6c652b1afd2721db34835106f0a" category="list-text">ネットワーク（ブリッジ）は適切な vLAN で構成する必要があります。</block>
+  <block id="abdc31a04150712ce84289f73ab3537d" category="list-title">仮想マシンの要件</block>
+  <block id="19e2dc96aba500cfce75cdbf644dcb3f" category="list-text">VM の VMDK が NFSv3 ボリュームに配置されていることを確認します（特定の VM のすべての VMDK は同じボリュームに含まれている必要があります）。</block>
+  <block id="b602f1269fd54599e3d82ef714f1007b" category="list-text">VM の準備が正常に完了するには、ゲスト VM 上で VMware Tools が実行されている必要があります。</block>
+  <block id="76d027b643130c57a22646bbec3237dd" category="list-text">移行が必要な VM が準備のために RUNNING 状態であることを確認してください</block>
+  <block id="9ab04320db6bcd44cd8ecddf185e46c9" category="list-text">Shiftツールキットは、以下のスクリプトを挿入することでVMの準備を実行します：</block>
+  <block id="70217e773ca948bec42549ff247f99e3" category="list-text">VirtIOドライバを追加</block>
+  <block id="fae49a8b4ce58c4a3669537c72392b9f" category="list-text">VMware ツールを削除する</block>
+  <block id="9012f3c3d4c29804ac1455f40cc34f5d" category="list-text">バックアップIPアドレス、ルート、DNS情報</block>
+  <block id="2250ade21f70f3898f30d19c23e4f560" category="admonition">移行を開始する前に、仮想マシンの電源をオフにする必要があります。</block>
+  <block id="643765be95e96ba0bd0d50b581f23ba9" category="admonition">VMware Toolsの削除は、VMの電源がオンになると宛先ハイパーバイザーで行われます</block>
+  <block id="e0a9da9332918532fa3fb3eadaa4ed4e" category="list-text">Windows VM を準備するために Invoke-VMScript を実行する場合は、ローカル管理者アカウントを使用するか、ローカルの Administrators グループに属する Active Directory アカウントを使用してください。Linux システムの場合は、パスワードを必要とせずにコマンドを実行できるアカウントを使用してください（例：パスワードなしの sudo を使用）。</block>
+  <block id="f1229500f6a7c4d3c2d90804fdb089b8" category="list-text">Windows VMの場合、VirtIO ISOがマウントされていることを確認してください。マウントされていない場合、準備プロセスは失敗します。VirtIO ISOドライバはここからダウンロードできます。このスクリプトはマウントされたドライブを検出し、必要なファイルを自動的にコピーします。</block>
+  <block id="bc0f647d8dee9e215c7b045379244a6e" category="list-text">リンクで指定されたISOが使用されていることを確認してください。準備スクリプトは.msiパッケージを使用してドライバとqemu-guest-agentをインストールします。前提条件が整ったら、Shift toolkit UIにログインし、Proxmox VEを宛先ハイパーバイザーとしてサイトを設定します。追加するには、「Add New Site」をクリックして「Destination」を選択します。</block>
+  <block id="165d8350def49f049896fbe15e76a272" category="section-title">ステップ1：接続先サイト（Proxmox VE）を追加する</block>
+  <block id="58c19cc9f30ac5f53cecad2b57f1b183" category="paragraph">移行先のProxmox VE環境をShift Toolkitに追加します。</block>
+  <block id="2be3d66150efaf11bc807c60b267e960" category="paragraph"><block ref="2be3d66150efaf11bc807c60b267e960" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="2acce3a2c4dd37bf9036f0a7d4bcfc84" category="paragraph">*サイト名*：サイトの名前を指定します *ハイパーバイザー*：ターゲットとして Proxmox VE (PVE) を選択します *サイトの場所*：デフォルトのオプションを選択します *コネクタ*：デフォルトの選択を選択します</block>
+  <block id="8eda3033073599e5cbcf2a5d38cba848" category="inline-image-macro">デスティネーションサイトの詳細を追加</block>
+  <block id="ee3954b1103fd177553ee384083be5b3" category="paragraph"><block ref="ee3954b1103fd177553ee384083be5b3" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="1331794d0701cabb76a8c6f3d5f72781" category="list-text">宛先PVEの詳細を入力します</block>
+  <block id="bbe692f98338107fba878a05e33e3deb" category="paragraph">*Endpoint*：ProxmoxノードのIPアドレスまたはFQDN *Username*：アクセスするlinuxユーザー名（形式：username）* 例：ntapshift。@pamについて言及する必要はありません。*Password*：アクセスするためのパスワード</block>
+  <block id="bce994a9f9bede9fa68eb9281875dd9a" category="inline-image-macro">Proxmox VEの詳細</block>
+  <block id="250d60b1842f217ab2a88fb3cb984e07" category="paragraph"><block ref="250d60b1842f217ab2a88fb3cb984e07" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="2771f022ed5f5f583d4395d47cb8a2b5" category="admonition">ディスクフォーマット変換はボリュームレベルで、かつ同一ボリューム内で行われるため、ソースボリュームと宛先ボリュームは同じになります。</block>
+  <block id="06066e46220d7638f084677fc888c691" category="list-text">*宛先 Proxmox エントリ* を選択</block>
+  <block id="c9eb69f4e408f5bdde670c86e8222c94" category="admonition">変換された VM が保存される宛先パスが、ESXi から Proxmox VE に VM を変換する際に qtree に設定されていることを確認してください。変換された VM ディスクを保存するために、複数の qtree を作成して使用することができます。</block>
+  <block id="a73dc566fd2c9e47b8aa24b66c5a5bc1" category="list-text">*Destination Site*と関連するProxmox VEターゲットを選択してください。</block>
+  <block id="f2e5093c7e8d132b5770d5d3a8f2fbb4" category="admonition">テスト移行の場合、「ネットワークを構成しない」がデフォルトの選択肢となっており、Shift toolkitはIPアドレスの割り当てを行いません。ディスクの変換が完了し、PVE側で仮想マシンが起動したら、本番ネットワークとの競合を避けるため、バブル論理ネットワークを手動で割り当ててください。</block>
+  <block id="076080a9aa5b6c47e1275f693b87b82f" category="admonition">構成選択では、ディスクイメージのフォーマットを選択したり、prepareVMのオーバーライドをスキップしたりできます。ディスクイメージ形式の場合、ワークフローはデフォルトでQCOW2形式になりますが、RAW形式が必要な場合は選択できます。prepareVMのオーバーライドを使用すると、VMの準備をスキップできるため、管理者は独自のスクリプトを実行してVMを移行準備状態にすることができます。このオプションを選択した場合、Shiftツールキットはスクリプトを挿入したり、VirtIOドライバを追加したりしません。</block>
+  <block id="ad331c61674b2ff82bbb2c984cca24e8" category="paragraph">VMware ESXiからProxmox VEへ仮想マシンを変換するための移行ワークフローを開始します。</block>
+  <block id="7eb490629894ef4f37ef16cb38cff104" category="list-text">Blueprint の VM スナップショットをソース側でトリガーする</block>
+  <block id="d726770cca98cb9501f61242cdb2f6e2" category="list-text">ダミーディスクを関連付けた VM を作成する</block>
+  <block id="07f956e7f7cae30976a7c1a613856ee6" category="list-text">すべての仮想マシンのVMDKをQCOW2またはRAW形式に変換し、ダミーディスクを上書きします</block>
+  <block id="95f4840a3d59a7bf04083fa862982bde" category="list-text">リソースグループ内の VM の電源をオンにする – ターゲット</block>
+  <block id="5a1884bfad159a38dad4daa51b199b90" category="list-text">VMware Toolsを削除し、OSの種類に応じてトリガースクリプトまたはcronジョブを使用してIPアドレスを割り当てます</block>
+  <block id="ec01f73a17f3b90d53635ac15e437c0b" category="image-alt">Proxmox VE の VM</block>
+  <block id="38ffc8cae96a8ac59aef58b15da6168d" category="section-title">Shift ツールキットのワークフロー</block>
+  <block id="9aa9e231f950da618c182450dfecb607" category="paragraph">以下のセクションでは、Shift ツールキットによってトリガーされた、VMDK の変換と Proxmox VE 側での VM の作成に関する手順について説明します。</block>
+  <block id="f293d7a41626208fcbb41b3a794a30a2" category="paragraph-title">QCOW2またはRAWイメージをPVE NFSベースのストレージプールにアップロードします</block>
+  <block id="f2ff48db9876dd928f72f730cad6c55e" category="paragraph">仮想マシンのディスクイメージをqcow2またはRAW形式に変換すると、Shiftツールキットはファイルを適切なストレージプールに配置し、各ディスクをそれぞれのVM IDフォルダ内に追加します。</block>
+  <block id="5d23268a1279c853582c3863ce0d4b7e" category="image-alt">shift toolkit 469</block>
+  <block id="0bdfa5286269feba4d23388e0c2f0e21" category="paragraph-title">仮想マシンを作成する</block>
+  <block id="9f6129bd27c47f979bd135fd817b20d3" category="paragraph">Shift toolkitは、OSに応じて各VMを作成するためにREST API呼び出しを行います。</block>
+  <block id="7201b4542207ea349ce6ee4e5fe1a1ef" category="admonition">VMはそれぞれのProxmoxノードの下に作成されます。</block>
+  <block id="7641a3ca4515625b9827a125208ce9ba" category="paragraph-title">VMを初めて起動する</block>
+  <block id="9dc7d1078613a016bf38c424e804e54a" category="paragraph">仮想マシンのOSに応じて、Shiftツールキットはストレージコントローラーのインターフェースとともに、VMの起動オプションを自動的に割り当てます。Linuxディストリビューションの場合、VirtIOまたはVirtIO scsiが使用されます。Windowsの場合、仮想マシンはSATAインターフェースで電源がオンになり、その後、スケジュールされたスクリプトによってVirtIOドライバーが自動的にインストールされ、インターフェースがVirtIOに変更されます。ネットワークは選択に基づいて適切に割り当てられます。</block>
+  <block id="c29becbd9ac7907756f253805d95aaab" category="image-alt">Proxmox VE VMの詳細</block>
+  <block id="4918b90fd1eb5748df0a72a0f3de43d4" category="section-title">Proxmox VEでVMを移行および作成するための最小限の権限</block>
+  <block id="1d0423aa9ff2fd874f6c9b380106ba8a" category="paragraph">このセクションでは、VM移行を実行するために必要な最小限の権限を持つ専用ユーザーアカウントを作成する手順について説明します。</block>
+  <block id="f5610950ce6657d3b8826a4379287f7b" category="list-text">Linuxユーザーを作成する</block>
+  <block id="4ca68372b56079d277fe5298a55ab7a8" category="list-text">useradd -m -s /bin/bash ntapshift</block>
+  <block id="148b90dd37d3754dde03d3810acfdf49" category="list-text">passwd ntapshift</block>
+  <block id="9cbc8cbbe9b7a06b2f829a9608888377" category="list-text">Proxmoxにユーザーを追加する</block>
+  <block id="9ba701ad3ee3fcb83ee90e774154e521" category="list-text">pveum useradd ntapshift@pam</block>
+  <block id="524cd4c33285ea1520dc8af155e589e1" category="list-text">移行ロールを作成する</block>
+  <block id="8ee3f22e8ee8bc07f094ef26df67e586" category="list-text">pveum roleadd ntapshift-migrator -privs "Datastore.AllocateSpace, Datastore.AllocateTemplate, Datastore.Audit, SDN.Audit, SDN.Use, Sys.AccessNetwork, Sys.Audit, Sys.Modify, VM.Allocate, VM.Audit, VM.Config.CDROM, VM.Config.CPU, VM.Config.Cloudinit, VM.Config.Disk, VM.Config.HWType, VM.Config.Memory, VM.Config.Network, VM.Config.Options, VM.Console, VM.Migrate, VM.PowerMgmt"</block>
+  <block id="c70a8c59834b0cf9d63d3f66717d5d02" category="list-text">クラスタルートでロールを割り当てる</block>
+  <block id="bc26ef423585194309ee26b38f980a04" category="list-text">pveum aclmod / -user ntapshift@pam -role ntapshift-migrator</block>
+  <block id="430ac9da617b7671d2470aac7aabeb61" category="list-text">特定のノードに役割を割り当てる</block>
+  <block id="904571716d757dd2366380f38f6a8c7d" category="list-text">pveum aclmod /nodes/&lt;node-name&gt; -user ntapshift@pam -role ntapshift-migrator</block>
+  <block id="c88d9b30e97598ef05d325b4506788d5" category="admonition">（<block ref="5229e8d2d27b318b34969f09afea3c3e" prefix=" " category="inline-code"></block>を各実際のProxmoxノード名に置き換えてください）</block>
+  <block id="e5b30de22f0b345a82ac611f3074c604" category="paragraph">Shift ツールキットは、Proxmox VE 9.X 以降を実行している環境で検証されています。</block>
+  <block id="6490ec34510eacbfef4a5a0912755642" category="sidebar">VMware ESXiからProxmox VEへVMを移行する</block>
 </blocks>

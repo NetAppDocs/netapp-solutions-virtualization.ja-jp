@@ -26,6 +26,8 @@ indexpage:
       url: proxmox-pbs-requirements.html
     - title: Proxmoxバックアップサーバーでデータ保護を構成する
       url: proxmox-wkld-dp-pbs.html
+    - title: Proxmox用Storage Managerの設定と使用
+      url: proxmox-smp.html
   - title: その他のリソース
     links:
     - title: Proxmox仮想化環境で画期的なパフォーマンスを実現するNetAppストレージとNVMe-oF

@@ -8677,4 +8677,364 @@
   <block id="c88d9b30e97598ef05d325b4506788d5" category="admonition">（<block ref="5229e8d2d27b318b34969f09afea3c3e" prefix=" " category="inline-code"></block>を各実際のProxmoxノード名に置き換えてください）</block>
   <block id="e5b30de22f0b345a82ac611f3074c604" category="paragraph">Shift ツールキットは、Proxmox VE 9.X 以降を実行している環境で検証されています。</block>
   <block id="6490ec34510eacbfef4a5a0912755642" category="sidebar">VMware ESXiからProxmox VEへVMを移行する</block>
+  <block id="bc6a2417f633d0e9c233879fd2818db0" category="summary">Storage Manager for Proxmox（SMP）は、NetApp ONTAPストレージシステムを使用したProxmox環境における仮想マシンの包括的なストレージ プロビジョニングとライフサイクル管理を提供します。SMPにより、管理者はストレージを直接管理できるようになり、自動プロビジョニング、バックアップ、リストア、クローニング機能によって運用が簡素化されます。</block>
+  <block id="a15b66fd2b17e8407ea544d0292babd1" category="doc">Proxmox用Storage Managerの設定と使用</block>
+  <block id="4a897ef7b3ac1f395f7fc32000401ab7" category="section-title">Proxmox 用 Storage Manager について学ぶ</block>
+  <block id="80793f5ab012f8005ce06374421179c2" category="paragraph">Proxmox用ストレージマネージャー（SMP）は、NetAppストレージシステムを利用するProxmox環境内の仮想マシンに対して、エンドツーエンドのストレージ管理を提供します。SMPは、管理者がストレージを直接管理できるようにすることで、Proxmox環境におけるストレージとデータ管理の両方のタスクを簡素化します。</block>
+  <block id="be01a357ae2c9752875b5385c732b017" category="section-title">主な機能</block>
+  <block id="d71818a28a60a5c8e015bcc81aae0c7b" category="list-text">*エンドツーエンドのストレージ管理*：SMPは、ストレージ プロビジョニングからバックアップとリカバリまで、仮想マシンの完全なライフサイクル管理を提供します。</block>
+  <block id="f13331afcedbe440081b36b55cb2a0c4" category="list-text">*ダイレクト ストレージ管理*: Proxmox の管理者はストレージを直接管理できるため、運用が効率化され、複雑さが軽減されます。</block>
+  <block id="98954d29674a2f7985969e1396bf1c3a" category="list-text">*スタンドアロンインストーラー*：SMPは、APIを介してProxmoxノードにシームレスに接続するスタンドアロンインストーラーとして提供されます。</block>
+  <block id="82ec2cd6fda87713f588da75c3b1d0ed" category="section-title">機能</block>
+  <block id="6b2dc2f3d66855df0d015639656d24b4" category="paragraph">SMPの各コンポーネントは、ストレージ管理の効率性を向上させるように設計されています。</block>
+  <block id="cb5de5f5a505032ccd94d2648d62f68e" category="list-text">*ストレージ プロビジョニング*：Proxmoxホストおよび関連する仮想マシンのストレージ リソースを簡単に割り当て、管理できます。</block>
+  <block id="3a01d360c0f0cb0cdc0585daa3df9da1" category="list-text">*NFS ストレージ プロビジョニング*：Proxmox 環境で使用する ONTAP NFS ストレージをセットアップして設定します。</block>
+  <block id="77288ba781bf399318385705a17429b2" category="list-text">*iSCSI ストレージ プロビジョニング*: 堅牢で効率的な iSCSI ストレージ管理のために、マルチパスを使用したシック LVM を実装します。</block>
+  <block id="14837468729ce3fa1f8d89ed60795450" category="list-text">*バックアップとリカバリ*：データの整合性と可用性を確保するために、信頼性の高いバックアップと迅速なリカバリを実行します。</block>
+  <block id="21ef6967068b9a36d21040af10adf612" category="list-text">*「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態のバックアップとファイル整合性バックアップ*：「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態とファイル整合性の両方のバックアップメカニズムを設定することで、データの整合性を確保します。</block>
+  <block id="3c97bebeef02907e93ed87d5f20f8c41" category="list-text">*VM復元操作*：仮想マシンの復元プロセスを実行して、データを復旧し、システムの可用性を維持します。</block>
+  <block id="8a45d50515bd9e571096bde2388b55ae" category="list-text">*ストレージ効率*：ONTAPは、データに必要なストレージ容量を最小限に抑えるように設計された、包括的なストレージ効率化技術スイートを提供します。これらの技術は、ストレージ消費量を削減するだけでなく、システムパフォーマンスを向上させ、以下の効果をもたらします：</block>
+  <block id="01b243a08d1ef96305ff0b40bc25a88b" category="list-text">*迅速なVMプロビジョニング*：仮想マシンのプロビジョニングを効率化し、より迅速な展開を実現します。</block>
+  <block id="621b04303152f01982bc0e44364360b3" category="list-text">*データセットのコピーを高速化*：データセットの複製を高速化し、効率的なデータ管理を実現します。</block>
+  <block id="bd6369bb4bd91954198f97950a94e3f8" category="paragraph">先に進む前に、以下の項目をすべて完了していることを確認してください。</block>
+  <block id="2f3184544c8c7698027d88c9c8a44ff6" category="list-text">動作するProxmox Virtual Environment（PVE）9.x以降のクラスター。</block>
+  <block id="7746ab2c9b8a6b3bfe8917fa9b70e926" category="inline-link-macro">ONTAPを使用したNFSデータストアの設定</block>
+  <block id="36b6fd653ba77e90e118f89284094d0e" category="inline-link-macro">ONTAP ストレージを使用した iSCSI 用に Proxmox VE 9.x を設定</block>
+  <block id="622870bd7d4035e7b855ef12105eb676" category="list-text">SVM レベルで NFS および iSCSI プロトコルが有効になっている ONTAP All Flash FAS（AFF）ストレージ。手順については、<block ref="6e56f4d15b7c1e04ae5f08c29f7b144a" category="inline-link-macro-rx"></block>および<block ref="86a5c73f1afc30bff858818023498f37" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="40dcafe19d809afae187eec1ba7f3ae1" category="paragraph">iSCSI LUN構成の場合、以下の項目を有効にする必要があります：</block>
+  <block id="5d8fa5d13a4a7190dd10930f1269a464" category="paragraph">*すべての Proxmox ホストにマルチパスと iSCSI をインストールします：*</block>
+  <block id="bcd0ddd05db26a82faebbf6a48c41aaf" category="paragraph">*iSCSI イニシエータを設定し、iSCSI 経由で接続します（Proxmox ホスト上）：*</block>
+  <block id="c650bec305174b8a20f8ffefbf65cecb" category="paragraph">作成または更新<block ref="dd5ff67ba72768d33f75e645aa2b8e56" prefix=" " category="inline-code"></block>：</block>
+  <block id="8c73154034873df50b02311c9347af03" category="paragraph">または以下を使用してください：</block>
+  <block id="1a6df8aa35122b13273963fc33dce3e5" category="list-text">ProxmoxホストとONTAPストレージは、SMPホストからネットワーク経由でアクセス可能です。</block>
+  <block id="7cb380268ba5ef101fd192503c03a851" category="section-title">Proxmox 用の Storage Manager をインストールしてセットアップする</block>
+  <block id="8ef7d23c0a4123be31ad9a21042f57e9" category="paragraph">SMPを使い始めるには、指定された仮想マシン上でWindowsオペレーティングシステムを使用してください。SMPは、Windows Server 2019、2022、および2025で実行できます。</block>
+  <block id="f75fc37643c9a38461b3a62dab08a144" category="inline-link">NetApp Console オートメーションハブ</block>
+  <block id="29deacf315fbfe62c3462b416af7aba5" category="list-text">SMPパッケージ（約17MB）を<block ref="0398c7fb0cc5a396466a8e016035628d" category="inline-link-rx"></block>からダウンロードしてください。</block>
+  <block id="b7982d00d3982934a62491f7e24e253c" category="example-title">SMPダウンロードページを表示</block>
+  <block id="e6b01aba18ae9101d6eae1b7f434703b" category="image-alt">NetApp Console Automation hub の SMP インストーラーダウンロードページ</block>
+  <block id="c77cdfc65f1e1add4c6d39d770ada25d" category="list-text">パッケージを解凍します。</block>
+  <block id="2ede026ae04efeec809da7ed27a096e1" category="list-text">実行ファイルを実行して、サービスをインストールおよび起動してください。</block>
+  <block id="6c51aa3a59b87c82c1dfecea3cba474d" category="admonition">SMPは利用可能なAPIを活用してプロビジョニングとデータ保護のワークフローをオーケストレーションするため、追加のパッケージ依存関係は必要ありません。</block>
+  <block id="624d744496b3011fbdadc16faba348c4" category="example-title">SMPインストールウィザードを表示</block>
+  <block id="16729ea42110f60c273634471fc22e67" category="image-alt">SMPインストールウィザード</block>
+  <block id="a5ae2b6d11cc9b270d9d7650d47f8470" category="paragraph">*Shift ツールキットを使用した代替インストール*</block>
+  <block id="f4ff31b41b86276ccb2df87283fae960" category="paragraph">スタンドアロンインストーラーの代わりに、Shift ツールキットを使用して Proxmox VE Storage Manager をインストールすることもできます：</block>
+  <block id="1d0745cbec37f3d4d7845f08528310c1" category="list-text">Open Shift Toolkitを開きます。</block>
+  <block id="9c3bf8b2581b9a27a83600260b27a7cf" category="list-text">*設定* &gt; *詳細設定* &gt; *ストレージマネージャー* の順に移動します。</block>
+  <block id="9d608322f3f4f1d41a875e9e7fdf1552" category="list-text">トグルスイッチを使用して Proxmox VE を有効にします。</block>
+  <block id="1d73fea09ff2c41139aaaf8f795e18f8" category="list-text">システムが必要なコンポーネントを自動的にインストールするまでお待ちください。</block>
+  <block id="ee16a42e32bf023103544c9f7c590ada" category="list-text">インストールが完了したら、*View*をクリックするか、Webブラウザーを開いて<block ref="17c02bfa253344cd8c235e1435ecfead" prefix=" " category="inline-code"></block>Storage Managerにアクセスします。</block>
+  <block id="344f4624c197942068a6539cdc4138e0" category="paragraph">例：<block ref="abad16881186eb7f5a53f159fcbe4243" prefix=" " category="inline-code"></block></block>
+  <block id="d82fbaed65c0ae471da1583d14a37bca" category="list-text">ウェブブラウザを開き、<block ref="05b17a751d9f33ab7e7a878a6ab984a2" prefix=" " category="inline-code"></block>を入力してSMP UIにアクセスします</block>
+  <block id="6e4d0d0f8b4808f7b2807bccfe8483da" category="example-title">SMPログイン画面を表示</block>
+  <block id="e85bb40f2eb4ebf12cc2fb9761d2a1cd" category="image-alt">SMPログイン画面</block>
+  <block id="870cd4e95860fe235c8a2e3b15aede36" category="example-title">SMPホーム画面を表示</block>
+  <block id="5cabdedbe16d03ed8c01d60e3260a89c" category="image-alt">SMPユーザーインターフェイスのホーム画面</block>
+  <block id="205499e4288d7067c81c08fe68e9e9cc" category="section-title">Proxmox 用の Storage Manager の設定</block>
+  <block id="01da4c32453f80a763a5a7b1d91f6196" category="paragraph">ストレージとストレージおよびProxmoxノードへの接続が適切に構成されたら、SMPを構成して、ONTAPスナップショットとFlexClone機能を活用した仮想マシンのプロビジョニングと保護を自動化します。</block>
+  <block id="63e6512e5da4c75e0e171d297a4608a1" category="paragraph">最初のステップは、ONTAPストレージエンドポイントを検出して追加し、次にターゲットのProxmoxノードをSMPに追加することです。</block>
+  <block id="9ded8ea6a281a01a3456d85998d83b17" category="list-text">SMPがインストールされています</block>
+  <block id="ef9e26869071d5005aa4111633260be5" category="list-text">SMPインスタンスはProxmoxノードおよびストレージシステムへの接続性を備えています。</block>
+  <block id="03f72d2db79bfe8b5850b37ad9b9a285" category="list-text">ONTAP クラスタで NFS または iSCSI ストレージ プールを提供</block>
+  <block id="b14099e7ba86d616328d732ee99beb44" category="list-text">DNS名を使用する場合、DNS解決が行われます。それ以外の場合は、検出にIPアドレスを使用してください。</block>
+  <block id="335b860fa96e5474db8806bfe459f4f6" category="list-text">この環境は、サポートされているバージョンのProxmox Virtual Environmentサーバーを使用しています。</block>
+  <block id="bbe48fb854ea022537208eeeff822f91" category="paragraph-title">タスク概要</block>
+  <block id="17dcd852dac7514645776d7846d2d176" category="paragraph">ハイパーバイザーとストレージ間の接続が確立された後、設定は数回のクリックと約2分で完了します。</block>
+  <block id="bca24abb65c6e351027b3a72dd3245ba" category="list-text">SMPにログインします。</block>
+  <block id="9033b9f2b9513307f04b2778ad5d66d4" category="list-text">SMPの左側のナビゲーションから*Plan*を選択します。</block>
+  <block id="4f703335310e496b01946356b7d9f417" category="list-text">*Add Plan* をクリックします。</block>
+  <block id="0445149019781b80dd8425105e8817d4" category="example-title">プランの追加を表示</block>
+  <block id="0fb052fdf5d002de705400662cf6c4c7" category="image-alt">「プランの追加」オプションが表示されたSMPプラン設定ページ</block>
+  <block id="fbb3f533d5596fce457e767126cd2462" category="list-text">*ONTAP の追加*をクリックして、ONTAP ストレージ システムのクレデンシャルを追加します。</block>
+  <block id="39aa8694c9f0165a9c255d63c639b5e8" category="paragraph">クラスタエンドポイントまたはSVM管理LIFのいずれかを使用してONTAPを追加できます。</block>
+  <block id="f5d0c85beea9633b8f3d05b0669c6ad3" category="list-text">クラスタエンドポイントを使用して追加するには、次の詳細を指定します。</block>
+  <block id="31f73799da3f96581a68124442f89562" category="list-text">クラスタ IP アドレスまたは FQDN</block>
+  <block id="3fc42626d7c1a7d96c4d684631cd9cc5" category="list-text">ONTAPクラスタにアクセスするためのユーザー名</block>
+  <block id="1d1745d0584caa4931777498d2038276" category="list-text">ONTAP クラスタにアクセスするためのパスワード</block>
+  <block id="306eb1afd5424875f511d22f89332ddf" category="list-text">*Accept self-signed certificate* を選択し、 *Add Storage Cluster* をクリックします</block>
+  <block id="5ee8fea254025adf13dac2405698c62d" category="example-title">ONTAP の追加を表示：クラスタエンドポイント</block>
+  <block id="703e44a0bb06fd03b9192a2a6a64fac9" category="image-alt">クラスターエンドポイントの認証情報を追加するONTAPダイアログ</block>
+  <block id="f97d55206680ad20ffd744636a3a5583" category="list-text">SVM管理LIFを使用して追加するには、以下の詳細情報を入力してください：</block>
+  <block id="28e3edf5dd553a107c254772d2730dde" category="list-text">SVM管理LIFまたはFQDN</block>
+  <block id="7368e2b2f35207aeac657a1d72574622" category="list-text">SVMにアクセスするためのユーザー名</block>
+  <block id="a4f5d0b677d71448697549ef4b1b73e8" category="list-text">SVMにアクセスするためのパスワード</block>
+  <block id="263dad744b8989444b7352a836f7d6c6" category="example-title">ONTAP の追加を表示：SVM 管理 LIF</block>
+  <block id="6d65021c4f4e8afb9b9e1055de01a49d" category="image-alt">SVM管理LIF認証情報のONTAP追加ダイアログ</block>
+  <block id="46680ca9e229ee1ee29c8608d11b2f6c" category="list-text">*Proxmoxを追加*をクリックして、SMPに登録するProxmoxノードの認証情報を追加します。</block>
+  <block id="d82ffddae26af45128fa07949e25e6f8" category="paragraph">Proxmoxノードを追加するには、既存のProxmoxノードのいずれかのIPアドレスを指定します。検出ジョブは、クラスターに自動的にクエリを実行して、必要な構成の詳細をすべて収集します。</block>
+  <block id="0de11488ec479f7728a12eaa20900087" category="list-text">次の詳細を入力します。</block>
+  <block id="5b25773ba32209a4fe725200a2a3d634" category="list-text">Proxmox スタンドアロン IP アドレスまたは FQDN</block>
+  <block id="97d74590db36cd4ca2d90356f9bfb36c" category="list-text">Proxmoxにアクセスするためのユーザー名</block>
+  <block id="9c32dec3011d3653626baa10712791e8" category="list-text">リソースのインベントリを実行するために Proxmox ホストにアクセスするためのパスワード</block>
+  <block id="a3527c00de3093aedfe39e88dee0476f" category="list-text">*Accept self-signed certificate* を選択し、*Continue* をクリックします</block>
+  <block id="981948c481297b86b99312dac33aa22b" category="example-title">Proxmoxの追加を表示：ノード認証情報</block>
+  <block id="24687c1cf4224ade86dc3a2613ba621e" category="image-alt">ノード認証情報用のProxmoxダイアログを追加する</block>
+  <block id="1360763f6d72571f7396ab687a83c4ee" category="paragraph">または、APIトークンを使用してAPIにアクセスするには、以下を提供してください：</block>
+  <block id="5ef6d12c6ab7cf8827b9f830e2522cb1" category="list-text">APIトークンID</block>
+  <block id="9eb805b09c2a753bc3c84670ec1edee0" category="list-text">APIトークンシークレット</block>
+  <block id="ec74e3326911e584dc27bfd7179f01df" category="admonition">今回のリリースでは、APIトークンはNFS処理でのみ使用できます。</block>
+  <block id="29fb3fbf9e6f05a465ffb384ec62fb96" category="example-title">Proxmox の追加を表示：API トークン</block>
+  <block id="7008d62c12095e070626d8e0ea00a96e" category="image-alt">APIトークンオプション付きのProxmoxダイアログを追加する</block>
+  <block id="077e2eb82a78c0cb2cf132d6d29a3f93" category="list-text">検出ジョブが正常に実行され、各プランのステータスが *Success* とマークされていることを確認してください。</block>
+  <block id="f8db156bcd939938d7f93316ea6313e3" category="paragraph">追加されると、SMPは自動的に検出スキャンを実行し、仮想マシンとその関連メタデータを表示します。既存のストレージ ボリュームやマッピングされたLUNも検出されます。</block>
+  <block id="da9ebfcb56d64b8f5ee1e1d8fbacde53" category="example-title">プランの検出結果を表示する</block>
+  <block id="462b9f75ff02bea828ab596b793f5251" category="image-alt">SMP Planの検出結果には、VMと関連するメタデータが表示されます。</block>
+  <block id="bd965e38a0c9cf27aa1bde099308e23f" category="list-title">終了後の操作</block>
+  <block id="e6e9b89e862bc003978f1af7f280869a" category="list-text">Proxmoxノードまたはストレージに変更が加えられた場合は、ディスカバリを実行して最新情報を取得してください。プラン名の横にある3つの点をクリックし、*Discover*をクリックしてください。</block>
+  <block id="474bf458cc30e4b8fdd736bd925c3b12" category="list-text">ONTAP ストレージ システムが最初に追加されていることを確認してください。これにより、検出ジョブで既存のリソースを適切にマッピングできます。Proxmox が最初に追加された場合は、ONTAP に対して検出ジョブを実行してください。</block>
+  <block id="f8d4ea7341264eb50afe80834dc061a0" category="list-text">認証情報またはAPIトークンを後で更新する必要が生じた場合は、*設定*に移動し、*認証情報の更新*オプションを選択してください。</block>
+  <block id="a535082aff98ea1d38f0f35ac647e12e" category="example-title">更新認証情報を表示</block>
+  <block id="6af2e498843e4f1854eb7d456772431f" category="image-alt">設定成功後のSMPプランの概要</block>
+  <block id="032bb3c77a75d4bae0f58801b4d5326a" category="section-title">ストレージのプロビジョニング</block>
+  <block id="79bdba7e9c2ce1634948cacedeb044e9" category="paragraph">ボリュームをストレージプール（一般的にはデータストアと呼ばれる）としてプロビジョニングすると、仮想マシンとその仮想ディスク（QCOW2またはRAW）のための論理コンテナが作成されます。SMPを使用すると、データストアをプロビジョニングし、それを単一のホストまたはクラスタ内のすべてのホストに接続できます。</block>
+  <block id="6a419d81a161181f12d8850f1a012be6" category="section-title">NFSストレージのプロビジョニング</block>
+  <block id="98985c7468b8d060b8c69adb35e858e9" category="paragraph">SMPを使用して、ONTAPボリュームをNFSデータストアとしてプロビジョニングおよびマウントします。</block>
+  <block id="63938bc948beb2e55c02dc31502b9ffb" category="list-text">SMP GUIで、*プロビジョニング*タブに移動します。</block>
+  <block id="1a6f577e0fac07b666b2bef4ad1272e8" category="list-text">*ボリュームの追加*に移動します。</block>
+  <block id="ebcdf9f15e57fc8163fdf3bd6b029a29" category="example-title">プロビジョニングタブを表示：ボリュームを追加</block>
+  <block id="dee1ab712ba700ad30a35856d4fe5038" category="image-alt">ボリュームの追加オプションがあるSMPプロビジョニングタブ</block>
+  <block id="d2772b4842c5dd40946a37c0d6d287ba" category="list-text">新規ボリュームウィザードの「クイックプロビジョニング」ステップで、*NFS*を選択します。</block>
+  <block id="74ba153df4d42d15015bd8a896cd8461" category="admonition">NFSがデフォルトで選択されています。クイックプロビジョニングは、標準的な導入のデフォルト設定を使用して、より高速なセットアップを実現します。高度なプロビジョニングでは、HAおよびBCDR機能の拡張オプションが提供されます。これらは今後のリリースで導入される予定です。</block>
+  <block id="c93f8b9a833b2738c6cb10c2367c7225" category="example-title">新規ボリュームウィザードの表示：NFS</block>
+  <block id="5f27d041642bb5d9a9067c02a896e458" category="image-alt">クイックプロビジョニング手順でNFSを選択した新規ボリュームウィザード</block>
+  <block id="4f12d9e0baa36a3f41168d307ba51dcb" category="list-text">*ONTAP詳細*セクションで、以下の情報を入力します：</block>
+  <block id="41f3847d09f22a55e99809db2c6104a6" category="list-text">*ストレージクラスタ*ドロップダウンからONTAPクラスタまたは指定されたStorage Virtual Machine（SVM）を選択します</block>
+  <block id="036c26a9b4ed3c17621e432898966f30" category="list-text">* Volume Name *フィールドに一意の値を指定します</block>
+  <block id="206f3e721cf4a8f1e513c322a1726779" category="list-text">データストアボリュームに必要な容量を*サイズ*フィールドに入力します</block>
+  <block id="0b702b379d2eaa087216d0256bc0070f" category="list-text">以下の適切なオプションを選択して、ONTAPストレージリソースを選択します：</block>
+  <block id="ccaf0d2d7033af92241b8ff76cd0c8db" category="list-text">アグリゲート名</block>
+  <block id="40bb64e121f0b3462502ccc0affca51a" category="list-text">Storage Virtual Machine（SVM）</block>
+  <block id="051e905db307c71f9aef8ac8cbd29613" category="list-text">データストアへのアクセスに使用する優先LIF</block>
+  <block id="b49ec07b8b611f7adc0a33efcc9fb5ff" category="list-text">既存の*Export Policy*を選択するか、必要に応じて（+）をクリックしてカスタムポリシーを作成します。</block>
+  <block id="24e0372bf95564bbd3c0e2d60241582e" category="example-title">ONTAP詳細の表示：NFS</block>
+  <block id="9e73cd568f4995015468e5ea7fc21267" category="image-alt">ONTAP詳細セクション（NFSボリュームプロビジョニング用）</block>
+  <block id="6ee2cb1f2ad53a8713dc4b5f1d14b00c" category="list-text">*Proxmoxの詳細*セクションで、以下の情報を入力します：</block>
+  <block id="4848d7a5dd5d5f219b1906134f7e4c12" category="list-text">*Proxmox*フィールドでターゲットクラスタを選択し、データストアへのアクセスが必要なすべてのノードを選択します</block>
+  <block id="7af504db4b1ab9a9b5d93aebd258cd70" category="list-text">*NFS Version*フィールドで、優先するNFSプロトコル（NFS v3またはNFS v4.1）を選択します</block>
+  <block id="7aa9f53296ff77ea0b117972e899efb5" category="list-text">*Content*セクションで、このデータストアで有効にするコンテンツタイプを選択します：</block>
+  <block id="c1fbc1bfb34660ddc938357ccdacd9b1" category="list-text">ディスクイメージ</block>
+  <block id="803b8db87be0f8173c99010aeed59929" category="list-text">ISOイメージ</block>
+  <block id="c6a7da7c822ee3f8597e8d2cfa6274e3" category="list-text">コンテナテンプレート</block>
+  <block id="72d6d7a1885885bb55a565fd1070581a" category="list-text">インポート</block>
+  <block id="ab09f6cb8731d936fd24ffd11c121a3e" category="list-text">または*すべて*のコンテンツタイプを選択します</block>
+  <block id="26cd09e3b55760a82de4221c32adc7f3" category="list-text">（オプション）複数のTCP接続が必要な場合は、*nconnect*オプションを有効にします</block>
+  <block id="717c5ff6ded1c053f9df755524e37b13" category="list-text">*Mount the datastore* がチェックされていることを確認してください。そうすることで、選択した Proxmox ノード全体にデータストアがマウントされます。</block>
+  <block id="5ae972fbea5178d385ae37c43066181b" category="example-title">Proxmoxの詳細を表示：NFS</block>
+  <block id="b17325a720e27a475e7f826f3a66d026" category="image-alt">NFSデータストア構成のProxmox詳細セクション</block>
+  <block id="2b401be828228e91a07a7d0b6e9d7794" category="list-text">*Provision*をクリックして、ONTAPボリュームを作成し、選択したProxmoxクラスタ内にデータストア（ストレージプール）を登録します。</block>
+  <block id="e257c7937069b319a144ecbf019c12bb" category="example-title">NFSプロビジョニング結果を表示する</block>
+  <block id="16c20084d0dbc8857e5bbc2e8f85e80d" category="image-alt">NFSボリュームのプロビジョニングが進行中です</block>
+  <block id="20d6bee48d0adbc3786a290b5f2e14db" category="image-alt">NFSデータストアのプロビジョニングが正常に完了しました</block>
+  <block id="b42c1df509703b4a4200ff23a9dc7fa5" category="example-title">ProxmoxでNFSデータストアを表示する</block>
+  <block id="6a5c4804d4d14230471b6e084363c227" category="image-alt">ProxmoxクラスタにNFSデータストアが登録されました</block>
+  <block id="a3b80f6e3aada23e186b29e38ccb39f7" category="section-title">プロビジョニング済みボリュームを編集する</block>
+  <block id="ea7c1ae20bb3c6c9907d9cf757343b83" category="paragraph">プロビジョニング後にボリューム設定を変更するには、SMPを使用します。</block>
+  <block id="b2a0a59da3d8bd2591e0f79ece6df392" category="list-text">SMP GUIで、*プロビジョニング*タブからボリュームを探します。</block>
+  <block id="7462ca72b115e3154b561b0b3ff80e42" category="list-text">ボリュームの横にある縦に並んだ3つの点（⋮）をクリックします。</block>
+  <block id="12b03368679477fc48ed14b8f217a115" category="list-text">コンテキストメニューから*Edit*を選択して、ボリューム設定を開きます。</block>
+  <block id="c2b2b3d9b51f35b3503181a7ecdcc51e" category="example-title">ボリューム編集ダイアログを表示</block>
+  <block id="7e445e8e62314fedc43a80d6c9051319" category="image-alt">ボリューム設定オプションを表示する「ボリュームの編集」ダイアログ</block>
+  <block id="6e7b977049eccdb5e457228b56adb54d" category="list-text">必要に応じてボリューム設定を変更します。</block>
+  <block id="7b4d237e75c218fc19cae448bcf6a5dd" category="list-text">*ボリュームのサイズ変更*：ボリュームのストレージ容量を調整します</block>
+  <block id="f38236b839f962d250e8138a4c223039" category="admonition">サイズ変更はNFSボリュームにのみ適用されます。</block>
+  <block id="65e1a411ade11648599055e27e9c97db" category="list-text">*Snapshotロック*：Snapshotの削除や変更を防止するために有効にします</block>
+  <block id="37538b44cf133013e7d2e698c3a4403f" category="admonition">これには、クラスタに SnapLock ライセンスがインストールされており、クラスタのコンプライアンスクロックが初期化されている必要があります。</block>
+  <block id="f2e9125c3ba8ab3c9d84f43698e5461f" category="list-text">*ランサムウェア対策*：ランサムウェア攻撃の兆候となる可能性のある異常なアクティビティを事前に検知し、警告を発します。</block>
+  <block id="94817b5c04e567acd05c78c40aeddbca" category="list-text">*エクスポートポリシー*：エクスポートポリシーを更新または変更する</block>
+  <block id="1c57870dbe054c795b276d38e3ad3796" category="list-text">変更を適用するには、*保存*をクリックします。</block>
+  <block id="c87d29528a937487ad7e7249ee2d9608" category="section-title">iSCSIストレージをプロビジョニングする</block>
+  <block id="5d1cab6f57f8464f77145e7938ba9be2" category="paragraph">SMPを使用して、仮想マシン用のiSCSIバックエンドをセットアップします。</block>
+  <block id="bd12dc2dcbdc0e148685df55534b34f3" category="list-text">新規ボリュームウィザードの「クイックプロビジョニング」ステップで、*iSCSI*を選択します。</block>
+  <block id="5d8ead293ea75a0a9ae617006275a11e" category="example-title">新規ボリュームウィザードの表示：iSCSI</block>
+  <block id="bf9d13dff3a0005aabec67bf48434b37" category="image-alt">クイックプロビジョニング手順でiSCSIを選択した新規ボリュームウィザード</block>
+  <block id="811a6b259240c7547f143de52c15e89a" category="list-text">iSCSIプロトコルでは、*ONTAP詳細*セクションで、以下の情報を入力します：</block>
+  <block id="0398656c0b0fd22f03e9901463fd7f15" category="list-text">*ストレージ クラスター*ドロップダウンから、適切なONTAPクラスタまたは指定されたStorage Virtual Machine（SVM）を選択します</block>
+  <block id="559a2a2d08113e7678c2e8ee2ce06fc2" category="list-text">以下のオプションを選択します。</block>
+  <block id="4b56968db9c546567d13d4a0e030cb38" category="list-text">* LUN Name *フィールドに一意の値を入力します</block>
+  <block id="344d4f645ac6f57b81a633ba1fd49e58" category="list-text">*Number of LUNs*フィールドに必要なLUN数を入力します（デフォルトは1、同じサイズの追加LUNを並行して作成できます）</block>
+  <block id="63bba23f10fee9a9eb2088e0af4abfbb" category="list-text">*Capacity per LUN*フィールドに、各LUNの希望サイズを入力します</block>
+  <block id="0c4ebcc189c7ff27b6d0ad5bf0170527" category="list-text">iSCSIアクセス制御用の*イニシエータグループ*（igroup）を選択します。既存のigroupを選択するか、新しいigroupを作成できます。</block>
+  <block id="66ff2e6484d13c3dacf6512016f91421" category="example-title">ONTAP詳細の表示：iSCSI LUN構成</block>
+  <block id="6ab0fd4c90fb9261d42864b6707f18bc" category="image-alt">iSCSI ONTAP詳細セクションにLUN構成オプションが表示されます</block>
+  <block id="b4108f8f34e4c29aceae0441e02b0d90" category="example-title">iSCSI igroupの選択を表示</block>
+  <block id="fb1ab9362f8b5e54aac4d9add259668d" category="image-alt">アクセス制御のためのiSCSI igroupの選択</block>
+  <block id="ce343df19283b3cf14c42054bd3834c2" category="list-text">*Proxmox* ドロップダウンからターゲットクラスターを選択し、ストレージへのアクセスが必要なすべてのノードを選択します</block>
+  <block id="7c2fa397eae5c7cff275d9af220677ff" category="list-text">Proxmox内でiSCSIベースのストレージプールを表す適切な*LVM ID*を選択してください</block>
+  <block id="55e55645eb48f6dd80eaae0011772935" category="list-text">* Nodes *フィールドで、提示されたiSCSIターゲットへのアクセスが必要なすべてのノードを選択します</block>
+  <block id="399ca814d2465ee55ab50696b86e124e" category="list-text">（オプション）VLANセグメンテーションが必要な場合は、目的の*Storage VLAN*を選択してください。</block>
+  <block id="44048d9edfce2d1039880fd65f5c1bd5" category="list-text">*Content*セクションで、このデータストアでサポートされているコンテンツタイプを選択します：</block>
+  <block id="0e7278cda02a9c0446dcc75a4df34eb2" category="list-text">Container</block>
+  <block id="32789d1bf615b3466cc67e73ee046c0a" category="list-text">ストレージが選択した Proxmox ノード全体で利用可能になるように、*データストアをマウントする*が選択されていることを確認してください。</block>
+  <block id="73c2e3d4f22c3855b4ca093f9153b16a" category="list-text">（オプション）ストレージプールが複数のノードから同時にアクセスされる場合は、*共有*を有効にしてください。</block>
+  <block id="c0789c6619eaef189013c5b5b6b6349c" category="example-title">Proxmoxの詳細を表示：iSCSI</block>
+  <block id="8a4e8882437f1ab8676e2e8ad20a56f0" category="image-alt">ストレージプール構成を示すiSCSI Proxmox詳細セクション</block>
+  <block id="b996a550e92087f66181379c0877d761" category="list-text">*Provision*をクリックして、ONTAP LUNを作成し、選択したProxmoxクラスタ内にデータストア（ストレージプール）を登録します。</block>
+  <block id="d750a964f886223afef79dcc3d71aa65" category="example-title">iSCSI LUNのプロビジョニングを表示する</block>
+  <block id="c59a1d58649b275a2d12a059e4c993bc" category="image-alt">iSCSI LUNのプロビジョニングが進行中です</block>
+  <block id="5ba878b8ae6fb27568603861f9773239" category="example-title">iSCSIプロビジョニングの完了を表示</block>
+  <block id="a3db89a7992cf0b790613bd2f3fc68f6" category="image-alt">iSCSI LUNのプロビジョニングが完了しました</block>
+  <block id="1bfe13b881d23c16a7e27351bd95424e" category="example-title">ProxmoxでiSCSIデータストアを表示する</block>
+  <block id="1f441e4c8f3f026105202e4280eeac59" category="image-alt">ProxmoxクラスタにiSCSIデータストアが登録されました</block>
+  <block id="12d76d1fd798f359377beceb6da3367b" category="list-text">Proxmoxエンドポイントにアクセスして、NFSおよびiSCSI LUNが接続されていることを確認します。</block>
+  <block id="ba6c6bdf8e13f558c64819daf5ddf1fd" category="paragraph">接続されたストレージは、仮想マシンのプロビジョニングに使用できるようになりました。</block>
+  <block id="503dfebeb8af3b374d8aaa098ab0454b" category="example-title">Proxmoxストレージビューを表示</block>
+  <block id="385d4bd896742ff9689e051c0ebce19d" category="image-alt">ProxmoxのストレージビューでNFSおよびiSCSIデータストアが接続されていることを確認</block>
+  <block id="1e797690fda2b7281d18e75ad4be1d9a" category="section-title">ボリューム構成オプション</block>
+  <block id="27defa684e9847f2a767a36772762b75" category="paragraph">SMPが新しいONTAP FlexVolボリュームとLUNをプロビジョニングする場合、いくつかのデフォルト設定値が自動的に適用されます：</block>
+  <block id="91b115a1144549ca8093901ee18c25eb" category="cell">ONTAP 設定</block>
+  <block id="6b66a61fa66288a9a7ad6474d2e686ec" category="cell">デフォルト値</block>
+  <block id="5938fe448c8661febcef3f4e779e3adb" category="cell">Snapshotリザーブ（-percent-snapshot-space）</block>
+  <block id="9f1ef07877f9d85a82bd500f408b4814" category="cell">0%</block>
+  <block id="7218aec62575561a6de1cae8d5658390" category="cell">フラクショナルリザーブ（-fractional-reserve）</block>
+  <block id="3a7e09ff0fa38663ffe6d91324ea75d9" category="cell">アクセス時刻の更新（-atime-update）</block>
+  <block id="b9f5c797ebbf55adccdd8539a65a0241" category="cell">無効</block>
+  <block id="e93200d5b0d16915bf04236790544b2f" category="cell">最小先読み（-min-readahead）</block>
+  <block id="c877d89702fdd14e51b02028a20c7d07" category="cell">スケジュールされたSnapshot</block>
+  <block id="6adf97f83acf6453d4a6a4b1070f3754" category="cell">なし</block>
+  <block id="fd18465573ec21a6218982055981f6b1" category="cell">ストレージ効率</block>
+  <block id="00d23a76e43b46dae9ec7aa9dcbebb32" category="cell">有効</block>
+  <block id="f65fd63b63c9e9f25bf6bc141e83de34" category="cell">ボリューム ギャランティ</block>
+  <block id="c2410aebdf425dabcc65e546e506b03e" category="cell">なし（シンプロビジョニング）</block>
+  <block id="8285885018fdba6d87edc774237f0e24" category="cell">ボリュームのオートサイズ</block>
+  <block id="d89f4f8b1d7c18847b88b46142f61535" category="cell">grow_shrink</block>
+  <block id="ace72ec54e17777d27eb8bdb9d57e782" category="cell">LUNスペース リザベーション</block>
+  <block id="514aa7792a71ab4ab677eb2385131aae" category="cell">LUN スペース割り当て</block>
+  <block id="d40a66b12af7a3ddd7bf63dedceda40d" category="section-title">NConnectの動作</block>
+  <block id="aeaaa17f83b9bc3b25ec5374560c9fac" category="paragraph">Proxmox VEでNFSストレージを使用する場合は、Linux NFSクライアント（Proxmox VEのベースOSであるDebianで使用されているもの）の特定の動作に注意してください。Linuxカーネルは、NFSエクスポートがノードに初めてマウントされたときのマウントパラメータを再利用する可能性があります。同じエクスポートを異なるマウントオプションで再度マウントした場合、新しいオプションが適用されない可能性があります。</block>
+  <block id="a9c60c99077ebc97689e44fb06b4dabc" category="paragraph">ベストプラクティスとして、個別のエクスポートを作成してマウントし、異なるNFSサーバIPアドレス（個別のデータLIFなど）を使用します。SMPは既存の接続とその関連するnconnect値を自動的に検出し、新しい接続に適切なnconnect値を適用します。</block>
+  <block id="c724784c65896d8b16350f4b0580dfd4" category="section-title">仮想マシンの保護</block>
+  <block id="d70d176974da5b5a7b4b5ad4a15f6cb4" category="paragraph">仮想マシンが ONTAP ベースの NFS データストアで実行される場合、最も効率的な保護方法は、Proxmox にファイルシステムの一貫性を確立させ、ONTAP がストレージ レイヤで実際のバックアップ ポイントをキャプチャすることです。ONTAP スナップショットは、高速でスペース効率に優れた、データストア ボリュームのポイントインタイム コピーを提供し、後でデータストア全体、個々のファイル、または VM コンテンツをリカバリするために使用できます。</block>
+  <block id="fb6d475c3e4b5d4d1fff6a48627a808d" category="paragraph">SMPは、「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態およびVM整合性のあるデータ保護とクローン管理のためのシンプルなオーケストレーターを提供します。このソフトウェアは、複数のジョブに適用できるバックアップ ポリシーを作成することで、バックアップ、リストア、クローン作成のライフサイクルを簡素化します。これらのポリシーは、スケジュール、保持期間、レプリケーション、およびその他の機能を定義できます。ファイル整合性スナップショットのオプション選択が可能です。このアプローチでは、ONTAPスナップショットを取得する前に、QEMUの機能を使用してI/Oを静止させます。</block>
+  <block id="5b08cbb5dca11f05981a75cbf1c5a88c" category="paragraph">SMP では、1 つの ONTAP NFS ボリュームに複数の VM が含まれるデータストア全体、複数のデータストアにまたがる VM のグループ、または個々の VM レベルで保護できます。</block>
+  <block id="c0819302c0fdeaa2de0e53290c2af810" category="section-title">仮想マシンのバックアップ</block>
+  <block id="acc5bd6a5c43a1a496c47e8be0d7563c" category="paragraph">ONTAP ボリュームがプロビジョニングされたら、バックアップ オプションを使用して、Proxmox クラスタで実行されているすべての VM を一覧表示し、仮想マシンの「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態またはファイル整合性バックアップを実行します。</block>
+  <block id="a86ce101da91da022fd2c8030492a31f" category="list-text">左側のナビゲーション ペインから * Protect * ＞ * Backup * にアクセスします。</block>
+  <block id="f06b701302ab96036d80b4ba50678b1c" category="example-title">Protect Backupページを表示</block>
+  <block id="7b801bff3f4a3d2cb930e2d4090b8e35" category="image-alt">SMP Protect Backup ページに Proxmox 仮想マシンの一覧が表示されます</block>
+  <block id="4ed0369f06813efcb56c84dd64276a93" category="list-text">バックアップする仮想マシンを選択し、*Backup*をクリックします。</block>
+  <block id="b43081f5a187c5dfefa3af565ec9c78c" category="example-title">バックアップダイアログの表示：VMの選択</block>
+  <block id="2cfb32e272e11167a228d801ed1d797d" category="image-alt">VMの選択とバックアップオプションを表示するバックアップダイアログ</block>
+  <block id="bb543620c1bb165f129729db39bd1075" category="list-text">バックアップ ワークフローでは、「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態とファイル整合性保護のいずれかを選択できます。</block>
+  <block id="a3d657430454923a672a6de3e8e78f9b" category="paragraph">ファイル整合性モードでは、スナップショット取得前にゲストOS内のファイルシステムが静止状態になるように、オプションでQEMU fsfreezeを使用します。fsfreezeが失敗した場合、システムはProxmoxスナップショットを使用するようにフォールバックします。</block>
+  <block id="b177c3761c50975267181c6f181ed49f" category="admonition">このフォールバックメカニズムは、NFSボリュームに保存されている仮想マシンにのみ適用されます。</block>
+  <block id="80fe339027f54b313e56c02f221b7784" category="example-title">バックアップの表示ダイアログ：整合性オプション</block>
+  <block id="9621aa748c18fae5b11563535ae693f1" category="image-alt">「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態とファイル整合性保護オプションを示すバックアップダイアログ</block>
+  <block id="1e0e0805ed47d989edfb7740bc02050d" category="example-title">バックアップの進行状況を表示する</block>
+  <block id="9edba21feb47e7c3c7b34a1e8c6a6082" category="image-alt">バックアップの進行状況には、一時的な Proxmox スナップショットと ONTAP スナップショットの作成が表示されます</block>
+  <block id="63744fa62a74bb5137c7a7e404682cde" category="admonition">ONTAPスナップショットはボリュームレベルで取得され、NFSデータストア内のすべてのVMディスクと構成ファイルを単一のスナップショットにキャプチャします。VM整合性保護が選択されている場合、fsfreezeは選択されたVMに対してのみ発行されます。ボリューム内の他のすべてのVMは、同じONTAPスナップショット内に「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態として含まれます。</block>
+  <block id="31efa25c2184d1a291da989772d74d65" category="list-title">追加のバックアップ オプション</block>
+  <block id="af871268b13c30a1719d3d01305cee2c" category="list-text">単一のデータストアをバックアップするには、*ストレージ*タブを選択し、*バックアップ* オプションを選択します。</block>
+  <block id="4ab34f1635594c4c74f476705e4288ff" category="list-text">複数のデータストアを1つの単位としてバックアップする場合、または異なるデータストアにまたがるVMグループを保護する場合は、*Resource Group*オプションを使用します。リソースグループを使用すると、データストアや仮想マシンを論理的な保護セットに編成できます。</block>
+  <block id="a80be1806697091cb40b260b8e6f3c81" category="example-title">リソース グループ タブを表示</block>
+  <block id="6f4b2c196e7e8c39991576c94413d72b" category="image-alt">新しいリソース グループを作成するオプションがある［Resource Group］タブ</block>
+  <block id="548b49f4267cb06525a994818f01fc03" category="list-title">リソースグループを作成する</block>
+  <block id="1d02e93ad2b503d0c9762050ad044fee" category="list-text">*Resource Group* タブを開き、*Add* を選択します。</block>
+  <block id="1cd35697f1c0958282da2047aa540e6c" category="list-text">新しいリソース グループの名前を入力します。</block>
+  <block id="6f9eb8c5e682f5484f8c4fdbaa8131d4" category="list-text">リソースの種類を選択してください：*VM* または *Datastore*。</block>
+  <block id="7295c5b603e686bf0646426684fb3ae9" category="list-text">適切な*プロトコル*を選択してください。</block>
+  <block id="4ef65ae9ac839b3a1389a2fbd696a8dc" category="list-text">選択したリソース タイプに基づいて、含める特定のVMまたはデータストアを選択します。</block>
+  <block id="dbd123bbb8208a33626f3887f73e976c" category="list-text">*Create Resource Group* をクリックして設定を完了します。</block>
+  <block id="d27880785e191bcc12e62da6a8bfc940" category="example-title">リソース グループの作成ダイアログを表示します</block>
+  <block id="089d83d5d30a9c34646b3c72a7bc6e48" category="image-alt">VMとデータストアの選択オプションを含むリソース グループの作成ダイアログ</block>
+  <block id="5eb544767dc93e1d6b3c354ae8456713" category="admonition">データストア（ボリューム）レベルで取得されたバックアップは常に「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態です。リソース グループには、仮想マシンまたはデータストアのいずれか1種類のリソース タイプのみを含めることができます。iSCSIベースのストレージの場合、バックアップは常に「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態です。</block>
+  <block id="e39661913d7ec84708217eb35b00f945" category="section-title">バックアップ ワークフローの詳細</block>
+  <block id="2b9b1f8453bf370c2983188160a5c1ab" category="paragraph">概要のバックアップ ワークフローには、次のものが含まれます。</block>
+  <block id="32475fd8913ed22e08f766a205aa16c5" category="list-text">*保護範囲を定義します*：保護対象がデータストア（ONTAP ボリューム）、リソース グループ（複数のボリュームまたは VM）、または個々の VM のいずれであるかを選択します。</block>
+  <block id="88c4013e231d0fdb60dcb5e0d79c1f49" category="list-text">*整合性方式の確認*：ONTAPスナップショットの作成前に整合性を確保する方法を選択します。</block>
+  <block id="a6c936939df5f921cea1c4b9c3cd87c1" category="list-text">QEMUゲストエージェントのフリーズ/解凍機能により、ゲスト内ファイルシステムの休止状態維持とWindows VSSとの統合を実現します。</block>
+  <block id="f6c02bd07995293ad23fff6bd04bf820" category="list-text">*VM構成ファイルをダンプします*。</block>
+  <block id="b45ca7816f29e4fc929df7e0df740dfa" category="list-text">*ONTAPスナップショットの作成*：VMが一貫性のある状態にあるときに、データストア ボリュームのONTAPスナップショットをキャプチャします。これが保持されるバックアップ コピーとなります。</block>
+  <block id="6d61f9389a3601895c88c1cb0fd62835" category="list-text">*一時的な Proxmox スナップショットの削除*：ONTAP スナップショットの完了後に Proxmox スナップショットを削除して、差分ファイルの増大を防ぎます。</block>
+  <block id="c7b74349395edac1a2ff66c56cba9a2b" category="list-text">*保持ポリシーとレプリケーション ポリシーの適用（ポリシーの使用）*：設定されたONTAP保持ポリシーを適用し、ディザスタ リカバリ レプリケーションが有効になっている場合はSnapshotセットをレプリケートします。</block>
+  <block id="28997d4ea5adb79d15126c8647eeecad" category="paragraph">この手法では、変更された情報のみを保存することで、ストレージ容量とネットワーク帯域幅を最小限に抑えます。Snapshot コピーを使用して、パフォーマンスに影響を与えることなく VM またはデータストアのクイック コピーを作成し、NetApp SnapMirror テクノロジを使用してセカンダリ システムに送信することで、長期的なオフサイト データ保護を実現します。</block>
+  <block id="3b448b799a5495c4f9a7ebc4d0689ab1" category="section-title">VMバックアップタスクを自動化する</block>
+  <block id="9adeeaa50234f5358601746b9c22415e" category="paragraph">スケジュールを設定することで、Proxmox VMのバックアップを自動化します。定期的なバックアップを作成することは、データ保護と災害復旧にとって非常に重要です。</block>
+  <block id="efedc938c8804069e43eef3afb7a50e2" category="list-text">* Protect * &gt; * Backup * &gt; * Policies * の順に選択し、 * Add * をクリックして新しいバックアップ ポリシーとスケジュールを追加します。</block>
+  <block id="79d49b4251609d45520d82a59fc9f8a0" category="example-title">バックアップ ポリシー ページを表示</block>
+  <block id="c4bdda0624f27abf6bf63530e27a4861" category="image-alt">バックアップ ポリシー ページ（新しいポリシーを追加するオプション付き）</block>
+  <block id="dd5c5779b00c1e6410c5f1448d8032e5" category="list-text">一般設定を構成する：</block>
+  <block id="14658415a5afeaa1957fb4873b7e1cef" category="list-text">ポリシーの名前を入力します</block>
+  <block id="083e281621716e4b47dd6127eb863f69" category="list-text">*ポリシー タイプ*（ボリュームまたはリソース グループ）を選択します</block>
+  <block id="26328790446c107cdf06d8061cfe4b23" category="list-text">選択したタイプに基づいて*ターゲット*を選択します</block>
+  <block id="0e2a78870984b898edf24cfaeaaf4cbb" category="list-text">* バックアップ頻度 * （毎時、毎日、毎週、または毎月）を設定します</block>
+  <block id="bd10dede615581ca9fb0ad15a5f80c8d" category="list-text">「保持日数」または「保持件数」のいずれかを使用して、*保持ポリシー*を設定します（デフォルトの保持期間は7です）</block>
+  <block id="162f053cfc588cae1387c277ab05bebc" category="list-text">*レプリケーション モード*を選択します（現在のリリースでは無効）：</block>
+  <block id="fa23470db7b9905492d6e4cdd14b03e5" category="list-text">Update SnapMirror after backup</block>
+  <block id="05c92158f412c4a911e0b21a09762bf2" category="list-text">Update SnapVault after backup</block>
+  <block id="b7162d5707ff1ce8659c81b10fe1360a" category="admonition">SnapMirrorレプリケーションは、CLIまたはSystem Managerを使用してONTAPで設定する必要があります。</block>
+  <block id="5c9c0ce957626de1ba61e3b223edc18a" category="list-text">*詳細オプション*で、ONTAPスナップショットをトリガーする前にProxmoxスナップショットまたはfsfreezeを使用する場合は、*VM整合性*を有効にします。</block>
+  <block id="e6e88ad731fa7394b0549c9bf8984e93" category="list-text">* Create Policy * をクリックして設定を保存します。</block>
+  <block id="483807e364a731ef25e37332431b95df" category="example-title">バックアップ ポリシーの表示：スケジュールと保持</block>
+  <block id="88e210e3874392c98a1a15ecca60983a" category="image-alt">バックアップ ポリシー構成（スケジュールと保持設定を表示）</block>
+  <block id="eb056378ebe1219f725292058c7c3cb2" category="example-title">バックアップ ポリシーの表示：レプリケーションと詳細オプション</block>
+  <block id="f199ab5a74d87f7506da5be17063933c" category="image-alt">レプリケーションと詳細オプションを表示するバックアップ ポリシー構成</block>
+  <block id="d546319060294cd6fed0a27c0300de85" category="admonition">リソース グループのスケジュールされた実行時間を待つことなく、*バックアップ*をクリックすることで、VMバックアップ ジョブを即座にトリガすることもできます。</block>
+  <block id="7cf83ed16229466716adaf95b4893815" category="section-title">仮想マシンまたはデータストアをリストアする</block>
+  <block id="a03236b29afd0ed2851a5d5eebd6f8f7" category="paragraph">SMPを使用して、Proxmox VMをバックアップからリストアします。</block>
+  <block id="c3d97c5d3055ae2da516925a70f7565a" category="paragraph">復元操作を実行する前に、仮想マシンの電源をオフにする必要があります。</block>
+  <block id="0701fbb9ba9af7c70c62fc8becce8a3d" category="list-text">Web インターフェイスの左側のナビゲーション ペインから * Restore * オプションを選択します。</block>
+  <block id="b9ae03a3aa993a2dbf24b77952323ceb" category="list-text">復元が必要な仮想マシン、ストレージ、またはリソース グループを選択します。</block>
+  <block id="e22a96d780914e2328ea1c5c0bb7ac1c" category="example-title">復元ページを表示</block>
+  <block id="ec66ca040e1e451014ab1b2b97b8effd" category="image-alt">仮想マシンをリストする復元ページ</block>
+  <block id="0163772b712a4596fe39e31c0df953e4" category="list-text">*Restore* アイコンをクリックします。</block>
+  <block id="8fb4c89a75e57cf95a7f11f9928c0598" category="paragraph">選択内容（VM、ストレージ、リソース グループのいずれか）に応じて、リストア ポップアップ ウィンドウが開きます。</block>
+  <block id="2177dd98be441da52cc94c64c5652ff5" category="admonition">選択したリソースに応じて、それぞれのコンポーネント用に作成されたスナップショットが表示されます。たとえば、リソース グループ レベルで作成されたスナップショットは、リソース グループが選択されている場合にのみ表示されます。ストレージについても同様です。ただし、仮想マシンの場合、コンポーネント全体で作成されたすべてのスナップショットが選択のために表示されます。</block>
+  <block id="d98b474b7ce96c0602b08184f998981b" category="example-title">リストア ダイアログの表示：Snapshot の選択</block>
+  <block id="d39a68c53f468994b8eb2a9969319d58" category="image-alt">ポイントインタイム リカバリのためのSnapshot選択を示すリストア ダイアログ</block>
+  <block id="9bad64a194489c724280a9f3aa290a8d" category="list-text">必要なオプションを選択します。</block>
+  <block id="34c80f37ec67f13e69bc00b969766355" category="list-text">*リストア ターゲット*：同じホストまたは別のホストにリストアするオプション</block>
+  <block id="4b57a9d53c1e5195b99e11692bf50a88" category="list-text">*ホスト*：代替ホストを選択した場合、ドロップダウンリストからクラスター内の利用可能なホストを選択できます。</block>
+  <block id="e0352dab27ca2a00303bd958e5b9af54" category="list-text">*スナップショット*：ポイントインタイム リストアに適したスナップショットを選択します</block>
+  <block id="357a35aedd0c37deb3a881df778a9bb4" category="list-text">* Restore * をクリックします。</block>
+  <block id="aeec9a15068a9fe8072320311bfbd325" category="example-title">進行中のリストアを表示</block>
+  <block id="57702f528c052b11afb86f0c827392fd" category="image-alt">リストア処理を実行中</block>
+  <block id="411c886732d838d7a4e7fc81c8995348" category="example-title">復元が完了しました</block>
+  <block id="af4a1b82397eb169184c4e1b3d7827ac" category="image-alt">リストア処理が正常に完了しました</block>
+  <block id="54f7813f0b2baaac12855f24a30bfa0b" category="admonition">ストレージ レベルのリストアが開始されると、そのボリュームまたはLUN上のすべての仮想マシンの電源がオフになり、ストレージ エンティティ全体が一括でリストアされます。</block>
+  <block id="421758f15e3278f12d9d030800b20ddd" category="example-title">ストレージ レベルのリストアを表示</block>
+  <block id="f92cc5baf6c3e188fd199b32593c2872" category="image-alt">選択したボリューム上のすべてのVMを表示するストレージ レベルのリストア</block>
+  <block id="d750ce3dc8c069b7e10707fa9bb26b37" category="section-title">リストア ワークフローの詳細</block>
+  <block id="4f7185469f5cf0defb7436df5f9a2cd2" category="paragraph">リストア ワークフローは、基盤となるストレージの種類によって異なり、以下の主要な手順が含まれます：</block>
+  <block id="32f048225f9de5f0b3fa497280cda9a9" category="list-text">*復元範囲を定義します*：保護対象がデータストア（ONTAP ボリューム）、リソース グループ（複数のボリュームまたは VM）、または個々の VM のいずれであるかを選択します。</block>
+  <block id="9f948cd2f711de107337701cc6554fdd" category="list-text">*リストア処理を実行*：VMのリストア プロセスは、ストレージ プロトコルによって異なります。</block>
+  <block id="4d697b61940b6c4b91e32653112ce2de" category="list-text">*NFSベースのリストア*：NFS上のボリュームまたはデータストアをリストアする場合、SMPはターゲット ボリューム上でボリューム スナップ リストア操作を開始します。NFSボリューム上でホストされているVMの場合、SMPはVM ID、スナップショット名、サイトID、ストレージ タイプなどのリストア パラメータを検証します。VMが実行中の場合、SMPはVMのステータスをポーリングし、停止コマンドを発行することでVMを停止します。システムはその後、ファイルレベルのリストア操作を使用して、スナップショットからVMディスクをリストアします。</block>
+  <block id="cd2c64c9ab903c66b4d2a7891b0b587c" category="list-text">*iSCSI ベースのリストア*：iSCSI データストアまたは LUN の場合、SMP はスナップショットから LUN をリストアし、リストアされたデバイスを検証し、Proxmox ノード全体で iSCSI の再スキャンを実行し、デバイスへのアクセス可能性を確保します。iSCSI ストレージ上に存在する VM の場合、SMP はスナップショット LUN をクローンし、クローンされた LUN を Proxmox ホストにマッピングし、iSCSI 検出を実行してそれらをインポートします。リストアされたストレージが追加され、VM 構成が更新されます。VM ディスクは、VM ごとに進捗状況が追跡された上で、元のストレージに戻されます。このプロセスは、一時ストレージの削除やクローンされた LUN の削除などのクリーンアップ作業で完了します。</block>
+  <block id="e28fdf4c2bbea67ab8cc9435c052542f" category="section-title">仮想マシンのクローニング</block>
+  <block id="25f522b1df2d8fb6114e43bf0917c615" category="paragraph">SMPを使用して、開発、テスト、または迅速なプロビジョニングのために仮想マシンのクローンを作成します。</block>
+  <block id="369f99486f571e9d472f89e3e7909776" category="list-text">*保護*セクションを開き、左側のナビゲーションメニューから*クローン*を選択します。</block>
+  <block id="f27e1184902281b008fe3673a73b481f" category="list-text">VM リストから必要な VM を見つけ、[ アクション ] 列の [ クローン ] をクリックします。</block>
+  <block id="f816cf33cefdfc199db4d0e92ff91311" category="list-text">Clone VM ウィンドウで、クローンを作成する *Target Node* を選択します。</block>
+  <block id="55e53a61f3c7477f7f167b8c721251ce" category="example-title">Clone VMダイアログを表示</block>
+  <block id="55b2ea0ea4963799e0e5c2a04635ae8f" category="image-alt">クローン VM ダイアログにターゲット ノードの選択が表示されています。</block>
+  <block id="cb3b692663c8fd9237a884fb13461b59" category="list-text">クローンのソースとして使用する *Snapshot* を選択します。</block>
+  <block id="734fb61fdd53b835cc4e8ac836428082" category="admonition">現在のリリースでは、クローンはアクティブ ファイル システムに対して実行されます。今後のリリースでは、クローンワークフローでスナップショットを選択できるようになります。選択したスナップショットから作成された新しいボリュームを使用してファイルクローンが実行されます。</block>
+  <block id="9214466080a06b7cc3b0de5c9dd22c97" category="list-text">クローンする仮想マシンの*コピー数*、*CPUコア数*、*ソケット数*、および*メモリ容量*を指定してください。</block>
+  <block id="e9b8051d934919e3a647130ed4789bde" category="list-text">（オプション）クローンされた VM が作成後に自動的に起動するようにするには、*Power on after clone* を有効にします。</block>
+  <block id="125f902d6277dea35f1e73bba93e1797" category="list-text">（オプション）クローンを新しく作成したデータストアに配置する場合は、*新しいデータストアを作成する*を選択します。</block>
+  <block id="48cdc65f398e691ca79d2ceb2bcb0653" category="list-text">*詳細オプション*で、ネットワーク設定をクローンに自動的に適用する場合は*ネットワーク構成*を有効にします。</block>
+  <block id="c1a914c3772512c513133c46f5ce43da" category="list-text">*Clone* をクリックしてクローニング プロセスを開始します。</block>
+  <block id="2d7e9a210f45284500629a7e1a5fc757" category="paragraph">クローンワークフローは、ONTAPの高速クローニングAPIを使用して新しいVMをプロビジョニングし、クローン化されたインスタンスに一意の5桁のGUIDを割り当てます。</block>
+  <block id="44e078a9c2786bafcf05cfed912ff8dd" category="example-title">クローン操作を表示</block>
+  <block id="ebb2db61be8173b99d7dbdc86bd6c162" category="image-alt">ONTAP FlexCloneを使用したクローン操作が進行中です</block>
+  <block id="757d94a4727d30a7bc055dc6ffc9650a" category="admonition">クローンされた VM はバックアップリストとクローンリストの両方に表示され、既存のバックアップポリシーを使用して保護できます。これらのリストにクローンされた VM を表示するには、Proxmox および ONTAP プランに対して検出を実行します。</block>
+  <block id="58cf380dd375a1ad9b72382c9ae4f20e" category="example-title">クローン VM をリストに表示</block>
+  <block id="24e1c51d79344374eb88c6a0cdf413ee" category="image-alt">バックアップおよびクローンリストに表示されるクローンされた仮想マシン</block>
+  <block id="1ee9044092621cd1ac75e063c280d1d2" category="section-title">クローンワークフローの詳細</block>
+  <block id="c6e2c6c6ce1a4b9e896ef549e6c70631" category="paragraph">SMP は、重い処理を ONTAP にオフロードして、ホスト側でのファイルコピーではなく、ストレージ側でのクローン作成を実行することで、VM の高速クローン作成を自動化します。内部では、SMP は ONTAP FlexClone セマンティクス（スナップショットベース、書き込み可能、スペース効率に優れたクローン）を利用するため、クローンは迅速に作成され、初期段階では消費容量が少なくなります。また、可能な限り Proxmox ホストを介したデータの読み書きを回避します。</block>
+  <block id="9d90d398f0f9f9ef3e46da5b04cdcbe2" category="paragraph">このアプローチは、クローン作業を ONTAP にプッシュすることで VM プロビジョニングを加速し、開発/テスト環境、ラボ、および迅速な更新サイクルに適した、高速で軽量、ストレージ効率の高いクローンを提供します。</block>
+  <block id="7e91228a15629a7b130a4ae105648554" category="paragraph">デフォルトでは、クローンはアクティブ ファイル システムに対して実行されます。クローンワークフローではスナップショットを選択することも可能で、その場合は選択したスナップショットから作成された新しいボリュームを使用してファイルクローンが実行されます。</block>
+  <block id="00ae0cd12340f0b4bbba6b466e757a65" category="section-title">運用の監視</block>
+  <block id="6eee01cbde07288dfe00892f0ee5ae71" category="paragraph">プロセスログとダッシュボードビューを使用して、SMP の操作を監視および追跡します。</block>
+  <block id="828650695d5b304f8a1a5f742391c024" category="section-title">プロセスログ</block>
+  <block id="e74eddb0eb9d008549f59ed36fc89956" category="paragraph">プロセスログビューには、Storage Manager for Proxmoxを通じて実行されたすべての操作の統合記録が表示されます。各項目には、ジョブのステータス、ジョブID、実行されたアクション、開始時刻、および所要時間が表示されます。これにより、完了したタスクの追跡、失敗した操作や部分的な操作の特定、および環境内で実行された一連のアクションの確認が容易になります。</block>
+  <block id="0cdd52f44ae71cc4850ce3088798caf9" category="paragraph">フィルタと検索オプションを使用すると、特定のジョブをすばやく検索したり、ステータスでリストを絞り込んだりできます。</block>
+  <block id="75d25c20dd3b1c1a301cf7b82672460f" category="example-title">プロセスログビューの表示</block>
+  <block id="7b5c02009e94ce335684cc92f06d3dca" category="image-alt">ジョブ履歴と操作ステータスを表示するプロセスログビュー</block>
+  <block id="2938c7f7e560ed972f8a4f68e80ff834" category="section-title">ダッシュボード</block>
+  <block id="ff49c5e7d30b99b8015363798dfe94ee" category="paragraph">ダッシュボードは、Proxmox用Storage Manager環境全体の概要を一目で確認できる機能を提供します。Proxmoxクラスター、ホスト、データストア、ONTAPクラスター、保護された仮想マシンの数などの主要なインベントリを要約します。システムの使用状況を明確に把握できるよう、容量使用量、総ストレージボリューム、保護ポリシー、リソースグループも表示されます。</block>
+  <block id="9f1f0ff0117a0c038ed3aeea004c9590" category="paragraph">クラスターの状態が目立つように表示され、接続されているすべてのノードの状態を示します。ダッシュボードの下部には、VM の分布（合計、実行中、停止中）が強調表示され、メモリ、ストレージ、CPU のリアルタイム Proxmox リソース使用率が表示されます。このビューは、システムの健全性を迅速に評価し、リソースの負荷を特定し、全体的な運用状態を監視するのに役立ちます。</block>
+  <block id="3b512de059a0505d85337f42502cc459" category="example-title">ダッシュボードを表示</block>
+  <block id="a203c70d64ac00a0da7baa307e769325" category="image-alt">クラスタの健全性を示すSMPダッシュボード</block>
+  <block id="f0000b12e34e9d2e8ad82c701c4729db" category="paragraph">Storage Manager for Proxmoxは、Proxmox環境全体にわたる保護、クローニング、およびリカバリ操作を、効率的かつ統一的に管理する方法を提供します。ONTAPと直接統合することで、このソリューションは、エンタープライズクラスのストレージの効率性、信頼性、およびパフォーマンスを日常的なVMワークフローにもたらします。ONTAPのスペース効率に優れたスナップショット、高速クローニング機能、および組み込みのレプリケーションにより、一貫性のある予測可能なデータ保護が実現され、SMPはこれらの機能を直感的でタスク中心のインターフェースに簡素化します。</block>
 </blocks>

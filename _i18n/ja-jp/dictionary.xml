@@ -8625,8 +8625,6 @@
   <block id="2250ade21f70f3898f30d19c23e4f560" category="admonition">移行を開始する前に、仮想マシンの電源をオフにする必要があります。</block>
   <block id="643765be95e96ba0bd0d50b581f23ba9" category="admonition">VMware Toolsの削除は、VMの電源がオンになると宛先ハイパーバイザーで行われます</block>
   <block id="e0a9da9332918532fa3fb3eadaa4ed4e" category="list-text">Windows VM を準備するために Invoke-VMScript を実行する場合は、ローカル管理者アカウントを使用するか、ローカルの Administrators グループに属する Active Directory アカウントを使用してください。Linux システムの場合は、パスワードを必要とせずにコマンドを実行できるアカウントを使用してください（例：パスワードなしの sudo を使用）。</block>
-  <block id="f1229500f6a7c4d3c2d90804fdb089b8" category="list-text">Windows VMの場合、VirtIO ISOがマウントされていることを確認してください。マウントされていない場合、準備プロセスは失敗します。VirtIO ISOドライバはここからダウンロードできます。このスクリプトはマウントされたドライブを検出し、必要なファイルを自動的にコピーします。</block>
-  <block id="bc0f647d8dee9e215c7b045379244a6e" category="list-text">リンクで指定されたISOが使用されていることを確認してください。準備スクリプトは.msiパッケージを使用してドライバとqemu-guest-agentをインストールします。前提条件が整ったら、Shift toolkit UIにログインし、Proxmox VEを宛先ハイパーバイザーとしてサイトを設定します。追加するには、「Add New Site」をクリックして「Destination」を選択します。</block>
   <block id="165d8350def49f049896fbe15e76a272" category="section-title">ステップ1：接続先サイト（Proxmox VE）を追加する</block>
   <block id="58c19cc9f30ac5f53cecad2b57f1b183" category="paragraph">移行先のProxmox VE環境をShift Toolkitに追加します。</block>
   <block id="2be3d66150efaf11bc807c60b267e960" category="paragraph"><block ref="2be3d66150efaf11bc807c60b267e960" category="inline-image-macro-rx" type="image"></block></block>
@@ -9037,4 +9035,6 @@
   <block id="3b512de059a0505d85337f42502cc459" category="example-title">ダッシュボードを表示</block>
   <block id="a203c70d64ac00a0da7baa307e769325" category="image-alt">クラスタの健全性を示すSMPダッシュボード</block>
   <block id="f0000b12e34e9d2e8ad82c701c4729db" category="paragraph">Storage Manager for Proxmoxは、Proxmox環境全体にわたる保護、クローニング、およびリカバリ操作を、効率的かつ統一的に管理する方法を提供します。ONTAPと直接統合することで、このソリューションは、エンタープライズクラスのストレージの効率性、信頼性、およびパフォーマンスを日常的なVMワークフローにもたらします。ONTAPのスペース効率に優れたスナップショット、高速クローニング機能、および組み込みのレプリケーションにより、一貫性のある予測可能なデータ保護が実現され、SMPはこれらの機能を直感的でタスク中心のインターフェースに簡素化します。</block>
+  <block id="cb2322662ab0efc3a672040563903109" category="list-text">Windows VMの場合、VirtIO ISOがマウントされていることを確認してください。マウントされていない場合、準備プロセスは失敗します。VirtIO ISOドライバは<block ref="a0c092fa69648d84887cd7b874e6d0bb" category="inline-link-macro-rx"></block>からダウンロードできます。このスクリプトはマウントされたドライブを検出し、必要なファイルを自動的にコピーします。</block>
+  <block id="20bd4f3e222783e1dc397b4d18429ecc" category="list-text">準備スクリプトは.msiパッケージを使用してドライバとqemu-guest-agentをインストールするため、リンク先で指定されているISOイメージを使用していることを確認してください。前提条件が整ったら、ShiftツールキットUIにログインし、Proxmox VEを宛先ハイパーバイザーとしてサイトを構成します。追加するには、「新しいサイトを追加」をクリックし、「宛先」を選択します。</block>
 </blocks>

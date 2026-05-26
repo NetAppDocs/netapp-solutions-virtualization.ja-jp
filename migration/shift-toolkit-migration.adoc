@@ -26,6 +26,8 @@ Shift Toolkit は、次のハイパーバイザー間の双方向の移行をサ
 * link:shift-toolkit-migrate-hyperv2esxi.html["Microsoft Hyper-V から VMware ESXi へ"]
 * link:shift-toolkit-migrate-esxi2olvm.html["VMware ESXi から Oracle Linux Virtualization Manager (OLVM) へ"]
 * link:shift-toolkit-migrate-esxi2osv.html["VMware ESXi から Red Hat OpenShift Virtualization へ"]
+* link:shift-toolkit-migrate-esxi2osvmtv.html["Migration Toolkit for Virtualization（MTV）を使用したVMware ESXiからRed Hat OpenShift Virtualizationへの移行"]
+* link:shift-toolkit-migrate-esxi2proxmox.html["VMware ESXi から Proxmox VE へ"]
 
 
 

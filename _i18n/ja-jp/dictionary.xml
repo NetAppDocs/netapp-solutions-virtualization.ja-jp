@@ -9037,4 +9037,8 @@
   <block id="f0000b12e34e9d2e8ad82c701c4729db" category="paragraph">Storage Manager for Proxmoxは、Proxmox環境全体にわたる保護、クローニング、およびリカバリ操作を、効率的かつ統一的に管理する方法を提供します。ONTAPと直接統合することで、このソリューションは、エンタープライズクラスのストレージの効率性、信頼性、およびパフォーマンスを日常的なVMワークフローにもたらします。ONTAPのスペース効率に優れたスナップショット、高速クローニング機能、および組み込みのレプリケーションにより、一貫性のある予測可能なデータ保護が実現され、SMPはこれらの機能を直感的でタスク中心のインターフェースに簡素化します。</block>
   <block id="cb2322662ab0efc3a672040563903109" category="list-text">Windows VMの場合、VirtIO ISOがマウントされていることを確認してください。マウントされていない場合、準備プロセスは失敗します。VirtIO ISOドライバは<block ref="a0c092fa69648d84887cd7b874e6d0bb" category="inline-link-macro-rx"></block>からダウンロードできます。このスクリプトはマウントされたドライブを検出し、必要なファイルを自動的にコピーします。</block>
   <block id="20bd4f3e222783e1dc397b4d18429ecc" category="list-text">準備スクリプトは.msiパッケージを使用してドライバとqemu-guest-agentをインストールするため、リンク先で指定されているISOイメージを使用していることを確認してください。前提条件が整ったら、ShiftツールキットUIにログインし、Proxmox VEを宛先ハイパーバイザーとしてサイトを構成します。追加するには、「新しいサイトを追加」をクリックし、「宛先」を選択します。</block>
+  <block id="de8e5a1efd59fd3016154d032cf04a70" category="inline-link-macro">Migration Toolkit for Virtualization（MTV）を使用したVMware ESXiからRed Hat OpenShift Virtualizationへの移行</block>
+  <block id="ff9844b2de7cfcbbdfa55375ab39a06f" category="list-text"><block ref="ff9844b2de7cfcbbdfa55375ab39a06f" category="inline-link-macro-rx"></block></block>
+  <block id="990fa9f57e4aad9dabc3374936fa135c" category="inline-link-macro">VMware ESXi から Proxmox VE へ</block>
+  <block id="0844e7bd233e5a61e8cb4e245ed8e467" category="list-text"><block ref="0844e7bd233e5a61e8cb4e245ed8e467" category="inline-link-macro-rx"></block></block>
 </blocks>

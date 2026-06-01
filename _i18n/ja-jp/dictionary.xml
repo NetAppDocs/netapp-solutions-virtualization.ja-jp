@@ -9041,4 +9041,26 @@
   <block id="ff9844b2de7cfcbbdfa55375ab39a06f" category="list-text"><block ref="ff9844b2de7cfcbbdfa55375ab39a06f" category="inline-link-macro-rx"></block></block>
   <block id="990fa9f57e4aad9dabc3374936fa135c" category="inline-link-macro">VMware ESXi から Proxmox VE へ</block>
   <block id="0844e7bd233e5a61e8cb4e245ed8e467" category="list-text"><block ref="0844e7bd233e5a61e8cb4e245ed8e467" category="inline-link-macro-rx"></block></block>
+  <block id="5ee3244123f8d6e1cd95dd20bbd4c917" category="section-title">移行の検証</block>
+  <block id="a72a581a13e85fc031dd394d163e7318" category="paragraph">Shiftツールキットに、ブループリントレベルでの検証オプションが追加されました。このオプションは、移行ステータスが"Success"または"Partial Failure"とマークされた後に有効になります。検証が成功すると、新しいジョブが開始され、ブループリントのマッピングで指定されたVM設定が確認されます。検証移行ジョブのステータスはジョブ監視画面に表示され、ジョブをクリックして"view logs"を選択することで詳細を確認できます。</block>
+  <block id="f32310bcb640784ccc77c7dd4c4b3dbf" category="admonition">検証オプションは、設計図の作成時に選択することもできます。その場合、移行ジョブが完了してから5分後に検証ジョブがトリガーされます。</block>
+  <block id="9d40980b6999e7f166bfa40856a00fec" category="admonition">移行ジョブの後に検証を選択した場合、検証ジョブが即座にトリガーされ、ウィザードにそのジョブが表示されます。</block>
+  <block id="56ac9d919bb8cab4f6077b76fb1f62a9" category="image-alt">移行ジョブの詳細を確認する</block>
+  <block id="bcf221f3eb2ff23d03e933df5dc05c15" category="image-alt">移行ジョブリストを確認する</block>
+  <block id="4215a20f35c33323f41cfdcc53561758" category="section-title">分割ワークフロー</block>
+  <block id="b648dea0c6088fda044bba8739f233dd" category="paragraph">分割ワークフロー（OpenShift移行ブループリントでONTAP NASドライバーを使用する場合にのみ適用）は、VMに関連付けられたボリュームと、それに対応するFlexCloneボリュームを自動的に検出します。</block>
+  <block id="8aa0551ed462370f4ba674dbd90ceb17" category="paragraph">ONTAPバージョンに基づいて、適切な分割戦略が自動的に選択されます。一般的なガイドラインは以下のとおりです：</block>
+  <block id="6d574a30eced387339f80ba54a89cc7d" category="list-text">ONTAP 9.17.1以降のボリュームの分割クローン、並列実行20個に対応</block>
+  <block id="3880a6f70719d876e231d8e2879f85ee" category="list-text">ONTAP バージョン 9.17.1 より前のバージョンでのボリューム移動では、最大 4 つの並列スレッドを使用します</block>
+  <block id="1a3cae237cc41487606878fecfbf5dbd" category="paragraph">分割クローン処理は、進行状況を継続的に監視し、それに応じてジョブキューを管理します。分割またはボリューム移動操作が完了すると、関連付けられた Snapshot は削除されます。</block>
+  <block id="9c3a731812fdeaa07c81b64877fdd363" category="paragraph">分割ステップジョブのステータスは、Job Monitoringに表示されます。詳細を表示するには、分割ジョブをクリックして「View Logs」を選択してください。</block>
+  <block id="e9957f4f6643604e2e240ef6506687cd" category="admonition">Shift Toolkitは現在、スナップショット削除後にボリュームのサイズを変更しません。この機能は今後のリリースで予定されています。</block>
+  <block id="240aa9b96ee46082f68f7be9164d556b" category="image-alt">分割ワークフロー戦略の選択</block>
+  <block id="17ad14aae32d21937aca67c32e7957b4" category="image-alt">分割ワークフロージョブの進行状況</block>
+  <block id="403f27f7aab7b0ad3c0682d7cca0a733" category="section-title">ハイパーバイザーの詳細設定</block>
+  <block id="d77c1cd5f2b0ce7f2dd95f4c5bc3c495" category="paragraph">Shift Toolkitには、ターゲットハイパーバイザーへの移行ジョブ用の高度なハイパーバイザー設定が含まれています。これらの設定により、移行管理者は必要に応じて各VM移行ウェーブごとに機能を有効にすることができます。Shift Toolkitは実行時に設定を読み込むため、各ジョブは開始時に選択されたオプションを適用します。</block>
+  <block id="4502be711601ff984509d35dfc59750d" category="image-alt">高度なハイパーバイザー設定の概要</block>
+  <block id="d54ff9be113864ba45f6c548b61f0360" category="image-alt">Advanced ハイパーバイザー Settings オプション</block>
+  <block id="891154c0cb3c52a4cadf0de9b589ee45" category="image-alt">高度なハイパーバイザー設定の構成</block>
+  <block id="8639d82053466ca0d28ba6da8779cf53" category="image-alt">Advanced Hypervisor Settingsジョブの詳細</block>
 </blocks>

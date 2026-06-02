@@ -1,0 +1,15 @@
+---
+section: euc
+title: NetAppを使用したエンドユーザコンピューティング
+url: "/euc/index.html"
+entries:
+- title: NetAppを使用したエンドユーザコンピューティングについて学ぶ
+  pdf-filename: NetAppを使用したエンドユーザ コンピューティングの概要
+  entries:
+  - title: NetAppを使用したエンドユーザ コンピューティングの概要
+    url: "/euc/euc-overview.html"
+  - title: エンドユーザコンピューティング向けNetAppストレージのメリット
+    url: "/euc/euc-benefits.html"
+- title: Omnissa Horizon とNetAppのアーキテクチャ
+  pdf-filename: Omnissa Horizon とNetAppのアーキテクチャ
+  url: "/euc/omnissa-netapp-architecture.html"

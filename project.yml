@@ -27,6 +27,7 @@ sidebar:
   - section: kvm
   - section: migration
   - section: opennebula
+  - section: euc
   - title: ビデオ
     url: "/videos/index.html"
     entries:

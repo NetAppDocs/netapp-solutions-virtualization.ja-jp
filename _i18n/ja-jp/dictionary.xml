@@ -7765,7 +7765,6 @@
   <block id="3df92176361d792627830768779df508" category="inline-link-macro">NetApp Disaster RecoveryNFS データストアを使用した DR</block>
   <block id="ffdcb7d3677c196661a9e4ad7577206b" category="paragraph">完全なソリューションについては、NetApp ソリューション ドキュメント センターをご覧ください。 <block ref="2c1099f5b5e7f13bd13b6333caafbe18" category="inline-link-macro-rx"></block></block>
   <block id="92c14cace513a50c24d49c4b13e1921d" category="sidebar">NetApp Disaster Recoveryで VMware データストアを保護する</block>
-  <block id="e7e5267e37f6f0b79b838b5279ec25fe" category="sidebar">Migration Toolkit for Virtualization を使用して、VMware ESXi から Red Hat OpenShift Virtualization に VM を移行する</block>
   <block id="3f92bc0cd3d2eee6f501ab309588039f" category="sidebar">VCF 9 DRとNetApp Disaster Recovery</block>
   <block id="72c2cb3a1c4fe511d4aa5e485a6894c5" category="sidebar">既存の vSphere クラスタを VCF に変換する方法について</block>
   <block id="29f9284e7442c54b5708da5878ed3103" category="sidebar">NFSデータストアを使用して既存のvSphereクラスタを変換する</block>
@@ -8639,7 +8638,6 @@
   <block id="9aa9e231f950da618c182450dfecb607" category="paragraph">以下のセクションでは、Shift ツールキットによってトリガーされた、VMDK の変換と Proxmox VE 側での VM の作成に関する手順について説明します。</block>
   <block id="f293d7a41626208fcbb41b3a794a30a2" category="paragraph-title">QCOW2またはRAWイメージをPVE NFSベースのストレージプールにアップロードします</block>
   <block id="f2ff48db9876dd928f72f730cad6c55e" category="paragraph">仮想マシンのディスクイメージをqcow2またはRAW形式に変換すると、Shiftツールキットはファイルを適切なストレージプールに配置し、各ディスクをそれぞれのVM IDフォルダ内に追加します。</block>
-  <block id="5d23268a1279c853582c3863ce0d4b7e" category="image-alt">shift toolkit 469</block>
   <block id="0bdfa5286269feba4d23388e0c2f0e21" category="paragraph-title">仮想マシンを作成する</block>
   <block id="9f6129bd27c47f979bd135fd817b20d3" category="paragraph">Shift toolkitは、OSに応じて各VMを作成するためにREST API呼び出しを行います。</block>
   <block id="7201b4542207ea349ce6ee4e5fe1a1ef" category="admonition">VMはそれぞれのProxmoxノードの下に作成されます。</block>
@@ -9178,4 +9176,59 @@
   <block id="900072db4db9aa5a93fea4d351c838fd" category="paragraph">移行が完了したら、クローンボリュームを切り離す必要があります。使用する方法は ONTAP バージョンによって異なります。ONTAP 9.17.1 以降では クローン スプリット を使用し、それ以前のバージョンでは vol move を使用してください。提供されている ZIP パッケージ内の「Post migrate」フォルダに、デタッチ処理を開始するためのスクリプトが含まれています。</block>
   <block id="2c965de51648fb5524d2eb0e957d4709" category="list-text">VMDKは複数の方法で構成できます。すべてのVMDKを単一のボリュームに配置する（ストレージ vMotion が不要になる）、各VMDKを個別のボリュームに配置する、または複数のVMDKをボリューム内のqtreeにまとめるといった方法があります。</block>
   <block id="57ab8ea8689e4a7f85baeb77d04e766e" category="admonition">Shift ツールキットは、レイアウトを自動的に検出し、適切なクローン作成方法と NAS ストレージドライバを選択します。</block>
+  <block id="c47f55c3a8bac3fc95565439ca167866" category="summary">NetApp Trident CSI および Virtualization 向け Migration Toolkit を使用して、Shift オペレーターをコンテナ化されたサービスとして標準モードで手動でデプロイします。</block>
+  <block id="c493434a73d41c1c89504b5c2119f8f7" category="doc">Shiftオペレーターを手動でデプロイする（標準モード）</block>
+  <block id="0b3dcbbfd02210c8232664ad58afacc1" category="paragraph">NetApp Shift ツールキットを、NetApp Trident CSI および Migration Toolkit for Virtualization （MTV） を使用してコンテナ化されたサービスとして手動でデプロイします。このプロセスにより、ストレージ プロビジョニングの自動化と仮想マシンのディスク移行が可能になり、アノテーションとラベルを活用してコンポーネント間でリクエストを適切にルーティングします。</block>
+  <block id="03d8535f3d709d87cf73393d68dc935e" category="section-title">アーキテクチャコンポーネント</block>
+  <block id="32de03dbc9044dcd99ef755bfa9a61c7" category="paragraph">NetApp Shift ツールキット、Trident CSI、および Migration Toolkit for Virtualization が連携して、OpenShift 環境における自動化されたストレージ プロビジョニングと VM ディスクの移行を実現する仕組みについて説明します。</block>
+  <block id="06a7cceb4ea9c104f5c471b398a24c44" category="image-alt">シフト演算子アーキテクチャ図</block>
+  <block id="87ed922160e9b4c75ab1ef893b525db3" category="paragraph">*NetApp Shift ツールキット*</block>
+  <block id="d6407f63c84b09b3d67be7c599991a55" category="list-text">イメージレジストリを介してコンテナ化されたサービスとしてデプロイされます</block>
+  <block id="20c3dba8e3ea0c01024e755c5c6207fd" category="list-text">特定のアノテーションが付いた MTV から発信される Persistent Volume Claim （PVC） リクエストをリッスンするエンドポイントを公開します。</block>
+  <block id="db8eec9fefc21532a5c922c37968316b" category="list-text">VMディスク移行タスク（フォーマット変換を含む）の処理を担当</block>
+  <block id="6bcc7e2f71f96347b4b98736fe8a1979" category="paragraph">*NetApp Trident CSI（バージョン26.06以降）*</block>
+  <block id="7bd93547c704f452dc59535fa98c61cd" category="list-text">コンテナストレージインターフェース（CSI）プロビジョナーとして機能します</block>
+  <block id="cfbba3393ca298e784a32cb3ff60f2b7" category="list-text">ShiftツールキットからPVCインポートリクエストを受け取ります</block>
+  <block id="f5516a7a904aaee238c3bb33a023bb89" category="list-text">PVC注釈とラベルに基づくロジックを適用して、リクエストを直接処理するかShiftにリダイレクトするかを決定します。</block>
+  <block id="3e209c0b838737b9e42fa2e1abc60d0d" category="paragraph">*Migration Toolkit for Virtualization（MTV 2.12以降）*</block>
+  <block id="c4b04e4af346af9c1e524e3c888249c3" category="list-text">仮想マシンの移行計画を統括します</block>
+  <block id="48fead57851c63d0a08f7d92570dc697" category="list-text">VM移行中のストレージ プロビジョニングに必要なPVCリクエストを発行します</block>
+  <block id="027261bcfd50e8709c7c09eadd20093c" category="list-text">下流処理をガイドするための注釈を追加します</block>
+  <block id="e058688fa340803d3bc8ecc02ebe596c" category="paragraph">OpenShift 環境に必要なコンポーネントがインストールされ、構成されていることを、Shift オペレーターをデプロイする前に確認してください。</block>
+  <block id="9b1fb571d14c63b89bbbeba56ad51220" category="list-text">Migration Toolkit for Virtualization Operator はバージョン 2.12 以降で動作しています。</block>
+  <block id="39ff57afbe369c71d87164292f4d0267" category="inline-link-macro">Tridentインストールガイド</block>
+  <block id="3582bb9bff4c360d1b876af2b7038b93" category="list-text">Trident は OpenShift OperatorHub を使用してインストールされます - <block ref="05c6198e6f7839675430d2fe772b5bcd" category="inline-link-macro-rx"></block></block>
+  <block id="ff7b16168d3a95f59b6b096ad2f62444" category="list-text">NetApp Shift はコンテナとしてデプロイされ、Shift エンドポイントは NetApp Trident からアクセス可能です</block>
+  <block id="ed34562ebeafe2fa2386ac50a8bdb482" category="list-text">ストレージクラスは、Shift ツールキットでの使用専用に作成され、ラベル付けされます。</block>
+  <block id="db94c9b7bf6cc982e79f2c27b5743ca7" category="list-text">このラベルは、Shift ツールキットが意図されたハンドラーであることを示しています。</block>
+  <block id="4351ff451e06ead04e9a98f9ede6648a" category="list-text">MTVはPVCに以下の注釈を含みます：<block ref="c465c4208b1e1f3418330711672ef4c0" prefix=" " category="inline-code"></block></block>
+  <block id="f80c7b604cf5d54f61f5580c1db23856" category="section-title">ステップ1：Shift インストーラーをダウンロードして解凍する</block>
+  <block id="eb54a35ee77c8f156cf491f203292ee0" category="paragraph">Shiftインストーラーパッケージには、ShiftオペレーターをデプロイしてShiftをインストールするために必要なものがすべて含まれています。</block>
+  <block id="a7a83b5e4f375c0585588b9c7ff92219" category="inline-link-macro">NetApp Support Site ツールチェスト</block>
+  <block id="728751c4a9e9dd7ddddfcf57839671a3" category="list-text">Shift インストーラーの最新バージョンを <block ref="b9c63223260665c8c6f7e5af5c329877" category="inline-link-macro-rx"></block> からダウンロードしてください。</block>
+  <block id="4a0495ab86984b1ab31e239d58d8efb5" category="list-text">インストーラーパッケージを解凍します。</block>
+  <block id="e85555dea2db4b5d9ec968264e242b59" category="list-text">インストーラーディレクトリに移動します：</block>
+  <block id="8de8c10653c019dccd733a2c9ad025d2" category="section-title">ステップ2：Shift名前空間とAPI認証情報を作成する</block>
+  <block id="8e4df91281e9b10e50416eba936b5e2a" category="paragraph">Shiftオペレーター専用のネームスペースを設定し、安全なAPIアクセスに必要な認証情報を作成します。</block>
+  <block id="519042fdff45eca9e93f6c7975a33261" category="list-text">Shift名前空間を作成します。</block>
+  <block id="ec280ac477abf1fd860b10b773a737d2" category="list-text">Shift名前空間内でShift APIアクセス用のシークレットを作成します。</block>
+  <block id="acb6fff399445a7c3982d06abd52c5e6" category="section-title">ステップ3：Shift オペレーターをデプロイする</block>
+  <block id="27cb2025888a0b8910a51ba44b8a1256" category="paragraph">Shift オペレーター構成を OpenShift クラスターに適用し、必要なポッドが正常に実行されていることを確認します。</block>
+  <block id="4063ac6d9d4e7d61536ceaaf647337fa" category="list-text">shift-installerディレクトリから、deployコマンドを実行します。</block>
+  <block id="1a676394126819000e99e53f06f4d3c8" category="list-text">ポッド作成ステータスを使用してインストールを確認します。</block>
+  <block id="8637d6c1f3e0436f7f2ec935b829bd22" category="paragraph">出力例：</block>
+  <block id="2adfd096e132762d7bb1806ee670838a" category="section-title">ステップ4：Shift統合用のストレージクラスを設定する</block>
+  <block id="c2bb497b0e08f4c5770ce936ceb5ceed" category="paragraph">Shiftとの統合に必要な注釈を追加して、新しいStorage Classを作成するか、既存のStorage Classを更新します。</block>
+  <block id="6920c9eaa8408cbe9ae61a5d1873db9d" category="paragraph">ストレージクラスには、以下のアノテーションを含める必要があります：</block>
+  <block id="57fd0c2d34b3faae09e8bcf9699feaff" category="list-text"><block ref="ef0a3ae2e4a56e2f40e59efcda1b4f3e" prefix="" category="inline-code"></block></block>
+  <block id="d85e934facee7138a2b76f8e8d3e3b18" category="list-text"><block ref="0baedb18fca27b94ae9ef70c324b3dc6" prefix="" category="inline-code"></block></block>
+  <block id="c289c6150aaba247cc1eac2250f16f40" category="list-text">既存のストレージクラスを確認します：</block>
+  <block id="0bdf847d5b76241a4b323312bcf8bac1" category="list-text">ストレージクラスに必要なアノテーションを付けてパッチを適用します：</block>
+  <block id="1c878a34021ac193182a89fe8da7f0ab" category="admonition">バックエンドのUUIDは、以下のコマンドを実行することで取得できます<block ref="7e745824a540942db553f6f4251bb92b" prefix=" " category="inline-code"></block></block>
+  <block id="01e12de62fa77fda2815719aed8ff892" category="section-title">次の手順</block>
+  <block id="3a36f8654c90283d28de9331a4458a28" category="paragraph">Shift オペレーターのデプロイとストレージクラスの設定が完了したら、MTV プランを作成してトリガーできます。</block>
+  <block id="6f95d4f44cf1afc50df6a1c231ff124e" category="inline-link-macro">Migration Toolkit for Virtualizationドキュメント</block>
+  <block id="da7f041e9cc4cf4c35dad13e6d6d4256" category="paragraph">MTVプランの作成に関する詳細については、<block ref="52cfaab11b47ceb91fc31cd678248f92" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="5b72c021801ffa146c82f90658cd7575" category="image-alt">VMディスクイメージがProxmox VE NFSストレージプールにアップロードされました</block>
+  <block id="5494dd2ac7ee98a0fa80c17d1b6858a0" category="sidebar">Shiftオペレーターを手動でデプロイする</block>
 </blocks>

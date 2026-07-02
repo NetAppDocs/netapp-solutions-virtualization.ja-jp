@@ -404,7 +404,7 @@ NOTE: VMDK ファイルが複数ある場合は、各 VMDK が変換されます
 .QCOW2またはRAWイメージをPVE NFSベースのストレージプールにアップロードします
 仮想マシンのディスクイメージをqcow2またはRAW形式に変換すると、Shiftツールキットはファイルを適切なストレージプールに配置し、各ディスクをそれぞれのVM IDフォルダ内に追加します。
 
-image::shift-toolkit-469.png[shift toolkit 469]
+image::shift-toolkit-469.png[VMディスクイメージがProxmox VE NFSストレージプールにアップロードされました]
 
 .仮想マシンを作成する
 Shift toolkitは、OSに応じて各VMを作成するためにREST API呼び出しを行います。

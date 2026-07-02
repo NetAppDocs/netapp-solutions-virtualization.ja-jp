@@ -1,0 +1,200 @@
+---
+sidebar: sidebar 
+permalink: migration/shift-toolkit-deploy-operator.html 
+keywords: netapp, shift, operator, openshift, trident, mtv, migration toolkit for virtualization 
+summary: NetApp Trident CSI および Virtualization 向け Migration Toolkit を使用して、Shift オペレーターをコンテナ化されたサービスとして標準モードで手動でデプロイします。 
+---
+= Shiftオペレーターを手動でデプロイする（標準モード）
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp Shift ツールキットを、NetApp Trident CSI および Migration Toolkit for Virtualization （MTV） を使用してコンテナ化されたサービスとして手動でデプロイします。このプロセスにより、ストレージ プロビジョニングの自動化と仮想マシンのディスク移行が可能になり、アノテーションとラベルを活用してコンポーネント間でリクエストを適切にルーティングします。
+
+
+
+== アーキテクチャコンポーネント
+
+NetApp Shift ツールキット、Trident CSI、および Migration Toolkit for Virtualization が連携して、OpenShift 環境における自動化されたストレージ プロビジョニングと VM ディスクの移行を実現する仕組みについて説明します。
+
+image::shift_operator_architecture.png[シフト演算子アーキテクチャ図]
+
+*NetApp Shift ツールキット*
+
+* イメージレジストリを介してコンテナ化されたサービスとしてデプロイされます
+* 特定のアノテーションが付いた MTV から発信される Persistent Volume Claim （PVC） リクエストをリッスンするエンドポイントを公開します。
+* VMディスク移行タスク（フォーマット変換を含む）の処理を担当
+
+
+*NetApp Trident CSI（バージョン26.06以降）*
+
+* コンテナストレージインターフェース（CSI）プロビジョナーとして機能します
+* ShiftツールキットからPVCインポートリクエストを受け取ります
+* PVC注釈とラベルに基づくロジックを適用して、リクエストを直接処理するかShiftにリダイレクトするかを決定します。
+
+
+*Migration Toolkit for Virtualization（MTV 2.12以降）*
+
+* 仮想マシンの移行計画を統括します
+* VM移行中のストレージ プロビジョニングに必要なPVCリクエストを発行します
+* 下流処理をガイドするための注釈を追加します
+
+
+
+
+== 開始する前に
+
+OpenShift 環境に必要なコンポーネントがインストールされ、構成されていることを、Shift オペレーターをデプロイする前に確認してください。
+
+* Migration Toolkit for Virtualization Operator はバージョン 2.12 以降で動作しています。
+* Trident は OpenShift OperatorHub を使用してインストールされます - link:https://docs.netapp.com/us-en/trident/trident-install/openshift-operator-deploy.html["Tridentインストールガイド"]
+* NetApp Shift はコンテナとしてデプロイされ、Shift エンドポイントは NetApp Trident からアクセス可能です
+* ストレージクラスは、Shift ツールキットでの使用専用に作成され、ラベル付けされます。
+* このラベルは、Shift ツールキットが意図されたハンドラーであることを示しています。
+* MTVはPVCに以下の注釈を含みます： `forklift.konveyor.io/netapp-shift: "true"`
+
+
+
+
+== ステップ1：Shift インストーラーをダウンロードして解凍する
+
+Shiftインストーラーパッケージには、ShiftオペレーターをデプロイしてShiftをインストールするために必要なものがすべて含まれています。
+
+.手順
+. Shift インストーラーの最新バージョンを link:https://mysupport.netapp.com/site/tools/tool-eula/netapp-shift-toolkit["NetApp Support Site ツールチェスト"] からダウンロードしてください。
+. インストーラーパッケージを解凍します。
++
+[source, bash]
+----
+tar -xf Shift-installer-1.0.0.tar.gz
+----
+. インストーラーディレクトリに移動します：
++
+[source, bash]
+----
+cd shift-installer
+----
+
+
+
+
+== ステップ2：Shift名前空間とAPI認証情報を作成する
+
+Shiftオペレーター専用のネームスペースを設定し、安全なAPIアクセスに必要な認証情報を作成します。
+
+.手順
+. Shift名前空間を作成します。
++
+[source, bash]
+----
+oc create ns shift
+----
+. Shift名前空間内でShift APIアクセス用のシークレットを作成します。
++
+[source, bash]
+----
+oc create secret generic shift-credentials -n shift \
+  --from-literal=username='admin' \
+  --from-literal=password='admin'
+----
+
+
+
+
+== ステップ3：Shift オペレーターをデプロイする
+
+Shift オペレーター構成を OpenShift クラスターに適用し、必要なポッドが正常に実行されていることを確認します。
+
+.手順
+. shift-installerディレクトリから、deployコマンドを実行します。
++
+[source, bash]
+----
+oc apply -f deploy/shift-bundle.yaml
+----
+. ポッド作成ステータスを使用してインストールを確認します。
++
+[source, bash]
+----
+oc get pods -n shift
+----
++
+出力例：
+
++
+[source, console]
+----
+NAME                                     READY   STATUS    RESTARTS   AGE
+shift-68ccd597c-dtsj7                    1/1     Running   0          18s
+shift-pvc-listener-57d546f6b8-r9mgc      1/1     Running   0          18s
+----
+
+
+
+
+== ステップ4：Shift統合用のストレージクラスを設定する
+
+Shiftとの統合に必要な注釈を追加して、新しいStorage Classを作成するか、既存のStorage Classを更新します。
+
+.タスク概要
+ストレージクラスには、以下のアノテーションを含める必要があります：
+
+* `shift.netapp.io/storage-class-type`
+* `shift.netapp.io/trident-backend-uuid`
+
+
+.手順
+. 既存のストレージクラスを確認します：
++
+[source, bash]
+----
+oc get sc
+----
++
+出力例：
+
++
+[source, console]
+----
+nimnas1172 (default)   csi.trident.netapp.io   Delete          Immediate         true
+----
+. ストレージクラスに必要なアノテーションを付けてパッチを適用します：
++
+[source, bash]
+----
+oc patch storageclass nimnas1172 \
+  --type=merge \
+  -p '{
+    "metadata": {
+      "annotations": {
+        "shift.netapp.io/storage-class-type": "shift",
+        "shift.netapp.io/trident-backend-uuid": "facc3aad-83bb-423a-b6a1-ba0fb8811217"
+      }
+    }
+  }'
+----
++
+出力例：
+
++
+[source, console]
+----
+storageclass.storage.k8s.io/nimnas1172 patched
+----
++
+
+NOTE: バックエンドのUUIDは、以下のコマンドを実行することで取得できます `oc get tbc -n trident`
+
+
+
+
+
+== 次の手順
+
+Shift オペレーターのデプロイとストレージクラスの設定が完了したら、MTV プランを作成してトリガーできます。
+
+MTVプランの作成に関する詳細については、link:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.3/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console["Migration Toolkit for Virtualizationドキュメント"]を参照してください。

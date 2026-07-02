@@ -30,9 +30,11 @@ entries:
       url: "/migration/shift-toolkit-migrate-hyperv2esxi.html"
     - title: VMware ESXi から Red Hat OpenShift Virtualization への VM の移行
       url: "/migration/shift-toolkit-migrate-esxi2osv.html"
-    - title: Migration Toolkit for Virtualization を使用して、VMware ESXi から Red Hat OpenShift
-        Virtualization に VM を移行する
+    - title: Shift ツールキットと Migration Toolkit for Virtualization を使用して、VMware ESXi
+        から Red Hat OpenShift Virtualization に VM を移行する
       url: "/migration/shift-toolkit-migrate-esxi2osvmtv.html"
+    - title: Shiftオペレーターを手動でデプロイする
+      url: "/migration/shift-toolkit-deploy-operator.html"
     - title: VMware ESXi から Oracle Linux Virtualization Manager (OLVM) に VM を移行する
       url: "/migration/shift-toolkit-migrate-esxi2olvm.html"
     - title: VMware ESXiからProxmox VEへVMを移行する

@@ -1,0 +1,109 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-disaster-recovery-failback.html 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift 仮想化 
+---
+= OpenShift Virtualization Disaster Recovery における VM のフェイルバック
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このセクションでは、NetApp Trident ProtectおよびAppMirrorを使用したOpenShift Virtualization災害復旧における、VMのフェイルバック プロセスに関する情報を提供します。災害復旧先となるデスティネーション クラスタに切り替えるフェイルオーバー処理を実行したあと、フェイルバック プロセスを使用してレプリケーション方向を反転し、元のソース クラスタをVMのプライマリ クラスタとして復元できます。これには、フェイルオーバー期間中にVMに加えられた変更を元のソース クラスタに再同期したあと、レプリケーション関係を逆方向にプロモートする処理が含まれます。これらの手順に従うことで、災害復旧イベントの発生後に、すべての変更を維持した状態で元のソース クラスタ上でVMを実行できます。
+
+
+
+[[failback-for-openshift-virtualization-disaster-recovery]]
+== OpenShift Virtualization ディザスタリカバリのフェイルバック
+
+Trident Protect を使用すると、次の一連の操作を使用して、フェイルオーバー操作後に「フェイルバック」を実現できます。このワークフローでは、元のレプリケーション方向を復元するために、Trident Protect は、レプリケーションの方向を反転する前に、アプリケーションの変更を元のソース アプリケーションに複製（再同期）します。
+
+このプロセスは、デスティネーションへのフェイルオーバーを完了した関係から開始され、次の手順が含まれます：
+
+. フェイルオーバー状態から開始します。
+. レプリケーション関係を逆方向に再同期する
++
+フェールオーバーされたレプリケーション関係を逆再同期すると、デスティネーション アプリケーションがソース アプリケーションになり、ソースがデスティネーションになります。フェイルオーバー中にデスティネーション アプリケーションに加えられた変更は保持されます。
+
++
+.. 元のデスティネーション クラスタで、AppMirrorRelationship CRを削除します。これにより、デスティネーションがソースになります。新しいデスティネーション クラスタに保護スケジュールが残っている場合は、それらを削除します。
++
+.例を表示
+[%collapsible]
+====
+image:osv-disaster-recovery-013.png["OCP-v AppMirror 関係が削除され、フェイルバックが開始されました"]
+
+====
+.. フェイルオーバー期間中に加えられた変更を記録するために、新しいソースクラスター（元のデスティネーション クラスタ）にSnapshotを作成します。これにより、再同期処理中にすべての変更が元のソースクラスターに確実にレプリケートされます。
++
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+# snapshot.yaml
+apiVersion: protect.trident.netapp.io/v1
+kind: Snapshot
+metadata:
+  name: test-source-dr-init-snapshot-failback
+  namespace: test-dr-ns
+spec:
+  applicationRef: test-dest-app
+  appVaultRef: ontap-s3-appvault
+  reclaimPolicy: Delete
+----
+image:osv-disaster-recovery-014.png["新しいソースクラスタ上で Trident Protect CLI を使用して作成された VM の OCP-v オンデマンド スナップショット"] image:osv-disaster-recovery-015.png["新しいソースクラスタ上で Trident Protect CLI を使用して作成される VM の OCP-v オンデマンド スナップショット"] image:osv-disaster-recovery-016.png["新しいソースクラスタ上で Trident Protect CLI を使用して作成された VM の OCP-v オンデマンド スナップショット"]
+
+====
+.. 新しいソースクラスター（元のデスティネーション クラスタ）から元のソースクラスターへのレプリケーション関係を設定し、逆方向の値を構成します。
++
+.例を表示
+[%collapsible]
+====
+# application-mirror-relationship.yaml
+
+[source, yaml]
+----
+apiVersion: protect.trident.netapp.io/v1
+kind: AppMirrorRelationship
+metadata:
+  name: amr1
+spec:
+  desiredState: Established
+  destinationAppVaultRef: ontap-s3-appvault
+  destinationApplicationRef: dr-source-vm-failback
+  namespaceMapping:
+  - destination: test-dr-ns
+    source: test-dr-ns-dest
+  recurrenceRule: |-
+    DTSTART:20240901T000200Z
+    RRULE:FREQ=MINUTELY;INTERVAL=5
+  sourceAppVaultRef: ontap-s3-appvault
+  sourceApplicationName: test-dest-app
+  sourceApplicationUID: "uid of the app in the original source cluster"
+  storageClassName: "sc-nas"
+----
+image:osv-disaster-recovery-017.png["OCP-v AppMirror 元のソース クラスターで作成された関係により、レプリケーションの方向が反転します。"] image:osv-disaster-recovery-018.png["OCP-v AppMirror レプリケーション方向を逆にするために元のデスティネーション クラスタで作成された関係"]
+
+====
+.. AppMirrorRelationship CRのdesiredStateフィールドを「Promoted」に更新して、新しいソース クラスタ（元のデスティネーション）から元のソース クラスタへのレプリケーション関係を昇格させます。
++
+.例を表示
+[%collapsible]
+====
+image:osv-disaster-recovery-019.png["OCP-v AppMirror 元のソース クラスター内の関係が完全なフェイルバックに昇格しました"]
+
+これで、VMが元のソースクラスタで実行されていることが確認できます。フェイルバック処理が完了しました。これで、元のデスティネーション クラスタのリソースをクリーンアップできます。フェイルバック処理後もディザスタリカバリ機能を維持する場合は、新しいレプリケーション関係を設定することもできます。
+
+
+NOTE: 通常の再同期操作は実行しないでください。フェイルオーバー手順中にデスティネーション クラスタに書き込まれたデータが破棄されます。
+
+====
+
+
+

@@ -18,6 +18,7 @@ ONTAP上の既存のファイバ チャネルまたは NFS データストアを
 
 
 
+[[solution-overview]]
 == ソリューションの概要
 
 このソリューションは、クラスタが VCF 管理ドメインに変換されるときに、vSphere 内の既存の FC または NFS データストアがプリンシパル ストレージになる方法を示しています。
@@ -28,6 +29,7 @@ ONTAP上の既存のファイバ チャネルまたは NFS データストアを
 
 
 
+[[architecture-overview]]
 == アーキテクチャの概要
 
 ONTAPツールのアーキテクチャは VMware 環境とシームレスに統合され、 ONTAPツール サービス、vSphere プラグイン、REST API を含むモジュール式のスケーラブルなフレームワークを活用して、効率的なストレージ管理、自動化、データ保護を実現します。
@@ -38,6 +40,7 @@ image::vmware-vcf-import-nfs-010.png[ONTAPツールのアーキテクチャ]
 
 
 
+[[supported-solutions-for-converting-a-vsphere-environment]]
 == vSphere 環境の変換にサポートされているソリューション
 
 vCenter インスタンスを変換するための技術的な詳細については、次のソリューションを参照してください。
@@ -48,6 +51,7 @@ vCenter インスタンスを変換するための技術的な詳細について
 
 
 
+[[additional-information]]
 == 追加情報
 
 * これらのソリューションのビデオデモについては、以下を参照してください。link:../videos/vmware-videos.html#vmware-datastore-provisioning-with-ontap["ONTAPを使用した VMware データストアのプロビジョニング"] 。

@@ -25,6 +25,7 @@ NOTE: パスワードはクリアテキストファイルに保存され、root 
 video::5b4ae54a-08d2-4f7d-95ec-b22d015f6035[panopto,width=360]
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 ONTAPを初めて使用する場合は、System Manager インターフェイスを使用してこれらのタスクを完了してください。
@@ -67,6 +68,7 @@ image:proxmox-ontap-smb-004.png["SMB共有情報"]
 
 
 
+[[virtualization-administrator-tasks]]
 == 仮想化管理者のタスク
 
 これらのタスクを完了すると、SMB 共有が Proxmox VE のストレージとして追加され、マルチチャネルが有効になり、パフォーマンスとフォールト トレランスが向上します。

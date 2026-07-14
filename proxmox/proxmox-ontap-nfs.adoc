@@ -24,6 +24,7 @@ ONTAPを初めて使用する場合は、System Manager インターフェイス
 video::f6c9aba3-b070-45d6-8048-b22e001acfd4[panopto,width=360]
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 Proxmox VE で使用するためにONTAP上の NFS ストレージをプロビジョニングするには、これらのタスクを完了します。
@@ -59,6 +60,7 @@ image:proxmox-ontap-nfs-003.png["NFSボリューム情報"]
 
 
 
+[[virtualization-administrator-tasks]]
 == 仮想化管理者のタスク
 
 これらのタスクを完了して、NFS ボリュームを Proxmox VE のストレージとして追加し、パフォーマンスを向上させるために nConnect またはセッショントランキングを構成します。

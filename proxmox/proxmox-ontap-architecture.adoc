@@ -15,6 +15,7 @@ NetApp ONTAP はProxmox Virtual Environment (VE) と統合され、NAS および
 
 
 
+[[solution-architecture]]
 == ソリューションアーキテクチャ
 
 ソリューション アーキテクチャには、次の主要コンポーネントが含まれます。
@@ -32,12 +33,14 @@ image::proxmox-deploy-guidelines-001.png[NetApp ONTAPアーキテクチャを採
 
 
 
+[[ontap-features-for-proxmox-ve]]
 == Proxmox VE のONTAP機能
 
 ONTAP は、Proxmox VE の導入を強化する包括的なエンタープライズ ストレージ機能を提供します。これらの機能は、NAS と SAN の両方のストレージ アーキテクチャにわたるデータ管理、保護、効率、プロトコル サポートにわたります。
 
 
 
+[[core-data-management-features]]
 === コアデータ管理機能
 
 * スケールアウトクラスタアーキテクチャ
@@ -60,6 +63,7 @@ ONTAP は、Proxmox VE の導入を強化する包括的なエンタープライ
 
 
 
+[[nas-protocol-features]]
 === NASプロトコルの機能
 
 * FlexGroupボリュームは、高いパフォーマンス、負荷分散、拡張性を備えたスケールアウトNASコンテナを提供します。
@@ -80,6 +84,7 @@ ONTAP は、Proxmox VE の導入を強化する包括的なエンタープライ
 
 
 
+[[san-protocol-features]]
 === SANプロトコルの機能
 
 * SnapMirror Active Syncを使用して障害ドメイン間でクラスタを拡張します（常に https://mysupport.netapp.com/matrix/#welcome["Interoperability Matrix Tool"] サポートされている構成の場合

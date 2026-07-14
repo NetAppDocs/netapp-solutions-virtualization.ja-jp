@@ -18,6 +18,7 @@ NetApp ONTAPでファイバー チャネル プロトコルを使用して、Pro
 
 
 
+[[initial-virtualization-administrator-tasks]]
 == 仮想化管理者の初期タスク
 
 これらの初期タスクを完了して、Proxmox VE ホストを FC 接続用に準備し、ストレージ管理者に必要な情報を収集します。
@@ -46,6 +47,7 @@ cat /sys/class/fc_host/host*/port_name
 
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
@@ -65,6 +67,7 @@ image:proxmox-ontap-fc-002.png["lunの詳細"]
 
 
 
+[[final-virtualization-administrator-tasks]]
 == 最終的な仮想化管理者のタスク
 
 これらのタスクを完了して、LUN を Proxmox VE の共有 LVM ストレージとして構成します。

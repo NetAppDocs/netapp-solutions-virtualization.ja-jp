@@ -20,6 +20,7 @@ vCenter Single Sign-On を備えた vSphere クライアントを使用して、
 
 
 
+[[step-1-create-distributed-port-groups-for-iscsi-traffic]]
 == ステップ1: iSCSIトラフィック用の分散ポートグループを作成する
 
 各 iSCSI ネットワークに新しい分散ポート グループを作成するには、次の手順を実行します。
@@ -72,6 +73,7 @@ image:vmware-vcf-asa-026.png["アップリンク1を未使用に移動する"]
 
 
 
+[[step-2-create-vmkernel-adapters-on-each-esxi-host]]
 == ステップ2: 各ESXiホストにVMkernelアダプタを作成する
 
 vSphere クライアントを使用して、ワークロード ドメイン内の各 ESXi ホストで次の手順を実行します。
@@ -130,6 +132,7 @@ image:vmware-vcf-asa-034.png["VMkernelの選択を確認する"]
 
 
 
+[[whats-next]]
 == 次の手順
 
 ワークロードドメイン内のすべてのESXiホストでiSCSIのネットワークを構成した後、link:vmw-vcf-viwld-supp-iscsi-vvols-storage.html["iSCSI vVolsのストレージを構成する"] 。

@@ -1,0 +1,80 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-disaster-recovery-simulate-dr.html 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift 仮想化 
+---
+= OpenShift Virtualization Disaster Recovery における VM のフェイルオーバー
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このセクションでは、NetApp Trident Protect と AppMirror を使用して、ソース クラスターから災害復旧ターゲット クラスターへの VM のフェイルオーバーを実行する方法について説明します。これは、フェイルオーバープロセスのテストや、ソースクラスタに対する計画的なメンテナンスの実施に役立ちます。これらの手順に従うことで、災害復旧イベント後も、VMがすべての変更を保持したまま災害復旧ターゲットクラスタ上で実行されていることを確認できます。
+
+
+
+[[failover-without-site-outage-for-openshift-virtualization]]
+== サイト停止なしのOpenShift Virtualization のフェイルオーバー
+
+このセクションでは、サイト停止なしでソースクラスタから VM のフェイルオーバーを実行する方法について説明します。これは、フェイルオーバープロセスのテストや、ソースクラスタに対する計画的なメンテナンスの実施に役立ちます。+
+
+サイト停止なしでフェイルオーバーを実行するには、まず前のセクションで説明したように、ソース クラスタとターゲット クラスタがディザスタリカバリ用に設定されていることを確認してください。次に、以下の手順を実行してください。
+
+. ソースクラスターとターゲットクラスター間の AppMirror 関係を確立します。AppMirror 関係が確立されると、最新のスナップショットがデスティネーション ネームスペースに転送されます。デスティネーション ネームスペース内の VM に対して PVC が作成されますが、VM ポッドはまだデスティネーション ネームスペース内に作成されていません。
++
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+# application-mirror-relationship.yaml
+apiVersion: protect.trident.netapp.io/v1
+kind: AppMirrorRelationship
+metadata:
+  name: amr1
+spec:
+  desiredState: Established
+  destinationAppVaultRef: ontap-s3-appvault
+  destinationApplicationRef: test-dest-app
+  namespaceMapping:
+  - destination: test-dr-ns-dest
+    source: test-dr-ns
+  recurrenceRule: |-
+    DTSTART:20240901T000200Z
+    RRULE:FREQ=MINUTELY;INTERVAL=5
+  sourceAppVaultRef: ontap-s3-appvault
+  sourceApplicationName: test-source-app
+  sourceApplicationUID: "<application-uid-of-the-source-app>"
+  storageClassName: "sc-nas"
+----
+image:osv-disaster-recovery-009.png["OCP-v AppMirror trident-protect 名前空間におけるリレーションシップ"]
+
+image:osv-disaster-recovery-010.png["OCP-v AppMirror trident-protect 名前空間で確立されたリレーションシップ"]
+
+
+NOTE: AppMirror関係は、デスティネーション クラスタの CLI から作成する必要があります。作成時には、希望する状態を「確立済み」に設定する必要があります。これにより、最新のスナップショットデータがデスティネーション クラスタにレプリケートされることが保証されます。
+
+====
+. AppMirror 関係をプロモートします。関係の目的の状態を「昇格済み」に変更して、デスティネーション ネームスペースに VM を作成します。VM は引き続きソース ネームスペースで実行されています。最新のスナップショット データはデスティネーション クラスタにレプリケートされ、VM はデスティネーション クラスタで起動されます。この方法を使用すると、ソース クラスタ全体を停止させることなく、フェイルオーバーのテストと VM の可用性の維持が可能になります。
++
+.例を表示
+[%collapsible]
+====
+[source, cli]
+----
+oc patch amr amr1 -n test-dr-ns-dest --type=merge -p '{"spec":{"desiredState":"Promoted"}}'
+----
+image:osv-disaster-recovery-012.png["OCP-v AppMirror 関係が昇格されました"]
+
+[source, cli]
+----
+oc get pod, pvc,vm -n test-dr-ns-dest
+oc get pod, pvc,vm -n test-dr-ns
+----
+====
+

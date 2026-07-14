@@ -17,6 +17,7 @@ Windows および Linux ゲスト オペレーティング システム、 ONTAP
 
 
 
+[[supported-vm-guest-operating-systems]]
 == サポートされているVMゲストオペレーティングシステム
 
 Shift Toolkit は、VM 変換用に次の Windows および Linux ゲスト オペレーティング システムをサポートしています。
@@ -52,12 +53,14 @@ NOTE: Windows Server 2008 は公式にはサポートされていません。た
 
 
 
+[[supported-ontap-versions]]
 == サポートされるONTAPバージョン
 
 Shift Toolkit はONTAP 9.14.1 以降をサポートしています。
 
 
 
+[[supported-hypervisors]]
 == サポートされているハイパーバイザー
 
 Shift Toolkit は、VM の移行と変換のために次のハイパーバイザー プラットフォームをサポートしています。

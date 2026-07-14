@@ -18,6 +18,7 @@ Fibre Channelプロトコルを使用して、NetApp ONTAPと連携し、OpenNeb
 
 
 
+[[initial-virtualization-administrator-tasks]]
 == 仮想化管理者の初期タスク
 
 FC 接続用の OpenNebula ホストを準備し、ストレージ管理者に必要な情報を収集するために、これらの初期タスクを完了してください。
@@ -60,6 +61,7 @@ cat /sys/class/fc_host/host*/port_name
 
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
@@ -73,6 +75,7 @@ ONTAPを初めて使用する場合は、System Manager を使用すると使い
 
 
 
+[[final-virtualization-administrator-tasks]]
 == 最終的な仮想化管理者のタスク
 
 OpenNebulaでFC LUNを共有LVMデータストアとして構成するには、次のタスクを実行します。

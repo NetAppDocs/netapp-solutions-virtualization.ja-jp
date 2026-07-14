@@ -18,6 +18,7 @@ ONTAPツールを使用して、VI ワークロード ドメインに iSCSI vVol
 
 
 
+[[step-1-deploy-ontap-tools-for-vmware-vsphere]]
 == ステップ1: ONTAP tools for VMware vSphereを導入する
 
 VI ワークロード ドメインの場合、 ONTAPツールは VCF 管理クラスタにインストールされますが、VI ワークロード ドメインに関連付けられた vCenter に登録されます。
@@ -87,6 +88,7 @@ image:vmware-vcf-asa-035.png["OTVテンプレート2をカスタマイズする"
 
 
 
+[[step-2-add-a-storage-system]]
 == ステップ2: ストレージシステムを追加する
 
 ONTAPツールを使用してストレージ システムを追加するには、次の手順を実行します。
@@ -131,6 +133,7 @@ image:vmware-vcf-asa-017.png["クラスタ証明書を承認する"]
 
 
 
+[[step-3-create-a-storage-capability-profile-in-ontap-tools]]
 == ステップ3: ONTAPツールでストレージ機能プロファイルを作成する
 
 ストレージ機能プロファイルは、ストレージ アレイまたはストレージ システムによって提供される機能を説明します。これらにはサービス品質の定義が含まれており、プロファイルで定義されたパラメータを満たすストレージ システムを選択するために使用されます。提供されているプロファイルの 1 つを使用することも、新しいプロファイルを作成することもできます。
@@ -197,6 +200,7 @@ image:vmware-vcf-asa-040.png["SCPの概要"]
 
 
 
+[[step-4-create-a-vvols-datastore-in-ontap-tools]]
 == ステップ4: ONTAPツールでvVolsデータストアを作成する
 
 ONTAPツールでvVolsデータストアを作成するには、次の手順を実行します。
@@ -250,6 +254,7 @@ image:vmware-vcf-asa-045.png["[サマリ]ページ"]
 
 
 
+[[additional-information]]
 == 追加情報
 
 * ONTAPストレージシステムの設定については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。

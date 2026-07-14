@@ -18,6 +18,7 @@ summary: 仮想化用の Shift Toolkit と Migration Toolkit を使用して、V
 
 
 
+[[before-you-begin]]
 == 開始する前に
 
 移行を開始する前に、次の前提条件が満たされていることを確認してください。
@@ -54,6 +55,7 @@ NOTE: VMDK が qtree 内に配置されている場合、Shift Toolkit は ONTAP
 
 
 
+[[step-1-create-migration-plans-using-migration-toolkit-for-virtualization]]
 == ステップ1: Migration Toolkit for Virtualizationを使用して移行計画を作成する
 
 . VMの高速変換を活用するには、まずMTVを使用してVMの移行計画を作成します。link:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.3/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console["ウェブコンソール"]またはlink:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.0/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-virtual-machines-to-virt_mtv#migrating-virtual-machines-cli_mtv["コマンドライン"]。

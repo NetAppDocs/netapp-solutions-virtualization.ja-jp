@@ -18,6 +18,7 @@ NetApp Data Infrastructure Insights (旧称Cloud Insights) は、オンプレミ
 
 
 
+[[monitoring-on-premises-storage-with-data-infrastructure-insights]]
 == Data Infrastructure Insightsサイトによるオンプレミスストレージの監視
 
 Data Infrastructure Insights は、VMware vSphere やNetApp ONTAPストレージ システムなどの資産のデータ コレクターがセットアップされた Acquisition Unit ソフトウェアを通じて動作します。これらのコレクターはデータを収集し、それをData Infrastructure Insightsに送信します。次に、プラットフォームはさまざまなダッシュボード、ウィジェット、メトリック クエリを活用して、ユーザーが解釈しやすいようにデータを整理し、洞察に富んだ分析を作成します。
@@ -28,6 +29,7 @@ image:vmware-dii.png["Data Infrastructure Insights"]
 
 
 
+[[solution-deployment-overview]]
 == ソリューション展開の概要
 
 このソリューションでは、Data Infrastructure Insightsを使用してオンプレミスの VMware vSphere およびONTAPストレージ システムを監視する方法を紹介します。
@@ -45,6 +47,7 @@ image:vmware-dii.png["Data Infrastructure Insights"]
 
 
 
+[[prerequisites]]
 == 前提条件
 
 このソリューションでは、次のコンポーネントを使用します。
@@ -57,10 +60,12 @@ image:vmware-dii.png["Data Infrastructure Insights"]
 
 
 
+[[solution-deployment]]
 == ソリューションの展開
 
 
 
+[[configure-data-collectors]]
 === データコレクターを構成する
 
 VMware vSphere およびONTAPストレージ システムのデータ コレクターを構成するには、次の手順を実行します。
@@ -103,6 +108,7 @@ image:vmware-asa-034.png["コレクターを構成する"]
 ====
 
 
+[[add-annotations-to-assets]]
 === アセットに注釈を追加する
 
 注釈は、アセットにタグを付け、 Cloud Insightsで利用できるさまざまなビューやメトリック クエリでフィルタリングしたり識別したりできるようにするための便利な方法です。
@@ -129,6 +135,7 @@ image:vmware-asa-037.png["すべてのルールを実行する"]
 ====
 
 
+[[explore-and-correlate-assets]]
 === 資産の調査と相関関係の分析
 
 Cloud Insights は、ストレージ システムと vSphere クラスター上で一緒に実行されている資産に関する論理的な結論を導き出します。
@@ -167,6 +174,7 @@ image:vmware-asa-043.png["VMパフォーマンスメトリック"]
 ====
 
 
+[[use-cloud-insights-to-identify-noisy-neighbors]]
 === Cloud Insightsを使用して、騒がしい隣人を特定する
 
 Cloud Insights には、同じストレージ ボリューム上で実行されている他の VM に悪影響を与えているピア VM を簡単に分離できるダッシュボードが備わっています。
@@ -195,6 +203,7 @@ image:vmware-asa-047.png["ワークロードの競合"]
 ====
 
 
+[[view-over-and-under-utilized-resources-in-cloud-insights]]
 === Cloud Insightsで過剰利用されているリソースと利用されていないリソースを表示する
 
 VM リソースを実際のワークロード要件に一致させることで、リソース使用率を最適化し、インフラストラクチャとクラウド サービスのコストを削減できます。  Cloud Insightsのデータはカスタマイズ可能で、過剰に使用されている VM や十分に使用されていない VM を簡単に表示できます。
@@ -223,6 +232,7 @@ image:vmware-asa-051.png["電源オフのVM"]
 ====
 
 
+[[use-queries-to-isolate-and-sort-metrics]]
 === クエリを使用してメトリックを分離および並べ替える
 
 Cloud Insightsによって収集されるデータの量は非常に包括的です。メトリック クエリは、大量のデータを便利な方法で並べ替え、整理するための強力な手段を提供します。
@@ -243,12 +253,14 @@ image:vmware-asa-053.png["ONTAPエッセンシャル - VMware"]
 ====
 
 
+[[conclusion]]
 == まとめ
 
 このソリューションは、 NetApp Cloud Insightsの使用を開始する方法と、この可観測性ソリューションが提供できる強力な機能の一部を紹介する入門書として設計されました。製品には何百ものダッシュボードとメトリック クエリが組み込まれているため、すぐに使い始めることができます。  Cloud Insightsのフル バージョンは 30 日間の試用版として提供されており、基本バージョンはNetApp の顧客に無料で提供されます。
 
 
 
+[[additional-information]]
 == 追加情報
 
 このソリューションで紹介されているテクノロジーの詳細については、次の追加情報を参照してください。

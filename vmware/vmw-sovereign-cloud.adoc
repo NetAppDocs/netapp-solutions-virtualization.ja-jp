@@ -20,6 +20,7 @@ VMware Sovereign Cloud は、機密データを扱う組織のデータ主権、
 
 
 
+[[vmware-sovereign-cloud-initiative]]
 == VMware ソブリン クラウド イニシアチブ
 
 VMware は、主権クラウドを次のように定義しています。
@@ -33,6 +34,7 @@ VMware は、主権クラウドを次のように定義しています。
 
 
 
+[[partnering-with-a-trusted-vmware-sovereign-cloud-service-provider]]
 == 信頼できる VMware ソブリン クラウド サービス プロバイダーとの提携
 
 成功を確実にするために、組織は信頼できるパートナーと協力し、本物で自律的なソブリン クラウド プラットフォームをホストできる必要があります。  VMware Sovereign Cloud イニシアチブで認定された VMware Cloud Provider は、VMware Sovereign Cloud フレームワークで概説されている主要な原則とベスト プラクティスを具体化した最新のソフトウェア定義アーキテクチャに基づくクラウド ソリューションの設計と運用に取り組んでいます。

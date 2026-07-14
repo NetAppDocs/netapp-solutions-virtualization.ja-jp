@@ -18,12 +18,14 @@ Shift Toolkit で変換する前に、VMware Storage vMotion と Storage Live Mi
 
 
 
+[[requirements-for-san-based-vms]]
 == SANベースのVMの要件
 
 Shift Toolkit では、変換前に VM が NAS 環境 (VMware ESXi の場合は NFS) に存在している必要があります。現在、VM が iSCSI、ファイバー チャネル (FC)、ファイバー チャネル オーバー イーサネット (FCoE)、または NVMe オーバー ファイバー チャネル (NVMe/FC) を使用して SAN ベースのデータストアに保存されている場合は、まずそれらを NFS データストアに移行する必要があります。
 
 
 
+[[migration-workflow-for-san-environments]]
 == SAN環境の移行ワークフロー
 
 次の図は、SAN 環境に保存されている VM の完全な移行ワークフローを示しています。
@@ -43,6 +45,7 @@ VM が NFS データストアに配置された後、Shift Toolkit はNetApp Fle
 
 
 
+[[handling-processor-compatibility-issues]]
 == プロセッサの互換性の問題の処理
 
 異なるプロセッサ機能を持つノード間でライブ VM 移行を実行すると、プロセッサ互換性チェックのために移行が失敗する可能性があります。

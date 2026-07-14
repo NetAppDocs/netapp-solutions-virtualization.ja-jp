@@ -18,6 +18,7 @@ summary: '複数の論理インターフェイス (LIF) を持つストレージ
 
 
 
+[[step-1-create-the-svms-and-lifs]]
 == ステップ1: SVMとLIFを作成する
 
 NVMe/TCP トラフィック用の複数の LIF を持つ SVM を作成するには、次の手順を実行します。
@@ -58,6 +59,7 @@ image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
 
 
 
+[[step-2-create-the-nvme-namespace]]
 == ステップ2: NVMe名前空間を作成する
 
 NVMe 名前空間は、iSCSI または FC の LUN に類似しています。vSphere Client から VMFS データストアを展開する前に、NVMe 名前空間を作成する必要があります。
@@ -103,6 +105,7 @@ image:vmware-vcf-asa-093.png["+追加をクリックしてNVMe名前空間を作
 
 
 
+[[whats-next]]
 == 次の手順
 
 SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nvme-network.html["NVMe/TCP (NVMe/TCP) vVolsのネットワークを構成する"] 。

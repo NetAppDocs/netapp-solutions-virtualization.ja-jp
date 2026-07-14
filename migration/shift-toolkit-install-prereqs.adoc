@@ -16,6 +16,7 @@ Shift Toolkit をインストールする前に、環境がハードウェア、
 
 
 
+[[hardware-requirements]]
 == ハードウェア要件
 
 Shift Toolkit サーバーが次の最小ハードウェア要件を満たしていることを確認します。
@@ -27,6 +28,7 @@ Shift Toolkit サーバーが次の最小ハードウェア要件を満たして
 
 
 
+[[connectivity-requirements]]
 == 接続要件
 
 次の接続要件が満たされていることを確認します。
@@ -40,12 +42,14 @@ Shift Toolkit サーバーが次の最小ハードウェア要件を満たして
 
 
 
+[[ontap-storage-configurations]]
 == ONTAPストレージ構成
 
 Shift Toolkit の移行をサポートするために、SVM、qtree、CIFS 共有などのONTAPストレージ コンポーネントを構成します。
 
 
 
+[[create-a-new-svm-recommended]]
 === 新しいSVMを作成する（推奨）
 
 Shift Toolkit では既存の SVM の使用が許可されていますが、 NetApp移行操作専用の SVM を作成することを推奨しています。
@@ -66,6 +70,7 @@ NOTE: VMware と Hyper-V 間の双方向移行の場合、SVM とプロビジョ
 
 
 
+[[qtree-requirements]]
 === Qtree の要件
 
 変換された VM をホストするボリュームに qtree を作成します。Qtree は、ターゲット ハイパーバイザーに基づいて、変換されたディスク ファイルを分離して保存します。
@@ -94,6 +99,7 @@ NOTE: OpenShift Virtualization の場合、変換された QCOW2 ファイルは
 
 
 
+[[cifs-share-requirements]]
 === CIFS共有の要件
 
 Hyper-V 移行の場合、変換された VM データを保存するための CIFS 共有を作成します。NFS 共有 (ソース VM) と CIFS 共有 (変換された VM) の両方が同じボリューム上に存在している必要があります。

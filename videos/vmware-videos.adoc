@@ -18,6 +18,7 @@ VMware とNetAppストレージ ソリューションの統合を紹介するビ
 
 
 
+[[vmware-datastore-provisioning-with-ontap]]
 == ONTAPを使用した VMware データストアのプロビジョニング
 
 .VMware 向けONTAPツール - 概要
@@ -30,6 +31,7 @@ video::3135c36f-3a13-4c95-aac9-b2a0001816dc[panopto,width=360]
 video::a34bcd1c-3aaa-4917-9a5d-b01200f97f08[panopto]
 
 
+[[snapcenter-plug-in-for-vmware-vsphere]]
 == SnapCenter Plug-in for VMware vSphere
 
 .SnapCenter Plug-in for VMware vSphere- ソリューションの前提条件
@@ -44,12 +46,14 @@ video::ed41002e-585c-445d-a60c-b01200fb1188[panopto,width=360]
 video::8df4ad1f-83ad-448b-9405-b01200fb2567[panopto,width=360]
 
 
+[[3-2-1-data-protection-solutions]]
 == 3-2-1データ保護ソリューション
 
 .SnapCenter Plug-in for VMware vSphereと仮想マシン向けNetApp Backup and Recoveryを使用した VMFS データストアの 3-2-1 データ保護
 video::7c21f3fc-4025-4d8f-b54c-b0e001504c76[panopto,width=360]
 
 
+[[vmware-cloud-on-aws-with-aws-fsx-ontap]]
 == AWS FSx ONTAPを使用した VMware Cloud on AWS
 
 .iSCSI を使用した FSx ONTAPによる Windows ゲスト接続ストレージ
@@ -68,6 +72,7 @@ video::52661f10-3f90-4f3d-865a-b01200f06d31[panopto,width=360]
 video::685c0dc2-9d8a-42ff-b46d-b01200f056b0[panopto,width=360]
 
 
+[[azure-vmware-solutions]]
 == Azure VMware ソリューション
 
 .Azure NetApp Filesを使用した Azure VMware ソリューションの補足データストアの概要
@@ -82,6 +87,7 @@ video::986bb505-6f3d-4a5a-b016-b01200f03f18[panopto,width=360]
 video::255640f5-4dff-438c-8d50-b01200f017d1[panopto,width=360]
 
 
+[[vmware-cloud-foundation-with-netapp-ontap]]
 == VMware Cloud Foundation とNetApp ONTAP
 
 .VCF ワークロード ドメインの主要ストレージとしての NFS データストア
@@ -90,6 +96,7 @@ video::9b66ac8d-d2b1-4ac4-a33c-b16900f67df6[panopto]
 video::1d0e1af1-40ae-483a-be6f-b156015507cc[panopto]
 
 
+[[netapp-cloud-insights]]
 == NetAppCloud Insights
 
 .NetApp Cloud Insights - 最新データセンターの可観測性

@@ -1,0 +1,79 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-migration-vm-storage.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, Red Hat OpenShift Virtualization, Storage Class migration, VM storage migration, OpenShift Virtualization storage migration 
+summary: Red Hat OpenShift 仮想化 
+---
+= OpenShift Virtualization におけるストレージクラス間の VM のストレージ移行
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift Virtualization では、仮想マシン（VM）を削除せずに、Web コンソールから直接、VM のディスクを別のストレージクラスに移行できます。このプロセスにより、VM ストレージ全体または特定のボリュームを移動できます。
+
+仮想マシンのストレージクラスを移行する方法を、以下の手順で説明します。
+
+. ターゲットストレージクラスが正しく構成され、OpenShiftクラスタで使用可能であることを確認してください。これには、必要なストレージバックエンド（例：NetApp ONTAP）が設定済みでアクセス可能であることが含まれます。
++
+.例を表示
+[%collapsible]
+====
+image:osv-sc-migration-015.png["Tridentバックエンド構成"]
+
+image:osv-sc-migration-017.png["ストレージクラス構成"]
+
+====
+. OpenShift Container Platform の Web コンソールで、仮想化パースペクティブに移動し、移行する VM を選択します。
++
+.例を表示
+[%collapsible]
+====
+image:osv-sc-migration-001.png["VM"]
+
+image:osv-sc-migration-002.png["VMディスク"]
+
+image:osv-sc-migration-003.png["OC CLI を使用した VM とディスク"]
+
+====
+. 「アクション」→「移行」→「ストレージの移行」をクリックします。移行するボリュームと移行先のストレージクラスを選択し、「移行」をクリックします。移行プロセスが開始され、VMの「イベント」タブで進行状況を監視できます。移行が完了すると、仮想マシンのディスクは新しいストレージクラスを使用するようになります。
++
+.例を表示
+[%collapsible]
+====
+image:osv-sc-migration-004.png["ストレージの移行"]
+
+image:osv-sc-migration-005.png["ボリュームを選択"]
+
+image:osv-sc-migration-006.png["ストレージクラスを選択"]
+
+image:osv-sc-migration-007.png["VMストレージの移行"]
+
+image:osv-sc-migration-008.png["移行中"]
+
+====
+. 移行が完了したら、Web コンソールで VM の詳細を確認するか、OpenShift CLI を使用して、VM のディスクが新しいストレージクラスを使用していることを確認できます。
++
+.例を表示
+[%collapsible]
+====
+image:osv-sc-migration-009.png["ストレージクラスを確認する"]
+
+image:osv-sc-migration-010.png["OC CLIを使用してすべてのオブジェクトを検証する"]
+
+image:osv-sc-migration-012.png["移行前にOC CLIを使用したONTAPボリューム名"]
+
+image:osv-sc-migration-011.png["移行前の ONTAP バックエンドのボリューム"]
+
+image:osv-sc-migration-018.png["移行後のnas-economyボリューム"]
+
+image:osv-sc-migration-019.png["移行後のONTAP バックエンドにおけるnas-economy qtree名"]
+
+image:osv-sc-migration-020.png["移行後のONTAP バックエンドにおけるnas-economy qtree"]
+
+====
+

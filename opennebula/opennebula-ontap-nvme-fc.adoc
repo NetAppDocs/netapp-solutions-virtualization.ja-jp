@@ -18,6 +18,7 @@ NVMe over Fibre Channelプロトコルを使用して、NetApp ONTAPとともに
 
 
 
+[[initial-virtualization-administrator-tasks]]
 == 仮想化管理者の初期タスク
 
 NVMe/FC 接続用に OpenNebula ホストを準備し、ストレージ管理者に必要な情報を収集するために、これらの初期タスクを完了してください。
@@ -53,6 +54,7 @@ nvme show-hostnqn
 
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
@@ -67,6 +69,7 @@ ONTAPを初めて使用する場合は、System Manager を使用すると使い
 
 
 
+[[final-virtualization-administrator-tasks]]
 == 最終的な仮想化管理者のタスク
 
 これらのタスクを完了して、NVMe名前空間をOpenNebulaで共有LVMストレージとして構成します。

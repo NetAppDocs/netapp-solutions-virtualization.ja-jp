@@ -1,0 +1,66 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-deployment-models.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift 仮想化 
+---
+= OpenShift/OpenShift Virtualizationの展開モデル
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift コンテナプラットフォームのデプロイメントモデルは、主に実行されるインフラストラクチャ（クラウド vs. オンプレミス）と、管理方法（Red Hat による管理か顧客による管理か）によって分類されます。OpenShift 仮想化は、OpenShift コンテナプラットフォームにインストールできます。
+
+
+
+[[key-deployment-models-include]]
+== 主な展開モデルには以下が含まれます
+
+. **マネージドサービス（Red Hat マネージド）**：このモデルでは、Red Hat が OpenShift コンテナプラットフォームのインフラストラクチャと運用を管理します。顧客は、プラットフォーム上で動作するアプリケーションとワークロードの管理に責任を負います。例としては以下のようなものがあります：
++
+.. **Red Hat OpenShift Service on AWS （ROSA）**：AWS サービスとの容易な統合を可能にするマネージドサービス。OpenShift Virtualization は、AWS 上の EC2 ベアメタルインスタンスにインストールされます。
+.. **Azure Red Hat OpenShift (ARO)**：これは Azure クラウド上のマネージドサービスです。OpenShift 仮想化は Azure 仮想マシン上で動作します。
+.. **Red Hat OpenShift Dedicated (OSD)**：Google Cloud 上にデプロイされ、Red Hat によって管理されるフルマネージドサービス。OpenShift Virtualization は、Google Cloud のベアメタルインスタンス上にデプロイされます。
+
+
+. **セルフマネージドサービス（顧客管理）**：この場合、OpenShift コンテナプラットフォームは、顧客が自社のインフラストラクチャ上で直接デプロイおよび管理します。インフラストラクチャは、パブリッククラウドまたはオンプレミスのいずれかに配置できます。
++
+.. **パブリッククラウド：** インストーラープロビジョニングインフラストラクチャ (IPI) またはユーザープロビジョニングインフラストラクチャ (UPI) を使用して、AWS、Azure、または GCP にデプロイされます。
+.. **ベアメタル：** 物理ハードウェア上に直接デプロイされます。
+.. **仮想化：** VMware vSphere などのプラットフォームに展開されます。
+
+
+
+
+
+
+[[infrastructure-deployment-options]]
+=== インフラストラクチャ展開オプション
+
+. **インストーラープロビジョニングインフラストラクチャ（IPI）：**インストールプログラムは、ネットワークやマシンなどのインフラストラクチャコンポーネントのプロビジョニングを自動化します。
+. **ユーザープロビジョニングインフラストラクチャ（UPI）：** ユーザーがインフラストラクチャを手動で作成および管理することで、環境に対するより詳細な制御が可能になります。
+
+
+
+
+[[specialized-deployment-models]]
+== 特殊な展開モデル
+
+. **シングルノードOpenShift（SNO）：** 単一の物理マシンまたは仮想マシン上にインストールされた完全なOpenShiftクラスターで、エッジコンピューティングによく使用されます。
+. **切断済み（エアギャップ）デプロイメント：** 外部インターネットアクセスのない制限されたネットワーク環境にデプロイされます。
+. **Red Hat OpenShift Virtualization Engine：** ベアメタル専用の仮想化インフラストラクチャであり、VMのデプロイ、管理、およびスケーリングのための信頼性の高いエンタープライズクラスのソリューションを企業に提供することを目的に即した製品です。OpenShift機能のサブセットとして、このOpenShiftエディションは仮想マシン専用のワークロードを対象としています。
+
+
+
+
+[[additional-resources]]
+== 参考資料
+
+OpenShift Container Platform の詳細については、Red Hat link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/overview/ocp-overview["ドキュメントはこちら。"] を参照してください。
+
+OpenShift Virtualizationの詳細については、Red Hat link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/virtualization/index["ドキュメントはこちら。"]を参照してください。

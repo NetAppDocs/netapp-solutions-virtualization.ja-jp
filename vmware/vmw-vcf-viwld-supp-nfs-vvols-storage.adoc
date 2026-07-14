@@ -18,6 +18,7 @@ VI ワークロード ドメインで NFS vVolsストレージを構成します
 
 
 
+[[step-1-deploy-ontap-tools-for-vmware-vsphere]]
 == ステップ1: ONTAP tools for VMware vSphereを導入する
 
 VI ワークロード ドメインの場合、 ONTAPツールは VCF 管理クラスタにインストールされますが、VI ワークロード ドメインに関連付けられた vCenter に登録されます。
@@ -87,6 +88,7 @@ image:vmware-vcf-asa-035.png["OTVテンプレート2をカスタマイズする"
 
 
 
+[[step-2-add-a-storage-system]]
 == ステップ2: ストレージシステムを追加する
 
 ONTAPツールを使用してストレージ システムを追加するには、次の手順を実行します。
@@ -131,6 +133,7 @@ image:vmware-vcf-asa-017.png["クラスタ証明書を承認する"]
 
 
 
+[[step-3-create-an-nfs-datastore-in-ontap-tools]]
 == ステップ3: ONTAPツールでNFSデータストアを作成する
 
 NFS 上で実行されるONTAPデータストアを展開するには、次の手順を実行します。  ONTAPツールを使用します。
@@ -187,6 +190,7 @@ image:vmware-vcf-aff-045.png["レビューの要約と終了"]
 
 
 
+[[step-4-create-a-vvols-datastore-in-ontap-tools]]
 == ステップ4: ONTAPツールでvVolsデータストアを作成する
 
 ONTAPツールでvVolsデータストアを作成するには、次の手順を実行します。
@@ -247,6 +251,7 @@ image:vmware-vcf-aff-049.png["[サマリ]ページ"]
 
 
 
+[[additional-information]]
 == 追加情報
 
 * ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。

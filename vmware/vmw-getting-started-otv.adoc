@@ -18,12 +18,14 @@ ONTAP tools for VMware vSphereは、 NetAppストレージを使用して VM の
 
 
 
+[[introduction]]
 == はじめに
 
 これにより、管理者は vCenter Server 内のストレージを直接管理し、VMware 環境のストレージとデータ管理を簡素化できます。 VMware vSphere Client プラグイン ツールは、vCenter Server 内で実行する必要なく、プラグイン機能を vSphere Client に統合するように設計されています。これにより、プラグインの分離が容易になり、大規模なvSphere環境で動作するプラグインのスケールアウトが実現します。
 
 
 
+[[ontap-tools-components]]
 == ONTAPツールコンポーネント
 
 * *仮想ストレージ コンソール (VSC)* VSC には vSphere クライアントと統合されたインターフェイスが含まれており、ストレージ コントローラの追加、データストアのプロビジョニング、データストアのパフォーマンスの監視、ESXi ホスト設定の表示と更新を行うことができます。

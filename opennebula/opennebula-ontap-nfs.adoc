@@ -22,6 +22,7 @@ ONTAPを初めて使用する場合は、System Manager インターフェイス
 
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 OpenNebulaで使用するONTAPのNFSストレージをプロビジョニングするには、次のタスクを実行します。
@@ -49,6 +50,7 @@ image:opennebula-ontap-nfs-002.png["FlexGroupオプション"]
 
 
 
+[[virtualization-administrator-tasks]]
 == 仮想化管理者のタスク
 
 NFSボリュームをOpenNebulaのデータストアとして追加し、パフォーマンスを向上させるためにnConnectまたはセッショントランキングを設定するには、次のタスクを実行します。

@@ -4,7 +4,7 @@ permalink: openshift/osv-deployment.html
 keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
 summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
 ---
-= ONTAPを使用したRed Hat OpenShift Virtualizationの導入
+= ONTAPを使用した Red Hat OpenShift Virtualization の導入要件
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,6 +14,61 @@ summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化
 
 
 [role="lead"]
+OpenShift 仮想化を ONTAP ストレージシステムにデプロイするための前提条件と追加の詳細を確認してください。
+
+
+
+[[prerequisites]]
+== 前提条件
+
+* RHCOS ワーカーノードを備えたベアメタル インフラストラクチャにインストールされた Red Hat OpenShift クラスター (バージョン 4.6 以降)
+* VMのHAを維持するためにマシンヘルスチェックを導入する
+* 正しいプロトコルで設定された SVM を備えたNetApp ONTAPクラスター。
+* OpenShift クラスタにインストールされたTrident
+* Tridentバックエンド構成が作成されました
+* Tridentをプロビジョナーとして OpenShift クラスター上に構成された StorageClass
+* TridentをプロビジョナーとしてOpenShiftクラスタに設定されたTridentのVolumeSnapshotClass
+* Trident StorageClassが OpenShift クラスターまたは OpenShift Virtualization のデフォルトとして設定されています。
+
+
+上記のTridentの前提条件については、link:osv-trident-install.html["Trident設置部"]詳細については。
+
+* Red Hat OpenShift クラスターへのクラスター管理者アクセス
+* NetApp ONTAPクラスタへの管理者アクセス
+* tridentctl および oc ツールがインストールされ、$PATH に追加された管理ワークステーション
+
+
+OpenShift Virtualization は OpenShift クラスターにインストールされたオペレーターによって管理されるため、メモリ、CPU、ストレージに追加のオーバーヘッドが発生します。クラスターのハードウェア要件を計画する際には、この点を考慮する必要があります。詳細については、ドキュメント link:https://docs.openshift.com/container-platform/4.7/virt/install/preparing-cluster-for-virt.html#virt-cluster-resource-requirements_preparing-cluster-for-virt["ここをクリックしてください。"] を参照してください。
+
+オプションで、ノード配置ルールを設定することにより、OpenShift Virtualization のオペレーター、コントローラー、および VM をホストする OpenShift クラスターノードのサブセットを指定することもできます。OpenShift Virtualization のノード配置ルールを設定するには、ドキュメント link:https://docs.openshift.com/container-platform/4.7/virt/install/virt-specifying-nodes-for-virtualization-components.html["ここをクリックしてください。"] を参照してください。
+
+OpenShift Virtualization を支えるストレージについては、 NetApp、専用の SVM によって支えられている特定のTridentバックエンドからストレージを要求する専用の StorageClass を用意することを推奨しています。これにより、OpenShift クラスター上の VM ベースのワークロードに提供されるデータに関して、マルチテナントのレベルが維持されます。
+
+
+
+[[netapp-trident-csi-storage-profiles-volume-access-modes-for-openshift-virtualization]]
+== NetApp Trident CSI、ストレージプロファイル、OpenShift Virtualization のボリュームアクセスモード
+
+OpenShift Virtualization では、ブートソースとは、テンプレートから仮想マシン（VM）をプロビジョニングするために使用されるディスクイメージのことです。これらは通常、openshift-virtualization-os-images 名前空間内の DataVolumes または永続ボリューム要求（PVC）として保存されます。OpenShift Virtualization が正しく機能するためには、オペレータを使用して OpenShift Virtualization をインストールする前に、必須のストレージ構成タスクが 2 つあります。
+
+. クラスターのデフォルトの StorageClass を設定する必要があります。設定しない場合、OpenShift Virtualization はブートソースイメージを自動的にインポートできません。
+. ストレージプロバイダがCDIによって認識されない場合は、ストレージプロファイルを設定する必要があります。ストレージプロファイルは、関連付けられているStorageClassに基づいて推奨されるストレージ設定を提供します。StorageProfileの重要な機能の1つは、StorageClassのクローニングストラテジを定義することです。これにより、ボリュームのクローニング方法（スナップショット、CSIクローン、ホスト支援コピーの使用など）が決定され、基盤となるストレージベンダーの機能に基づいてパフォーマンスとリソースの使用状況が最適化されます。+ Trident CSIドライバーはCDIによって認識され、クラスタ内に作成されたすべてのTrident StorageClassに対してデフォルトのストレージプロファイルが自動的に作成されます。このデフォルトのストレージプロファイルのクローニングストラテジはスナップショットに設定されています。これは、Trident CSIドライバーに推奨されるクローニングストラテジです。OpenShift Virtualizationをインストールする前に、Trident用のVolumeSnapshotClassとStorageClassを作成し、そのStorageClassをデフォルトとして設定する必要があります。これにより、ブートソースイメージがopenshift-virtualization-os-imagesネームスペースでVolumeSnapshotsとして確実に利用可能になり、エラーを発生させずにVMを効率的にプロビジョニングできるようになります。
+
+
+特定のサポートされているオペレーティングシステム（RHEL、Fedora、CentOS など）の場合、OpenShift 仮想化はブートソースを自動的に提供および更新します。これらは OpenShift 仮想化のインストール時にダウンロードされ、自動的に管理されて最新の OS バージョンに更新されます。OS が自動的に提供されない場合、管理者はカスタムイメージを手動で準備してアタッチする必要があります。CSI として NetApp Trident を使用すると、次の追加メリットが得られます：
+
+. ブートソースイメージは、openshift-virtualization-os-images名前空間のスナップショットとして利用可能になります。仮想マシンがプロビジョニングされる際、ブートイメージはスナップショットからクローンされるため、仮想マシンの起動が大幅に高速化されます。
+. 各 Trident StorageClass に対してストレージプロファイルが自動的に作成され、クローン戦略がスナップショットに設定された状態で自動的に構成されます。アクセスモードは ReadWriteMany に設定されています。手動設定は不要です。
+
+
+クラスタに OpenShift Virtualization をインストールする前に、Trident StorageClass と Trident VolumeSnapshotClass を作成し、それらをデフォルトとして設定することが非常に重要です。これにより、ブートソースイメージが openshift-virtualization-os-images ネームスペースで VolumeSnapshots として利用可能になり、エラーを発生させることなく効率的に VM をプロビジョニングできるようになります。
+
+Trident CSIを使用するもう1つのメリットは次のとおりです：OpenShift Virtualizationでは、VMのライブ マイグレーションを実行するために、VMのブート ディスクにRWXアクセス モードが必要です。Tridentは、NASプロトコルを使用してプロビジョニングされたボリュームだけでなく、SANプロトコルを使用してプロビジョニングされたボリューム（volumeModeがFileSystemではなくBlockに設定されている場合）に対しても、**ReadWriteMany**アクセス モードをサポートしています。ブート ディスクにはどちらのプロトコルも使用できます。Storage profileオブジェクトはStorageClassの設定に基づいて自動的に構成され、VMのプロビジョニング時にブート ディスクのアクセス モードが適切に設定されます。
+
+クラスターのデフォルトとして Trident StorageClass を設定した後、異なるパラメータを持つ Trident 用の追加の StorageClasses を作成できます。これらは、適切なストレージプロファイルが作成された状態で OpenShift Virtualization によって自動的に認識されます。その後、VM 定義において VM のブートディスクおよびデータディスクに使用する StorageClass を指定できます。
+
+OpenShiftクラスタへのOpenShift Virtualizationのインストールは、OpenShift OperatorHubで提供されているOpenShift Virtualizationオペレータを使用する簡単なプロセスです。OpenShift Virtualizationのインストール手順の詳細については、ドキュメントlink:https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/virtualization/installing["ここをクリックしてください。"]を参照してください。
+
 Red Hat OpenShift ベアメタル クラスターに OpenShift Virtualization をインストールします。この手順には、cluster-admin アクセスでのログイン、OperatorHub への移動、OpenShift Virtualization オペレーターのインストールが含まれます。
 
 . cluster-admin アクセスを使用して Red Hat OpenShift ベアメタル クラスターにログインします。

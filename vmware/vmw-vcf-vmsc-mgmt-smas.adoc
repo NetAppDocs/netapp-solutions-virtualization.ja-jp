@@ -20,6 +20,7 @@ image:vmware-vcf-asa-mgmt-stretchcluster-001.png["単一インスタンス - 複
 
 
 
+[[scenario-overview]]
 == シナリオの概要
 
 ストレッチ クラスター ソリューションは、デフォルトのクラスター、または VCF 管理ドメインまたはワークロード ドメイン内の追加のクラスターに実装できます。  FC 上の VMFS は、プリンシパル データストアと補助データストアの両方でサポートされます。  iSCSI 上の VMFS は、補足データストアでのみサポートされます。  SnapMirrorアクティブ同期を使用した NVMe-oF 上の VMFS のサポートについては、 IMTを参照してください。
@@ -60,6 +61,7 @@ NOTE: クラスタが拡張または縮小されるたびに、クラスタのON
 ====
 
 
+[[additional-information]]
 == 追加情報
 
 ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
@@ -68,6 +70,7 @@ VCFの設定方法については、以下を参照してください。link:htt
 
 
 
+[[video-demo-for-this-solution]]
 == このソリューションのビデオデモ
 
 .ONTAPツールを使用した VCF 用ストレッチ クラスタ

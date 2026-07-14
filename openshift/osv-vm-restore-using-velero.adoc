@@ -18,6 +18,7 @@ Velero と OpenShift API for Data Protection (OADP) を使用して、OpenShift 
 
 
 
+[[prerequisites]]
 == 前提条件
 
 バックアップから復元するには、仮想マシンが存在していた名前空間が誤って削除されたと仮定します。

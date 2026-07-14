@@ -46,6 +46,7 @@ VI ワークロード vCenter を登録すると、vCenter プラグインが有
 
 
 
+[[additional-information]]
 == 追加情報
 
 * ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。

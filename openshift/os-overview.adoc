@@ -18,6 +18,7 @@ Red Hat OpenShift Container Platform は、開発と IT 運用を単一のプラ
 
 
 
+[[red-hat-openshift-provides-the-following-capabilities]]
 == Red Hat OpenShift は次の機能を提供します。
 
 * *セルフサービス プロビジョニング* 開発者は、最もよく使用するツールからオンデマンドでアプリケーションを迅速かつ簡単に作成でき、運用担当者は環境全体を完全に制御できます。
@@ -37,6 +38,7 @@ image:redhat-openshift-004.png["入出力ダイアログまたは書かれたコ
 
 
 
+[[deployment-methods-for-red-hat-openshift]]
 == Red Hat OpenShiftのデプロイメント方法
 
 Red Hat OpenShift 4 以降、OpenShift のデプロイメント方法には、高度にカスタマイズされたデプロイメントのための User Provisioned Infrastructure (UPI) を使用した手動デプロイメントや、Installer Provisioned Infrastructure (IPI) を使用した完全に自動化されたデプロイメントが含まれます。
@@ -45,6 +47,7 @@ IPI インストール方法は、開発、テスト、実稼働環境向けの 
 
 
 
+[[ipi-installation-of-red-hat-openshift]]
 === Red Hat OpenShiftのIPIインストール
 
 OpenShift の Installer Provisioned Infrastructure (IPI) デプロイメントには、次の大まかな手順が含まれます。
@@ -63,6 +66,7 @@ image:redhat-openshift-009.png["入出力ダイアログまたは書かれたコ
 
 
 
+[[netapp-validated-openshift-deployments]]
 === NetApp検証済み OpenShift 導入
 
 NetApp は、次の各データセンター環境で、インストーラー プロビジョニング インフラストラクチャ (IPI) 導入方法を使用して、ラボで Red Hat OpenShift の導入をテストおよび検証しました。

@@ -18,6 +18,7 @@ summary:
 
 
 
+[[overview]]
 == 概要
 
 link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/["NetApp Snapmirror アクティブ同期 (SM アクティブ同期)"]仮想化環境でゼロ復旧時間目標 (RTO) とゼロ復旧ポイント目標 (RPO) を達成するための堅牢なソリューションです。
@@ -32,6 +33,7 @@ SM アクティブ シンク (以前はSnapMirror Business Continuity (SMBC) と
 
 
 
+[[prerequisites]]
 == 前提条件
 
 * NetAppストレージ システム: Snapmirror ライセンスを持つ 2 つのNetAppストレージ クラスター (ソースと宛先) があることを確認します。
@@ -47,6 +49,7 @@ SM アクティブ シンク (以前はSnapMirror Business Continuity (SMBC) と
 
 
 
+[[steps-to-convert-from-asymmetric-to-symmetric-sm-active-sync]]
 == 非対称SMアクティブ同期から対称SMアクティブ同期に変換する手順
 
 以下の例では、selectrz1 がプライマリ サイトであり、selectrz2 がセカンダリ サイトです。

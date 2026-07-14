@@ -1,0 +1,221 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-vm-deployment-other-methods.html 
+keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+---
+= Red Hat OpenShift Virtualization で、代替手段を使用して ONTAP ストレージを通じて VM を作成する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+OpenShift Virtualization UI を使用して VM を作成する方法に加えて、OpenShift Virtualization で VM を作成する他の方法もあります。このセクションでは、それらの方法のいくつかについて概説します。
+
+
+
+[[create-a-vm-from-a-yaml-file-with-red-hat-openshift-virtualization]]
+== Red Hat OpenShift Virtualization を使用して YAML ファイルから VM を作成する
+
+VM は、YAML ファイルを `oc apply`コマンドで適用することによって作成することもできます。この方法は、CLI の使用を好むユーザーや、スクリプトを使用して VM の作成を自動化したいユーザーにとって便利です。この方法で VM を作成するには、VM とその関連リソース（VM ディスクの PVC など）を定義する YAML ファイルを作成します。次に、 `oc apply -f <yaml-file>`コマンドを使用して YAML ファイルを適用し、OpenShift クラスタ上に VM を作成できます。
+
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: test-vms-vm
+  namespace: test-5vms
+  labels:
+    app: test-vms-vm
+    vm.kubevirt.io/template: centos-stream9-server-small
+spec:
+  dataVolumeTemplates:
+    - apiVersion: cdi.kubevirt.io/v1beta1
+      kind: DataVolume
+      metadata:
+        name: test-vms-vm-rootdisk
+      spec:
+        sourceRef:
+          kind: DataSource
+          name: centos-stream9
+          namespace: openshift-virtualization-os-images
+        storage:
+          resources:
+            requests:
+              storage: 30Gi
+  runStrategy: Always
+  template:
+    metadata:
+      labels:
+        kubevirt.io/domain: test-vms-vm
+    spec:
+      domain:
+        cpu:
+          cores: 1
+          sockets: 1
+          threads: 1
+        devices:
+          disks:
+            - bootOrder: 1
+              disk:
+                bus: virtio
+              name: rootdisk
+            - disk:
+                bus: virtio
+              name: cloudinitdisk
+          interfaces:
+            - masquerade: {}
+              model: virtio
+              name: default
+        resources:
+          requests:
+            memory: 2Gi
+      networks:
+        - name: default
+          pod: {}
+      terminationGracePeriodSeconds: 180
+      volumes:
+        - dataVolume:
+            name: test-vms-vm-rootdisk
+          name: rootdisk
+        - cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              user: admin
+              password: <replace with your password>
+              chpasswd: { expire: False }
+          name: cloudinitdisk
+----
+====
+
+
+[[create-a-vm-from-a-snapshot-copy-with-red-hat-openshift-virtualization]]
+== Red Hat OpenShift Virtualization を使用してスナップショット コピーから VM を作成する
+
+OpenShift Virtualization を使用して、スナップショットから VM を作成できます。この手順には、VolumeSnapshotClass の作成、VM の永続ボリューム要求（PVC）のスナップショットの取得、スナップショットの新しい PVC への復元、および復元された PVC をルートディスクとして使用する新しい VM のデプロイが含まれます。
+
+Tridentと Red Hat OpenShift を使用すると、ユーザーは、それによってプロビジョニングされたストレージ クラス上の永続ボリュームのスナップショットを取得できます。この機能を使用すると、ユーザーはボリュームのポイントインタイム コピーを取得し、それを使用して新しいボリュームを作成したり、同じボリュームを以前の状態に復元したりできます。これにより、ロールバックからクローン、データの復元まで、さまざまなユースケースが可能またはサポートされます。
+
+OpenShift でのスナップショット操作では、リソース VolumeSnapshotClass、VolumeSnapshot、および VolumeSnapshotContent を定義する必要があります。
+
+* VolumeSnapshotContent は、クラスター内のボリュームから取得された実際のスナップショットです。これは、ストレージ用の PersistentVolume に類似したクラスター全体のリソースです。
+* VolumeSnapshot は、ボリュームのスナップショットを作成するための要求です。これは PersistentVolumeClaim に類似しています。
+* VolumeSnapshotClass を使用すると、管理者は VolumeSnapshot にさまざまな属性を指定できます。同じボリュームから取得した異なるスナップショットに異なる属性を設定できます。
+
+
+image:redhat-openshift-060.png["スナップショットからのVMアーキテクチャ"]
+
+.例を表示
+[%collapsible]
+====
+**前提条件**
+
+PVCのスナップショットを作成するには、Trident Storage Class上にプロビジョニングされ、PVCが接続された既存のVMが存在し、そのVMが実行状態である必要があります。VolumeSnapshotの作成に使用できるVolumeSnapshotClassが作成されている必要があります。これは、OpenShift Virtualizationをインストールするための前提条件の一部として作成されている必要があります。詳細については、link:osv-trident-install.html["VolumeSnapshotClass 構成を作成するステップ 3"]を参照してください。
+
+**仮想マシンのスナップショットを作成するには、以下の手順を実行してください。**
+
+. ソース VM に接続されている PVC を識別し、その PVC のスナップショットを作成します。移動先 `Storage > VolumeSnapshots`[ボリュームスナップショットの作成]をクリックします。
+. スナップショットを作成する PVC を選択し、スナップショットの名前を入力するかデフォルトを受け入れ、適切な VolumeSnapshotClass を選択します。次に、「作成」をクリックします。
+. これにより、その時点での PVC のスナップショットが作成されます。
+
+
+image:redhat-openshift-062.png["Snapshot を作成"]
+
+**スナップショットから新しい仮想マシンを作成する**
+
+. まず、スナップショットを新しい PVC に復元します。  [ストレージ] > [VolumeSnapshots] に移動し、復元するスナップショットの横にある省略記号をクリックして、[新しい PVC として復元] をクリックします。
+. 新しい PVC の詳細を入力し、「復元」をクリックします。これにより、新しい PVC が作成されます。
+
+
+image:redhat-openshift-063.png["スナップショットを新しいPVCに復元する"]
+
+. 次に、この PVC から新しい VM を作成します。  [仮想化] > [仮想マシン] に移動し、[作成] > [YAML を使用] をクリックします。
+. spec > template > spec > volumes セクションで、コンテナー ディスクではなくスナップショットから作成された新しい PVC を指定します。要件に応じて、新しい VM のその他すべての詳細を指定します。
+
+
+[source, yaml]
+----
+- name: rootdisk
+  persistentVolumeClaim:
+    claimName: rhel8-short-frog-rootdisk-28dvb-snapshot-restore
+----
+. [作成] をクリックして新しい VM を作成します。
+. VM が正常に作成されたら、アクセスして、新しい VM の状態が、スナップショットの作成時に使用された PVC を持つ VM の状態 (スナップショットの作成時) と同じであることを確認します。
+
+
+====
+
+
+[[clone-a-vm-in-openshift-virtualization-using-trident]]
+== OpenShift Virtualization で Trident を使用して VM をクローンする
+
+この手順では、Trident CSI ボリュームクローニングを活用することで、ソース VM をシャットダウンして新しい VM を作成するか、ソース VM を実行したままにするかを選択できます。
+
+.例を表示
+[%collapsible]
+====
+**VMクローニング**
+
+OpenShift での既存の VM のクローン作成は、Trident のボリューム CSI クローン作成機能のサポートによって実現されます。 CSI ボリューム クローンを使用すると、既存の PVC の PV を複製して、それをデータ ソースとして使用して新しい PVC を作成できます。新しい PVC が作成されると、それはソース PVC へのリンクや依存関係のない別個のエンティティとして機能します。
+
+image:redhat-openshift-057.png["VMクローンアーキテクチャ"]
+
+CSI ボリュームのクローン作成には、考慮すべき特定の制限があります。
+
+. ソース PVC と宛先 PVC は同じプロジェクト内にある必要があります。
+. 同じストレージ クラス内でのクローン作成がサポートされます。
+. クローン作成は、ソース ボリュームと宛先ボリュームが同じ VolumeMode 設定を使用している場合にのみ実行できます。たとえば、ブロック ボリュームは別のブロック ボリュームにのみクローン作成できます。
+
+
+OpenShift クラスター内の VM は、次の 2 つの方法で複製できます。
+
+. ソースVMをシャットダウンすることで
+. ソースVMを稼働させておくことで
+
+
+**ソースVMをシャットダウンすることによって**
+
+VM をシャットダウンして既存の VM を複製する機能は、 Tridentのサポートを受けて実装されたネイティブの OpenShift 機能です。  VM のクローンを作成するには、次の手順を実行します。
+
+. [ワークロード] > [仮想化] > [仮想マシン] に移動し、クローンを作成する仮想マシンの横にある省略記号をクリックします。
+. 「仮想マシンの複製」をクリックし、新しい VM の詳細を入力します。
++
+image:redhat-openshift-058.png["クローンVM"]
+
+. [仮想マシンのクローン作成] をクリックすると、ソース VM がシャットダウンされ、クローン VM の作成が開始されます。
+. この手順が完了すると、クローンされた VM の内容にアクセスして検証できるようになります。
+
+
+**ソースVMを稼働状態に保つことで**
+
+既存の VM は、ソース VM の既存の PVC を複製し、複製された PVC を使用して新しい VM を作成することによって複製することもできます。この方法では、ソース VM をシャットダウンする必要はありません。  VM をシャットダウンせずにクローンするには、次の手順を実行します。
+
+. [ストレージ] > [PersistentVolumeClaims] に移動し、ソース VM に接続されている PVC の横にある省略記号をクリックします。
+. 「PVC の複製」をクリックし、新しい PVC の詳細を入力します。
++
+image:redhat-openshift-059.png["クローンPVC"]
+
+. 次に、「クローン」をクリックします。これにより、新しい VM の PVC が作成されます。
+. [ワークロード] > [仮想化] > [仮想マシン] に移動し、[作成] > [YAML を使用] をクリックします。
+. spec > template > spec > volumes セクションで、コンテナー ディスクの代わりにクローンされた PVC を接続します。要件に応じて、新しい VM のその他すべての詳細を指定します。
+
+
+[listing]
+----
+- name: rootdisk
+  persistentVolumeClaim:
+    claimName: rhel8-short-frog-rootdisk-28dvb-clone
+----
+. [作成] をクリックして新しい VM を作成します。
+. VM が正常に作成されたら、新しい VM にアクセスして、それがソース VM のクローンであることを確認します。
+
+
+====

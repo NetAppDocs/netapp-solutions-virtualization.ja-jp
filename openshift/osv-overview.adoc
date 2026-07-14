@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: openshift/osv-overview.html 
 keywords: OpenShift, OCP, Trident, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, CNV, Container Native Virtualization, Red Hat OpenShift Virtualization 
-summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化 
+summary: Red Hat OpenShift 仮想化 
 ---
-= ONTAPを使用したRed Hat OpenShift Virtualizationについて学ぶ
+= Red Hat OpenShift Virtualizationについて
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,14 +14,59 @@ summary: NetApp ONTAPを使用した Red Hat OpenShift 仮想化
 
 
 [role="lead"]
-Red Hat OpenShift Virtualization とONTAPストレージを使用して VM を実行および管理する方法について学習します。  Tridentを使用すると、ライブ VM 移行、VM ディスクのクローン作成、VM スナップショットが有効になり、インフラストラクチャの管理とデータ保護が簡素化されます。
-
-具体的なユースケースに応じて、コンテナと仮想マシン (VM) の両方が、さまざまな種類のアプリケーションに最適なプラットフォームとして機能できます。そのため、多くの組織では、ワークロードの一部をコンテナ上で実行し、一部を VM 上で実行しています。多くの場合、これにより組織は、VM 用のハイパーバイザーとアプリケーション用のコンテナ オーケストレーターという別々のプラットフォームを管理する必要があり、追加の課題に直面することになります。
-
-この課題に対処するために、Red Hat は OpenShift バージョン 4.6 から OpenShift Virtualization (旧称 Container Native Virtualization) を導入しました。  OpenShift Virtualization 機能を使用すると、同じ OpenShift Container Platform インストール上のコンテナーと並行して仮想マシンを実行および管理することができ、オペレーターによる VM のデプロイメントと管理を自動化するハイブリッド管理機能が提供されます。  OpenShift での VM の作成に加えて、OpenShift Virtualization では、Red Hat は VMware vSphere、Red Hat Virtualization、および Red Hat OpenStack Platform デプロイメントからの VM のインポートもサポートしています。
+Red Hat®OpenShift® Virtualizationにより、組織は従来の仮想マシン（VM）を最新のワークロードと並行して、統合されたハイブリッドクラウドアプリケーションプラットフォーム上でシームレスに移行、実行、管理できるようになります。OpenShift Virtualizationは、あらゆるOpenShiftサブスクリプションに含まれるオペレーターとして提供されています。OpenShift Container Platformへのこのアドオンは、VMとコンテナ化されたアプリケーションを統合するための堅牢なソリューションを提供します。信頼性の高いLinuxカーネルハイパーバイザーであるKernel-based Virtual Machine（KVM）を使用しており、堅牢なパフォーマンス、拡張性、安定性で知られ、OpenShift内のネイティブオブジェクトとして仮想マシンのエンタープライズクラスの仮想化を実現します。
 
 image:redhat-openshift-044.png["OpenShift仮想化"]
 
-ライブ VM マイグレーション、VM ディスクのクローン作成、VM スナップショットなどの特定の機能も、 NetApp ONTAPを利用する場合はTridentのサポートにより OpenShift Virtualization でサポートされます。これらの各ワークフローの例については、このドキュメントの後半のそれぞれのセクションで説明します。
 
-Red Hat OpenShift Virtualizationの詳細については、ドキュメントを参照してください。 https://www.openshift.com/learn/topics/virtualization/["ここをクリックしてください。"] 。
+
+[[key-features-of-red-hat-openshift-virtualization]]
+== Red Hat OpenShift Virtualization の主な機能
+
+**ハイブリッドワークロード：** クラウドネイティブのメリットを活かして仮想マシンを移行および実行し、統一されたツールセットを使用してコンテナやサーバーレスワークロードと並行して管理します。
+
+**段階的な最新化：** 既存の仮想マシンに影響を与えることなく、コンテナの採用、マイクロサービスの導入、AIの統合などによって、自分のペースで最新化を進めることができます。
+
+**Kubernetes統合：** Kubernetesカスタムリソースを活用して、OpenShiftクラスタに仮想化機能を追加します。
+
+
+
+[[capabilities-of-red-hat-openshift-virtualization]]
+== Red Hat OpenShift Virtualization の機能
+
+**VM管理：** LinuxおよびWindowsのVMを作成および管理します。
+
+**統合ワークロード：** クラスター内でポッドとVMのワークロードを同時に実行します。
+
+**接続性：** さまざまなコンソールおよびCLIツールを使用してVMにアクセスできます。
+
+**VM操作：** ノード間でVMをインポート、クローン、ライブマイグレーションします。
+
+**リソース管理：** VMに接続されているネットワークインターフェイスとストレージディスクを管理します。
+
+
+
+[[compatibility]]
+== 互換性
+
+OpenShift Virtualizationは概念的にはVMware vSphereと異なりますが、仮想化管理者に特化して調整された最新のプラットフォームを提供し、以下のような使い慣れた機能を備えています。**ライブマイグレーション：** vSphereのvMotionに相当します。
+
+**ストレージ管理：** OpenShift のストレージクラスは、vSphere のストレージポリシーベース管理（SPBM）に対応しています。
+
+**永続ストレージ：** 永続ボリューム要求 (PVC) と永続ボリューム (PV) は、vSphere のデータストアに対応します。
+
+
+
+[[for-vsphere-administrators]]
+== vSphere 管理者向け
+
+vSphere の概念と最も近い OpenShift Virtualization の対応物とのマッピング一覧については、link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/virtualization/about#virt-vmware-comparison_about-virt["ドキュメントはこちら"] を参照してください。
+
+
+
+[[additional-resources]]
+== 参考資料
+
+**OpenShift Container Platform Webコンソール**の仮想化パースペクティブ、または**OpenShift CLI （oc）**を使用して、クラスターと仮想化リソースを管理できます。
+
+Red Hat OpenShift Virtualization の詳細については、ドキュメント link:https://www.openshift.com/learn/topics/virtualization/["ここをクリックしてください。"] を参照してください。

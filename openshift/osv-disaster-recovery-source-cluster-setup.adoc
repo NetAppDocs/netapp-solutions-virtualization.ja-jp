@@ -1,0 +1,178 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-disaster-recovery-source-cluster-setup.html 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift 仮想化 
+---
+= Red Hat OpenShift 仮想化ディザスタリカバリのソース クラスタ設定
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このセクションでは、NetApp Trident ProtectおよびAppMirrorを使用してOpenShift Virtualizationワークロードの災害復旧用にソース クラスタをセットアップする方法について説明します。これには、ONTAP S3を使用したAppVaultの作成、ソースVM用のTrident Protect Applicationの作成、およびTrident Protectを使用したVMのオンデマンドおよびスケジュールされたスナップショットの作成が含まれます。これらの手順は、ソース クラスタが災害復旧ターゲット クラスタにデータをレプリケートするように適切に構成され、災害時にVMの復旧を可能にするために不可欠です。
+
+
+
+[[setup-disaster-recovery-source-cluster-for-openshift-virtualization]]
+== OpenShift Virtualization のディザスタリカバリ ソース クラスタのセットアップ
+
+以下の手順はすべて、保護対象の仮想マシンが現在実行されているソースクラスタ上で実行されます。
+
+
+
+[[create-appvault-using-ontap-s3]]
+== ONTAP S3を使用してAppVaultを作成する
+
+このセクションでは、ONTAP S3 オブジェクトストレージを使用して Trident Protect で AppVault オブジェクトを設定する方法について説明します。このステップで作成した AppVault は、ソース クラスタからレプリケートされたデータを格納するために使用され、そのデータはディザスタリカバリのデスティネーション クラスタでの復旧に使用されます。
+
+oc コマンドと以下に示す yaml ファイルを使用して、ONTAP s3 のシークレットと AppVault カスタムリソースを作成します。必ず trident-protect 名前空間内に作成してください。
+
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+apiVersion: v1
+# You can provide the keys either as stringData or base 64 encoded data
+stringData:
+  accessKeyID: "<access key id as obtained from ONTAP>"
+  secretAccessKey: "<secret access key as obtained from ONTAP>"
+#data:
+  #accessKeyID: <base 64 encoded value of access key>
+  #secretAccessKey: <base 64 encoded value of secret access key>
+kind: Secret
+metadata:
+  name: appvault-secret
+  namespace: trident-protect
+type: Opaque
+
+----
+[source, yaml]
+----
+apiVersion: protect.trident.netapp.io/v1
+kind: AppVault
+metadata:
+  name: ontap-s3-appvault
+  namespace: trident-protect
+spec:
+  providerConfig:
+    s3:
+      bucketName: oc-dr
+      endpoint: <data lif to use to access S3>
+      secure: "false" # Setting this to "false" will disable TLS, which is not recommended for production environments.
+      skipCertValidation: "true" # When TLS is enabled, setting skipCertValidation to "true" will skip TLS certificate validation, which is not recommended for production environments.
+  providerCredentials:
+    accessKeyID:
+      valueFromSecret:
+        key: accessKeyID
+        name: appvault-secret
+    secretAccessKey:
+      valueFromSecret:
+        key: secretAccessKey
+        name: appvault-secret
+  providerType: OntapS3
+----
+ONTAP S3ボールトが作成され、利用可能な状態になっていることを確認してください
+
+[source, cli]
+----
+oc create -f app-vault-secret.yaml -n trident-protect
+oc create -f app-vault.yaml -n trident-protect
+----
+image:osv-disaster-recovery-003.png["trident-protect名前空間内のOCP-v AppVault"]
+
+====
+
+
+[[create-a-trident-protect-app-for-the-source-vm]]
+== ソース VM の Trident Protect アプリを作成する
+
+ソースVMが配置されている名前空間に、アプリケーションカスタムリソースを作成します。
+
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+# cat app.yaml
+apiVersion: protect.trident.netapp.io/v1
+kind: Application
+metadata:
+  creationTimestamp: null
+  name: test-source-app
+  namespace: test-dr-ns
+spec:
+  includedNamespaces:
+  - namespace: test-dr-ns
+----
+[source, cli]
+----
+tridentctl-protect create app <source-vm> -n <source-ns> --namespaces <source-ns>
+----
+image:osv-disaster-recovery-004.png["source-ns 名前空間の OCP-v アプリ"]
+
+アプリのカスタムリソースに含まれる名前空間内のVMとそのPVCを以下に示します。
+
+image:osv-disaster-recovery-005.png["アプリのカスタムリソースに含まれる名前空間内のVMとそのPVC"]
+
+====
+
+
+[[create-a-snapshot-of-the-vm-using-trident-protect]]
+== Trident Protect を使用して VM のスナップショットを作成する
+
+Trident Protect CLI または API を使用して、VM のオンデマンド スナップショットを作成できます。このスナップショットは、前の手順で作成した AppVault に保存され、ディザスタリカバリのデスティネーション クラスタでの復旧に使用できます。
+
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+# snapshot.yaml
+apiVersion: protect.trident.netapp.io/v1
+kind: Snapshot
+metadata:
+  name: test-source-dr-init-snapshot
+  namespace: test-dr-ns
+spec:
+  applicationRef: test-source-app
+  appVaultRef: ontap-s3-appvault
+  reclaimPolicy: Delete
+
+----
+image:osv-disaster-recovery-006.png["Trident Protect CLIを使用して作成されたVMのOCP-vオンデマンドスナップショット"]
+
+====
+
+
+[[create-a-scheduled-snapshot-of-the-vm-using-trident-protect]]
+== Trident Protect を使用して VM のスケジュールされたスナップショットを作成する
+
+アプリケーションカスタムリソースと同じ名前空間にスケジュールカスタムリソースを作成することで、スケジュールされたスナップショットを作成することもできます。スケジュールは、指定されたスケジュールで VM のスナップショットを自動的に作成し、AppVault に保存します。
+
+.例を表示
+[%collapsible]
+====
+[source, yaml]
+----
+apiVersion: protect.trident.netapp.io/v1
+kind: Schedule
+metadata:
+  name: appmirror-sched1
+spec:
+  appVaultRef: ontap-s3-appvault
+  applicationRef: test-source-app
+  backupRetention: "0"
+  enabled: true
+  granularity: Custom
+  recurrenceRule: |-
+    DTSTART:20240901T000200Z
+    RRULE:FREQ=MINUTELY;INTERVAL=5
+  snapshotRetention: "2"
+----
+====

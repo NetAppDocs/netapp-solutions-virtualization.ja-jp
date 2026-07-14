@@ -56,6 +56,7 @@ image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
 
 
 
+[[whats-next]]
 == 次の手順
 
 SVMとLIFを作成したら、link:vmw-vcf-mgmt-supplemental-iscsi-network.html["ESXiホスト上のiSCSIのネットワークを構成する"] 。

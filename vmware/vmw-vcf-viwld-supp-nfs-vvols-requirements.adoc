@@ -13,6 +13,7 @@ VMware Cloud Foundation VI ワークロード ドメインに NFS vVolsをデプ
 
 
 
+[[infrastructure-requirements]]
 == インフラストラクチャ要件
 
 次のコンポーネントと構成が適切であることを確認してください。
@@ -24,6 +25,7 @@ VMware Cloud Foundation VI ワークロード ドメインに NFS vVolsをデプ
 
 
 
+[[recommended-nfs-network-design]]
 == 推奨されるNFSネットワーク設計
 
 NFS の冗長ネットワーク設計を構成して、ストレージ システム、スイッチ、ネットワーク アダプタ、およびホスト システムにフォールト トレランスを提供します。アーキテクチャの要件に応じて、単一のサブネットまたは複数のサブネットで NFS を展開するのが一般的です。
@@ -32,6 +34,7 @@ NFS の冗長ネットワーク設計を構成して、ストレージ システ
 
 
 
+[[additional-information]]
 == 追加情報
 
 * VMware vSphereに固有の詳細情報については、 https://www.vmware.com/docs/vmw-best-practices-running-nfs-vmware-vsphere["VMware vSphere で NFS を実行するためのベストプラクティス"] 。
@@ -44,6 +47,7 @@ NFS の冗長ネットワーク設計を構成して、ストレージ システ
 
 
 
+[[whats-next]]
 == 次の手順
 
 要件を確認した後、link:vmw-vcf-viwld-supp-nfs-vvols-svm-lifs.html["SVMとLIFを作成する"] 。

@@ -18,6 +18,7 @@ Velero とNetApp ONTAP S3 またはStorageGRIDを使用して OpenShift Virtuali
 
 
 
+[[steps-to-create-a-backup-of-a-vm]]
 == VMのバックアップを作成する手順
 
 VM 全体 (VM メタデータと VM ディスク) のオンデマンド バックアップを作成するには、[**バックアップ**] タブをクリックします。これにより、バックアップ カスタム リソース (CR) が作成されます。バックアップ CR を作成するためのサンプル yaml が提供されています。この yaml を使用すると、指定された名前空間内の VM とそのディスクがバックアップされます。追加のパラメータは、link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/oadp-creating-backup-cr.html["ドキュメント"] 。
@@ -51,6 +52,7 @@ image:redhat-openshift-oadp-backup-002.png["S3 のオブジェクトのバック
 
 
 
+[[creating-scheduled-backups-for-vms-in-openshift-virtualization]]
 == OpenShift Virtualization で VM のスケジュールされたバックアップを作成する
 
 スケジュールに従ってバックアップを作成するには、スケジュール CR を作成する必要があります。スケジュールは、バックアップを作成する時間を指定できる単純な Cron 式です。スケジュール CR を作成するためのサンプル yaml。

@@ -27,6 +27,7 @@ NetAppと VMware のテクノロジーの統合には、20 年にわたる歴史
 
 
 
+[[netapp-ontap-and-vmware-supported-releases]]
 == NetApp ONTAPおよび VMware のサポート対象リリース
 
 

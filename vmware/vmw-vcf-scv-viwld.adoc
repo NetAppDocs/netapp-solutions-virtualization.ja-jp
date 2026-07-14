@@ -20,6 +20,7 @@ summary:
 
 
 
+[[scenario-overview]]
 == シナリオの概要
 
 このシナリオでは、次の大まかな手順について説明します。
@@ -35,6 +36,7 @@ summary:
 
 
 
+[[prerequisites]]
 == 前提条件
 
 このシナリオには、次のコンポーネントと構成が必要です。
@@ -55,12 +57,14 @@ image:vmware-vcf-asa-108.png["3-2-1バックアップ戦略"]
 
 
 
+[[deployment-steps]]
 == 展開手順
 
 SnapCenterプラグインを展開し、それを使用してバックアップを作成し、VM とデータストアを復元するには、次の手順を実行します。
 
 
 
+[[deploy-and-use-scv-to-protect-data-in-a-vi-workload-domain]]
 === SCV を導入して使用し、VI ワークロード ドメイン内のデータを保護する
 
 SCV を展開、構成、使用して VI ワークロード ドメイン内のデータを保護するには、次の手順を実行します。
@@ -470,6 +474,7 @@ image:vmware-vcf-asa-092.png["ゲストファイル参照2"]
 ====
 
 
+[[additional-information]]
 == 追加情報
 
 VCFの設定方法については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。

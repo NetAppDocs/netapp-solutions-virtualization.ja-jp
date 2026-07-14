@@ -59,6 +59,7 @@ image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
 
 
 
+[[whats-next]]
 == 次の手順
 
 SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nfs-vvols-network.html["ESXiホスト上のNFSネットワークを構成する"] 。

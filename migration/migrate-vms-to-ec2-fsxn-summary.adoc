@@ -18,6 +18,7 @@ summary: 'この技術レポートでは、Cirrus Migrate Cloud (CMC) の Migrat
 
 
 
+[[other-possibilities]]
 == その他の可能性
 
 同じアプローチを拡張して、オンプレミスの VM 上のゲスト内ストレージを使用して VM を移行することもできます。 OS VMDK は CMC を使用して移行でき、ゲスト内の iSCSI LUN はSnapMirrorを使用して複製できます。このプロセスでは、下の図に示すように、ミラーを解除し、新しく移行された Amazon EC2 インスタンスに LUN を接続する必要があります。
@@ -26,6 +27,7 @@ image:migrate-ec2-fsxn-013.png["この移行ソリューションのさらなる
 
 
 
+[[conclusion]]
 == まとめ
 
 このドキュメントでは、CMC の MigrateOps 機能を使用して、Amazon EC2 インスタンスと FSx ONTAPを使ってオンプレミスの VMware リポジトリに保存されているデータを AWS に移行する方法について詳しく説明しました。

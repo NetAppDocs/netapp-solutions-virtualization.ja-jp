@@ -1,0 +1,56 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-disaster-recovery-requirements.html 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, Red Hat OpenShift Virtualization 
+summary: Red Hat OpenShift 仮想化 
+---
+= Trident Protect/AppMirror の OpenShift Virtualization ディザスタリカバリの前提条件
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+このセクションでは、OpenShift VirtualizationワークロードのディザスタリカバリにNetApp Trident ProtectおよびAppMirrorを使用するための前提条件について説明します。これには、OpenShift Virtualization上で実行されているVMの効果的なディザスタリカバリのために、Trident ProtectおよびAppMirrorをセットアップするために必要なクラスタ構成、ストレージ要件、およびインストール手順が含まれます。
+
+
+
+[[prerequisites]]
+== 前提条件
+
+. Red Hat OpenShift Virtualization がインストールおよび設定された OpenShift クラスター。インストール手順については、link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.21/html/installation_overview/index["ドキュメントはこちら"]を参照してください。
+. 2つの NetApp ONTAP ストレージシステムにそれぞれ SVM が構成されており、アクティブおよびディザスタリカバリ用の OpenShift クラスタにストレージを提供します。各 SVM には、少なくとも 1 つの管理 LIF と 1 つのデータ LIF が設定され、対応する OpenShift クラスタからアクセス可能である必要があります。
+. 2つの ONTAP システム間でクラスタピアリングと SVM ピアリングが構成されており、ソースクラスタの SVM からターゲットクラスタの SVM へのデータレプリケーションが可能です。クラスタピアリングと SVM ピアリングの設定方法については、link:https://docs.netapp.com/us-en/ontap/peering/index.html["ONTAPクラスタピアリングに関するドキュメントはこちら"]を参照してください。
+. NetApp Trident が OpenShift クラスターにインストールおよび構成され、ONTAP SVM から永続ストレージをプロビジョニングします。インストール手順については、link:https://docs.netapp.com/us-en/trident/["Tridentドキュメントはこちら"]を参照してください。
+. ONTAP SVM用に作成されたTridentバックエンド構成、およびそのTridentバックエンドをプロビジョナーとして使用するようにOpenShiftクラスタ上で構成されたStorageClass。Tridentバックエンド構成とStorageClassを作成する手順については、link:https://docs.netapp.com/us-en/trident/trident-use/backends.html["Tridentバックエンド設定に関するドキュメントはこちら"]を参照してください。
+. OpenShift クラスターへのクラスター管理者アクセスと、ONTAP ストレージシステムへの管理者アクセスにより、必要な設定を実行します。
+.  `tridentctl`および `oc`ツールがインストールされ、$PATH環境変数に追加された管理ワークステーション。OpenShiftクラスターおよび Trident と連携します。
+. OpenShift クラスター上に、OpenShift Virtualization オペレーターとプロビジョニングされる VM をサポートするための十分なハードウェアリソースが必要です。リソース要件の詳細については、link:https://docs.openshift.com/container-platform/4.7/virt/install/preparing-cluster-for-virt.html#virt-cluster-resource-requirements_preparing-cluster-for-virt["ドキュメントはこちら"]を参照してください。
+. オプションで、OpenShift Virtualization のノード配置ルールを設定して、OpenShift Virtualization のオペレーター、コントローラー、および VM をホストするクラスタノードのサブセットを指定します。ノード配置ルールの設定方法については、link:https://docs.openshift.com/container-platform/4.7/virt/install/virt-specifying-nodes-for-virtualization-components.html["ドキュメントはこちら"]を参照してください。
+. OpenShift Virtualization のストレージバッキングには、特定の Trident バックエンドからストレージを要求する専用のStorageClassを使用することを推奨します。この Trident バックエンドは、専用の SVM によってサポートされています。これにより、OpenShiftクラスタ上の VM ベースのワークロードに提供されるデータに関して、マルチテナンシーのレベルが維持されます。
+. VM は OpenShift Virtualization で利用可能である必要があります。新しい VM をデプロイする方法、または既存の VM を OpenShift Virtualization に移行する方法の詳細については、ドキュメントの適切なセクションを参照してください。
+
+
+
+
+[[install-netapp-trident-protect-for-openshift-virtualization]]
+== NetApp Trident Protect を OpenShift Virtualization 用にインストールする
+
+NetApp Trident Protectを使用してOpenShift Virtualizationワークロードのディザスタリカバリ機能を有効にするには、OpenShiftクラスタにTrident Protectがインストールされ、構成されている必要があります。Trident Protectは、Helmチャートを使用してインストールできます。
+
+
+NOTE: Trident Protect のインストールは、Trident のインストール後に行う必要があります。
+
+インストール手順の詳細については、link:https://docs.netapp.com/us-en/trident/trident-protect/learn-about-trident-protect.html["Trident Protect のドキュメントはこちら"]を参照してください。
+
+.例を表示
+[%collapsible]
+====
+image:osv-disaster-recovery-001.png["Trident Protect のインストール"]
+
+image:osv-disaster-recovery-002.png["Trident Protect のインストールが完了しました"]
+
+====

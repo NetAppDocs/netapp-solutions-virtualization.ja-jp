@@ -47,6 +47,7 @@ ONTAP tools for VMware vSphereは、 NFS および VMFS データストアをサ
 
 
 
+[[additional-information]]
 == 追加情報
 
 * ONTAPストレージシステムの構成については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"] 。

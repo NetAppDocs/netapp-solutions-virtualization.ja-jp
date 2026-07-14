@@ -20,6 +20,7 @@ NetApp ONTAPで iSCSI プロトコルを使用して、Proxmox 仮想環境 (VE)
 video::d66ef67f-bcc2-4ced-848e-b22e01588e8c[panopto,width=360]
 
 
+[[initial-virtualization-administrator-tasks]]
 == 仮想化管理者の初期タスク
 
 これらの初期タスクを完了して、Proxmox VE ホストを iSCSI 接続用に準備し、ストレージ管理者に必要な情報を収集します。
@@ -48,6 +49,7 @@ cat /etc/iscsi/initiator.name
 
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
@@ -67,6 +69,7 @@ image:proxmox-ontap-iscsi-002.png["iSCSI LUNの詳細"]
 
 
 
+[[final-virtualization-administrator-tasks]]
 == 最終的な仮想化管理者のタスク
 
 Proxmox VE で iSCSI LUN を共有 LVM ストレージとして構成するには、これらのタスクを完了します。

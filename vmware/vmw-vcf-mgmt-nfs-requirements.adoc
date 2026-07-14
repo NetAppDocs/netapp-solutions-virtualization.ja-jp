@@ -17,6 +17,7 @@ NetApp ONTAP NFS データストアを含む vSphere 8 クラスタを VMware Cl
 
 
 
+[[infrastructure-requirements]]
 == インフラストラクチャ要件
 
 次のコンポーネントと構成が適切であることを確認してください。
@@ -37,6 +38,7 @@ ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれ
 
 
 
+[[additional-resources]]
 == その他のリソース
 
 * vSphere を VCF 5.2 に変換またはインポートする際にサポートされるストレージおよびその他の考慮事項については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
@@ -46,6 +48,7 @@ ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれ
 
 
 
+[[whats-next]]
 == 次の手順
 
 展開要件を確認した後、link:vmw-vcf-mgmt-nfs-deploy.html["ONTAPツールを導入し、NFSデータストアをプロビジョニングする"] 。

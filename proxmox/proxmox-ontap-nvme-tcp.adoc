@@ -20,6 +20,7 @@ NetApp ONTAPで NVMe over TCP プロトコルを使用して、Proxmox 仮想環
 video::80164fe4-06db-4c21-a25d-b22e0179c3d2[panopto,width=360]
 
 
+[[initial-virtualization-administrator-tasks]]
 == 仮想化管理者の初期タスク
 
 これらの初期タスクを完了して、Proxmox VE ホストを NVMe/TCP 接続用に準備し、ストレージ管理者に必要な情報を収集します。
@@ -36,6 +37,7 @@ nvme show-hostnqn
 
 
 
+[[storage-administrator-tasks]]
 == ストレージ管理者のタスク
 
 ONTAPを初めて使用する場合は、System Manager を使用すると使いやすくなります。
@@ -56,6 +58,7 @@ image:proxmox-ontap-nvme-tcp-001.png["nvme名前空間の作成"]
 
 
 
+[[final-virtualization-administrator-tasks]]
 == 最終的な仮想化管理者のタスク
 
 Proxmox VE で NVMe 名前空間を共有 LVM ストレージとして構成するには、これらのタスクを完了します。

@@ -61,7 +61,7 @@ image:redhat-openshift-008.png["入出力ダイアログまたは書かれたコ
 +
 image:redhat-openshift-009.png["入出力ダイアログまたは書かれたコンテンツを示す図"]
 
-. フォローlink:https://docs.openshift.com/container-platform/4.7/installing/index.html["インストール手順"]選択した環境にデプロイするために Red Hat によって提供されます。
+. Red Hat が提供するlink:https://docs.redhat.com/en/documentation/openshift_container_platform/4.22#Install["インストール手順"]に従って、選択した環境にデプロイしてください。
 
 
 

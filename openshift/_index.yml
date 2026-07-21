@@ -32,6 +32,8 @@ indexpage:
       url: osv-migration-vm-storage.html
   - title: NetAppストレージでVMを保護する
     links:
+    - title: NetApp Consoleを使用したバックアップとリストア
+      url: osv-data-protection-console-br.html
     - title: Trident Protect を使用したバックアップとリストア
       url: osv-vm-dp-using-tp.html
     - title: ボリューム グループ スナップショットを使用して VM を保護する
@@ -65,6 +67,6 @@ indexpage:
     - title: 'OpenShift Virtualization: 仮想環境のパワーを解き放つ'
       url: https://www.redhat.com/en/blog/openshift-virtualization-unleashing-the-power-of-cloud-native-virtual-environments
     - title: Red Hat OpenShift ドキュメント
-      url: https://docs.openshift.com/container-platform/4.15/virt/about_virt/about-virt.html
+      url: https://docs.openshift.com/container-platform/4.22
     - title: Red Hatブログ
       url: https://www.redhat.com/en/blog/products

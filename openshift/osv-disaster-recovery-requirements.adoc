@@ -29,7 +29,7 @@ summary: Red Hat OpenShift 仮想化
 . OpenShift クラスターへのクラスター管理者アクセスと、ONTAP ストレージシステムへの管理者アクセスにより、必要な設定を実行します。
 .  `tridentctl`および `oc`ツールがインストールされ、$PATH環境変数に追加された管理ワークステーション。OpenShiftクラスターおよび Trident と連携します。
 . OpenShift クラスター上に、OpenShift Virtualization オペレーターとプロビジョニングされる VM をサポートするための十分なハードウェアリソースが必要です。リソース要件の詳細については、link:https://docs.openshift.com/container-platform/4.7/virt/install/preparing-cluster-for-virt.html#virt-cluster-resource-requirements_preparing-cluster-for-virt["ドキュメントはこちら"]を参照してください。
-. オプションで、OpenShift Virtualization のノード配置ルールを設定して、OpenShift Virtualization のオペレーター、コントローラー、および VM をホストするクラスタノードのサブセットを指定します。ノード配置ルールの設定方法については、link:https://docs.openshift.com/container-platform/4.7/virt/install/virt-specifying-nodes-for-virtualization-components.html["ドキュメントはこちら"]を参照してください。
+. オプションで、OpenShift Virtualization のノード配置ルールを設定して、OpenShift Virtualization のオペレーター、コントローラー、および VM をホストするクラスタノードのサブセットを指定します。ノード配置ルールの設定方法については、link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/installing["ドキュメントはこちら"]を参照してください。
 . OpenShift Virtualization のストレージバッキングには、特定の Trident バックエンドからストレージを要求する専用のStorageClassを使用することを推奨します。この Trident バックエンドは、専用の SVM によってサポートされています。これにより、OpenShiftクラスタ上の VM ベースのワークロードに提供されるデータに関して、マルチテナンシーのレベルが維持されます。
 . VM は OpenShift Virtualization で利用可能である必要があります。新しい VM をデプロイする方法、または既存の VM を OpenShift Virtualization に移行する方法の詳細については、ドキュメントの適切なセクションを参照してください。
 

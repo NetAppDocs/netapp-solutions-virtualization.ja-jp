@@ -29,6 +29,8 @@ entries:
 - title: データ保護
   pdf-filename: Red Hat OpenShift 仮想化データ保護
   entries:
+  - title: NetApp Consoleを使用したバックアップとリストア
+    url: "/openshift/osv-data-protection-console-br.html"
   - title: Trident Protect を使用したバックアップとリストア
     url: "/openshift/osv-vm-dp-using-tp.html"
   - title: ボリューム グループ スナップショットを使用して VM を保護する

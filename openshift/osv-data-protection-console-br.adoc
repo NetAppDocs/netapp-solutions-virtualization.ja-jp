@@ -1,0 +1,276 @@
+---
+sidebar: sidebar 
+permalink: openshift/osv-data-protection-console-br.html 
+keywords: OpenShift, OCP, Trident, Trident Protect, NetApp ONTAP, Red Hat OpenShift, OpenShift Virtualization, Red Hat OpenShift Virtualization 
+summary: NetApp Console Backup and Recovery Service を使用した OpenShift Virtualization VM のバックアップとリストア 
+---
+= NetApp Console Backup and Recovery Serviceを使用したVMのバックアップとリストア
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Red Hat OpenShift VirtualizationでNetApp Consoleを使用してVMをバックアップおよびリストアします。この手順では、NetApp Consoleを介してBackup and Recovery Serviceを使用し、Azure Blob Storageコンテナをバックアップターゲットとして、バックアップとリストア操作を作成および管理する方法について説明します。
+
+NetApp Console は、オンプレミスおよびクラウド環境全体にわたるストレージとデータサービスの一元管理を提供します。統合されたコントロール、運用の簡素化、および安全な管理を実現します。link:https://console.netapp.com["console.netapp.com"^] のユーザーインターフェースからアクセスできるデータサービスと管理機能がいくつかあります。NetApp Console の詳細については、link:https://docs.netapp.com/us-en/console-family/["NetApp Console のドキュメント"] を参照してください。
+
+このセクションでは、Kubernetesワークロード向けのNetApp Backup and Recoveryデータサービス、特にOpenShift仮想マシンに焦点を当てます。NetApp Backup and Recoveryサービスを使用すると、単一のインターフェースを使用して、KubernetesアプリケーションとVMに対する保護ポリシーを検出、管理、作成、および関連付けることができます。完全なガイドについては、link:https://docs.netapp.com/us-en/data-services-backup-recovery/br-use-kubernetes-protect-overview.html["NetApp Backup and Recovery ドキュメント"]を参照してください。
+
+
+
+[[backup-and-recovery-workflow]]
+== バックアップとリカバリのワークフロー
+
+. *コンソールエージェントがインストールされていることを確認してください。*
++
+OpenShift クラスターが稼働している環境にコンソールエージェントがデプロイされていることを確認してください。コンソールエージェントのインストールの詳細については、link:https://docs.netapp.com/us-en/console-setup-admin/concept-agent-install-options.html#agent-console-deploy["NetApp Console Setupドキュメント"]を参照してください。
+
++
+.サンプルの提示
+[%collapsible]
+====
+NetApp Console で、スクリーンショットに示されているように「Deploy Agent」をクリックし、OpenShiftクラスターが稼働している環境にエージェントをデプロイします。
+
+この例では、オンプレミスを選択しました。エージェントインストーラーの URL をコピーし、curl コマンドを使用して vSphere 上で動作する Ubuntu マシンにエージェントインストーラーをダウンロードし、インストーラーを実行して Console エージェントをデプロイします。
+
+URLにエージェントのIPアドレスを使用して登録してください。詳細な手順については、link:https://docs.netapp.com/us-en/console-setup-admin/task-install-agent-on-prem-ova.html["ドキュメント"]を参照してください。エージェントが登録されると、以下のスクリーンショットに示すように NetApp Console で確認できます。
+
+image:osv-data-protection-console-001.png["コンソールエージェントのインストール"]
+
+image:osv-data-protection-console-002.png["エージェントインストーラーのURLを使用する"]
+
+image:osv-data-protection-console-003.png["コンソールエージェントが NetApp Console に接続しました"]
+
+====
+. *OpenShift VMのバックアップと復元シナリオのバックアップターゲットとして、Azure Blob Storageコンテナを設定します。*
++
+この例では、バックアップ先としてAzure Blob Storageを使用します。AWS S3、Google Cloud Storage、StorageGRID、またはONTAPオブジェクトストレージをバックアップ先として使用することもできます。
+
++
+詳細については、link:https://docs.netapp.com/us-en/data-services-backup-recovery/br-start-setup.html#prepare-the-backup-destination["NetApp Console のドキュメント"]を参照してください。
+
++
+Azure Blob Storage コンテナーをバックアップターゲットとして NetApp Console で検出するには、Azure ポータルから以下の情報が必要です。
+
++
+[listing]
+----
+Application (Client) ID:
+Client Secret:
+Directory (tenant) ID:
+----
++
+これらの値を取得するには、Azure ポータルで以下の操作を行います。
+
++
+.. Blob Storageコンテナを作成します。
+.. エンタープライズアプリケーションを作成し、このアプリケーションに必要なアクセス権限をBlobストレージコンテナに割り当てます。このアプリケーションのアプリケーション ID、ディレクトリ ID、およびクライアントシークレットを取得し、NetApp Console でAzure Blob Storageコンテナーをバックアップターゲットとして検出するために使用します。
++
+.サンプルの提示
+[%collapsible]
+====
+... *ストレージアカウントとブロブコンテナを作成する*
++
+.... サブスクリプション内でリソースグループを作成します。
+.... ストレージアカウントを作成し、次にブロブコンテナを作成します。
+
+
+
+
+image:osv-data-protection-console-004.png["ストレージアカウント"]
+
+image:osv-data-protection-console-005.png["Blob Storage"]
+
+image:osv-data-protection-console-006.png["Container"]
+
+image:osv-data-protection-console-007.png["Blob Containerが作成されます"]
+
+... *適切な権限を持つエンタープライズアプリケーションを作成します。*Azure ポータルで以下の手順を完了してください。
++
+.... Azure サブスクリプションにエンタープライズ アプリケーションを作成します。
+.... アプリケーションを登録します。先ほど登録したアプリケーションのアプリケーション ID とディレクトリ ID を取得します。
+.... アプリケーションがストレージBlobコンテナにアクセスできるように、ロールを割り当てます。+ これを行うには、以前に作成したストレージBlobのIAMに移動し、*ロール割り当ての追加*をクリックします。+ ストレージアカウントの共同作成者ロールを選択し、「次へ」をクリックします。「ユーザー、グループ、またはサービスプリンシパルにアクセス権を割り当てる」を選択し、「メンバーの選択」セクションで、作成したエンタープライズアプリケーションを選択します。+ *レビュー + 割り当て*をクリックして割り当てを完了します。+ この手順を繰り返して、以下に示す他のロールを追加します。アプリケーションがBlobコンテナにアクセスするには、これらのロールがすべて必要です。
++
+..... ストレージ BLOB データ リーダー
+..... Storage Blob Data Contributor
+..... ストレージ アカウント共同作成者
+
+
+.... 最後に、このアプリケーション用のクライアントシークレットを作成します。
+
+
+
+
+image:osv-data-protection-console-008.png["エンタープライズアプリケーションの作成"]
+
+image:osv-data-protection-console-009.png["エンタープライズアプリケーションを作成する"]
+
+image:osv-data-protection-console-010.png["エンタープライズアプリケーションを登録する"]
+
+image:osv-data-protection-console-011.png["アプリID、ディレクトリIDを取得する"]
+
+image:osv-data-protection-console-012.png["ストレージアカウントIAM"]
+
+image:osv-data-protection-console-013.png["役割割り当てを追加する"]
+
+image:osv-data-protection-console-014.png["サービスプリンシパルを選択してください"]
+
+image:osv-data-protection-console-015.png["レビューと割り当て"]
+
+image:osv-data-protection-console-016.png["アプリケーションのクライアントシークレットを作成する"]
+
+image:osv-data-protection-console-017.png["アプリケーションのクライアントシークレットを作成する"]
+
+====
+
+
+. *NetApp Console で、OpenShift クラスタを検出します。*
++
+.サンプルの提示
+[%collapsible]
+====
+このステップを実行するには、OpenShiftクラスターが実行されており、Consoleエージェントが同じ環境にデプロイされている必要があります。次の手順に従って、NetApp ConsoleでOpenShiftクラスターを検出します。
+
+.. NetApp Console で、*インベントリ > Kubernetes* を選択し、OpenShift クラスタの詳細を入力します。
+.. OpenShift クラスターが配置されているのと同じ環境にデプロイされたエージェントを選択します。
+.. 提供されたコマンドをコピーしてTrident Protectをインストールし、OpenShiftクラスタで `oc`コマンドを実行するために使用するマシンから実行してください。
+.. Trident Protect が正常にインストールされたら、「検出」をクリックします。NetApp Console は、エージェントを介して OpenShift クラスターとそのすべてのリソースを検出し、UI に表示します。
+
+
+image:osv-data-protection-console-018.png["OpenShift クラスタの検出"]
+
+image:osv-data-protection-console-019.png["Trident Protect をインストールし、「Discover」をクリックします。"]
+
+====
+. *NetApp Console で、Azure Blob Storage を検出します。*
++
+.サンプルの提示
+[%collapsible]
+====
+NetApp Console で Azure Blob Storage を検出するには、Azure ポータルで以前に作成したエンタープライズ アプリケーションのアプリケーション （クライアント） ID、クライアント シークレット、およびディレクトリ （テナント） ID が必要です。
+
+これらの詳細を NetApp Console に入力すると、NetApp Console は Azure Blob Storage を検出し、UI に表示します。
+
+Azure 認証情報は、NetApp Console に保存され、バックアップおよびリストア操作のために Azure Blob Storage へのアクセスに使用されます。
+
+image:osv-data-protection-console-020.png["バックアップターゲットの検出"]
+
+image:osv-data-protection-console-021.png["Azure 資格情報を追加する"]
+
+image:osv-data-protection-console-022.png["資格情報が必要です"]
+
+image:osv-data-protection-console-023.png["Azureの認証情報を入力してください"]
+
+image:osv-data-protection-console-024.png["Azure サブスクリプションと Marketplace サブスクリプションを選択してください"]
+
+image:osv-data-protection-console-025.png["確認して追加する"]
+
+image:osv-data-protection-console-026.png["Azure 認証情報が追加され、Azure Blob Storage が検出されました"]
+
+====
+. *NetApp Console で、VM 用のアプリケーションを作成し、バックアップを使用してそれらを保護します*
++
+.サンプルの提示
+[%collapsible]
+====
+このステップでは、保護が必要な仮想マシン用のアプリケーションを NetApp Console で作成します。単一の仮想マシン（VM）または複数のVM向けにアプリケーションを作成できます。名前空間を使用して、OpenShift クラスタの名前空間内のすべてのVMを保護するアプリケーションを作成することもできます。
+
+また、アプリケーションに関連付ける保護ポリシーも必要です。新しい保護ポリシーを作成するか、既存のものを使用することができます。この例では、新しい保護ポリシーがアプリケーションと共に作成され、アプリケーションに関連付けられます。アプリケーションのバックアップは、関連付けられた保護ポリシーに基づいて作成されます。保持されるバックアップの数は、保護ポリシーで定義された保持ポリシーに基づきます。
+
+image:osv-data-protection-console-027.png["VM用のアプリケーションを作成する"]
+
+image:osv-data-protection-console-028.png["詳細を入力してください"]
+
+image:osv-data-protection-console-029.png["名前空間内のすべての仮想マシンを保護する"]
+
+image:osv-data-protection-console-030.png["新しい保護ポリシーを作成する"]
+
+image:osv-data-protection-console-031.png["名前を入力してください"]
+
+image:osv-data-protection-console-032.png["ポリシーの詳細を入力する"]
+
+image:osv-data-protection-console-033.png["ローカルスナップショット設定を選択し、バックアップ先として Azure Blob Storage を選択します"]
+
+image:osv-data-protection-console-034.png["保護ポリシーが作成されました"]
+
+image:osv-data-protection-console-035.png["このポリシーを使用したアプリケーション保護が開始されました。"]
+
+image:osv-data-protection-console-036.png["アプリケーションは保護されており、正常な状態です。"]
+
+image:osv-data-protection-console-037.png["2つのディスクで1つの仮想マシンを保護する"]
+
+image:osv-data-protection-console-038.png["ディスク2台ずつ搭載した5台の仮想マシンを保護する"]
+
+アプリケーション/VM に複数のディスクがあり、バックアップが以下のエラーで失敗する場合は、 `volumegroupsnapshots`および `volumegroupsnapshotcontents` API ルールを編集して、表示されている動詞が含まれるようにしてください。
+
+.<strong>修正を表示</strong>
+[%collapsible]
+=====
+image:osv-data-protection-console-043.png["ディスクが複数ある仮想マシンを保護する際にエラーが発生しました"]
+
+[source, yaml]
+----
+- apiGroups:
+  - groupsnapshot.storage.k8s.io
+  resources:
+  - volumegroupsnapshots
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+  - update
+  - patch
+- apiGroups:
+  - groupsnapshot.storage.k8s.io
+  resources:
+  - volumegroupsnapshotcontents
+  - volumegroupsnapshotcontents/status
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+  - update
+  - patch
+- apiGroups:
+  - groupsnapshot.storage.k8s.io
+  resources:
+  - volumegroupsnapshotclasses
+  verbs:
+  - get
+  - list
+  - watch
+
+----
+=====
+====
+
+
+. *バックアップからアプリケーションを復元する*
++
+.サンプルの提示
+[%collapsible]
+====
+** 必要に応じて、利用可能な多数のバックアップの中から1つを選択して仮想マシンを復元できます。
+** 元の名前空間に復元することも、別の名前空間に復元することもできます。
+** 復元が必要なリソースを選択できます。
+** 仮想マシンを復元する際に使用するストレージクラスを選択できます。
+
+
+image:osv-data-protection-console-039.png["復元ポイントを選択してください"]
+
+image:osv-data-protection-console-040.png["バックアップからアプリケーションを復元する"]
+
+image:osv-data-protection-console-041.png["バックアップからアプリケーションを復元する"]
+
+image:osv-data-protection-console-042.png["バックアップからアプリケーションを復元する"]
+
+====
+

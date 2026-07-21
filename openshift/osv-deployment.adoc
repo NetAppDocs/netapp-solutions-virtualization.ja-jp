@@ -38,9 +38,9 @@ OpenShift 仮想化を ONTAP ストレージシステムにデプロイするた
 * tridentctl および oc ツールがインストールされ、$PATH に追加された管理ワークステーション
 
 
-OpenShift Virtualization は OpenShift クラスターにインストールされたオペレーターによって管理されるため、メモリ、CPU、ストレージに追加のオーバーヘッドが発生します。クラスターのハードウェア要件を計画する際には、この点を考慮する必要があります。詳細については、ドキュメント link:https://docs.openshift.com/container-platform/4.7/virt/install/preparing-cluster-for-virt.html#virt-cluster-resource-requirements_preparing-cluster-for-virt["ここをクリックしてください。"] を参照してください。
+OpenShift Virtualization は OpenShift クラスターにインストールされたオペレーターによって管理されるため、メモリ、CPU、ストレージに追加のオーバーヘッドが発生します。クラスターのハードウェア要件を計画する際には、この点を考慮する必要があります。詳細については、ドキュメント link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/installing["ここをクリックしてください。"] を参照してください。
 
-オプションで、ノード配置ルールを設定することにより、OpenShift Virtualization のオペレーター、コントローラー、および VM をホストする OpenShift クラスターノードのサブセットを指定することもできます。OpenShift Virtualization のノード配置ルールを設定するには、ドキュメント link:https://docs.openshift.com/container-platform/4.7/virt/install/virt-specifying-nodes-for-virtualization-components.html["ここをクリックしてください。"] を参照してください。
+オプションで、ノード配置ルールを設定することにより、OpenShift Virtualization のオペレーター、コントローラー、および VM をホストする OpenShift クラスターノードのサブセットを指定することもできます。OpenShift Virtualization のノード配置ルールを設定するには、ドキュメント link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/virtualization/installing["ここをクリックしてください。"] を参照してください。
 
 OpenShift Virtualization を支えるストレージについては、 NetApp、専用の SVM によって支えられている特定のTridentバックエンドからストレージを要求する専用の StorageClass を用意することを推奨しています。これにより、OpenShift クラスター上の VM ベースのワークロードに提供されるデータに関して、マルチテナントのレベルが維持されます。
 

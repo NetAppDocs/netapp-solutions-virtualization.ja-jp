@@ -1,0 +1,20 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-nfs-converge.html 
+keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
+summary: VCF インストーラーツールを使用して、既存のvSphereクラスタを VCF 管理ドメインに統合します。vCenterアプライアンスを検証し、VCF インストーラーをデプロイし、既存のコンポーネントを再利用して新しいコンポーネントをインストールし、VCF 管理ドメインを完成させます。 
+---
+= VCF Installer Tool を使用して vSphere クラスターを VCF 管理ドメインに統合する
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+VCF インストーラーツールを使用して、既存のvSphereクラスタを VCF 管理ドメインに統合します。vCenterアプライアンスを検証し、VCF インストーラーをデプロイし、既存のコンポーネントを再利用して新しいコンポーネントをインストールし、VCF 管理ドメインを完成させます。
+
+VCFインストーラーツールは、お客様の環境に既に導入されているコンポーネントに基づいて、どのコンポーネントを再利用可能で、どのコンポーネントをインストールする必要があるかを判断します。VCFインストーラーツールは既存のvCenterアプライアンスを検証し、コンバージェンスの要件を満たしていることを確認します。
+
+ https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-.html["既存のvSphereインフラストラクチャをVCF管理ドメインに統合する"]に記載されている手順に従って、収束プロセスを完了してください。
+
+https://vmware.github.io/vcf-upgrade-planner/["VCFアップグレード計画ツール"]は、お客様が入力した情報に基づいて、収束プロセスを完了するための概要手順を提供します。

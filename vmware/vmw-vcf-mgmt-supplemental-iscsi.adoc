@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-mgmt-supplemental-iscsi.html 
 keywords: netapp, vmware, cloud, foundation, vcf, iscsi, information 
-summary: 'VMware Cloud Foundation (VCF) 管理ドメインの補助ストレージとして iSCSI データストアの追加を開始します。  iSCSI 用の論理インターフェイス (LIF) を使用してストレージ仮想マシン (SVM) をセットアップし、ESXi ホストで iSCSI ネットワークを構成し、 ONTAP tools for VMware vSphereを展開し、VMFS データストアを作成します。' 
+summary: 'VMware Cloud Foundation (VCF) 管理ドメインの補助ストレージとして iSCSI データストアを追加する手順を説明します。iSCSI 用の論理インターフェイス (LIF) を備えたストレージ仮想マシン (SVM) をセットアップし、vSphere ホストで iSCSI ネットワークを構成し、ONTAP tools for VMware vSphere をデプロイして、VMFS データストアを作成します。' 
 ---
 = VCF管理ドメインに補助ストレージとしてiSCSIデータストアを追加するための導入ワークフロー
 :hardbreaks:
@@ -14,7 +14,7 @@ summary: 'VMware Cloud Foundation (VCF) 管理ドメインの補助ストレー�
 
 
 [role="lead"]
-VMware Cloud Foundation (VCF) 管理ドメインの補助ストレージとして iSCSI データストアの追加を開始します。  iSCSI 用の論理インターフェイス (LIF) を使用してストレージ仮想マシン (SVM) をセットアップし、ESXi ホストで iSCSI ネットワークを構成し、 ONTAP tools for VMware vSphereを展開し、VMFS データストアを作成します。
+VMware Cloud Foundation (VCF) 管理ドメインの補助ストレージとして iSCSI データストアを追加する手順を説明します。iSCSI 用の論理インターフェイス (LIF) を備えたストレージ仮想マシン (SVM) をセットアップし、vSphere ホストで iSCSI ネットワークを構成し、ONTAP tools for VMware vSphere をデプロイして、VMFS データストアを作成します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-1.png["1"]link:vmw-vcf-mgmt-supplemental-iscsi-requirements.html["展開要件を確認する"]
 [role="quick-margin-para"]
@@ -26,8 +26,16 @@ iSCSI トラフィック用に複数の LIF を持つ SVM を作成します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-mgmt-supplemental-iscsi-network.html["ネットワークの設定"]
 [role="quick-margin-para"]
-ESXi ホスト上で iSCSI のネットワークを設定します。
+vSphere ホストで iSCSI のネットワークを設定します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-4.png["4"]link:vmw-vcf-mgmt-supplemental-iscsi-storage.html["ストレージを設定する"]
 [role="quick-margin-para"]
 ONTAPツールを導入して使用し、ストレージを構成します。
+
+
+
+[[reference-video]]
+== 参考動画：
+
+.AFF および ASA r2 を使用した iSCSI マルチパス
+video::62c2a66c-1a07-4284-bc7b-b4ac00e9aeea[panopto]

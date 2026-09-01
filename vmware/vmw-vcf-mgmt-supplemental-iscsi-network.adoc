@@ -1,17 +1,17 @@
 ---
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-mgmt-supplemental-iscsi-network.html 
-keywords: netapp, vmware, cloud, foundation, vcf, iscsi, network, esxi 
-summary: VMware Cloud Foundation 管理ドメイン内の ESXi ホストで iSCSI ネットワークを構成して、 ONTAPストレージ システムへの接続を有効にします。  VLAN 分離による分散ポート グループを作成し、冗長性のためにアップリンク チーミングを構成し、各 ESXi ホストに VMkernel アダプタを設定して、フェイルオーバー機能用の専用 iSCSI パスを確立します。 
+keywords: netapp, vmware, cloud, foundation, vcf, iscsi, network, vSphere 
+summary: VMware Cloud Foundation管理ドメイン内のvSphereホストでiSCSIネットワークを構成して、ONTAPストレージシステムへの接続を有効にします。VLAN分離を使用した分散ポートグループを作成し、冗長性のためにアップリンクチーミングを構成し、各vSphereホストにVMkernelアダプタを設定して、フェイルオーバー機能のための専用iSCSIパスを確立します。 
 ---
-= VCF管理ドメイン内のESXiホストでiSCSIのネットワークを構成する
+= VCF管理ドメイン内のvSphereホストでiSCSIのネットワークを構成する
 :allow-uri-read: 
 :icons: font
 :imagesdir: ../media/
 
 
 [role="lead"]
-VMware Cloud Foundation 管理ドメイン内の ESXi ホストで iSCSI ネットワークを構成して、 ONTAPストレージ システムへの接続を有効にします。  VLAN 分離による分散ポート グループを作成し、冗長性のためにアップリンク チーミングを構成し、各 ESXi ホストに VMkernel アダプタを設定して、フェイルオーバー機能用の専用 iSCSI パスを確立します。
+VMware Cloud Foundation管理ドメイン内のvSphereホストでiSCSIネットワークを構成して、ONTAPストレージシステムへの接続を有効にします。VLAN分離を使用した分散ポートグループを作成し、冗長性のためにアップリンクチーミングを構成し、各vSphereホストにVMkernelアダプタを設定して、フェイルオーバー機能のための専用iSCSIパスを確立します。
 
 vSphere クライアントを使用して、VCF 管理ドメイン クラスタで次の手順を実行します。
 
@@ -70,10 +70,10 @@ image:vmware-vcf-asa-026.png["アップリンク1を未使用に移動する"]
 
 
 
-[[step-2-create-vmkernel-adapters-on-each-esxi-host]]
-== ステップ2: 各ESXiホストにVMkernelアダプタを作成する
+[[step-2-create-vmkernel-adapters-on-each-vsphere-host]]
+== ステップ2：各vSphereホストにVMkernelアダプタを作成する
 
-管理ドメイン内の各 ESXi ホストに VMkernel アダプタを作成します。
+管理ドメイン内の各 vSphere ホストに VMkernel アダプターを作成します。
 
 .手順
 . vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。*構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
@@ -132,4 +132,4 @@ image:vmware-vcf-asa-034.png["VMkernelの選択を確認する"]
 [[whats-next]]
 == 次の手順
 
-ワークロードドメイン内のすべてのESXiホストでiSCSIのネットワークを構成した後、link:vmw-vcf-mgmt-supplemental-iscsi-storage.html["ESXiホスト上のiSCSI用ストレージを構成する"] 。
+管理ドメイン内のすべてのvSphereホストでiSCSIのネットワークを設定した後、link:vmw-vcf-mgmt-supplemental-iscsi-storage.html["vSphereホスト上でiSCSI用のストレージを構成する"]。

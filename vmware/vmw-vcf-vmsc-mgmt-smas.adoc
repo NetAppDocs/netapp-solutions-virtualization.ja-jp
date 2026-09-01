@@ -4,7 +4,7 @@ permalink: vmware/vmw-vcf-vmsc-mgmt-smas.html
 keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, iscsi 
 summary:  
 ---
-= SnapMirror Active Syncを使用してVCF管理ドメインのストレッチクラスタを構成する
+= SnapMirror Active Sync（SANおよびNAS）を使用したVCF管理ドメイン用のストレッチクラスターの構成
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -16,47 +16,46 @@ summary:
 [role="lead"]
 このユースケースでは、 ONTAP tools for VMware vSphereを使用して、VCF 管理ドメインのストレッチ クラスタを構成する手順について説明します。この手順には、vSphere ホストと vCenter Server の展開、 ONTAPツールのインストール、 SnapMirror Active Sync によるデータストアの保護、保護されたデータストアへの VM の移行、および補足ストレージの構成が含まれます。
 
-image:vmware-vcf-asa-mgmt-stretchcluster-001.png["単一インスタンス - 複数のアベイラビリティゾーン"]
+image:vmw-vcf-vmsc-mgmt-smas-001.png["VCF管理ドメイン用のONTAPを使用したストレッチクラスタ"]
 
+SANでは、均一型と非均一型の両方のストレッチクラスタ構成がサポートされています。NASの場合、ONTAP 9.19.1でのアクティブ / パッシブ構成です。
+
+[NOTE]
+====
+ホスト近接設定は、マルチパス構成と併用され、ストレージトラフィックに最適なパス選択を保証するために使用されます。ホスト近接設定は、SCSIの場合はigroupで、NVMe-oFの場合はサブシステムで構成されます。例えば、統一ホストアクセス構成では、ホストは拡張クラスタ内の両方のストレージシステムにアクセスできます。マルチパス構成では、最適なパスと最適ではないパスは、ホストの近接設定に基づいて構成されます。
+
+====
 
 
 [[scenario-overview]]
 == シナリオの概要
 
-ストレッチ クラスター ソリューションは、デフォルトのクラスター、または VCF 管理ドメインまたはワークロード ドメイン内の追加のクラスターに実装できます。  FC 上の VMFS は、プリンシパル データストアと補助データストアの両方でサポートされます。  iSCSI 上の VMFS は、補足データストアでのみサポートされます。  SnapMirrorアクティブ同期を使用した NVMe-oF 上の VMFS のサポートについては、 IMTを参照してください。
+ストレッチクラスタソリューションは、VCF管理ドメインまたはワークロードドメイン内のデフォルトクラスタ、あるいは追加クラスタに実装できます。ONTAP tools 10.6は、iSCSIおよびFCプロトコル上のVMFSデータストアに対して、SnapMirrorアクティブ同期によるデータストア保護をサポートしています。ONTAPは、SAN（iSCSI、FC、NVMe-oF対応）およびNAS（NFS v3およびNFSv4.1対応）に対してSnapMirrorアクティブ同期をサポートしています。SANプロトコルでは、保護は整合性グループレベルで実行されますが、NASではSVMレベルで実行されます。次の図は、FCを使用したVMFS向けONTAP tools for VMware vSphereを備えたVCF管理ドメインのストレッチクラスタソリューションを示しています。
 
 image:vmware-vcf-asa-mgmt-stretchcluster-002.png["VCF管理ドメイン用のONTAPを使用したストレッチクラスタ"]
 
 .管理ドメイン上の主ストレージ
 [%collapsible%open]
 ====
-VCF 5.2 以降では、VCF インポート ツールを使用して、VSAN なしで管理ドメインを展開できます。  VCFインポートツールの変換オプションを使用すると、link:vmw-vcf-mgmt-fc.html["既存のvCenterの展開を管理ドメインに導入する"] 。  vCenter 内のすべてのクラスターは管理ドメインの一部になります。
+. サポートされている任意のプロトコルを使用して、VCF管理ドメインをデプロイします。
++
+.. FC および NFSv3 上の VMFS の場合、VCF インストーラーツールが直接使用されます。iSCSI、NVMe-oF、NFSv4.1 の場合は、vCenter で設定してから、VCF インストーラーツールを使用して管理ドメインをデプロイする必要があります。詳細については、link:vmw-vcf-migrate.html["iSCSI、NVMe-oF、およびNFSv4.1を使用したVCF管理ドメインの展開"] を参照してください。
 
-. vSphereホストを展開する
-. ローカル データストアに vCenter Server を展開します (vCenter は管理ドメインに変換される vSphere ホスト上に共存する必要があります)
+
 . ONTAP tools for VMware vSphereを導入する
 . VMware vSphere 用SnapCenterプラグインの導入 (オプション)
-. データストアを作成する（FCゾーン構成が設定されている必要があります）
-. vSphere クラスタを保護する
-. VMを新しく作成したデータストアに移行する
+. データストアを保護します。
++
+.. iSCSI および FC の場合、データストアを保護するには ONTAP tools 10.6 以降を使用します。NVMe-oF および NFSv4.1 の場合は、System Manager を使用してデータストアを保護してください。参考までに、NVMe/TCP と NFS に関するデモ動画を以下でご覧ください。
 
 
 
-NOTE: クラスタが拡張または縮小されるたびに、クラスタのONTAPツールでホスト クラスタ関係を更新し、ソースまたはターゲットに加えられた変更を示す必要があります。
 
 ====
 .管理ドメイン上の補助ストレージ
 [%collapsible%open]
 ====
-管理ドメインが起動して実行されると、 ONTAPツールを使用して追加のデータストアを作成し、整合性グループの拡張をトリガーできます。
-
-
-TIP: vSphere クラスタが保護されている場合、クラスタ内のすべてのデータストアが保護されます。
-
-VCF 環境が Cloud Builder ツールを使用して展開されている場合、iSCSI を使用して補足ストレージを作成するには、 ONTAPツールを展開して iSCSI データストアを作成し、vSphere クラスターを保護します。
-
-
-NOTE: クラスタが拡張または縮小されるたびに、クラスタのONTAPツールでホスト クラスタ関係を更新し、ソースまたはターゲットに加えられた変更を示す必要があります。
+管理ドメインが起動して実行されたら、ONTAP tools 10.6以降を使用して追加のデータストアを作成し、iSCSIおよびFCのSnapMirrorアクティブ同期で保護することができます。NVMe-oFおよびNFSについては、以下のビデオデモをご参照ください。このデモはワークロードドメインで実行されていますが、管理ドメインでも同様の手順に従うことができます。
 
 ====
 
@@ -66,12 +65,16 @@ NOTE: クラスタが拡張または縮小されるたびに、クラスタのON
 
 ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
 
-VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation 5.2 ドキュメント"] 。
+VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation ドキュメント"]を参照してください。
 
 
 
 [[video-demo-for-this-solution]]
 == このソリューションのビデオデモ
 
-.ONTAPツールを使用した VCF 用ストレッチ クラスタ
-video::569a91a9-2679-4414-b6dc-b25d00ff0c5a[panopto,width=360]
+.ONTAP toolsを使用したSnapMirror active sync iSCSIによるVCF向けストレッチ クラスター
+video::4c21ee83-dc11-43bf-a9af-b4ac014aaa0e[panopto,width=360]
+.VCF 向けストレッチ クラスターと SnapMirror アクティブ同期 NVMe/TCP
+video::f85530ec-ff24-4c7d-abb4-b49b0176402c[panopto,width=360]
+.VCF 向けストレッチ クラスターと SnapMirror アクティブ シンク NAS
+video::76549cac-a1e3-4471-acf5-b49c00eebcf7[panopto,width=360]

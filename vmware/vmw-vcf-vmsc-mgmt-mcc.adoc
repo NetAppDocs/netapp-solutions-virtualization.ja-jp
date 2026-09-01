@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-このユースケースでは、プライマリ データストアとして NFS を使用したONTAP MetroClusterを使用して、VMware Cloud Foundation (VCF) 管理ドメインのストレッチ クラスタを構成する手順について説明します。この手順には、vSphere ホストと vCenter Server のデプロイ、NFS データストアのプロビジョニング、VCF インポート ツールを使用したクラスタの検証、NSX 設定の構成、環境の VCF 管理ドメインへの変換が含まれます。
+このユースケースでは、FC、iSCSI、NVMe-oF、NFSv3、またはNFSv4.1をプライマリデータストアとして使用し、ONTAP MetroClusterを使用してVMware Cloud Foundation （VCF） 管理ドメイン用のストレッチクラスタを構成する手順を概説します。VCFは、お客様のニーズに基づいた柔軟な導入オプションを提供します。VCFインストーラーツールは、新しいVCF管理ドメインをデプロイするか、既存のvSphere環境をVCF管理ドメインに変換するために使用します。このドキュメントでは、MetroClusterの部分に焦点を当て、展開手順に基づいて他のドキュメントを参照します。
 
 image:vmw-vcf-vmsc-mgmt-mcc-001.png["vMSC を使用した VCF 管理ドメイン、幅 = 500"]
 
@@ -23,22 +23,7 @@ image:vmw-vcf-vmsc-mgmt-mcc-001.png["vMSC を使用した VCF 管理ドメイン
 [[introduction]]
 == はじめに
 
-このソリューションでは、 ONTAP MetroClusterを使用して、NFS をプリンシパル データストアとしてストレッチ VCF 管理ドメインを実装する方法を説明します。
-
-
-
-[[scenario-overview]]
-== シナリオの概要
-
-このシナリオでは、次の大まかな手順について説明します。
-
-* vSphere ホストと vCenter サーバーをデプロイします。
-* NFS データストアを vSphere ホストにプロビジョニングします。
-* vSphere クラスタに SDDC Manager をデプロイします。
-* VCF インポート ツールを使用して、vSphere クラスターを検証します。
-* VCF 変換中に NSX を作成するための JSON ファイルを構成します。
-* VCF インポート ツールを使用して、vSphere 8 環境を VCF 管理ドメインに変換します。
-
+このソリューションでは、ONTAP MetroClusterをプリンシパルデータストアとして使用したストレッチVCF管理ドメインの実装方法を説明します。MetroClusterを使用すると、ONTAPクラスタで実行されているすべてのワークロードに対して高可用性ソリューションをデプロイできます。ワークロードに特化した高可用性ソリューションを導入する必要がある場合は、SnapMirrorアクティブ同期（SANおよびNAS）の使用をご検討ください。SnapMirrorアクティブ同期（SAN）は整合性グループレベルで動作しますが、SnapMirrorアクティブ同期（NAS）はSVMレベルで動作します。詳細については、link:vmw-vcf-vmsc-mgmt-smas.html["SnapMirror Active Sync（SANおよびNAS）を使用したVCF管理ドメイン用のストレッチクラスターの構成"]を参照してください。
 
 
 
@@ -48,11 +33,16 @@ image:vmw-vcf-vmsc-mgmt-mcc-001.png["vMSC を使用した VCF 管理ドメイン
 このシナリオには、次のコンポーネントと構成が必要です。
 
 * サポートされているONTAP MetroCluster構成
-* NFS トラフィックを許可するように構成されたストレージ仮想マシン (SVM)。
-* NFS トラフィックを伝送し、SVM に関連付けられた IP ネットワーク上に論理インターフェイス (LIF) が作成されています。
-* ネットワーク スイッチに接続された 4 台の ESXi ホストを備えた vSphere 8 クラスター。
-* VCF 変換に必要なソフトウェアをダウンロードします。
+* ストレージ仮想マシン（SVM）は、優先ストレージ プロトコルで設定されています。
+* ストレージトラフィックを伝送するために論理インターフェース（LIF）が作成され、SVMに関連付けられています。
 
+
+
+
+[[high-level-overview]]
+== 概要
+
+MetroCluster は、集約レベルで処理されるワークロードに対して高可用性ソリューションを提供します。SVM は、MetroCluster のいずれかの障害ドメインでアクティブになります。
 
 以下は、 MetroCluster構成を示す System Manager のサンプル スクリーンショットです。image:vmw-vcf-vmsc-mgmt-mcc-015.png["4ノードMetroClusterIP"]
 
@@ -66,221 +56,41 @@ image:vmw-vcf-vmsc-mgmt-mcc-016.png["障害ドメイン1のSVM"]
 
 image:vmw-vcf-vmsc-mgmt-mcc-017.png["障害ドメイン2のSVM"]
 
-参照する https://knowledge.broadcom.com/external/article/312183/vmware-vsphere-support-with-netapp-metro.html["MetroClusterを使用した vMSC"]。
+参照 https://support.broadcom.com/web/ecx/search?searchString=vMSC%20with%20MetroCluster["MetroClusterを使用した vMSC"]。
 
-vSphere を VCF 5.2 に変換またはインポートする際にサポートされるストレージおよびその他の考慮事項については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
-
-VCF管理ドメインに変換するvSphereクラスタを作成する前に、 https://knowledge.broadcom.com/external/article/373968/vlcm-config-manager-is-enabled-on-this-c.html["vSphere クラスタにおける NSX の考慮事項"]
-
-必要なソフトウェアについては、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/download-software-for-converting-or-importing-existing-vsphere-environments-admin.html["既存の vSphere 環境を変換またはインポートするためのソフトウェアをダウンロードする"] 。
+統合プロセスの概要については、VMwareのドキュメントを参照してください： https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-.html["既存の仮想インフラストラクチャをVCFに統合する"]。
 
 ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
 
-VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation ドキュメント"] 。
+VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation 9.1 ドキュメント"]を参照してください。
 
 
 
-[[deployment-steps]]
-== 展開手順
+[[deployment-steps-for-greenfield-vcf-management-domain-with-metrocluster]]
+== グリーンフィールドVCF管理ドメインと MetroCluster の展開手順
 
-NFSを主データストアとしてVCFストレッチ管理ドメインを展開するには、
+グリーンフィールド展開（既存のVCFコンポーネントがない新規展開）の場合、VCFインストーラーツールを使用して管理ドメインを展開します。このシナリオでは、FC上のVMFSおよびNFSv3がサポートされています。
 
-次の手順を実行します。
-
-* vSphere ホストと vCenter をデプロイします。
-* vSphere クラスターを作成します。
-* NFS データストアをプロビジョニングします。
-* VCF インポート ツールを vCenter アプライアンスにコピーします。
-* VCF インポート ツールを使用して、vCenter アプライアンスの事前チェックを実行します。
-* vCenter クラスタに SDDC マネージャ VM をデプロイします。
-* 変換プロセス中に展開する NSX クラスタの JSON ファイルを作成します。
-* 必要なソフトウェアを SDDC マネージャーにアップロードします。
-* vSphere クラスタを VCF 管理ドメインに変換します。
-
-
-変換プロセスの概要については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["vSphere 環境を管理ドメインに変換するか、VMware Cloud Foundation で vSphere 環境を VI ワークロード ドメインとしてインポートする"] 。
+VMFS on FC の場合、詳細については link:vmw-vcf-mgmt-principal-fc.html["VCF管理ドメインとFCベースのVMFSデータストアをONTAP上のプリンシパルストレージとして使用"] を参照してください。NFSv3 の場合、詳細については link:vmw-vcf-mgmt-principal-nfs.html["VCF管理ドメインとONTAP上のNFSv3データストアをプリンシパルストレージとして使用"] を参照してください。
 
 
 
-[[deploy-vsphere-hosts-and-vcenter]]
-=== vSphereホストとvCenterを展開する
+[[deployment-steps-for-brownfield-vcf-management-domain-with-metrocluster]]
+== ブラウンフィールドVCF管理ドメインとMetroClusterの展開手順
 
-Broadcom サポート ポータルからダウンロードした ISO を使用してホストに vSphere を展開するか、vSphere ホストの既存の展開オプションを使用します。
+ブラウンフィールド展開とは、既存のvSphere環境をVCF管理ドメインとして統合するシナリオです。
 
-.NFS データストアをホスト VM にマウントする
-[%collapsible%open]
-====
-この手順では、NFS ボリュームを作成し、それをデータストアとしてマウントして VM をホストします。
-
-. System Manager を使用してボリュームを作成し、vSphere ホストの IP サブネットを含むエクスポート ポリシーに接続します。image:vmw-vcf-vmsc-mgmt-mcc-002.png["System Manager による NFS ボリュームの作成"]
-. vSphere ホストに SSH で接続し、NFS データストアをマウントします。image:vmw-vcf-vmsc-mgmt-mcc-003.png["vSphere ホストに NFS データストアをマウントする"]
-+
-[注意] ハードウェアアクセラレーションがサポートされていないと表示される場合は、最新のNFS VAAIコンポーネント（ NetAppサポートポータルからダウンロード）がvSphereホストにインストールされていることを確認してください。image:vmw-vcf-vmsc-mgmt-mcc-005.png["NFS VAAIコンポーネントをインストールする"]ボリュームをホストする SVM で vStorage が有効になっています。image:vmw-vcf-vmsc-mgmt-mcc-004.png["VAAI の SVM で vStorage を有効にする"]
-
-. 追加のデータストアが必要な場合は上記の手順を繰り返し、ハードウェア アクセラレーションがサポートされていることを確認します。image:vmw-vcf-vmsc-mgmt-mcc-006.png["データストアのリスト。各断層領域から1つ"]
-
-
-====
-NFS データストアに vCenter をデプロイします。  vCenter アプライアンスで SSH と Bash シェルが有効になっていることを確認します。
+iSCSI、NVMe-oF、NFSv4.1 の場合は、vCenter （できれば ONTAP tools を使用）で設定し、その後 VCF インストーラーツールを使用して管理ドメインに統合する必要があります。詳細については、link:vmw-vcf-mgmt-vmfs.html["vCenter と VMFS データストアの収束"] および link:vmw-vcf-mgmt-nfs.html["vCenter と NFS データストアの収束"] を参照してください。
 
 
 
-[[create-vsphere-cluster]]
-=== vSphere クラスタを作成する
+[[supplemental-datastore-deployment-steps-for-vcf-management-domain-with-metrocluster]]
+== VCF管理ドメインとMetroClusterの補足データストア展開手順
 
-. vSphere Web クライアントにログインし、NFS VAAI が展開されているホストの 1 つを追加して、データセンターと vSphere クラスターを作成します。クラスター内のすべてのホストを単一のイメージ オプションで管理することを選択しました。 [ヒント] クラスター レベルで構成を管理を選択しないでください。詳細については、 https://knowledge.broadcom.com/external/article/373968/vlcm-config-manager-is-enabled-on-this-c.html["vSphere クラスタにおける NSX の考慮事項"] 。  ONTAP MetroClusterを使用したvMSCのベストプラクティスについては、 https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware_vmsc_design.html#netapp-storage-configuration["vMSC 設計および実装ガイドライン"]
-. 他の vSphere ホストをクラスタに追加します。
-. 分散スイッチを作成し、ポート グループを追加します。
-. https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-network-design/migrating-from-standard-to-distributed-vswitch.html["標準の vSwitch から分散スイッチにネットワークを移行します。"]
+ONTAP tools を使用する場合は、両方の ONTAP クラスターを登録してください。詳細については、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/concepts/reference_metrocluster_configurations_supported_by_ontap_tools_for_vmware_vsphere.html#metrocluster-configurations-and-ontap-tools["MetroCluster の ONTAP Tools for VMware vSphere でサポートされる構成"]を参照してください。
 
+* link:vmw-vcf-mgmt-supplemental-iscsi.html["ONTAP Toolsを使用してVCF管理ドメインにiSCSIデータストアをデプロイする"]
+* link:vmw-vcf-mgmt-supplemental-fc.html["ONTAP Tools を使用して、VCF 管理ドメインに補助的な FC データストアをデプロイする"]
+* link:vmw-vcf-viwld-supp-nvme.html["VCF管理ドメインで使用するNVMe-oFデータストアを構成する"]
+* link:vmw-vcf-mgmt-nfs.html["ONTAP toolsを使用してVCF管理ドメインにNFSv3/NFSv4.1データストアをデプロイする"]
 
-
-
-[[convert-vsphere-environment-to-vcf-management-domain]]
-=== vSphere 環境を VCF 管理ドメインに変換する
-
-次のセクションでは、SDDC マネージャをデプロイし、vSphere 8 クラスタを VCF 5.2 管理ドメインに変換する手順について説明します。必要に応じて、詳細については VMware のドキュメントが参照されます。
-
-VMware by Broadcom の VCF インポート ツールは、vCenter アプライアンスと SDDC マネージャの両方で使用されるユーティリティで、構成を検証し、vSphere および VCF 環境の変換およびインポート サービスを提供します。
-
- https://docs.vmware.com/en/VMware-Cloud-Foundation/5.2/vcf-admin/GUID-44CBCB85-C001-41B2-BBB4-E71928B8D955.html["VCFインポートツールのオプションとパラメータ"] 。
-
-.VCFインポートツールのコピーと抽出
-[%collapsible%open]
-====
-VCF インポート ツールは、vCenter アプライアンスで使用され、vSphere クラスタが VCF 変換またはインポート プロセスに対して正常な状態にあることを検証します。
-
-次の手順を実行します。
-
-. 次の手順に従ってください https://docs.vmware.com/en/VMware-Cloud-Foundation/5.2/vcf-admin/GUID-6ACE3794-BF52-4923-9FA2-2338E774B7CB.html["VCFインポートツールをターゲットのvCenterアプライアンスにコピーします"]VMware Docs を参照して、VCF インポート ツールを正しい場所にコピーします。
-. 次のコマンドを使用してバンドルを抽出します。
-+
-....
-tar -xvf vcf-brownfield-import-<buildnumber>.tar.gz
-....
-
-
-====
-.vCenterアプライアンスを検証する
-[%collapsible%open]
-====
-変換前に、VCF インポート ツールを使用して vCenter アプライアンスを検証します。
-
-. 次の手順に従ってください https://docs.vmware.com/en/VMware-Cloud-Foundation/5.2/vcf-admin/GUID-AC6BF714-E0DB-4ADE-A884-DBDD7D6473BB.html["変換前にターゲット vCenter で事前チェックを実行する"]検証を実行します。
-. 次の出力は、vCenter アプライアンスが事前チェックに合格したことを示しています。
-+
-image:vmw-vcf-vmsc-mgmt-mcc-007.png["vcfインポートツールの事前チェック"]
-
-
-
-====
-.SDDC マネージャーを展開する
-[%collapsible%open]
-====
-SDDC マネージャーは、VCF 管理ドメインに変換される vSphere クラスター上に共存する必要があります。
-
-展開を完了するには、VMware Docs の展開手順に従ってください。
-
-image:vmw-vcf-vmsc-mgmt-mcc-008.png["VCF変換前"]
-
-参照 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin/deploy-the-sddc-manager-appliance-on-the-target-vcenter-admin.html["ターゲットvCenterにSDDC Managerアプライアンスを展開する"]。
-
-====
-.NSX 展開用の JSON ファイルを作成する
-[%collapsible%open]
-====
-vSphere 環境を VMware Cloud Foundation にインポートまたは変換しながら NSX Manager をデプロイするには、NSX デプロイ仕様を作成します。  NSX の展開には少なくとも 3 台のホストが必要です。
-
-
-NOTE: 変換またはインポート操作で NSX Manager クラスタをデプロイする場合、NSX VLAN でバックアップされたセグメントが使用されます。  NSX-VLAN でバックアップされたセグメントの制限の詳細については、「既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前の考慮事項」セクションを参照してください。  NSX-VLANネットワークの制限については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
-
-以下は、NSX デプロイメント用の JSON ファイルの例です。
-
-....
-{
-  "deploy_without_license_keys": true,
-  "form_factor": "small",
-  "admin_password": "******************",
-  "install_bundle_path": "/nfs/vmware/vcf/nfs-mount/bundle/bundle-133764.zip",
-  "cluster_ip": "10.61.185.114",
-  "cluster_fqdn": "mcc-nsx.sddc.netapp.com",
-  "manager_specs": [{
-    "fqdn": "mcc-nsxa.sddc.netapp.com",
-    "name": "mcc-nsxa",
-    "ip_address": "10.61.185.111",
-    "gateway": "10.61.185.1",
-    "subnet_mask": "255.255.255.0"
-  },
-  {
-    "fqdn": "mcc-nsxb.sddc.netapp.com",
-    "name": "mcc-nsxb",
-    "ip_address": "10.61.185.112",
-    "gateway": "10.61.185.1",
-    "subnet_mask": "255.255.255.0"
-  },
-  {
-    "fqdn": "mcc-nsxc.sddc.netapp.com",
-    "name": "mcc-nsxc",
-    "ip_address": "10.61.185.113",
-    "gateway": "10.61.185.1",
-    "subnet_mask": "255.255.255.0"
-  }]
-}
-....
-JSON ファイルを SDDC マネージャーの vcf ユーザーのホーム フォルダーにコピーします。
-
-====
-.SDDC マネージャーにソフトウェアをアップロードする
-[%collapsible%open]
-====
-VCF インポート ツールを vcf ユーザーのホーム フォルダにコピーし、NSX デプロイメント バンドルを SDDC マネージャの /nfs/vmware/vcf/nfs-mount/bundle/ フォルダにコピーします。
-
-見る https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin/seed-software-on-sddc-manager-admin.html["必要なソフトウェアを SDDC Manager アプライアンスにアップロードする"]詳細な手順については、こちらをご覧ください。
-
-====
-.変換前のvCenterの詳細チェック
-[%collapsible%open]
-====
-管理ドメインの変換操作または VI ワークロード ドメインのインポート操作を実行する前に、既存の vSphere 環境の構成が変換またはインポートに対してサポートされていることを確認するために詳細なチェックを実行する必要があります。 。ユーザー vcf として SDDC Manager アプライアンスに SSH 接続します。  。  VCF インポート ツールをコピーしたディレクトリに移動します。 。次のコマンドを実行して、vSphere環境が変換できることを確認します。
-
-....
-python3 vcf_brownfield.py check --vcenter '<vcenter-fqdn>' --sso-user '<sso-user>' --sso-password '********' --local-admin-password '****************' --accept-trust
-....
-====
-.vSphere クラスタを VCF 管理ドメインに変換する
-[%collapsible%open]
-====
-変換プロセスを実行するには、VCF インポート ツールが使用されます。
-
-次のコマンドを実行して、vSphere クラスタを VCF 管理ドメインに変換し、NSX クラスタをデプロイします。
-
-....
-python3 vcf_brownfield.py convert --vcenter '<vcenter-fqdn>' --sso-user '<sso-user>' --sso-password '******' --vcenter-root-password '********' --local-admin-password '****************' --backup-password '****************' --domain-name '<Mgmt-domain-name>' --accept-trust --nsx-deployment-spec-path /home/vcf/nsx.json
-....
-vSphere ホスト上で複数のデータストアが使用可能な場合、デフォルトで NSX VM がデプロイされるプライマリ データストアとして考慮する必要があるデータストアを指定するよう要求されます。image:vmw-vcf-vmsc-mgmt-mcc-012.png["プリンシパルデータストアを選択"]
-
-詳しい手順については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["VCF変換手順"] 。
-
-NSX VM は vCenter にデプロイされます。image:vmw-vcf-vmsc-mgmt-mcc-009.png["VCF変換後"]
-
-SDDC マネージャーには、指定された名前で作成された管理ドメインと、データストアとしての NFS が表示されます。image:vmw-vcf-vmsc-mgmt-mcc-010.png["NFS を使用した VCF 管理ドメイン"]
-
-クラスターを検査すると、NFS データストアの情報が提供されます。image:vmw-vcf-vmsc-mgmt-mcc-011.png["VCF からの NFS データストアの詳細"]
-
-====
-.VCFにライセンスを追加する
-[%collapsible%open]
-====
-変換が完了したら、環境にライセンスを追加する必要があります。
-
-. SDDC Manager UI にログインします。
-. ナビゲーション ペインで *管理 > ライセンス* に移動します。
-. *+ ライセンス キー* をクリックします。
-. ドロップダウンメニューから製品を選択します。
-. ライセンスキーを入力してください。
-. ライセンスの説明を入力します。
-. *[追加]*をクリックします。
-. ライセンスごとにこれらの手順を繰り返します。
-
-
-====

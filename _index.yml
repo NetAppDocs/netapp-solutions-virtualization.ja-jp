@@ -20,7 +20,7 @@ indexpage:
       url: "/videos/index.html"
   - title: 仮想化のためのNetAppソリューション
     links:
-    - title: VMwareオンプレミスとクラウド
+    - title: VMware を使用したプライベートクラウド
       url: "/vmware/index.html"
     - title: Microsoft Hyper-V
       url: hyperv/index.html

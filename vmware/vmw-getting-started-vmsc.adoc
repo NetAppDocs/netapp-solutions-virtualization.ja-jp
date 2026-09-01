@@ -32,10 +32,10 @@ NetApp MetroCluster は、 NetApp の高可用性 (HA) 機能を使用して、�
 
 
 
-[[netapp-snapmirror-active-sync]]
-== NetApp SnapMirrorアクティブ同期
+[[netapp-snapmirror-active-sync-san-and-nas-protocols]]
+== NetApp SnapMirror アクティブ同期（SAN および NAS プロトコル）
 
-NetApp SnapMirrorアクティブ シンクは、FCP および iSCSI SAN プロトコルを使用してデータストア単位のきめ細かな保護を提供し、優先度の高いワークロード トポロジを選択的に保護します。アクティブ/スタンバイMetroClusterとは異なり、ローカル サイトとリモート サイトの両方にアクティブ/アクティブ アクセスを提供します。  ONTAP 9.15.1 以降、 SnapMirrorアクティブ同期は対称アクティブ/アクティブ機能をサポートし、双方向同期レプリケーションを使用して保護された LUN の両方のコピーからの読み取りおよび書き込み I/O 操作を可能にします。
+NetApp SnapMirror active syncは、SANプロトコルを使用してデータストア単位（整合性グループ）の保護を提供し、優先度の高いワークロードのトポロジを選択的に保護します。アクティブ / スタンバイの MetroCluster とは異なり、ローカルサイトとリモートサイトの両方へのアクティブ / アクティブアクセスを提供します。ONTAP 9.15.1以降、SnapMirror active syncは対称アクティブ / アクティブ機能をサポートし、双方向の同期レプリケーションにより、保護されたLUN/ネームスペースの両方のコピーからの読み取りおよび書き込みI/O操作が可能になります。ONTAP 9.19.1以降、SnapMirror active syncはNASプロトコルをサポートし、SVMレベルで保護します。SVMは一方のサイトでアクティブ、もう一方のサイトでスタンバイとなり、双方向の同期レプリケーションが行われます。
 
 
 

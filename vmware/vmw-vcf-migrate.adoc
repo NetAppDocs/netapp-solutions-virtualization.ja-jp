@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-migrate.html 
 keywords: vmware, vcf, migrate, import 
-summary: ONTAP上の既存のファイバ チャネルまたは NFS データストアを使用して vSphere 環境を変換するには、現在のインフラストラクチャを最新のプライベート クラウド アーキテクチャに統合する必要があります。 
+summary: 既存のファイバーチャネルまたはNFSデータストアを使用したvSphere環境をONTAPに統合するには、現在のインフラストラクチャを最新のプライベートクラウドアーキテクチャに組み込む必要があります。 
 ---
-= 既存のデータストアを持つ vSphere 環境を VCF 管理ドメインに変換する方法について学習します。
+= 既存のデータストアを持つvSphere環境をVCF管理ドメインに統合する方法について説明します
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,16 +14,16 @@ summary: ONTAP上の既存のファイバ チャネルまたは NFS データス
 
 
 [role="lead"]
-ONTAP上の既存のファイバ チャネルまたは NFS データストアを使用して vSphere 環境を変換するには、現在のインフラストラクチャを最新のプライベート クラウド アーキテクチャに統合する必要があります。
+サポートされているすべてのvSphere環境は、VCF プライベートクラウド環境の一部として構築できます。VCF 管理ドメインに統合することも、ワークロードドメインとしてインポートすることも可能です。このソリューションでは、vSphereの既存の VMFS または NFS データストアが、クラスターを VCF 管理ドメインに変換するとプリンシパルストレージになる方法を示します。
 
 
 
 [[solution-overview]]
 == ソリューションの概要
 
-このソリューションは、クラスタが VCF 管理ドメインに変換されるときに、vSphere 内の既存の FC または NFS データストアがプリンシパル ストレージになる方法を示しています。
+このソリューションでは、クラスタがVCF管理ドメインに統合されたときに、vSphere内の既存のVMFSまたはNFSデータストアがプリンシパルストレージになる方法を示します。
 
-このプロセスは、 ONTAPストレージの堅牢性と柔軟性を活用し、シームレスなデータ アクセスと管理を実現します。変換プロセスを通じて VCF 管理ドメインが確立されると、管理者は FC と NFS の両方のデータストアを使用する環境を含む追加の vSphere 環境を VCF エコシステムに効率的にインポートできます。
+このプロセスは、ONTAPストレージの堅牢性と柔軟性を活用して、シームレスなデータアクセスと管理を実現します。コンバージプロセスを通じてVCF管理ドメインが確立されると、管理者はVMFSとNFSの両方のデータストアを使用する環境を含む、追加のvSphere環境をVCFエコシステムに効率的にインポートできます。
 
 この統合により、リソースの使用率が向上するだけでなく、プライベート クラウド インフラストラクチャの管理が簡素化され、既存のワークロードの中断を最小限に抑えながらスムーズな移行が可能になります。
 
@@ -40,13 +40,13 @@ image::vmware-vcf-import-nfs-010.png[ONTAPツールのアーキテクチャ]
 
 
 
-[[supported-solutions-for-converting-a-vsphere-environment]]
-== vSphere 環境の変換にサポートされているソリューション
+[[supported-solutions-for-converging-a-vsphere-environment]]
+== vSphere 環境を統合するためにサポートされているソリューション
 
 vCenter インスタンスを変換するための技術的な詳細については、次のソリューションを参照してください。
 
-* link:vmw-vcf-mgmt-nfs.html["vCenter インスタンスを VCF 管理ドメイン (NFS データストア) に変換する"]
-* link:vmw-vcf-mgmt-fc.html["vCenterインスタンスをVCF管理ドメイン（FCデータストア）に変換する"]
+* link:vmw-vcf-mgmt-nfs.html["vCenter インスタンスを VCF 管理ドメイン（NFS データストア）に統合する"]
+* link:vmw-vcf-mgmt-vmfs.html["vCenter インスタンスを VCF 管理ドメイン（VMFS データストア）に統合する"]
 
 
 
@@ -55,8 +55,8 @@ vCenter インスタンスを変換するための技術的な詳細について
 == 追加情報
 
 * これらのソリューションのビデオデモについては、以下を参照してください。link:../videos/vmware-videos.html#vmware-datastore-provisioning-with-ontap["ONTAPを使用した VMware データストアのプロビジョニング"] 。
-* 変換プロセスの概要については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["vSphere 環境を管理ドメインに変換するか、vSphere 環境を VMware Cloud Foundation の VI ワークロード ドメインとしてインポートします。"] 。
+* 収束プロセスの概要については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-.html["既存の仮想インフラストラクチャをVCFに統合する"]を参照してください。
 * ONTAPストレージシステムの設定については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"] 。
 * VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"] 。
-* vSphereをVCF 5.2に変換またはインポートする際にサポートされるストレージおよびその他の考慮事項については、以下を参照してください。 https://techdocs.broadcom.com/fr/fr/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前の考慮事項"] 。
+* サポートされているストレージやその他の考慮事項については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-/supported-and-not-supported-configurations.html["VCFへの収束におけるサポート対象構成とサポート対象外構成"]を参照してください。
 

@@ -4,7 +4,7 @@ permalink: vmware/vmw-vcf-vmsc-viwld-smas.html
 keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, iscsi 
 summary:  
 ---
-= SnapMirror Active Syncを使用してVIワークロードドメインのストレッチクラスタを構成する
+= SnapMirror active sync（SANおよびNAS）を使用して、ワークロード ドメインのストレッチ クラスターを構成します
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,39 +14,49 @@ summary:
 
 
 [role="lead"]
-このユースケースでは、ONTAP tools for VMware vSphereを使用してSnapMirror Active Sync を使用し、仮想インフラストラクチャ (VI) ワークロード ドメインのストレッチ クラスターを構成する手順について説明します。この手順には、ファイバ チャネル上の VMFS を使用した VCF ワークロード ドメインの作成、 ONTAPツールを使用した vCenter の登録、ストレージ システムの登録、および vSphere クラスタの保護が含まれます。
+このユースケースでは、ONTAP tools for VMware vSphereを使用して、ワークロード ドメインのストレッチ クラスターを構成する手順の概要を説明します（ONTAP tools 10.6はFCおよびiSCSIをサポートしています）。なお、この構成にはSnapMirror active syncを使用します。ONTAPは、SAN（iSCSI、Fibre Channel、およびNVMe over Fabricsを使用）とNAS（NFSv3およびNFSv4.1）の両方でSnapMirror active syncをサポートしています。
 
-image:vmware-vcf-asa-mgmt-stretchcluster-001.png["単一インスタンス - 複数のアベイラビリティゾーン"]
+image:vmw-vcf-vmsc-viwld-smas-001.png["VCF 用のストレッチ クラスターと SnapMirror アクティブ シンク"]
 
+SANでは、均一型と非均一型の両方のストレッチクラスタ構成がサポートされています。NASの場合、ONTAP 9.19.1でのアクティブ / パッシブ構成です。
+
+[NOTE]
+====
+ホスト近接設定は、マルチパス構成と併用され、ストレージトラフィックに最適なパス選択を保証するために使用されます。ホスト近接設定は、SCSIの場合はigroupで、NVMe-oFの場合はサブシステムで構成されます。例えば、統一ホストアクセス構成では、ホストは拡張クラスタ内の両方のストレージシステムにアクセスできます。マルチパス構成では、最適なパスと最適ではないパスは、ホストの近接設定に基づいて構成されます。
+
+====
 
 
 [[scenario-overview]]
 == シナリオの概要
 
-VCF ワークロード ドメイン上のデータストアは、 SnapMirrorアクティブ シンクを使用して保護し、ストレッチ クラスタ ソリューションを提供できます。保護は vSphere クラスタ レベルで有効になり、クラスタ内のすべてのONTAPブロック データストアが保護されます。
+VCF ワークロードドメイン上のデータストアは、SnapMirror アクティブ同期で保護し、ストレッチクラスタソリューションを提供できます。SAN の場合、保護機能はデータストアレベル（整合性グループ）で有効化され、NAS の場合、SVM レベルで保護されます。
+
+
+
+[[prerequisites]]
+== 前提条件
 
 .ワークロードドメイン上のプリンシパルストレージ
 [%collapsible%open]
 ====
-ワークロード ドメインは、VCF インポート ツールを使用してインポートするか、SDDC マネージャーを使用してデプロイすることで作成できます。  SDDC マネージャーを使用して展開すると、既存の環境をインポートするよりも多くのネットワーク オプションが提供されます。
+ワークロードドメインは、インポートまたは VCF Ops ツールを使用した作成のいずれかによって作成できます。
 
-. FC上のVMFSでワークロードドメインを作成する
+. サポートされている任意のプロトコルを使用してワークロードドメインを作成します。
 . link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["ワークロード ドメイン vCenter をONTAPツール マネージャーに登録して、vCenter プラグインを展開します。"]
 . link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html["ONTAPツールにストレージシステムを登録する"]
-. link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/protect-cluster.html["vSphere クラスタを保護する"]
+. iSCSIおよびFCデータストアについては、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/protect/protect-multiple-ds.html["ONTAP ツールを使用して vSphere データストアを保護する"]を参照してください。
+. NVMe-oFおよびNFSデータストアについては、SnapMirror active syncを使用してワークロードドメイン上のデータストアを保護する手順について、以下のビデオデモをご確認ください。
 
-
-
-NOTE: クラスタが拡張または縮小されるたびに、クラスタのONTAPツールでホスト クラスタ関係を更新し、ソースまたはターゲットに加えられた変更を示す必要があります。
 
 ====
 .ワークロードドメインの補助ストレージ
 [%collapsible%open]
 ====
-ワークロード ドメインが起動して実行されると、 ONTAPツールを使用して追加のデータストアを作成し、整合性グループの拡張をトリガーできます。
+ワークロード ドメインが稼働すると、ONTAP toolsを使用して追加のデータストアを作成し、保護することができます。SnapMirror active syncの詳細については、 https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/index.html#benefits["ONTAP SnapMirror Active Syncについて学ぶ"]を参照してください。
 
 
-TIP: vSphere クラスタが保護されている場合、クラスタ内のすべてのデータストアが保護されます。
+TIP: ONTAP tools 10.6以降では、SnapMirrorアクティブ同期を使用してワークロードドメイン上のデータストアを保護できます。ワークロードドメイン上のデータストアをSnapMirrorアクティブ同期で保護する手順については、以下のビデオデモを参照してください。
 
 ====
 
@@ -63,5 +73,9 @@ VCFの設定方法については、以下を参照してください。link:htt
 [[video-demo-for-this-solution]]
 == このソリューションのビデオデモ
 
-.ONTAPツールを使用した VCF 用ストレッチ クラスタ
-video::569a91a9-2679-4414-b6dc-b25d00ff0c5a[panopto,width=360]
+.ONTAP toolsを使用したSnapMirror active sync iSCSIによるVCF向けストレッチ クラスター
+video::4c21ee83-dc11-43bf-a9af-b4ac014aaa0e[panopto,width=360]
+.VCF 向けストレッチ クラスターと SnapMirror アクティブ同期 NVMe/TCP
+video::f85530ec-ff24-4c7d-abb4-b49b0176402c[panopto,width=360]
+.VCF 向けストレッチ クラスターと SnapMirror アクティブ シンク NAS
+video::76549cac-a1e3-4471-acf5-b49c00eebcf7[panopto,width=360]

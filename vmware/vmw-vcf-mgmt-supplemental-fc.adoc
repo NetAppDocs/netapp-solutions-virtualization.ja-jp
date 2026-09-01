@@ -47,11 +47,18 @@ ONTAP tools for VMware vSphereは、 NFS および VMFS データストアをサ
 
 
 
+[[reference-video]]
+== 参考動画
+
+.FC を備えた補助データストア
+video::96311abf-aa45-4ce9-984b-b4b001005bab[panopto,width=360]
+
+
 [[additional-information]]
 == 追加情報
 
 * ONTAPストレージシステムの構成については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"] 。
-* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation ドキュメント"] 。
+* VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation ドキュメント"]を参照してください。
 * ONTAPストレージシステムでのファイバチャネルの設定については、 ONTAP 9のドキュメントを参照してください。 https://docs.netapp.com/us-en/ontap/san-management/index.html["SANストレージの管理"] 。
 * ONTAPストレージシステムでVMFSを使用する方法の詳細については、link:vmw-vmfs-deploy.html["VMFSの導入ガイド"] 。
 * このソリューションのビデオデモについては、以下を参照してください。link:../videos/vmware-videos.html#vmware-datastore-provisioning-with-ontap["VMware データストアのプロビジョニング"] 。

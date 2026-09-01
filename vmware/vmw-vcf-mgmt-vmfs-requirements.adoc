@@ -1,0 +1,54 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-vmfs-requirements.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, aff, all-flash, fc, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
+summary: vSphere クラスターと NetApp ONTAP VMFS データストアを VMware Cloud Foundation 管理ドメインに統合するための要件を確認します。 
+---
+= VMFSデータストアを使用したVCF管理ドメインへのvCenterサーバインスタンスの統合に関する展開要件
+:allow-uri-read: 
+:icons: font
+:imagesdir: ../media/
+
+
+[role="lead"]
+vSphere クラスターと NetApp ONTAP VMFS データストアを VMware Cloud Foundation 管理ドメインに統合するための要件を確認します。
+
+
+
+[[infrastructure-requirements]]
+== インフラストラクチャ要件
+
+次のコンポーネントと構成が適切であることを確認してください。
+
+* NetApp ASA R2/ASA/AFF ストレージシステムと、FC/iSCSI トラフィックを許可するように構成されたストレージ仮想マシン（SVM）。
+* FC/iSCSIトラフィックを伝送するために作成され、SVMに関連付けられた論理インターフェース（LIF）。
+* FCおよびNVMe/FCの場合、FCゾーニングはファブリック スイッチで設定されます。
+* iSCSI および NVMe/TCP の場合、それぞれのトラフィックを処理するために vSphere ホストで設定された vmkernel ポート グループ。
+* サポートされているvSphereクラスター（4 x vSphereホストとvCenterアプライアンスがクラスター上に同一場所に配置）。
+* この目的のために確立された VLAN またはネットワーク セグメント上の vMotion 用に構成された分散ポート グループ。
+* VCF統合には、ダウンロード済みのVCFインストーラーツールが必要です。詳細については、以下を参照してください https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment.html["VCFの展開、統合、およびアップグレード"]。
+* ONTAPツールの前提条件が満たされています。
++
+ONTAPツールの前提条件の詳細については、以下を参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/prerequisites.html#system-requirements["ONTAP tools for VMware vSphereの前提条件"] 。
+
++
+ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれにもインストールできます。
+
+
+
+
+
+[[additional-resources]]
+== その他のリソース
+
+* サポートされているストレージと、vSphere を VCF に収束させる際のその他の考慮事項については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-/supported-and-not-supported-configurations.html["VCFへの収束におけるサポート対象構成とサポート対象外構成"]を参照してください。
+* ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"] 。
+* VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation 9.1 ドキュメント"]を参照してください。
+
+
+
+
+[[whats-next]]
+== 次の手順
+
+展開要件を確認したら、link:vmw-vcf-mgmt-vmfs-deploy.html["ONTAP tools を導入して VMFS データストアをプロビジョニングする"]。

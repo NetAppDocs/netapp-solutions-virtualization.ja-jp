@@ -2,20 +2,20 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-iscsi-vvols.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: 'VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインの補助ストレージとして、iSCSI を使用してvVolsデータストアを構成する手順を開始します。  SVM と LIF を作成し、iSCSI ネットワークをセットアップし、 ONTAP tools for VMware vSphereを展開し、 vVolsデータストアをプロビジョニングします。' 
+summary: 'VMware Cloud Foundation (VCF) ワークロードドメインの補助ストレージとして、iSCSI を使用した vVols データストアの設定を開始します。SVM と LIF を作成し、iSCSI ネットワークをセットアップし、ONTAP tools for VMware vSphere をデプロイして、vVols データストアをプロビジョニングします。' 
 ---
-= VI ワークロード ドメインに補助ストレージとして iSCSI vVolsデータストアを追加するための展開ワークフロー
+= ワークロードドメインの補助ストレージとしてiSCSI vVolsデータストアを追加するためのデプロイメントワークフロー
 :allow-uri-read: 
 :icons: font
 :imagesdir: ../media/
 
 
 [role="lead"]
-VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメイン内の補助ストレージとして iSCI vVolsデータストアを構成する手順を説明します。  SVM と LIF を作成し、iSCSI ネットワークをセットアップし、 ONTAP tools for VMware vSphereを展開し、ストレージを構成します。
+VMware Cloud Foundation （VCF）ワークロードドメインの補助ストレージとして iSCSI vVols データストアを設定する手順について説明します。SVM と LIF を作成し、iSCSI ネットワークをセットアップし、ONTAP tools for VMware vSphere をデプロイして、ストレージを設定します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-1.png["1"]link:vmw-vcf-viwld-supp-iscsi-vvols-requirements.html["展開要件を確認する"]
 [role="quick-margin-para"]
-VMware Cloud Foundation VI ワークロード ドメインに iSCSI vVolsをデプロイするための要件を確認します。
+VMware Cloud Foundation ワークロード ドメインに iSCSI vVols を導入するための要件を確認します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-2.png["2"]link:vmw-vcf-viwld-supp-iscsi-vvols-svm-lifs.html["SVMとLIFを作成する"]
 [role="quick-margin-para"]
@@ -23,7 +23,7 @@ iSCSI トラフィック用に複数の LIF を持つ SVM を作成します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-viwld-supp-iscsi-vvols-network.html["ネットワークの設定"]
 [role="quick-margin-para"]
-ESXi ホスト上で iSCSI のネットワークを設定します。
+vSphere ホストで iSCSI のネットワークを設定します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-4.png["4"]link:vmw-vcf-viwld-supp-iscsi-vvols-storage.html["ストレージを設定する"]
 [role="quick-margin-para"]

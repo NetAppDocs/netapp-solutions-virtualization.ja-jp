@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nvme-network.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: 'VI ワークロード ドメイン内の ESXi ホスト上の NVMe over TCP (NVMe/TCP) ストレージのネットワークを構成します。  NVMe トラフィック用の分散ポート グループを作成し、各 ESXi ホストに VMkernel アダプタを設定し、NVMe/TCP アダプタを追加して、信頼性の高い接続とマルチパスを有効にします。' 
+summary: ワークロードドメイン内のvSphereホストで NVMe over TCP （NVMe/TCP）ストレージのネットワークを構成します。NVMe トラフィック用の分散ポートグループを作成し、各vSphereホストに VMkernel アダプタを設定して、NVMe/TCP アダプタを追加することで、信頼性の高い接続とマルチパスを有効にします。 
 ---
-= VCF VIワークロードドメイン内のESXiホストでNVMe/TCPのネットワークを構成する
+= VCF ワークロードドメイン内の vSphere ホストで NVMe/TCP のネットワークを構成する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,14 +14,14 @@ summary: 'VI ワークロード ドメイン内の ESXi ホスト上の NVMe ove
 
 
 [role="lead"]
-VI ワークロード ドメイン内の ESXi ホスト上の NVMe over TCP (NVMe/TCP) ストレージのネットワークを構成します。  NVMe トラフィック用の分散ポート グループを作成し、各 ESXi ホストに VMkernel アダプタを設定し、NVMe/TCP アダプタを追加して、信頼性の高い接続とマルチパスを有効にします。
+ワークロードドメイン内のvSphereホストで NVMe over TCP （NVMe/TCP）ストレージのネットワークを構成します。NVMe トラフィック用の分散ポートグループを作成し、各vSphereホストに VMkernel アダプタを設定して、NVMe/TCP アダプタを追加することで、信頼性の高い接続とマルチパスを有効にします。
 
-vSphere クライアントを使用して、VI ワークロード ドメイン クラスタで次の手順を実行します。この場合、vCenter Single Sign-On が使用されているため、vSphere クライアントは管理ドメインとワークロード ドメインの両方で共通になります。
+ワークロードドメインクラスタで、vSphereクライアントを使用して以下の手順を実行します。この場合、vCenterシングルサインオンが使用されているため、vSphereクライアントは管理ドメインとワークロードドメインの両方に共通です。
 
 
 
 [[step-1-create-distributed-port-groups-for-nvmetcp-traffic]]
-== ステップ1: NVME/TCPトラフィック用の分散ポートグループを作成する
+== ステップ1：NVMe/TCPトラフィック用の分散ポートグループを作成する
 
 各 NVMe/TCP ネットワークに新しい分散ポート グループを作成するには、次の手順を実行します。
 
@@ -82,13 +82,13 @@ image:vmware-vcf-asa-079.png["アップリンク1を未使用に移動する"]
 
 
 
-[[step-2-create-the-vmkernel-adapters-on-each-esxi-host]]
-== ステップ2: 各ESXiホストにVMkernelアダプタを作成する
+[[step-2-create-the-vmkernel-adapters-on-each-vsphere-host]]
+== ステップ2：各vSphereホストにVMkernelアダプタを作成します
 
-ワークロード ドメイン内の各 ESXi ホストに VMkernel アダプタを作成します。
+ワークロードドメイン内の各 vSphere ホストに VMkernel アダプタを作成します。
 
 .手順
-. vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。  *構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
+. vSphere クライアントから、ワークロードドメインインベントリ内のいずれかの vSphere ホストに移動します。「構成」タブから「VMkernel アダプタ」を選択し、「ネットワークの追加…」をクリックして開始します。
 +
 .例を表示
 [%collapsible]
@@ -142,13 +142,13 @@ image:vmware-vcf-asa-098.png["VMkernelの選択を確認する"]
 
 
 [[step-3-add-nvmetcp-adapter]]
-== ステップ3: NVMe/TCPアダプターを追加する
+=== ステップ3: NVMe/TCPアダプターを追加する
 
-ワークロード ドメイン クラスタ内の各 ESXi ホストには、ストレージ トラフィック専用の確立された NVMe/TCP ネットワークごとに NVMe/TCP ソフトウェア アダプタがインストールされている必要があります。
+ワークロードドメインクラスタ内のすべてのvSphereホストには、ストレージトラフィック専用に確立された NVMe/TCP ネットワークごとに NVMe/TCP ソフトウェアアダプタがインストールされている必要があります。
 
 NVMe/TCP アダプターをインストールし、NVMe コントローラーを検出するには、次の手順を実行します。
 
-. vSphere クライアントで、ワークロード ドメイン クラスタ内の ESXi ホストの 1 つに移動します。  *構成*タブから、メニューの*ストレージ アダプタ*をクリックします。
+. vSphere クライアントで、ワークロードドメインクラスタ内のいずれかの vSphere ホストに移動します。「Configure」タブから、メニューの「Storage Adapters」をクリックします。
 . *ソフトウェア アダプターの追加* ドロップダウン メニューから、*NVMe over TCP アダプターの追加* を選択します。
 +
 .例を表示

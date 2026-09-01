@@ -94,3 +94,11 @@ VMFS データストアをプロビジョニングするには、次の手順を
 . HBA ドライバーがインストールされていることを確認します。  VMwareがサポートするHBAにはドライバがすぐに導入されており、link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/getting-started-with-a-traditional-storage-model-in-vsphere-environment/supported-storage-adapters/view-storage-adapters-available-on-an-esxi-host.html++["ストレージアダプタ情報"] 。
 . link:++https://docs.netapp.com/vapp-98/topic/com.netapp.doc.vsc-iag/GUID-D7CAD8AF-E722-40C2-A4CB-5B4089A14B00.html++["ONTAPツールを使用して VMFS データストアをプロビジョニングする"] 。
 
+
+
+
+[[reference-video]]
+== 参考動画
+
+.FC を備えた補助データストア
+video::96311abf-aa45-4ce9-984b-b4b001005bab[panopto,width=360]

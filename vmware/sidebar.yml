@@ -49,31 +49,31 @@ entries:
     url: "/vmware/vmw-vcf-deployment.html"
   - title: VCF 9 DRとNetApp Disaster Recovery
     url: "/vmware/vmw-vcf-disaster-recovery-nfs.html"
-  - title: 既存の vSphere クラスタを VCF に変換する
+  - title: 既存のvSphereクラスターをVCFに統合
     entries:
-    - title: 既存の vSphere クラスタを VCF に変換する方法について
+    - title: 既存のvSphereクラスターのVCFへの統合について
       url: "/vmware/vmw-vcf-migrate.html"
-    - title: NFSデータストアを使用して既存のvSphereクラスタを変換する
+    - title: 既存のvSphereクラスターをNFSデータストアと統合する
       url: "/vmware/vmw-vcf-mgmt-nfs.html"
-    - title: FCデータストアを使用して既存のvSphereクラスタを変換する
-      url: "/vmware/vmw-vcf-mgmt-fc.html"
+    - title: 既存のvSphereクラスタをVMFSデータストアに統合する
+      url: "/vmware/vmw-vcf-mgmt-vmfs.html"
   - title: VCFにプリンシパルストレージをプロビジョニングする
     entries:
     - title: プリンシパルストレージのプロビジョニングについて
       url: "/vmware/vmw-vcf-provision.html"
     - title: FCによる管理ドメインのプロビジョニング
       url: "/vmware/vmw-vcf-mgmt-principal-fc.html"
-    - title: NFS による管理ドメインのプロビジョニング
+    - title: NFSを使用した管理ドメインのプロビジョニング
       url: "/vmware/vmw-vcf-mgmt-principal-nfs.html"
-    - title: FCを使用してVIワークロードドメインをプロビジョニングする
+    - title: FCを使用してワークロードドメインをプロビジョニングする
       url: "/vmware/vmw-vcf-viwld-principal-fc.html"
-    - title: NFSを使用してVIワークロードドメインをプロビジョニングする
+    - title: NFSを使用してワークロードドメインをプロビジョニングする
       url: "/vmware/vmw-vcf-viwld-principal-nfs.html"
   - title: 補助ストレージでVCFを拡張
     entries:
     - title: ストレージの拡張について学ぶ
       url: "/vmware/vmw-vcf-expand.html"
-    - title: iSCSIで管理ドメインを拡張
+    - title: iSCSIを使用して管理ドメインを拡張する
       entries:
       - title: 展開ワークフロー
         url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi.html"
@@ -87,7 +87,7 @@ entries:
         url: "/vmware/vmw-vcf-mgmt-supplemental-iscsi-storage.html"
     - title: FCで管理領域を拡大
       url: "/vmware/vmw-vcf-mgmt-supplemental-fc.html"
-    - title: vVols iSCSIでVIワークロードドメインを拡張
+    - title: VCFワークロードドメインをvVols iSCSIで拡張する
       entries:
       - title: 展開ワークフロー
         url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols.html"
@@ -99,7 +99,7 @@ entries:
         url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols-network.html"
       - title: ストレージを設定する
         url: "/vmware/vmw-vcf-viwld-supp-iscsi-vvols-storage.html"
-    - title: vVols NFSでVIワークロードドメインを拡張
+    - title: VCFワークロードドメインをvVols NFSで拡張する
       entries:
       - title: 展開ワークフロー
         url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols.html"
@@ -111,7 +111,7 @@ entries:
         url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols-network.html"
       - title: ストレージを設定する
         url: "/vmware/vmw-vcf-viwld-supp-nfs-vvols-storage.html"
-    - title: NVMe/TCPでVIワークロードドメインを拡張
+    - title: NVMe/TCPを使用してVCFワークロードドメインを拡張する
       entries:
       - title: 展開ワークフロー
         url: "/vmware/vmw-vcf-viwld-supp-nvme.html"
@@ -123,7 +123,7 @@ entries:
         url: "/vmware/vmw-vcf-viwld-supp-nvme-network.html"
       - title: ストレージを設定する
         url: "/vmware/vmw-vcf-viwld-supp-nvme-storage.html"
-    - title: FCでVIワークロードドメインを拡張
+    - title: FCを使用したVCFワークロードドメインの拡張
       url: "/vmware/vmw-vcf-viwld-supp-fc.html"
   - title: SnapCenterでVCFを保護する
     entries:
@@ -141,11 +141,11 @@ entries:
       url: "/vmware/vmw-vcf-protect-vmsc.html"
     - title: MetroClusterで管理ドメインを構成する
       url: "/vmware/vmw-vcf-vmsc-mgmt-mcc.html"
-    - title: MetroClusterを使用してVIワークロードドメインを構成する
+    - title: MetroClusterを使用したワークロードドメインの構成
       url: "/vmware/vmw-vcf-vmsc-viwld-mcc.html"
-    - title: SnapMirror Active Syncを使用して管理ドメインを構成する
+    - title: SnapMirror Active Sync を使用して管理ドメインを設定する（SAN および NAS）
       url: "/vmware/vmw-vcf-vmsc-mgmt-smas.html"
-    - title: SnapMirror Active Syncを使用してVIワークロードドメインを構成する
+    - title: ワークロードドメインを SnapMirror Active Sync で構成する（SAN および NAS）
       url: "/vmware/vmw-vcf-vmsc-viwld-smas.html"
   - title: vSphere から VM を移行する
     url: "/vmware/migrate-vms-to-ontap-datastore.html"

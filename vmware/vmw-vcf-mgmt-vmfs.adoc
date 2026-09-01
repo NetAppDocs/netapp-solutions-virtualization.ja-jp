@@ -1,0 +1,47 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-mgmt-vmfs.html 
+keywords: netapp, vmware, cloud, foundation, vcf, asa, aff, all-flash, fc, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
+summary: 既存のvSphereクラスターをサポートされているNetApp ONTAP VMFSデータストアとともにVMware Cloud Foundation管理ドメインに統合します。構成要件を確認し、ONTAP toolsをデプロイしてVMFSデータストアをプロビジョニングし、VCFインストーラツールを使用してクラスタを検証および収束します。 
+---
+= VMFSデータストアを使用したVCF管理ドメインへのvCenterサーバインスタンス統合のデプロイメントワークフロー
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+既存のvSphereクラスターとNetApp ONTAP VMFSデータストアをVMware Cloud Foundation管理ドメインに統合します。構成要件を確認し、ONTAP toolsをデプロイしてVMFSデータストアをプロビジョニングし、VCFインストーラーツールを使用して既存のコンポーネントを検証および活用し、必要な新しいコンポーネントをデプロイして、プラットフォームを構成します。
+
+このワークフローは、サポートされているVMFSデータストアをVCF管理ドメインのプリンシパルストレージとして利用するためにも使用されます。
+
+変換プロセスの概要については、VMwareのドキュメントを参照してください： https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-.html["既存の仮想インフラストラクチャをVCFに統合する"]。
+
+.image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-1.png["1"]link:vmw-vcf-mgmt-vmfs-requirements.html["構成要件を確認する"]
+[role="quick-margin-para"]
+VMFSデータストアを使用してvCenterサーバインスタンスをVCF管理ドメインに統合するための主要要件を確認します。
+
+.image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-2.png["2"]link:vmw-vcf-mgmt-vmfs-deploy.html["ONTAP tools の導入とサポート対象の VMFS データストアのプロビジョニング"]
+[role="quick-margin-para"]
+ONTAP tools for VMware vSphere を導入し、サポートされている VMFS データストアをプロビジョニングします。
+
+.image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-mgmt-vmfs-converge.html["vSphere クラスターを VCF 管理ドメインに統合する"]
+[role="quick-margin-para"]
+VCFインストーラーツールを使用して、VCF管理ドメインを構成する既存のコンポーネントを検証、再利用し、新しいコンポーネントをデプロイします。
+
+
+
+[[reference-video]]
+== 参考動画：
+
+.AFF および ASA r2 を使用した iSCSI マルチパス
+video::62c2a66c-1a07-4284-bc7b-b4ac00e9aeea[panopto,width=360]
+.NVMe/TCP対応の補助データストア
+video::f85530ec-ff24-4c7d-abb4-b49b0176402c[panopto,width=360]
+.NVMe/FC対応の補助データストア
+video::b2b16a35-05cd-49c9-a91a-b4ac0127813d[panopto,width=360]
+.FC を備えた補助データストア
+video::96311abf-aa45-4ce9-984b-b4b001005bab[panopto,width=360]

@@ -2,16 +2,16 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-mgmt-nfs-deploy.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
-summary: ONTAP tools for VMware vSphereを導入し、NFS データストアをプロビジョニングして、VMware Cloud Foundation とのシームレスな統合を実現します。  ONTAPツールを導入し、ストレージ バックエンドを構成し、vSphere 8 クラスタから VCF 管理ドメインへの変換をサポートする NFS データストアを作成します。 
+summary: ONTAP tools for VMware vSphere 10 を展開し、NFS データストアをプロビジョニングして、VMware Cloud Foundation とのシームレスな統合を実現します。ONTAP tools を展開し、ストレージ バックエンドを構成し、NFS データストアを作成することで、vCenter の VCF 管理ドメインへの統合をサポートします。 
 ---
-= ONTAPツールを導入し、VCF管理ドメイン変換用のNFSデータストアをプロビジョニングする
+= VCF管理ドメイン向けのONTAP toolsの導入とNFSデータストアのプロビジョニング
 :allow-uri-read: 
 :icons: font
 :imagesdir: ../media/
 
 
 [role="lead"]
-ONTAP tools for VMware vSphereを導入し、NFS データストアをプロビジョニングして、VMware Cloud Foundation とのシームレスな統合を実現します。  ONTAPツールを導入し、ストレージ バックエンドを構成し、vSphere 8 クラスタから VCF 管理ドメインへの変換をサポートする NFS データストアを作成します。
+ONTAP tools for VMware vSphere 10 を展開し、NFS データストアをプロビジョニングして、VMware Cloud Foundation とのシームレスな統合を実現します。ONTAP tools を展開し、ストレージ バックエンドを構成し、NFS データストアを作成することで、vCenter の VCF 管理ドメインへの統合をサポートします。
 
 
 
@@ -27,7 +27,7 @@ ONTAP tools for VMware vSphereを導入し、NFS データストアをプロビ�
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-001.png[OVFテンプレートのデプロイ]
+image::vmw-vcf-mgmt-nfs-deploy-001.png[OVFテンプレートのデプロイ]
 
 ====
 . *OVF テンプレートのデプロイ*で、次の手順を実行します。
@@ -44,7 +44,7 @@ image::vmware-vcf-import-nfs-001.png[OVFテンプレートのデプロイ]
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-002.png[構成 - 展開タイプ]
+image::vmw-vcf-mgmt-nfs-deploy-002.png[構成 - 展開タイプ]
 
 ====
 . *ストレージの選択*ページで、VM をインストールするデータストアを選択し、*次へ*をクリックします。
@@ -62,7 +62,7 @@ image::vmware-vcf-import-nfs-002.png[構成 - 展開タイプ]
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-003.png[Customize template]
+image::vmw-vcf-mgmt-nfs-deploy-003.png[Customize template]
 
 ====
 
@@ -84,7 +84,7 @@ ONTAPツール VM をインストールして電源を入れたら、管理す�
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-004.png[オープンONTAPツール]
+image::vmw-vcf-mgmt-nfs-deploy-004.png[オープンONTAPツール]
 
 ====
 . 左側のメニューの *ストレージ バックエンド* に移動し、*追加* をクリックして *ストレージ バックエンドの追加* ウィンドウにアクセスします。
@@ -93,7 +93,7 @@ image::vmware-vcf-import-nfs-004.png[オープンONTAPツール]
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-005.png[ストレージバックエンドの追加]
+image::vmw-vcf-mgmt-nfs-deploy-005.png[ストレージバックエンドの追加]
 
 ====
 +
@@ -116,7 +116,7 @@ ONTAPツールは、vSphere クライアント UI 全体に機能を統合しま
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-006.png[データストアを作成する]
+image::vmw-vcf-mgmt-nfs-deploy-006.png[データストアを作成する]
 
 ====
 . *データストアの作成*ウィザードで、作成するデータストアの種類を選択します。オプションは NFS または VMFS です。
@@ -125,7 +125,7 @@ image::vmware-vcf-import-nfs-006.png[データストアを作成する]
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-007.png[名前とプロトコル]
+image::vmw-vcf-mgmt-nfs-deploy-007.png[名前とプロトコル]
 
 ====
 . *ストレージ* ページで、 ONTAPストレージ プラットフォームとストレージ仮想マシン (SVM) を選択します。ここで、利用可能なカスタム エクスポート ポリシーを選択することもできます。続行するには、[次へ] をクリックします。
@@ -133,19 +133,19 @@ image::vmware-vcf-import-nfs-007.png[名前とプロトコル]
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-008.png[ストレージページ]
+image::vmw-vcf-mgmt-nfs-deploy-008.png[ストレージページ]
 
 ====
 . *ストレージ属性*ページで、使用するストレージ アグリゲートを選択します。続行するには、[次へ] をクリックします。
 . *概要* ページで情報を確認し、*完了* をクリックしてプロビジョニング プロセスを開始します。
 +
-ONTAPツールは、 ONTAPストレージ システムにボリュームを作成し、それをクラスタ内のすべての ESXi ホストに NFS データストアとしてマウントします。
+ONTAP tools は、ONTAP ストレージシステム上にボリュームを作成し、クラスター内のすべての vSphere ホストに NFS データストアとしてマウントします。
 
 +
 .例を表示
 [%collapsible]
 ====
-image::vmware-vcf-import-nfs-009.png[[サマリ]ページ]
+image::vmw-vcf-mgmt-nfs-deploy-009.png[[サマリ]ページ]
 
 ====
 
@@ -155,4 +155,4 @@ image::vmware-vcf-import-nfs-009.png[[サマリ]ページ]
 [[whats-next]]
 == 次の手順
 
-ONTAPツールを導入し、NFSデータストアをプロビジョニングしたら、link:vmw-vcf-mgmt-nfs-conversion.html["vSphere クラスタを VCF 管理ドメインに変換する"] 。
+ONTAP tools をデプロイして NFS データストアをプロビジョニングしたら、link:vmw-vcf-mgmt-nfs-converge.html["vSphere クラスターを VCF 管理ドメインに統合する"]。

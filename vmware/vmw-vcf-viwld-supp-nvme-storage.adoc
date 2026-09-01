@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nvme-storage.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: 'VI ワークロード ドメインで NVMe over TCP (NVMe/TCP) vVolsストレージを構成します。  ONTAPツールを導入し、ストレージ システムを登録し、ストレージ機能プロファイルを作成し、vSphere クライアントでvVolsデータストアをプロビジョニングします。' 
+summary: VMware Cloud FoundationワークロードドメインでNVMe over TCP（NVMe/TCP）データストアを構成します。ONTAP toolsを導入し、ストレージシステムを登録し、ストレージケイパビリティプロファイルを作成し、vSphereクライアントでNVMe/TCPデータストアをプロビジョニングします。 
 ---
-= VCF VIワークロードドメインでNVMe/TCP vVolsストレージを構成する
+= VCFワークロードドメインでNVMe/TCPデータストアを構成する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary: 'VI ワークロード ドメインで NVMe over TCP (NVMe/TCP) vVols�
 
 
 [role="lead"]
-VMware Cloud Foundation VI ワークロード ドメインで NVMe/TCP vVolsストレージを構成します。  ONTAPツールを導入し、ストレージ システムを登録し、ストレージ機能プロファイルを作成し、vSphere クライアントでvVolsデータストアをプロビジョニングします。
+VMware Cloud FoundationワークロードドメインでNVMe/TCPデータストアを構成します。ONTAP toolsを展開し、ストレージシステムを登録し、ストレージ機能プロファイルを作成し、vSphereクライアントでNVMe/TCPデータストアをプロビジョニングします。
 
 .手順
 . vSphere クライアントで、ワークロード ドメイン クラスタ内の ESXi ホストの 1 つに移動します。*アクション* メニューから *ストレージ > 新しいデータストア...* を選択します。
@@ -22,11 +22,11 @@ VMware Cloud Foundation VI ワークロード ドメインで NVMe/TCP vVolsス�
 .例を表示
 [%collapsible]
 ====
-image:vmware-vcf-asa-104.png["NVMe/TCPアダプタを追加する"]
+image:vmware-vcf-asa-104.png["NVMe/TCPデータストアを追加する"]
 
 ====
 . *新しいデータストア*ウィザードで、タイプとして*VMFS*を選択します。続行するには、[次へ] をクリックします。
-. *名前とデバイスの選択*ページで、データストアの名前を入力し、使用可能なデバイスのリストから NVMe 名前空間を選択します。
+. 「名前とデバイスの選択」ページで、データストアの名前を入力し、利用可能なデバイスのリストから NVMe/TCP 名前空間を選択します。
 +
 .例を表示
 [%collapsible]
@@ -62,5 +62,5 @@ image:vmware-vcf-asa-107.png["データストアに接続されたホスト"]
 * SANの冗長構成の詳細については、link:https://docs.netapp.com/us-en/ontap/san-config/index.html["NetApp SAN 構成リファレンス"^] 。
 * ONTAPストレージシステムのNVMe設計に関する考慮事項の詳細については、以下を参照してください。link:https://docs.netapp.com/us-en/ontap/nvme/support-limitations.html["NVMeの構成、サポート、制限事項"^] 。
 * ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。
-* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf.html["VMware Cloud Foundation ドキュメント"^] 。
+* VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation ドキュメント"^]を参照してください。
 

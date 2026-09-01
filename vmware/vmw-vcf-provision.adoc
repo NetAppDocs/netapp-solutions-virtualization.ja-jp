@@ -14,12 +14,12 @@ summary:
 
 
 [role="lead"]
-NetApp ONTAPストレージは、VMware Cloud Foundation (VCF) 管理および仮想インフラストラクチャ (VI) ワークロード ドメインに最適なプライマリ ストレージ ソリューションです。  ONTAP は、高いパフォーマンス、拡張性、高度なデータ管理、シームレスな統合を実現し、運用効率とデータ保護を向上させます。
+NetApp ONTAP ストレージは、VMware Cloud Foundation（VCF）の管理およびワークロードドメインにとって理想的なプライマリストレージソリューションです。ONTAP は、ハイパフォーマンス、拡張性、高度なデータ管理、およびシームレスな統合を実現し、運用効率とデータ保護を向上させます。
 
 適切なドメインおよび適切なプロトコルで VCF 環境をプロビジョニングするための技術的な詳細については、次のソリューションを参照してください。
 
 * link:vmw-vcf-mgmt-principal-fc.html["FCによる管理ドメイン"]
 * link:vmw-vcf-mgmt-principal-nfs.html["NFSを使用した管理ドメイン"]
-* link:vmw-vcf-viwld-principal-fc.html["FC を使用した仮想インフラストラクチャ ワークロード ドメイン"]
-* link:vmw-vcf-viwld-principal-nfs.html["NFS を使用した仮想インフラストラクチャ ワークロード ドメイン"]
+* link:vmw-vcf-viwld-principal-fc.html["FCを使用したワークロードドメイン"]
+* link:vmw-vcf-viwld-principal-nfs.html["NFSを使用したワークロードドメイン"]
 

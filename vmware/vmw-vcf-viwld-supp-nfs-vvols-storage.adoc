@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols-storage.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
-summary: VI ワークロード ドメインで NFS vVolsストレージを構成します。  ONTAP tools for VMware vSphereを導入した後、vSphere クライアント インターフェイスを使用してストレージ システムを追加し、ストレージ機能プロファイルを作成し、 vVolsデータストアをプロビジョニングします。 
+summary: ワークロードドメインでの NFS vVols ストレージの設定。ONTAP tools for VMware vSphere をデプロイした後、vSphere クライアントインターフェイスを使用してストレージシステムを追加し、ストレージ機能プロファイルを作成して、vVols データストアをプロビジョニングします。 
 ---
-= ONTAPツールを使用して VCF VI ワークロード ドメインで NFS vVolsストレージを構成する
+= ONTAP toolsを使用してVCFワークロードドメインにNFS vVolsストレージを設定する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,14 +14,14 @@ summary: VI ワークロード ドメインで NFS vVolsストレージを構成
 
 
 [role="lead"]
-VI ワークロード ドメインで NFS vVolsストレージを構成します。  ONTAP tools for VMware vSphereを導入した後、vSphere クライアント インターフェイスを使用してストレージ システムを追加し、ストレージ機能プロファイルを作成し、 vVolsデータストアをプロビジョニングします。
+ワークロードドメインでの NFS vVols ストレージの設定。ONTAP tools for VMware vSphere をデプロイした後、vSphere クライアントインターフェイスを使用してストレージシステムを追加し、ストレージ機能プロファイルを作成して、vVols データストアをプロビジョニングします。
 
 
 
 [[step-1-deploy-ontap-tools-for-vmware-vsphere]]
 == ステップ1: ONTAP tools for VMware vSphereを導入する
 
-VI ワークロード ドメインの場合、 ONTAPツールは VCF 管理クラスタにインストールされますが、VI ワークロード ドメインに関連付けられた vCenter に登録されます。
+ワークロードドメインの場合、ONTAP tools は VCF 管理クラスタにインストールされますが、ワークロードドメインに関連付けられた vCenter に登録されます。
 
 ONTAP tools for VMware vSphereはVM アプライアンスとして導入され、 ONTAPストレージを管理するための統合された vCenter UI を提供します。
 

@@ -4,7 +4,7 @@ permalink: vmware/vmw-vcf-viwld-supp-fc.html
 keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, fc 
 summary:  
 ---
-= FCベースのVMFSデータストアをVIワークロードドメインの補助ストレージとして追加する
+= ワークロードドメインに、FCベースのVMFSデータストアを補助ストレージとして追加する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-このユースケースでは、VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインの補助ストレージとしてファイバ チャネル (FC) を使用して VMFS データストアを構成する手順について説明します。この手順では、VMware vSphere 用のONTAPツールの導入、VI ワークロード vCenter サーバーの登録、ストレージ バックエンドの定義、および FC データストアのプロビジョニングについてまとめています。
+このユースケースでは、VMware Cloud Foundation（VCF）ワークロードドメインの補助ストレージとしてファイバーチャネル（FC）を使用してVMFSデータストアを構成する手順を概説します。この手順では、ONTAP Tools for VMware vSphereのデプロイ、ワークロードvCenterサーバーの登録、ストレージバックエンドの定義、およびFCデータストアのプロビジョニングについて説明します。
 
 .開始する前に
 次のコンポーネントと構成が適切であることを確認してください。
@@ -33,9 +33,9 @@ summary:
 
 ====
 .手順
-. ONTAP tools for VMware vSphereの手順に従って、VI ワークロード vCenter を登録します。link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["VIワークロードvCenterを登録する"] 。
+. VMware vSphere向けONTAPツールのドキュメントに記載されている手順に従って、ワークロード ドメインのvCenterを登録します：link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-vcenter.html["ワークロード vCenter を登録する"]。
 +
-VI ワークロード vCenter を登録すると、vCenter プラグインが有効になります。
+ワークロード ドメインの vCenter サーバーを登録すると、vCenter プラグインが有効になります。
 
 . ONTAP tools for VMware vSphereドキュメントの手順に従って、vSphere クライアント インターフェイスを使用してストレージ バックエンドを追加します。link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/add-storage-backend.html["vSphere クライアント インターフェースを使用してストレージ バックエンドを定義する"] 。
 +
@@ -46,11 +46,18 @@ VI ワークロード vCenter を登録すると、vCenter プラグインが有
 
 
 
+[[reference-video]]
+== 参考動画
+
+.FC を備えた補助データストア
+video::96311abf-aa45-4ce9-984b-b4b001005bab[panopto,width=360]
+
+
 [[additional-information]]
 == 追加情報
 
 * ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"^] 。
-* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation ドキュメント"^] 。
+* VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation ドキュメント"^]を参照してください。
 * ONTAPストレージシステムでのファイバチャネルの設定については、 https://docs.netapp.com/us-en/ontap/san-management/index.html["SANストレージの管理"^] ONTAP 9 のドキュメントを参照してください。
 * ONTAPストレージシステムでVMFSを使用する方法については、link:vmw-vmfs-deploy.html["VMFSの導入ガイド"] 。
 * このソリューションのビデオデモについては、以下を参照してください。link:../videos/vmware-videos.html#vmware-datastore-provisioning-with-ontap["VMware データストアのプロビジョニング"] 。

@@ -2,18 +2,18 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-mgmt-nfs-requirements.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
-summary: NetApp ONTAP NFS データストアを含む vSphere 8 クラスタを VMware Cloud Foundation 管理ドメインに変換するための要件を確認します。 
+summary: vSphere クラスターを NetApp ONTAP NFS データストアで VMware Cloud Foundation 管理ドメインに統合するための要件を確認します。 
 ---
-= NFS データストアを使用して vCenter Server インスタンスを VCF 管理ドメインに変換するための展開要件
+= NFS データストアを使用して vCenter サーバーインスタンスを VCF 管理ドメインに収束させるための導入要件
 :allow-uri-read: 
 :icons: font
 :imagesdir: ../media/
 
 
 [role="lead"]
-NetApp ONTAP NFS データストアを含む vSphere 8 クラスタを VMware Cloud Foundation 管理ドメインに変換するための要件を確認します。
+vSphere クラスターを NetApp ONTAP NFS データストアで VMware Cloud Foundation 管理ドメインに統合するための要件を確認します。
 
-変換プロセスには、 AFFまたはASAストレージ システム、FC トラフィック用の SVM と LIF、スイッチ上の NFS ゾーニング、ESXi ホストと vCenter を含む vSphere クラスター、および vMotion 専用のネットワーク セグメントが必要です。
+コンバージェンス プロセスには、AFFまたはAFXストレージ システム、NFSトラフィック用のSVMとLIF、スイッチ上のNFS VLAN、vSphereホストとvCenterを備えたvSphereクラスター、およびvMotion用の専用ネットワーク セグメントが必要です。
 
 
 
@@ -22,11 +22,11 @@ NetApp ONTAP NFS データストアを含む vSphere 8 クラスタを VMware Cl
 
 次のコンポーネントと構成が適切であることを確認してください。
 
-* NFS トラフィックを許可するように構成されたストレージ仮想マシン (SVM) を備えたNetApp AFFストレージ システム。
+* NetApp AFF または AFX ストレージシステム（NFS トラフィックを許可するように構成されたストレージ仮想マシン（SVM）を備えたもの）。
 * NFS トラフィックを伝送するために IP ネットワーク上に作成され、SVM に関連付けられた論理インターフェイス (LIF)。
-* 4 台の ESXi ホストと、クラスター上に共存する vCenter アプライアンスを備えた vSphere クラスター。
+* 少なくとも2台のvSphereホストと、クラスター上に同じ場所に配置されたvCenterアプライアンスで構成されるvSphereクラスター。
 * この目的のために確立された VLAN またはネットワーク セグメント上の vMotion および NFS ストレージ トラフィック用に構成された分散ポート グループ。
-* VCF 変換用のソフトウェア。必要なソフトウェアについては、 https://support.broadcom.com/["Broadcom サポートポータル"] 。
+* VCF管理ドメインにvCenterを統合するためのVCFインストーラーツール。
 * ONTAPツールの前提条件。
 +
 ONTAPツールの前提条件の詳細については、以下を参照してください。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/deploy/prerequisites.html#system-requirements["ONTAP tools for VMware vSphereの前提条件"] 。
@@ -41,9 +41,9 @@ ONTAP tools for VMware vSphereは、 HA 構成または非 HA 構成のいずれ
 [[additional-resources]]
 == その他のリソース
 
-* vSphere を VCF 5.2 に変換またはインポートする際にサポートされるストレージおよびその他の考慮事項については、以下を参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/considerations-before-converting-or-importing-existing-vsphere-environments-into-vcf-admin.html["既存の vSphere 環境を VMware Cloud Foundation に変換またはインポートする前に考慮すべき事項"] 。
+* サポートされているストレージと、vSphere を VCF に収束させる際のその他の考慮事項については、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-/supported-and-not-supported-configurations.html["VCFへの収束におけるサポート対象構成とサポート対象外構成"]を参照してください。
 * ONTAPストレージシステムの設定については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9 ドキュメント"] 。
-* VCFの設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation 5.2 のドキュメント"] 。
+* VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation 9.1 ドキュメント"]を参照してください。
 
 
 

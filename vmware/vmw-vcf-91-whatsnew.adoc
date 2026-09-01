@@ -1,0 +1,49 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vcf-91-whatsnew.html 
+keywords: netapp, vmware, cloud, foundation, vcf, flexpod 
+summary: VCF 9.1では、新機能と機能強化が追加されています。 
+---
+= VMware Cloud Foundation 9.1 の新機能
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VCF 9.1では、プライベートクラウド環境の全体的な機能性とパフォーマンスを向上させるための、いくつかの新機能と機能強化が導入されています。最新のアップデートと、NetApp 製品が継続的に付加価値を提供する方法についてご確認ください。
+
+VCF 9.1の主な新機能と機能強化点は次のとおりです：
+
+* vSphere クラスター向けのゼロタッチプロビジョニング（ZTP）により、vSphere クラスターの自動展開と構成が可能になります。
++
+** ONTAP NFS データストアで VAAI を使用する予定がある場合は、NFS VAAI プラグインをイメージに含めることを忘れないでください。 https://mysupport.netapp.com/site/products/all/details/nfsplugin-vmware-vaai/about-tab["NFS VAAIプラグイン"]は NetApp Support Site からダウンロードし、vSphere クラスターのデプロイに使用するイメージに追加できます。
+
+
+* NFS 4.1データストアに対するUNMAPのサポートにより、ストレージ効率の向上とスペースの再利用が可能になります。
+* NVMe over RDMAをサポートすることで、ストレージ性能の向上とレイテンシの低減を実現します。
++
+** パケット解析およびRoCEv2接続のトラブルシューティング用ツール（pktcap-uw、rdmaperf-uw、rdmaperf）がハイパーバイザーで利用可能になりました。
+
+
+* インターネットストレージネームサービス（iSNS）プロトコルを使用したiSCSI接続の自動検出、構成、および管理。詳細については、以下をご覧ください。 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/9-1/vsphere-storage/configuring-iscsi-and-iser-adapters-and-storage-with-esxi/using-isns-with-esx.html["ESXiでiSNSを使用する"]
+* メモリ階層化のサポートには、すべての VM タイプへの対応と、簡素化されたデプロイメントが含まれます。
+* Ubuntu 26.04 LTS、Debian 13、SUSE Linux Enterprise Server 16など、ゲストOSのサポートを拡張しました。
+* vSphere ホスト Web クライアントが更新され、vCenter Server Web クライアントと同様のエクスペリエンスが提供されるようになりました。以前のバージョンとの完全な機能パリティも実現しています。
+* VMware Kubernetes Service (VKS) におけるコンテナストレージボリュームの高速プロビジョニングを実現する、ファーストクラスディスク (FCD) のリンククローン。
+* 分散型トランジットゲートウェイは、Virtual Network Appliance（VNA）を使用して、VKS Supervisor および VCF Automation をサポートします。VNA では、レイヤー 4 ロードバランサーのサポートも利用できます。
+* VPC Transit Gateway、Traceflow、ライブトラフィック分析が vSphere クライアントから利用できるようになりました。
+* VPCサブネット向けのVLAN拡張機能により、分散型vSwitchポートグループからVPCサブネットへのワークロードのオンボーディングが可能になります。
+* Transit Gateway と VPC のネットワーク範囲を特定のクラスターに制限するか、ネットワークドメインのすべての vCenter インスタンスにまたがるように定義する機能。
+* 大量移行における vMotion 速度の向上。
+* VPC 間のネットワーク トラフィックに対するセキュリティと制御を向上させるための VPC 接続ポリシー。
+* VKS マルチインターフェースネットワークは、管理トラフィックとワークロードトラフィックを分離してサポートします。
+* vCloud Director から VCF Automation へのインプレース移行用の移行ツールが含まれています。
+
+
+これらの機能と拡張機能の詳細については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/release-notes/vmware-cloud-foundation-9-1-0-0-release-notes/what-s-new.html["BroadcomのVCF 9.1の新機能に関する技術文書"]を参照してください。
+
+特に断りのない限り、このドキュメントの大部分は VCF 9.1 にも適用されます。実運用で使用する前に、必ず https://imt.netapp.com/matrix/#search["Interoperability Matrix Tool"]および https://www.vmware.com/resources/compatibility/search.php?deviceCategory=san["VMware 互換性ガイド"]で特定のリリースに関する詳細を確認してください。

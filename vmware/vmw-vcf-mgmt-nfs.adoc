@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-mgmt-nfs.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, array, ontap tools, otv, sddc, sddc manager, ontap tools, ontap tools 10 
-summary: NetApp ONTAP NFS データストアを含む既存の vSphere 8 クラスタを VMware Cloud Foundation 管理ドメインに変換します。構成要件を確認し、 ONTAPツールを導入して NFS データストアをプロビジョニングし、VCF インポート ツールを使用してクラスターを検証および変換します。 
+summary: 既存のvSphereクラスターとNetApp ONTAP NFS データストアを VMware Cloud Foundation 管理ドメインに収束させます。構成要件を確認し、ONTAP tools をデプロイして NFS データストアをプロビジョニングし、VCF インストーラーツールを使用して既存のコンポーネントを検証・活用し、必要な新しいコンポーネントをデプロイしてプラットフォームを構成します。 
 ---
-= vCenter Server インスタンスを NFS データストアを持つ VCF 管理ドメインに変換するための展開ワークフロー
+= NFS データストアを使用した VCF 管理ドメインへの vCenter サーバインスタンス統合のデプロイメントワークフロー
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,18 +14,30 @@ summary: NetApp ONTAP NFS データストアを含む既存の vSphere 8 クラ�
 
 
 [role="lead"]
-NetApp ONTAP NFS データストアを含む既存の vSphere 8 クラスタを VMware Cloud Foundation 管理ドメインに変換します。構成要件を確認し、 ONTAPツールを導入して NFS データストアをプロビジョニングし、VCF インポート ツールを使用してクラスターを検証および変換します。
+既存のvSphereクラスターとNetApp ONTAP NFS データストアを VMware Cloud Foundation 管理ドメインに統合します。構成要件を確認し、ONTAP tools をデプロイして NFS データストアをプロビジョニングし、VCF インストーラーツールを使用して既存のコンポーネントを検証および活用し、必要な新しいコンポーネントをデプロイしてプラットフォームを構成します。
 
-変換プロセスの概要については、VMware のドキュメントを参照してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["vSphere 環境を管理ドメインに変換するか、vSphere 環境を VMware Cloud Foundation の VI ワークロード ドメインとしてインポートします。"] 。
+このワークフローは、ONTAP NFS 4.1データストアをVCF管理ドメインのプリンシパルストレージとして使用する場合にも適用されます。
+
+統合プロセスの概要については、VMwareのドキュメントを参照してください： https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/deployment/converging-your-existing-vsphere-infrastructure-to-a-vcf-or-vvf-platform-.html["既存の仮想インフラストラクチャをVCFに統合する"]。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-1.png["1"]link:vmw-vcf-mgmt-nfs-requirements.html["構成要件を確認する"]
 [role="quick-margin-para"]
-NFS データストアを使用して vCenter Server インスタンスを VCF 管理ドメインに変換するための主な要件を確認します。
+NFS データストアを使用して vCenter サーバーインスタンスを VCF 管理ドメインに統合するための主要要件を確認します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-2.png["2"]link:vmw-vcf-mgmt-nfs-deploy.html["ONTAPツールを導入し、NFSデータストアをプロビジョニングする"]
 [role="quick-margin-para"]
 ONTAP tools for VMware vSphereを導入し、NFS データストアをプロビジョニングします。
 
-.image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-mgmt-nfs-conversion.html["vSphere クラスタを VCF 管理ドメインに変換する"]
+.image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-mgmt-nfs-converge.html["vSphere クラスターを VCF 管理ドメインに統合する"]
 [role="quick-margin-para"]
-VCF インポート ツールを使用して、vSphere 8 を検証し、VCF 管理ドメインに変換します。
+VCFインストーラーツールを使用して、VCF管理ドメインを構成する既存のコンポーネントを検証、再利用し、新しいコンポーネントをデプロイします。
+
+
+
+[[reference-video-demo-for-this-solution]]
+== このソリューションの参考ビデオデモ
+
+以下のビデオでは、nConnect機能を利用したONTAP tools を使用したNFSデータストアの作成方法を示しています。
+
+.VCF 向けストレッチ クラスターと SnapMirror アクティブ シンク NAS
+video::76549cac-a1e3-4471-acf5-b49c00eebcf7[panopto,width=360]

@@ -58,6 +58,8 @@ indexpage:
       url: https://www.vmware.com/resources/compatibility/search.php?deviceCategory=san&details=1&partner=64&isSVA=0&page=1&display_interval=10&sortColumn=Partner&sortOrder=Asc
   - title: その他のリソース
     links:
+    - title: VMware Cloud Foundation 9.1 の新機能
+      url: vmw-vcf-91-whatsnew.html
     - title: VMware vSphere with ONTAP のベストプラクティス
       url: https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-overview.html
     - title: VMware vSphere 仮想ボリューム (vVols) とNetApp ONTAP

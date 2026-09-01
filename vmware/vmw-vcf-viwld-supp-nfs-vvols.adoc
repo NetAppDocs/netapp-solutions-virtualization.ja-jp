@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
-summary: 'ONTAP tools for VMware vSphereを使用して、VI ワークロード ドメインに NFS とvVols を補助ストレージとして追加します。  ONTAP tools for VMware vSphereを導入し、NFS 論理インターフェイスを使用してストレージ仮想マシン (SVM) を構成し、NFS とvVols の両方のデータストアをプロビジョニングします。' 
+summary: ONTAP tools for VMware vSphereを使用して、VCFワークロード ドメインに補完ストレージとしてNFSおよびvVolsを追加する手順を開始します。ONTAP tools for VMware vSphereをデプロイし、NFS論理インターフェイスを使用してStorage Virtual Machine（SVM）を構成し、NFSデータストアとvVolsデータストアの両方をプロビジョニングします。 
 ---
-= VI ワークロード ドメインに補助ストレージとして NFS vVolsデータストアを追加するための展開ワークフロー
+= VCFワークロードドメインの補助ストレージとしてNFS vVolsデータストアを追加するためのデプロイメントワークフロー
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary: 'ONTAP tools for VMware vSphereを使用して、VI ワークロード 
 
 
 [role="lead"]
-ONTAP tools for VMware vSphereを使用して、VI ワークロード ドメインの補助ストレージとして NFS vVolsデータストアを追加します。導入要件を確認し、 ONTAP tools for VMware vSphereを導入し、論理インターフェイスを使用して SVM を構成し、ストレージを構成します。
+ONTAP tools for VMware vSphereを使用して、VCFワークロード ドメインに補完ストレージとしてNFS vVolsデータストアを追加する手順を開始します。デプロイ要件を確認し、ONTAP tools for VMware vSphereをデプロイし、論理インターフェイスを使用してSVMを構成し、ストレージを構成します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-1.png["1"]link:vmw-vcf-viwld-supp-nfs-vvols-requirements.html["展開要件を確認する"]
 [role="quick-margin-para"]
@@ -26,7 +26,7 @@ NFS トラフィック用に複数の LIF を持つ SVM を作成します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-viwld-supp-nfs-vvols-network.html["ネットワークの設定"]
 [role="quick-margin-para"]
-ESXi ホスト上で NFS のネットワークを設定します。
+vSphere ホストの NFS 用ネットワークをセットアップします。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-4.png["4"]link:vmw-vcf-viwld-supp-nfs-vvols-storage.html["ストレージを設定する"]
 [role="quick-margin-para"]

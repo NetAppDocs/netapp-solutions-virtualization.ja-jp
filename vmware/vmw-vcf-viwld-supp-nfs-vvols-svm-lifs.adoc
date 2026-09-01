@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols-svm-lifs.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
-summary: 'VMware Cloud Foundation VI ワークロード ドメイン内のvVolsデータストアの NFS トラフィックをサポートするには、 ONTAPシステム上にストレージ仮想マシン (SVM) と複数の論理インターフェイス (LIF) を作成します。' 
+summary: VMware Cloud FoundationワークロードドメインのvVolsデータストアのNFSトラフィックをサポートするために、ONTAPシステムにストレージ仮想マシン（SVM）と複数の論理インターフェイス（LIF）を作成します。 
 ---
-= VCF VIワークロードドメインにNFS vVolsデータストア用のSVMとLIFを作成する
+= VCFワークロードドメイン内のNFS vVols データストア用のSVMとLIFを作成する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary: 'VMware Cloud Foundation VI ワークロード ドメイン内のvVols�
 
 
 [role="lead"]
-VMware Cloud Foundation VI ワークロード ドメイン内のvVolsデータストアの NFS トラフィックをサポートするには、 ONTAPシステム上にストレージ仮想マシン (SVM) と複数の論理インターフェイス (LIF) を作成します。
+VMware Cloud FoundationワークロードドメインのvVolsデータストアのNFSトラフィックをサポートするために、ONTAPシステムにストレージ仮想マシン（SVM）と複数の論理インターフェイス（LIF）を作成します。
 
 既存の SVM に新しい LIF を追加するには、 ONTAP のドキュメントを参照してください。link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["ONTAP LIFを作成する"^] 。
 
@@ -37,7 +37,7 @@ image:vmware-vcf-aff-035.png["ストレージVMの追加ウィザード - NFSの
 ====
 +
 
-TIP: *NFS クライアント アクセスを許可する* チェックボックスをオンにする必要はありません。  ONTAP tools for VMware vSphereを使用して、ESXi ホストへのクライアント アクセスの提供を含むデータストアの展開プロセスを自動化します。
+TIP: 「NFS クライアント アクセスを許可する」チェックボックスをオンにする必要はありません。ONTAP tools for VMware vSphere は、データストアの導入プロセスを自動化するために使用されます。これには、vSphere ホストへのクライアント アクセスの提供が含まれます。
 
 . *ネットワーク インターフェース* セクションで、最初の LIF の *IP アドレス*、*サブネット マスク*、および *ブロードキャスト ドメインとポート* を入力します。後続の LIF については、個別の設定を使用するか、チェックボックスをオンにして残りのすべての LIF で共通の設定を使用するかを選択できます。
 +
@@ -62,4 +62,4 @@ image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
 [[whats-next]]
 == 次の手順
 
-SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nfs-vvols-network.html["ESXiホスト上のNFSネットワークを構成する"] 。
+SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nfs-vvols-network.html["vSphere ホストの NFS 用ネットワークを設定する"]。

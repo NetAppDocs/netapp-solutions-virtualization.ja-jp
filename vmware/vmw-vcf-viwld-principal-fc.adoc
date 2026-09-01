@@ -4,7 +4,7 @@ permalink: vmware/vmw-vcf-viwld-principal-fc.html
 keywords: netapp, vmware, cloud, foundation, vcf, asa, all-flash, array, ontap tools, otv, sddc, fc 
 summary:  
 ---
-= ONTAP上のFCベースのVMFSデータストアをVIワークロードドメインの主ストレージとして使用する
+= FC ベースの VMFS データストアを ONTAP 上で VCF ワークロード ドメインの主要ストレージとして使用する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-このユースケースでは、VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインのプライマリ ストレージ ソリューションとして、 ONTAP上にファイバ チャネル (FC) VMFS データストアをセットアップする手順について説明します。この手順では、必要なコンポーネント、構成手順、および展開プロセスをまとめています。
+このユースケースでは、Fibre Channel (FC) VMFSデータストアをONTAP上にセットアップする手順を概説します。ONTAPは、VMware Cloud Foundation（VCF）ワークロードドメインの主要ストレージソリューションとして使用します。この手順では、必要なコンポーネント、構成手順、および展開プロセスを概説します。
 
 
 
@@ -41,19 +41,19 @@ NetAppストレージシステムでのファイバーチャネルの使用に�
 * FC トラフィック用の論理インターフェイス (LIF) を備えたストレージ仮想マシン (SVM) を作成します。
 * 展開するホストの WWPN 情報を収集し、 ONTAPストレージ システム上に対応するイニシエーター グループを作成します。
 * ONTAPストレージ システムに FC ボリュームを作成します。
-* イニシエーターグループをマップしてFCボリュームを作成する
+* 作成したFCボリュームにイニシエータグループをマッピングします。
 * FC スイッチで単一のイニシエーター ターゲット ゾーニングを活用します。イニシエーターごとに 1 つのゾーンを作成します (単一イニシエーター ゾーン)。
 +
 ** 各ゾーンには、SVM のONTAP FC 論理インターフェイス (WWPN) であるターゲットを含めます。 SVM ごとにノードごとに少なくとも 2 つの論理インターフェイスが必要です。物理ポートの WWPN を使用しないでください。
 
 
-* SDDC Manager で vMotion トラフィック用のネットワーク プールを作成します。
-* VI ワークロード ドメインで使用するために VCF 内のホストを委託します。
-* FC データストアをプリンシパル ストレージとして使用して、VCF に VI ワークロード ドメインを展開します。
+* vCenterでvMotionトラフィック用のネットワーク プールを作成します。
+* vCenter のホストをコミッションして、ワークロード ドメインで使用できるようにします。
+* プライマリストレージとして VMFS on FC データストアを使用して、VCF Ops にワークロード ドメインをデプロイします。
 
 
 
-NOTE: このソリューションは、 NetApp AFFやFASなどの NFS ストレージをサポートするONTAPプラットフォームに適用できます。
+NOTE: このソリューションは、FCストレージをサポートするONTAPプラットフォーム（NetApp ASAr2、AFF、FASを含む）に適用できます。
 
 
 
@@ -62,10 +62,11 @@ NOTE: このソリューションは、 NetApp AFFやFASなどの NFS ストレ�
 
 このシナリオでは、次のコンポーネントと構成が使用されます。
 
-* FC スイッチに接続された FC ポートを備えたONTAP AFFまたはASAストレージ システム。
+* FCポートがFCスイッチに接続されたONTAP AFF、ASA、またはFASストレージ システム。
 * FC lifs で作成された SVM。
 * FC スイッチに接続された FC HBA を備えた vSphere。
 * FC スイッチには単一のイニシエーター ターゲット ゾーニングが構成されています。
+* SVMマルチパスポリシーがアクティブ / アクティブに設定されていることを確認してください。
 
 
 
@@ -78,39 +79,23 @@ NOTE: NetApp は、FC LUN にマルチパスを推奨しています。
 
 
 
-[[management-domain-default-cluster]]
-=== 管理ドメイン - デフォルトクラスタ
+[[vcf-workload-domain-default-cluster]]
+=== VCF Workload Domain - デフォルト クラスター
 
-初期クラスター上の FC プリンシパル ストレージは、VCF ブラウンフィールド インポート ツールでのみサポートされます。 VCF が cloudbuilder ツール (バージョン 5.2.x まで) を使用して展開されている場合、VSAN のみがサポートされます。参照する https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2/map-for-administering-vcf-5-2/importing-existing-vsphere-environments-admin/convert-or-import-a-vsphere-environment-into-vmware-cloud-foundation-admin.html["既存の vSphere 環境を管理ドメインに変換する"]詳細については。
+管理ドメインが稼働状態になったら、VCF ワークロード ドメインを作成できます。
 
-
-
-[[management-domain-additional-cluster]]
-=== 管理ドメイン - 追加クラスター
-
-管理ドメイン上の追加の vSphere クラスタは、次のオプションを使用して展開できます。 * vSphere 環境に追加のクラスタを用意し、VCF ブラウンフィールド インポート ツールを使用して vSphere 環境を管理ドメインに変換します。 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.html["ONTAP tools for VMware vSphere"] 、 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"] VMFS データストアを vSphere クラスタにデプロイするために使用できます。* SDDC API を使用して追加のクラスターを展開します。vSphere ホストには VMFS データストアが設定されている必要があります。使用 https://docs.netapp.com/us-en/ontap/san-admin/provision-storage.html["システムマネージャまたはONTAP API"]LUN を vSphere ホストに展開します。* SDDC Manager UI を使用して追加のクラスターを展開します。ただし、このオプションはバージョン 5.2.x までの VSAN データストアのみを作成します。
-
-
-
-[[vi-workload-domain-default-cluster]]
-=== VI ワークロードドメイン - デフォルトクラスタ
-
-管理ドメインが起動したら、VI ワークロード ドメインを作成できます。
-
-* SDDC マネージャー UI を使用します。  vSphere ホストには VMFS データストアが設定されている必要があります。  System Manager またはONTAP API を使用して、LUN を vSphere ホストに展開します。
-* 既存の vSphere 環境を新しい VI ワークロード ドメインとしてインポートします。  ONTAP tools for VMware vSphere、System Manager、またはONTAP API を使用して、VMFS データストアを vSphere クラスターに展開できます。
+* VCF Ops UI を使用します。vSphere ホストは vCenter にコミッションされ、ネットワークプールが設定されます。System Manager または ONTAP API を使用して、vSphere ホストに LUN をデプロイします。
+* 既存のvSphere環境を新しいワークロードドメインとしてインポートします。ONTAP tools for VMware vSphere、System Manager、または ONTAP API を使用して、VMFS データストアをvSphereクラスタにデプロイできます。
 
 
 
 
-[[vi-workload-domain-additional-cluster]]
-=== VI ワークロードドメイン - 追加クラスター
+[[vcf-workload-domain-additional-cluster]]
+=== VCFワークロード ドメイン - 追加クラスター
 
-VI ワークロードが起動して実行されると、次のオプションを使用して、FC LUN 上の VMFS を使用して追加のクラスターを展開できます。
+ワークロードドメインにクラスターを追加するには、 https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1/building-your-private-cloud-infrastructure/working-with-workload-domains/expand-a-workload-domain/add-a-cluster-to-a-workload-domain-using-the-sddc-manager-ui.html["SDDCクラスタをVCFドメインに追加する"]を参照してください。
 
-* VCF ブラウンフィールド インポート ツールを使用してインポートされた vSphere 環境内の追加クラスター。  ONTAP tools for VMware vSphere、System Manager、またはONTAP API を使用して、VMFS データストアを vSphere クラスターに展開できます。
-* SDDC Manager UI または API を使用して追加のクラスターをデプロイします。  vSphere ホストには VMFS データストアが設定されている必要があります。  System Manager またはONTAP API を使用して、LUN を vSphere ホストに展開します。
-
+大まかに言うと、ワークロード ドメインに追加のクラスターを追加する手順は次のとおりです。* ホストがコミッショニングされ、ネットワーク プールが vCenter で構成されていることを確認します。* LUN は ONTAP ストレージ システムにプロビジョニングされ、追加クラスター内のホストに提示されます。* vCenter のワークロード ドメインに新しい SDDC クラスターを作成し、ウィザードに従って追加のクラスターをワークロード ドメインに追加します。
 
 
 
@@ -119,4 +104,4 @@ VI ワークロードが起動して実行されると、次のオプション�
 
 ONTAPストレージシステムの構成については、link:https://docs.netapp.com/us-en/ontap["ONTAP 9ドキュメント"]中心。
 
-VCFの設定方法については、以下を参照してください。link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-5-2-and-earlier/5-2.html["VMware Cloud Foundation ドキュメント"] 。
+VCF の設定方法については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vcf-9-0-and-later/9-1.html["VMware Cloud Foundation ドキュメント"]を参照してください。

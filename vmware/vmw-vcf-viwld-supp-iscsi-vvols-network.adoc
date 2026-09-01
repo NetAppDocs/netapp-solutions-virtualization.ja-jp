@@ -2,26 +2,26 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-iscsi-vvols-network.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: VI ワークロード ドメイン内の ESXi ホスト上の iSCSI ストレージのネットワークを構成します。  iSCSI トラフィック用の分散ポート グループを作成し、vSphere クライアントを使用して VMkernel アダプタを設定し、信頼性の高い接続とマルチパスを有効にします。 
+summary: ワークロードドメイン内のvSphereホストにおけるiSCSIストレージのネットワークを構成します。iSCSIトラフィック用の分散ポートグループを作成し、vSphereクライアントを使用してVMkernelアダプタを設定することで、信頼性の高い接続とマルチパスを有効にします。 
 ---
-= VCF VIワークロードドメイン内のESXiホストでiSCSIのネットワークを構成する
-:hardbreaks:
+= VCFワークロードドメイン内のvSphereホストでiSCSIのネットワークを構成する
 :allow-uri-read: 
-:nofooter: 
-:icons: font
-:linkattrs: 
-:imagesdir: ../media/
 
+
+
+
+[[configure-networking-for-iscsi-on-vsphere-hosts-in-a-vcf-workload-domain]]
+== VCFワークロードドメイン内のvSphereホストでiSCSIのネットワークを構成する
 
 [role="lead"]
-VI ワークロード ドメイン内の ESXi ホスト上の iSCSI ストレージのネットワークを構成します。  iSCSI トラフィック用の分散ポート グループを作成し、vSphere クライアントを使用して VMkernel アダプタを設定し、信頼性の高い接続とマルチパスを有効にします。
+ワークロードドメイン内のvSphereホストにおけるiSCSIストレージのネットワークを構成します。iSCSIトラフィック用の分散ポートグループを作成し、vSphereクライアントを使用してVMkernelアダプタを設定することで、信頼性の高い接続とマルチパスを有効にします。
 
-vCenter Single Sign-On を備えた vSphere クライアントを使用して、VI ワークロード ドメイン クラスタでこれらの手順を実行します。同じ vSphere クライアントが管理ドメインとワークロード ドメインの両方を管理します。
+ワークロード ドメイン クラスターでこれらの手順を実行するには、vCenter Single Sign-OnでvSphereクライアントを使用します。同じvSphereクライアントで、管理ドメインとワークロード ドメインの両方を管理します。
 
 
 
 [[step-1-create-distributed-port-groups-for-iscsi-traffic]]
-== ステップ1: iSCSIトラフィック用の分散ポートグループを作成する
+=== ステップ1: iSCSIトラフィック用の分散ポートグループを作成する
 
 各 iSCSI ネットワークに新しい分散ポート グループを作成するには、次の手順を実行します。
 
@@ -73,10 +73,10 @@ image:vmware-vcf-asa-026.png["アップリンク1を未使用に移動する"]
 
 
 
-[[step-2-create-vmkernel-adapters-on-each-esxi-host]]
-== ステップ2: 各ESXiホストにVMkernelアダプタを作成する
+[[step-2-create-vmkernel-adapters-on-each-vsphere-host]]
+=== ステップ2：各vSphereホストにVMkernelアダプタを作成する
 
-vSphere クライアントを使用して、ワークロード ドメイン内の各 ESXi ホストで次の手順を実行します。
+ワークロード ドメイン内の各 vSphere ホストで、vSphere クライアントを使用して以下の手順を実行してください。
 
 .手順
 . vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。*構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
@@ -133,6 +133,6 @@ image:vmware-vcf-asa-034.png["VMkernelの選択を確認する"]
 
 
 [[whats-next]]
-== 次の手順
+=== 次の手順
 
-ワークロードドメイン内のすべてのESXiホストでiSCSIのネットワークを構成した後、link:vmw-vcf-viwld-supp-iscsi-vvols-storage.html["iSCSI vVolsのストレージを構成する"] 。
+ワークロードドメイン内のすべてのvSphereホストでiSCSIのネットワークを設定したら、link:vmw-vcf-viwld-supp-iscsi-vvols-storage.html["iSCSI vVolsのストレージを構成する"]。

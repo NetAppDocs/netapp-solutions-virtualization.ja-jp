@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nvme.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: 'VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインの補助ストレージとして、NVMe over TCP (NVMe/TCP) データストアの追加を開始します。  NVMe/TCP 対応のストレージ仮想マシン (SVM) と LIF を設定し、NVMe 名前空間を作成し、ESXi ホスト ネットワークを構成し、VMFS データストアを展開します。' 
+summary: 'VMware Cloud Foundation (VCF) ワークロードドメインの補助ストレージとして、NVMe over TCP (NVMe/TCP) データストアを追加する手順を説明します。NVMe/TCP 対応のストレージ仮想マシン（SVM）と LIF をセットアップし、NVMe ネームスペースを作成し、vSphere ホストネットワークを構成して、VMFS データストアをデプロイします。' 
 ---
-= VI ワークロード ドメインに補助ストレージとしてvVols NVMe データストアを追加するための展開ワークフロー
+= ワークロードドメインの補助ストレージとして vVols NVMe データストアを追加するためのデプロイメントワークフロー
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,11 +14,11 @@ summary: 'VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI
 
 
 [role="lead"]
-VMware Cloud Foundation (VCF) 仮想インフラストラクチャ (VI) ワークロード ドメインの補助ストレージとして NVMe/TCP vVolsデータストアの追加を開始します。展開要件を確認し、NVMe/TCP 対応の SVM と LIF をセットアップし、ESXi ホスト ネットワークを構成して、NVMe/TCP データストアを展開します。
+VMware Cloud Foundation （VCF） ワークロードドメインの補助ストレージとして NVMe/TCP vVols データストアの追加を開始します。展開要件を確認し、NVMe/TCP 対応の SVM と LIF をセットアップして、vSphere ホストネットワークを設定し、NVMe/TCP vVol データストアを展開します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-1.png["1"]link:vmw-vcf-viwld-supp-nvme-requirements.html["展開要件を確認する"]
 [role="quick-margin-para"]
-VMware Cloud Foundation VI ワークロード ドメインに NVMe/TCP データストアをデプロイするための要件を確認します。
+VMware Cloud Foundation ワークロードドメインに NVMe/TCP データストアをデプロイするための要件を確認します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-2.png["2"]link:vmw-vcf-viwld-supp-nvme-svm-lifs.html["SVMとLIF、NVMeネームスペースを作成する"]
 [role="quick-margin-para"]
@@ -26,8 +26,18 @@ NVMe/TCP トラフィック用の論理インターフェイスと NVMe 名前�
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-3.png["三つ"]link:vmw-vcf-viwld-supp-nvme-network.html["ネットワークの設定"]
 [role="quick-margin-para"]
-VI ワークロード ドメインの ESXi ホスト上に分散ポート グループと vmkernel アダプタを作成します。
+VCFワークロードドメインのvSphereホスト上に分散ポートグループとvmkernelアダプタを作成します。
 
 .image:https://raw.githubusercontent.com/NetAppDocs/common/main/media/number-4.png["4"]link:vmw-vcf-viwld-supp-nvme-storage.html["ストレージを設定する"]
 [role="quick-margin-para"]
 NVMe/TCP データストアをデプロイします。
+
+
+
+[[video-demo-for-this-solution]]
+== このソリューションのビデオデモ
+
+.NVMe/TCP対応の補助データストア
+video::f85530ec-ff24-4c7d-abb4-b49b0176402c[panopto,width=360]
+.NVMe/FC対応の補助データストア
+video::b2b16a35-05cd-49c9-a91a-b4ac0127813d[panopto,width=360]

@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nvme-requirements.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: VMware Cloud Foundation VI ワークロード ドメインに NVMe vVolsをデプロイするには、完全に構成されたONTAP AFFまたはASAストレージ システム、完了した VCF 管理ドメイン、および既存の VI ワークロード ドメインが必要です。信頼性の高い高性能なストレージ統合を確実に実現するために、推奨されるネットワーク設計とインフラストラクチャの要件を確認します。 
+summary: VMware Cloud FoundationワークロードドメインにNVMe/TCPデータストアをデプロイするには、完全に構成されたONTAP AFFまたはASAストレージシステム、完成済みのVCF管理ドメイン、および既存のワークロードドメインが必要です。信頼性の高いハイパフォーマンスストレージ統合を実現するために、推奨されるネットワーク設計とインフラストラクチャ要件を確認してください。 
 ---
-= VIワークロードドメインにおけるNVMe vVolsの展開要件
+= VMware Cloud FoundationワークロードドメインにおけるNVMe/TCPデータストアの展開要件
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary: VMware Cloud Foundation VI ワークロード ドメインに NVMe vVol
 
 
 [role="lead"]
-VMware Cloud Foundation VI ワークロード ドメインに NVMe vVolsをデプロイするために推奨されるネットワーク設計とインフラストラクチャ要件を確認します。完全に構成されたONTAP AFFまたはASAストレージ システム、展開された VCF 管理ドメイン、および既存の VI ワークロード ドメインが必要です。
+VMware Cloud FoundationワークロードドメインにNVMe/TCPデータストアをデプロイするための推奨ネットワーク設計とインフラストラクチャ要件を確認してください。完全に構成された ONTAP AFF または ASA ストレージシステム、デプロイ済みの VCF 管理ドメイン、および既存のワークロードドメインが必要です。
 
 
 
@@ -23,7 +23,7 @@ VMware Cloud Foundation VI ワークロード ドメインに NVMe vVolsをデ�
 
 * ストレージ トラフィック専用のイーサネット スイッチ上に物理データ ポートを備えたONTAP AFFまたはASAストレージ システム。
 * VCF 管理ドメインの展開が完了し、vSphere クライアントにアクセスできるようになりました。
-* VI ワークロード ドメインは以前にデプロイされています。
+* ワークロードドメインは既にデプロイ済みです。
 
 
 

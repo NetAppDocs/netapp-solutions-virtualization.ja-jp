@@ -92,7 +92,7 @@ TIP: ノードごとに 2 つの iSCSI ネットワーク インターフェイ�
 . link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-single-host-management-vmware-host-client-7-0/networking-in-the-vsphere-host-client-vSphereSingleHostManagementVMwareHostClient/managing-physical-network-adapters-in-the-vsphere-host-client-vSphereSingleHostManagementVMwareHostClient/view-physical-network-adapter-information-in-the-vsphere-host-client-vSphereSingleHostManagementVMwareHostClient.html++["vSphere ホストで使用可能な物理 NIC の数を特定します。"]
 . link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-storage-8-0/configuring-iscsi-and-iser-adapters-and-storage-with-esxi/configure-the-software-iscsi-adapter-with-esxi.html++["iSCSI イニシエーターを構成します。"]典型的な使用例は、ソフトウェア iSCSI イニシエーターです。
 . link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsan/vsan/8-0/vsan-network-design/ip-network-transport-configuration/vsphere-tcp-ip-stacks.html++["iSCSIのTCPIPスタックが利用可能であることを確認する"] 。
-. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/assign-a-port-group-or-network-to-a-network-protocol-profile.html++["iSCSIポートグループが利用可能であることを確認する"] 。
+. link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vsphere-networking/basic-networking-with-vnetwork-distributed-switches/dvport-groups.html++["iSCSIポートグループが利用可能であることを確認する"]。
 +
 ** 通常、複数のアップリンク ポートを持つ単一の仮想スイッチを使用します。
 ** 1:1 アダプタ マッピングを使用します。
@@ -104,6 +104,13 @@ TIP: ノードごとに 2 つの iSCSI ネットワーク インターフェイ�
 . link:++https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/7-0/vsphere-storage-7-0/storage-hardware-acceleration-in-vsphere/vsphere-hardware-acceleration-on-block-storage/managing-hardware-acceleration-filter-and-plug-ins/verify-hardware-acceleration-support-status.html++["ハードウェア アクセラレーションのサポートを確認します。"]
 
 
+
+
+[[reference-video]]
+== 参考動画：
+
+.AFF および ASA r2 を使用した iSCSI マルチパス
+video::62c2a66c-1a07-4284-bc7b-b4ac00e9aeea[panopto]
 
 
 [[whats-next]]

@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nfs-vvols-network.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc 
-summary: VMware Cloud Foundation 管理ドメイン内の ESXi ホストで NFS ネットワークを構成して、 ONTAPストレージ システムへの接続を有効にします。  VLAN 分離による分散ポート グループを作成し、冗長性のためにアップリンク チーミングを構成し、各 ESXi ホストに VMkernel アダプタを設定して、フェイルオーバー機能用の専用 NFS パスを確立します。 
+summary: VMware Cloud Foundationワークロードドメイン内のvSphereホストでNFSネットワークを構成し、ONTAPストレージシステムへの接続を有効にします。VLAN分離による分散ポートグループを作成し、冗長性のためにアップリンクチーミングを構成し、各vSphereホストにVMkernelアダプタを設定して、フェイルオーバー機能のための専用NFSパスを確立します。 
 ---
-= VCF VIワークロードドメイン内のESXiホスト上のNFSネットワークを構成する
+= VCF ワークロードドメイン内の vSphere ホストで NFS のネットワークを構成する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,9 +14,9 @@ summary: VMware Cloud Foundation 管理ドメイン内の ESXi ホストで NFS 
 
 
 [role="lead"]
-VMware Cloud Foundation 管理ドメイン内の ESXi ホストで NFS ネットワークを構成して、 ONTAPストレージ システムへの接続を有効にします。  VLAN 分離による分散ポート グループを作成し、冗長性のためにアップリンク チーミングを構成し、各 ESXi ホストに VMkernel アダプタを設定して、フェイルオーバー機能用の専用 NFS パスを確立します。
+VMware Cloud Foundationワークロードドメイン内のvSphereホストでNFSネットワークを構成し、ONTAPストレージシステムへの接続を有効にします。VLAN分離による分散ポートグループを作成し、冗長性のためにアップリンクチーミングを構成し、各vSphereホストにVMkernelアダプタを設定して、フェイルオーバー機能のための専用NFSパスを確立します。
 
-vSphere クライアントを使用して、VI ワークロード ドメイン クラスタで次の手順を実行します。この場合、vCenter Single Sign-On が使用されているため、vSphere クライアントは管理ドメインとワークロード ドメイン全体で共通になります。
+vSphere クライアントを使用して、ワークロードドメインクラスタで以下の手順を実行します。この場合、vCenter シングルサインオンが使用されているため、vSphere クライアントは管理ドメインとワークロードドメインの両方で共通です。
 
 
 
@@ -60,18 +60,18 @@ image:vmware-vcf-aff-037.png["DPG - 設定の編集"]
 image:vmware-vcf-aff-038.png["DPG - チームアップリンク"]
 
 ====
-. クラスタ内の各 ESXi ホストに対してこのプロセスを繰り返します。
+. クラスター内の各 vSphere ホストについて、このプロセスを繰り返します。
 
 
 
 
-[[step-2-create-a-vmkernel-adapter-on-each-esxi-host]]
-== ステップ2: 各ESXiホストにVMkernelアダプタを作成する
+[[step-2-create-a-vmkernel-adapter-on-each-vsphere-host]]
+== ステップ 2：各 vSphere ホストに VMkernel アダプタを作成する
 
-ワークロード ドメイン内の各 ESXi ホストに VMkernel アダプタを作成します。
+ワークロード ドメイン内の各 vSphere ホストに VMkernel アダプターを作成します。
 
 .手順
-. vSphere クライアントから、ワークロード ドメイン インベントリ内の ESXi ホストの 1 つに移動します。*構成*タブから*VMkernelアダプタ*を選択し、*ネットワークの追加...*をクリックして開始します。
+. vSphere クライアントから、ワークロード ドメイン インベントリ内のいずれかの vSphere ホストに移動します。*設定* タブから *VMkernel アダプタ* を選択し、*ネットワークの追加…* をクリックして開始します。
 +
 .例を表示
 [%collapsible]
@@ -119,4 +119,4 @@ image:vmware-vcf-aff-041.png["VMkernelの選択を確認する"]
 [[whats-next]]
 == 次の手順
 
-ワークロードドメイン内のすべてのESXiホストでNFSのネットワークを構成した後、link:vmw-vcf-viwld-supp-nfs-vvols-storage.html["NFS vVolsのストレージを構成する"] 。
+ワークロードドメイン内のすべてのvSphereホストでNFSのネットワークを設定した後、link:vmw-vcf-viwld-supp-nfs-vvols-storage.html["NFS vVolsのストレージを構成する"]。

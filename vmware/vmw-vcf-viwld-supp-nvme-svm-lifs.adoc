@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-nvme-svm-lifs.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: '複数の論理インターフェイス (LIF) を持つストレージ仮想マシン (SVM) を作成し、VMware Cloud Foundation 管理ドメインに iSCSI 接続を提供します。  NVMe プロトコル サポートを備えた SVM を構成し、個別のイーサネット ネットワークにわたって複数の LIF をセットアップして、マルチパスとフェイルオーバーを有効にし、最適なパフォーマンスと可用性を実現します。' 
+summary: VMware Cloud FoundationワークロードドメインにNVMe/TCP接続を提供するために、複数の論理インターフェイス（LIF）を持つストレージ仮想マシン（SVM）を作成します。最適なパフォーマンスと可用性を実現するために、NVMeプロトコルをサポートするようにSVMを構成し、複数のイーサネットネットワークにまたがる複数のLIFを設定することで、マルチパスとフェイルオーバーを有効にします。 
 ---
-= VCF VIワークロードドメインにNVMe/TCP vVolsデータストア用のSVMとLIF、およびNVMeネームスペースを作成する
+= VMware Cloud Foundation ワークロードドメイン内のNVMe/TCPデータストア用のSVMとLIF、およびNVMeネームスペースを作成します。
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -64,10 +64,10 @@ image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
 
 NVMe 名前空間は、iSCSI または FC の LUN に類似しています。vSphere Client から VMFS データストアを展開する前に、NVMe 名前空間を作成する必要があります。
 
-NVMe 名前空間を作成するには、クラスター内の各 ESXi ホストから NVMe 修飾名 (NQN) を取得します。  ONTAP はNQN を使用してネームスペースへのアクセス制御を提供します。
+NVMe 名前空間を作成するには、クラスター内の各 vSphere ホストから NVMe 修飾名（NQN）を取得します。ONTAP は NQN を使用して、名前空間へのアクセス制御を提供します。
 
 .手順
-. クラスター内の ESXi ホストとの SSH セッションを開き、その NQN を取得します。  CLI から次のコマンドを使用します。
+. クラスター内のvSphereホストとのSSHセッションを開いて、NQNを取得します。CLIから以下のコマンドを使用します。
 +
 [source, cli]
 ----
@@ -81,7 +81,7 @@ esxcli nvme info get
 ----
 Host NQN: nqn.2014-08.com.netapp.sddc:nvme:vcf-wkld-esx01
 ----
-. クラスタ内の各 ESXi ホストの NQN を記録します。
+. クラスター内の各 vSphere ホストの NQN を記録します。
 . ONTAP System Manager から、左側のメニューの *NVMe Namespaces* に移動し、*+ Add* をクリックして開始します。
 +
 .例を表示
@@ -91,7 +91,7 @@ image:vmware-vcf-asa-093.png["+追加をクリックしてNVMe名前空間を作
 
 ====
 . *NVMe 名前空間の追加* ページで、名前のプレフィックス、作成する名前空間の数、名前空間のサイズ、名前空間にアクセスするホスト オペレーティング システムを入力します。
-. *ホスト NQN* セクションで、名前空間にアクセスする ESXi ホストから以前に収集された NQN のコンマ区切りリストを作成します。
+. *ホスト NQN* セクションで、名前空間にアクセスする vSphere ホストから以前に収集した NQN のカンマ区切りリストを作成します。
 . スナップショット保護ポリシーなどの追加項目を構成するには、[*その他のオプション*] をクリックします。
 . 最後に、[*保存*] をクリックして NVMe 名前空間を作成します。
 +
@@ -108,4 +108,4 @@ image:vmware-vcf-asa-093.png["+追加をクリックしてNVMe名前空間を作
 [[whats-next]]
 == 次の手順
 
-SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nvme-network.html["NVMe/TCP (NVMe/TCP) vVolsのネットワークを構成する"] 。
+SVMとLIFを作成した後、link:vmw-vcf-viwld-supp-nvme-network.html["NVMe/TCP のネットワークを設定する（NVMe/TCP）"]。

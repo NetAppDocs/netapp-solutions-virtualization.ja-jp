@@ -14,14 +14,14 @@ summary:
 
 
 [role="lead"]
-NetApp ONTAP の高可用性を VMware vSphere Metro Storage Cluster (vMSC) と統合するために使用できるNetAppソリューションについて学習します。これにより、VMware Cloud Foundation (VCF) 管理および VI ワークロード ドメインに堅牢なソリューションが提供されます。
+NetApp ONTAPの高可用性をVMware vSphere Metro Storage Cluster（vMSC）と統合するために使用できるNetAppソリューションについて説明します。これにより、VMware Cloud Foundation（VCF）の管理ドメインおよびワークロードドメイン向けの堅牢なソリューションが提供されます。
 
-この組み合わせにより、地理的に分散したサイト間での継続的なデータ可用性、シームレスなフェイルオーバー、災害復旧が保証され、重要なワークロードの回復力と運用の継続性が向上します。 SnapMirrorアクティブ シンクにより、サイト全体の障害が発生してもビジネス サービスの運用が継続され、セカンダリ コピーを使用してアプリケーションが透過的にフェイルオーバーできるようになります。SnapMirrorアクティブ同期でフェイルオーバーをトリガーするために、手動操作やカスタム スクリプトは必要ありません。
+この組み合わせにより、地理的に分散した拠点間でデータの継続的な可用性、シームレスなフェイルオーバー、および災害復旧が保証され、重要なワークロードの回復力と運用継続性が強化されます。SnapMirrorアクティブ同期（SANおよびNAS）により、完全なサイト障害が発生してもビジネスサービスが継続して稼働できるようになり、アプリケーションがセカンダリコピーを使用して透過的にフェイルオーバーすることをサポートします。SnapMirrorアクティブ同期（SANおよびNAS）でフェイルオーバーをトリガーするために、手動介入やカスタムスクリプトは必要ありません。ONTAP メディエーターは、プライマリサイトの正常性を監視し、災害発生時に自動的にセカンダリサイトへフェイルオーバーするために使用されます。ONTAP メディエーターは、どちらのサイトにも属さない別のサーバーまたは仮想マシンにデプロイされ、クォーラムを確保することでスプリットブレインシナリオを回避します。
 
 詳細については、以下の解決策を参照してください。
 
-* link:vmw-vcf-vmsc-mgmt-smas.html["SnapMirror Active Sync を使用した管理ドメインのストレッチ クラスタ"]
+* link:vmw-vcf-vmsc-mgmt-smas.html["SnapMirror アクティブ同期を使用した管理ドメイン向けストレッチクラスタ（SAN および NAS）"]
 * link:vmw-vcf-vmsc-mgmt-mcc.html["MetroClusterを使用した管理ドメインのストレッチ クラスタ"]
-* link:vmw-vcf-vmsc-viwld-smas.html["SnapMirror Active Sync を使用した VI ワークロード ドメインのストレッチ クラスタ"]
-* link:vmw-vcf-vmsc-viwld-mcc.html["MetroClusterを使用した VI ワークロード ドメインのストレッチ クラスタ"]
+* link:vmw-vcf-vmsc-viwld-smas.html["SnapMirror アクティブ同期を使用したワークロードドメイン用ストレッチクラスター（SAN および NAS）"]
+* link:vmw-vcf-vmsc-viwld-mcc.html["MetroClusterを使用したワークロードドメイン用ストレッチクラスター"]
 

@@ -2,9 +2,9 @@
 sidebar: sidebar 
 permalink: vmware/vmw-vcf-viwld-supp-iscsi-vvols-svm-lifs.html 
 keywords: netapp, vmware, cloud, foundation, vcf, aff, all-flash, nfs, vvol, vvols, array, ontap tools, otv, sddc, iscsi 
-summary: 'VMware Cloud Foundation VI ワークロード ドメイン内のvVolsデータストアの iSCSI トラフィックをサポートするには、 ONTAPシステム上にストレージ仮想マシン (SVM) と複数の論理インターフェイス (LIF) を作成します。新しい SVM を追加し、iSCSI を有効にし、LIF を構成し、オプションでストレージ VM 管理アカウントを有効にします。' 
+summary: VMware Cloud FoundationワークロードドメインのvVolsデータストアのiSCSIトラフィックをサポートするために、ONTAPシステムにストレージ仮想マシン（SVM）と複数の論理インターフェイス（LIF）を作成します。新しいSVMを追加し、iSCSIを有効にし、LIFを設定し、必要に応じてストレージVM管理アカウントを有効にします。 
 ---
-= VCF VIワークロードドメインにiSCSI vVolsデータストア用のSVMとLIFを作成する
+= VCFワークロードドメイン内のiSCSI vVols データストア用のSVMとLIFを作成する
 :hardbreaks:
 :allow-uri-read: 
 :nofooter: 
@@ -14,7 +14,7 @@ summary: 'VMware Cloud Foundation VI ワークロード ドメイン内のvVols�
 
 
 [role="lead"]
-VMware Cloud Foundation VI ワークロード ドメイン内のvVolsデータストアの iSCSI トラフィックをサポートするには、 ONTAPシステム上にストレージ仮想マシン (SVM) と複数の論理インターフェイス (LIF) を作成します。新しい SVM を追加し、iSCSI を有効にし、LIF を構成し、オプションでストレージ VM 管理アカウントを有効にします。
+VMware Cloud Foundationワークロードドメイン内のvVolsデータストアのiSCSIトラフィックをサポートするために、ONTAPシステムにストレージ仮想マシン（SVM）と複数の論理インターフェイス（LIF）を作成します。新しいSVMを追加し、iSCSIを有効にし、LIFを構成し、必要に応じてストレージVM管理アカウントを有効にします。
 
 既存の SVM に新しい LIF を追加するには、 ONTAP のドキュメントを参照してください。link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["ONTAP LIFを作成する"^] 。
 
@@ -62,4 +62,4 @@ image:vmware-vcf-asa-004.png["SVMアカウントを有効にして完了"]
 [[whats-next]]
 == 次の手順
 
-SVMとLIFを作成したら、link:vmw-vcf-viwld-supp-iscsi-vvols-network.html["ESXiホスト上のiSCSIのネットワークを構成する"] 。
+SVMとLIFを作成したら、link:vmw-vcf-viwld-supp-iscsi-vvols-network.html["vSphereホストの iSCSI ネットワークを設定する"]。

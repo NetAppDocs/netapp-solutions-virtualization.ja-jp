@@ -37,6 +37,8 @@ VCFインストーラーツールを使用して、VCF管理ドメインを構�
 [[reference-video]]
 == 参考動画：
 
+.FCを備えた主要データストア
+video::9c51101c-292b-41ef-8dd5-b4cf0131dd62[panopto,width=360]
 .AFF および ASA r2 を使用した iSCSI マルチパス
 video::62c2a66c-1a07-4284-bc7b-b4ac00e9aeea[panopto,width=360]
 .NVMe/TCP対応の補助データストア

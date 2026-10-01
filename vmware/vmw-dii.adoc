@@ -267,5 +267,5 @@ image:vmware-asa-053.png["ONTAPエッセンシャル - VMware"]
 
 * https://www.netapp.com/console/["NetApp Consoleのランディングページ"]
 * https://www.netapp.com/data-infrastructure-insights/["NetApp Data Infrastructure Insightsランディング ページ"]
-* https://docs.netapp.com/us-en/data-infrastructure-insights/index.html/["NetApp Data Infrastructure Insightsドキュメント"]
+* https://docs.netapp.com/us-en/data-infrastructure-insights/index.html["NetApp Data Infrastructure Insightsドキュメント"]
 

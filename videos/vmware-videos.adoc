@@ -90,6 +90,8 @@ video::255640f5-4dff-438c-8d50-b01200f017d1[panopto,width=360]
 [[vmware-cloud-foundation-with-netapp-ontap]]
 == VMware Cloud Foundation とNetApp ONTAP
 
+.FC 上での VMFS を使用した VCF の展開
+video::9c51101c-292b-41ef-8dd5-b4cf0131dd62[panopto,width=360]
 .VCF ワークロード ドメインの主要ストレージとしての NFS データストア
 video::9b66ac8d-d2b1-4ac4-a33c-b16900f67df6[panopto]
 .VCF管理ドメインの補助ストレージとしてのiSCSIデータストア

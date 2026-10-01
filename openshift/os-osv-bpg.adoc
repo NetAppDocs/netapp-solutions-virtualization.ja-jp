@@ -174,9 +174,9 @@ NOTE: ストレージ構成とTridentの使用に関するベストプラクテ�
 [[openshift-virtualization-tuning-scaling-guide]]
 == **OpenShift Virtualization - チューニングとスケーリングガイド**
 
-Red Hat はlink:https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/scalability_and_performance/recommended-performance-and-scalability-practices-2["OpenShift クラスターのスケーリングの推奨事項と制限"]を文書化しています。
+Red Hat はlink:https://docs.redhat.com/en/documentation/openshift_container_platform/4.22/html/scalability_and_performance/recommended-performance-and-scalability-practices["OpenShift クラスターのスケーリングの推奨事項と制限"]を文書化しています。
 
-さらに、彼らはlink:https://access.redhat.com/articles/6994974["OpenShift Virtualization チューニングガイド"]とlink:https://access.redhat.com/articles/6571671["OpenShift Virtualization 4.x のサポート制限"]も文書化しています。
+さらに、彼らはlink:https://access.redhat.com/articles/6994974["OpenShift Virtualization チューニングガイド"]とlink:https://docs.redhat.com/en/documentation/openshift_container_platform/4.13/html/virtualization/virt-supported-limits["OpenShift Virtualization 4.x のサポート制限"]も文書化しています。
 
 
 NOTE: 上記のコンテンツにアクセスするには、有効な Red Hat サブスクリプションが必要です。

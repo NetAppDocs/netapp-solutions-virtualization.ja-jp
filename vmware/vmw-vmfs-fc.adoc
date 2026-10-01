@@ -102,3 +102,5 @@ VMFS データストアをプロビジョニングするには、次の手順を
 
 .FC を備えた補助データストア
 video::96311abf-aa45-4ce9-984b-b4b001005bab[panopto,width=360]
+.FCを備えた主要データストア
+video::9c51101c-292b-41ef-8dd5-b4cf0131dd62[panopto,width=360]

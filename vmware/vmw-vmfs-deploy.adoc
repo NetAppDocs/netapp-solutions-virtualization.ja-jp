@@ -160,7 +160,7 @@ image:vmfs-deploy-015.png["入出力ダイアログまたは書かれたコン�
 
 
 
-vVol、FC、NVMe/TCP データストアのプロビジョニングについては、これらのリンクを参照してください。
+vVolsデータストア、またはFCやNVMe/TCPを使用するVMFSデータストアをプロビジョニングするには、link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/configure/create-datastore.html["ONTAP toolsでデータストアを作成する"^]を参照してください。そのページには、NVMe/TCPに必要なESXiホスト構成も記載されています。
 
 
 

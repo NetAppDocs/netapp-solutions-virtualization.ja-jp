@@ -1,0 +1,29 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvol-nfs-migration-integ-tools.html 
+keywords: netapp, vmware, nfs, ontap, tools, integration, vaai, snapcenter, sra, disaster recovery 
+summary: VMware環境でNFSデータストアを管理および保護するためのONTAP統合ツール（ONTAP tools for VMware vSphere、NFS VAAIプラグイン、SnapCenter Plug-in for VMware vSphereなど）について説明します。 
+---
+= VMware環境におけるNFSデータストア向けのONTAP統合ツール
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware環境でNFSデータストアを管理、監視、保護するためのONTAP統合ツール（ONTAP tools for VMware vSphere、NFS VAAIプラグイン、SnapCenter Plug-in for VMware vSphereなど）について説明します。
+
+NetAppは、VMware環境におけるNFSデータストアの管理と保護のために、以下のツールを提供します：
+
+* *link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/index.html["ONTAP tools for VMware vSphere"^]*：NFSデータストアのプロビジョニング、監視、管理のためにONTAPの管理をvSphere Clientに統合し、推奨されるESXiホスト設定を適用します。
+* *link:https://docs.netapp.com/us-en/nfs-plugin-vmware-vaai/index.html["NetApp NFS Plug-in for VMware VAAI"^]*：クローン作成などのストレージ操作をONTAPにオフロードし、パフォーマンスを向上させてESXiホストの負荷を軽減します。
+* *link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/protect/enable-storage-replication-adapter.html["Storage Replication Adapter（SRA）"^]*：VMware Live Site Recovery（旧称VMware Site Recovery Manager）と統合し、ONTAP SnapMirrorレプリケーションを使用して災害復旧をオーケストレーションします。
+* *link:vmw-dr-gs.html["NetApp Disaster Recovery"]*：NetApp ConsoleからNFSデータストア上のVMの災害復旧をオーケストレーションします。
+* *link:https://docs.netapp.com/us-en/sc-plugin-vmware-vsphere/index.html["SnapCenter Plug-in for VMware vSphere"^]*：NFSデータストア上のVMに対して、「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態およびVM整合性のあるバックアップとリストアを提供します。
+* *link:https://docs.netapp.com/us-en/data-infrastructure-insights/index.html["NetAppData Infrastructure Insights"^]*：ONTAPストレージおよびVMwareインフラストラクチャのパフォーマンスと健全性に関する可視性を提供します。
+
+
+これらのツールは、VMware環境におけるNFSデータストアの運用を効率化し、パフォーマンスを向上させ、データ保護を提供します。

@@ -1,0 +1,48 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvol-nfs-migration-options.html 
+keywords: netapp, vmware, nfs, migration, vvol, vvols, vmotion, storage vmotion, powercli 
+summary: ONTAP を使用した VMware 環境で、Storage vMotion、コールド マイグレーション、スクリプトによるマイグレーションなど、vVols データストアから NFS データストアへの VM マイグレーション オプションについて説明します。 
+---
+= vVolsデータストアからNFSデータストアへの移行オプション
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAP を使用した VMware 環境で、Storage vMotion、コールド マイグレーション、スクリプトによるマイグレーションなど、vVols データストアから NFS データストアへの VM のマイグレーション オプションについて説明します。ダウンタイムを最小限に抑え、業務を継続させるための方法を確認できます。
+
+ONTAPを使用するVMware環境で、vVolsデータストアからNFSデータストアに移行する場合は、以下のオプションを検討してください：
+
+* *ストレージvMotion*：VMの実行中に、VMファイルをvVolsデータストアからNFSデータストアに移行します。両方のデータストアは、VMを実行するESXiホストからアクセス可能である必要があります。
+* *vMotion および Storage vMotion*：ソースホストと宛先ホストがストレージを共有していない場合に、単一の操作でコンピューティング リソースとデータストアの両方を変更します。
+* *コールドマイグレーション*：VMの電源をオフにし、vSphere Clientの*移行*オプションを使用してNFSデータストアに移動します。この方法はシンプルですが、ダウンタイムが必要になります。
+* *バックアップと復元*：別のデータストアへの仮想マシンの復元をサポートするバックアップ アプリケーションを使用します。この方法は、ソースデータストアとターゲットデータストアが同じホストからアクセスできない場合に役立ちます。
+* *スクリプトによる移行*：PowerCLI またはその他の自動化ツールを使用して、一括移行を実行します。
+
+
+移行を開始する前に、NFSデータストアのサイズ、構成、テストが適切であることを確認し、重要なデータをバックアップしてください。
+
+PowerCLIの例を含む手順の詳細については、link:migrate-vms-to-ontap-datastore.html["VMware vSphere からONTAPデータストアに VM を移行する"]を参照してください。
+
+
+
+[[why-use-storage-vmotion-for-migration]]
+== 移行にストレージvMotionを使用する理由
+
+ストレージvMotionは、ダウンタイムなしでVMファイルを移動できるため、vVolsデータストアからNFSデータストアへVMを移行するための推奨される方法です。
+
+この方法により、ワークロードへの影響を最小限に抑え、アプリケーションを利用可能な状態に保ちながら、管理者が仮想マシンを移動できるようになります。ストレージvMotionはVMの構成とメタデータを保持し、移行中に仮想ディスクのフォーマットを維持または変更できます。
+
+
+
+[[concurrency-limits]]
+== 同時実行制限
+
+vCenterは同時移行の数を制限します。デフォルトでは、ホストは最大2つの同時ストレージvMotion操作を実行でき、データストアは最大8つまで参加できます。追加の操作は、リソースが利用可能になるまでキューに追加されます。
+
+これらの制限を考慮して移行バッチを計画し、移行中はホスト、ネットワーク、ストレージの使用状況を監視してください。現在の制限については、link:https://configmax.broadcom.com["VMware構成の最大値"^]を参照してください。

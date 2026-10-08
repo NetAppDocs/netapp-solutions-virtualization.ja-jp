@@ -1,0 +1,179 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvol-nfs-migration.html 
+keywords: netapp, vmware, vvol, vvols, ONTAP tools, nfs, flexgroup, migration 
+summary: VMware vSphere仮想ボリューム（vVols）の概要、組織がこれらを導入した理由、およびONTAP NFSデータストアが管理を簡素化して拡張性を向上させながらvVolsデータストアをどのように置き換えることができるかについて説明します。 
+---
+= vVolsデータストアからONTAP NFSデータストアへの移行について
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware vSphere Virtual Volumes（vVols）の概要、採用された理由、そのアーキテクチャ、およびONTAP NFSデータストアがどのように代替として機能するかについて説明します。ONTAP NFSデータストアは、仮想化環境に必要なパフォーマンスと柔軟性を維持しながら、管理を簡素化し、拡張性を向上させます。
+
+
+
+[[solution-overview]]
+== ソリューションの概要
+
+プライベートクラウド環境には、拡張性、柔軟性、そして運用上の簡便性が求められます。vVolsは、個々のVMディスクレベルでポリシーを適用し、SCSIストレージのセカンダリLUN機能を使用してLUNの制限に対処するために、vSphere 6.0で導入されました。
+
+プロトコルエンドポイント（PE）は、LUNマルチパスとNFSマウントを処理し、ストレージアレイへのデータ パスとして機能します。
+
+ONTAPのvVols実装では、SCSI LUNに使用される各FlexVolボリューム、およびNFSプロトコル用のSVM上の各論理インターフェイス（LIF）に対してPEが存在します。
+
+[cols="4a,4a"]
+|===
+| vVols（SCSI） | NFSを使用したvVols 
+
+
+ a| 
+image:vmw-vvol-nfs-migration-001.png["vVols（SCSI）"]
+ a| 
+image:vmw-vvol-nfs-migration-002.png["NFSを使用したvVols"]
+
+|===
+
+NOTE: VMwareは、VCFおよびVVF 9.0以降、vVolsを非推奨としており、将来のリリースで廃止する予定です。vVolsは、VCFおよびVVF 9.1では引き続き利用可能です。詳細については、link:https://knowledge.broadcom.com/external/article?articleId=401070["VCF 9.0およびVVF 9.0におけるVMware vSphere 仮想ボリューム（vVols）の非推奨化"^]を参照してください。
+
+
+
+[[scale-considerations]]
+=== 規模の考慮事項
+
+各VMディスクはvVolsを使用した個別のLUNであるため、環境によってはESXiホストごとにサポートされるLUNとパスの最大数にすぐに達する可能性があります。vVolsは、セカンダリLUN機能を使用してLUNの規模に対応します。この機能には、ストレージアレイとファブリックスイッチの両方からのサポートが必要です。
+
+NFSデータストアは、ホストごとのLUN制限の影響を受けません。ESXiは、ホストあたり最大256個のNFSデータストアのマウントをサポートします。現在の制限については、link:https://configmax.broadcom.com["VMware構成の最大値"^]を参照してください。
+
+
+
+[[storage-consumption-models]]
+=== ストレージ消費モデル
+
+NFSでは、データストアはマウントポイントを介して利用され、VMの構成ファイルとデータファイルはボリューム内に保存されます。ストレージボリュームを追加するには、追加のマウントポイントが必要です。
+
+vVolsは、プロトコルエンドポイントがすべてのLIF上のSVMのルートを指すようにして、FlexVolボリュームを追加することで容量制限に対処します。vVolsデータストアは、接続されているすべてのFlexVolボリュームの合計を容量とするストレージコンテナです。
+
+vVolsには、いくつかのオブジェクトタイプが含まれます：構成、データ、スワップ、スナップショット、メモリ。vVolsはデフォルトでシンプロビジョニングされます。
+
+
+
+[[vasa-and-storage-policy-management]]
+=== VASAとストレージポリシー管理
+
+スナップショット、VMディスクのクローン作成、レプリケーション、その他のストレージ処理は、vSphere APIs for Storage Awareness（VASA）（vVolsのコアコンポーネント）を使用してストレージアレイにオフロードされます。
+
+一部のストレージベンダーは、アレイ上にVASAを実装しています。NetAppは、ONTAP tools for VMware vSphereでアレイの外部にVASAを実装しているため、単一のインスタンスで複数のアレイを管理できます。
+
+ストレージポリシーベース管理（SPBM）は、要求されたストレージポリシーに基づいて、VMディスクを特定のストレージに配置します。
+
+
+
+[[why-organizations-use-vvols]]
+== 組織がvVolsを使用する理由
+
+組織がvVolsを採用した理由はいくつかあります：
+
+* *きめ細かなストレージ管理*：ストレージポリシーは個々のVMディスクレベルで適用され、パフォーマンス、可用性、データ保護をきめ細かく制御できます。
+* *操作の簡素化*：ストレージのプロビジョニングと管理はSPBMによって自動化され、手作業とエラーが削減されます。
+* *ストレージ操作のオフロード*：スナップショット、クローニング、レプリケーションは、VASAを介してストレージアレイにオフロードされます。
+* *拡張性の向上*：プロトコルエンドポイントとセカンダリLUNにより、従来のホストごとのLUN制限が解消されます。
+* *VMwareエコシステムの統合*：vVolsは、ポリシーの自動適用など、VMwareのツールやワークフローと緊密に統合します。
+
+
+vVolsが非推奨となったため、組織はVASAに依存することなく、これらの運用上の利点を維持できる代替手段を必要としています。
+
+
+
+[[architecture-overview]]
+== アーキテクチャの概要
+
+NFSは、そのシンプルさ、拡張性、柔軟性から、vSphere環境で人気の選択肢です。NFSデータストアはプロビジョニングと拡張が容易で、最小限の管理オーバーヘッドで大規模な環境をサポートします。ONTAPを使用すると、NFSにマルチパス、パフォーマンスを向上させるnConnect、およびVMwareツールとの統合が追加されます。
+
+
+
+[[ontap-nfs-advantages]]
+=== ONTAP NFSの利点
+
+ONTAPのお客様は、vCenter Serverインスタンス間でデータを移動する機能など、link:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-datastores-nfs.html["NFSデータストア"^]のシンプルさを高く評価しています。ONTAPを使用すると、同じボリューム上の他のVMに影響を与えることなく、単一のVMディスクをリカバリできます。
+
+単一のONTAP FlexGroupボリュームは、最大20PBおよび4000億ファイルまで拡張可能で、数千台のVMをホストできます。単一のVMディスクは最大62TBまで対応可能です。ONTAP Snapshotコピーは、バックアップとリストアの処理を簡素化します。
+
+
+
+[[performance-and-disaster-recovery-tools]]
+=== パフォーマンスおよび災害復旧ツール
+
+NetApp VMware VAAI（vSphere APIs for Array Integration）用NFSプラグインは、クローン作成などの操作をストレージアレイにオフロードしてパフォーマンスを向上させます。
+
+災害復旧のために、NetAppはVMware Live Site Recovery（旧称VMware Site Recovery Manager）用のストレージレプリケーションアダプタ（SRA）およびlink:vmw-dr-gs.html["NetApp Disaster Recovery"]サービスを提供します。
+
+image:vmw-vvol-nfs-migration-004.png["NFS VAAI"]
+
+
+
+[[nfs-operational-simplicity]]
+=== NFSの運用上のシンプルさ
+
+次の図は、物理サーバー（左）、NFSデータストア内のVM（中央）、およびvVolsデータストア内のVM（右）でホストされている2つのアプリケーションを比較したものです。vVolsデータストアとNFSデータストアでのVMのホストは非常によく似ています。
+
+image:vmw-vvol-nfs-migration-003.png["vVolsとNFS"]
+
+NFSデータストアは、日常的な運用においてVASAやSPBMに依存しません。NFSデータストアは、複数のvCenter Serverインスタンスにマウントでき、vMotion、DRS、HA、FT、およびその他のVMware機能をサポートします。管理者は、vSphere Clientからストレージを管理するためにONTAP tools for VMware vSphereを使用します。
+
+
+
+[[ontap-cluster-architecture]]
+=== ONTAPクラスタアーキテクチャ
+
+ONTAP NASクラスタは最大24ノードまで拡張可能です。各ノードは複数のアグリゲートを持つことができ、各アグリゲートには複数のFlexVolまたはFlexGroupボリュームを含めることができます。SVMは複数のノードにまたがることができ、NFSプロトコル用に複数のLIFを持つことができます。ESXiホストは、各LIFを介してNFSデータストアをマウントできます。
+
+
+
+[[pnfs-support]]
+=== pNFSサポート
+
+pNFSは、クライアントが複数のネットワークパスを介してストレージに並列アクセスすることを可能にし、パフォーマンスと拡張性を向上させます。ONTAPはNFSv4.1でpNFSをサポートしており、ESXiホストが並列データアクセスのためにONTAP SVM上の複数のLIFを使用できるようにします。
+
+以下の画像は、pNFSのテストに使用したサンプル設定を示しています。
+
+image:vmw-vvol-nfs-migration-006.png["pNFSの設定"]
+
+
+NOTE: pNFSにはlink:https://docs.netapp.com/us-en/ontap/nfs-admin/enable-disable-pnfs-task.html["SVM上でpNFSオプションを有効にする"^]が必要です。pNFSはNFSv4.1でのみサポートされています。
+
+
+
+[[benefits-of-migrating-to-ontap-nfs]]
+== ONTAP NFSへの移行のメリット
+
+vVolsデータストアからONTAP NFSデータストアへの移行には、いくつかの利点があります：
+
+* *シンプルな管理*：ONTAP tools for VMware vSphere を vCenter と統合して使用し、NFS データストアのプロビジョニング、拡張、管理を行います。
+* *拡張性*：FlexGroupボリュームは、単一のデータストア内で数千台の仮想マシンをサポートします。
+* *パフォーマンス*：NFSマルチパス、nConnect、およびONTAPの最適化により、高いスループットと低レイテンシを実現します。
+* *データ保護*：ONTAP Snapshotコピーは、VMのパフォーマンスに影響を与えることなく、高速でスペース効率に優れたバックアップとリストアを提供します。
+* *運用上の柔軟性*：NFSデータストアは、複数のvCenter Serverインスタンスにマウントでき、vMotion、DRS、HA、FTをサポートします。
+* *統合*：ONTAP NFSは、NFS VAAIプラグイン、VMware Live Site Recovery、およびNetApp Disaster Recoveryと連携して動作します。
+* *効率的なスペース利用*：シンプロビジョニング、重複排除、圧縮により、ストレージコストを削減します。
+* *セキュリティとコンプライアンス*：エクスポートポリシー、RBAC、Kerberos、および暗号化により、データを保護し、アクセスを制御します。
+* *将来性への対応*：NFSはvVolsの非推奨化の影響を受けず、長期的な互換性とサポートを確保します。
+
+
+
+
+[[whats-next]]
+== 次の手順
+
+* link:vmw-vvol-nfs-migration-best-practices.html["NFSデータストアの導入に関するベストプラクティスを確認する"]
+* link:vmw-vvol-nfs-migration-storage-options.html["FlexVolボリュームとFlexGroupボリュームの選択"]
+* link:vmw-vvol-nfs-migration-sizing.html["サイジングガイドラインを確認する"]
+* link:vmw-vvol-nfs-migration-integ-tools.html["ONTAP統合ツールについて学ぶ"]
+* link:vmw-vvol-nfs-migration-options.html["移行オプションを選択してください"]
+* link:vmw-vvol-nfs-migration-add-info.html["その他のリソースを探す"]
+

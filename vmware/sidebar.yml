@@ -149,6 +149,22 @@ entries:
       url: "/vmware/vmw-vcf-vmsc-viwld-smas.html"
   - title: vSphere から VM を移行する
     url: "/vmware/migrate-vms-to-ontap-datastore.html"
+  - title: VMをvVolsからNFSへ移行する
+    entries:
+    - title: vVolsからNFSへの移行について
+      url: "/vmware/vmw-vvol-nfs-migration.html"
+    - title: 導入のベストプラクティス
+      url: "/vmware/vmw-vvol-nfs-migration-best-practices.html"
+    - title: ストレージオプション
+      url: "/vmware/vmw-vvol-nfs-migration-storage-options.html"
+    - title: サイジングガイドライン
+      url: "/vmware/vmw-vvol-nfs-migration-sizing.html"
+    - title: ONTAP統合ツール
+      url: "/vmware/vmw-vvol-nfs-migration-integ-tools.html"
+    - title: 移行オプション
+      url: "/vmware/vmw-vvol-nfs-migration-options.html"
+    - title: その他のリソース
+      url: "/vmware/vmw-vvol-nfs-migration-add-info.html"
   - title: ランサムウェアからデータを保護および回復する
     url: "/vmware/vmw-nfs-arp.html"
   - title: DII でオンプレミス ストレージを監視する

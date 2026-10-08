@@ -1,0 +1,46 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvol-nfs-migration-storage-options.html 
+keywords: netapp, vmware, nfs, ontap, flexvol, flexgroup, storage, options, scalability 
+summary: VMware環境のNFSデータストア向けONTAPストレージオプションについて学び、FlexVolボリュームとFlexGroupボリュームを比較して、ワークロードに最適なものを選択してください。 
+---
+= ONTAPを使用するVMware vSphere環境におけるNFSデータストアのストレージオプション
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware環境におけるNFSデータストア向けのONTAPストレージオプションについて説明します。ワークロードの要件と規模に最適なソリューションを選択するために、FlexVolボリュームとFlexGroupボリュームを比較します。
+
+VMware環境のNFSデータストアにFlexVolボリュームとFlexGroupボリュームのどちらを選択するかについては、次の点を考慮してください：
+
+image:vmw-vvol-nfs-migration-005.png["FlexVolとFlexGroupの比較"]
+
+.FlexVol
+FlexVol ボリュームは、予測可能なパフォーマンスと詳細な管理が求められる小規模から中規模の環境に適しています。
+
+Snapshotコピー、クローン作成、レプリケーションをサポートしています。FlexVolボリュームは、ワークロードを分離する必要がある場合や、個々のデータストアに特定のポリシーを適用する必要がある場合に最適です。
+
+.FlexGroup
+FlexGroupボリュームは大規模な環境向けに設計されており、非常に高い拡張性（最大20PBおよび4000億ファイル）と並列処理を提供します。
+
+これらはデータを複数の構成ボリュームに自動的に分散させ、数千台の仮想マシンが存在する環境において、ハイパフォーマンスと簡素化された管理を実現します。多数の仮想マシンに対して単一のスケーラブルなデータストアが必要な場合は、FlexGroupボリュームを使用します。
+
+.推奨事項
+* 小規模で独立したワークロード、またはきめ細かな制御が必要な場合は、*FlexVol volumeを使用します*。
+* 管理の簡素化と拡張性が求められる大規模でハイパフォーマンスな環境には、*FlexGroupボリュームを使用*します。
+
+
+
+
+[[additional-information]]
+== 追加情報
+
+* link:https://docs.netapp.com/us-en/ontap/flexgroup/index.html["FlexGroupボリュームドキュメント"^]
+* link:https://docs.netapp.com/us-en/ontap/flexgroup/supported-unsupported-config-concept.html["FlexGroupボリュームでサポートされる機能とサポートされない機能"^]
+* link:https://docs.netapp.com/us-en/ontap/volumes/index.html["論理ストレージ管理に関するドキュメント"^]
+

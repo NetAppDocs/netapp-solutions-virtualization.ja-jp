@@ -1,0 +1,104 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvol-nfs-migration-best-practices.html 
+keywords: netapp, vmware, nfs, ontap, deployment, best practices, connectivity, provisioning, nconnect, security 
+summary: 接続、プロビジョニング、nConnect、セキュリティなど、ONTAPを使用したVMware環境でNFSデータストアを使用するためのベストプラクティスについて説明します。 
+---
+= ONTAPを使用したVMware環境でNFSデータストアを使用するためのベストプラクティス
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+VMware 環境における NFS データストアの使用に関するベスト プラクティス（接続性、プロビジョニング、nConnect、セキュリティを含む）について説明します。これらのベスト プラクティスに従うことで、vVols からの移行後も最適なパフォーマンスと信頼性を確保できます。
+
+
+
+[[deployment-best-practices]]
+== 導入のベストプラクティス
+
+ONTAPを使用するVMware環境でNFSデータストアをデプロイする場合は、以下のベストプラクティスを考慮してください：
+
+* 環境要件に応じて、NFSv3またはNFSv4.1を使用してください。NFSv3は広くサポートされています。NFSv4.1では、マルチパス用のKerberos認証とセッション トランキングが追加されています。セッション トランキングには、ONTAP 9.14.1以降が必要です。
+* ストレージトラフィックを分離し、パフォーマンスを向上させるために、NFSトラフィック専用のネットワークインターフェースを設定してください。
+* SVMでvStorageオプションを有効にします。VMware VAAI用のNetApp NFSプラグインでは、これが必要です。
+* ESXiホスト、ネットワークスイッチ、およびONTAPで、ジャンボフレーム（MTU 9000）をエンドツーエンドで有効にします。
+* ロード バランシングと高可用性を実現するために、ONTAPで複数のLIFを使用します。
+* ESXiホストとONTAPシステム間で、DNSと時刻の同期が整合していることを確認します。
+* NetAppが推奨するESXiホスト設定を適用します。ONTAP tools for VMware vSphereでこれらの設定を適用できます。
+* 効率的なバックアップとリカバリには、ONTAP Snapshotコピーを使用します。
+* RBACとエクスポートポリシーを使用して、NFSボリュームへのアクセスを制限します。
+* 高可用性および災害復旧構成を検証するために、フェイルオーバーシナリオをテストします。
+
+
+詳細については、link:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-datastores-nfs.html["VMware vSphere with ONTAP ベストプラクティスガイドのNFSデータストア"^]およびlink:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-settings.html["推奨されるESXiホストおよびその他のONTAP設定"^]を参照してください。
+
+
+
+[[nfs-connectivity-best-practices]]
+== NFS接続のベストプラクティス
+
+ESXiホストとONTAPストレージ間でNFS接続を構成する場合は、次のベストプラクティスに従ってください：
+
+* ESXiホストとONTAP NFS LIFを同じネットワークセグメントに配置するか、適切なルーティングを確保してください。
+* NFSトラフィックを分離して保護するために、専用のVLANを使用してください。
+* ロード バランシングとフェイルオーバーを提供するために、NFS用に複数のONTAP LIFを設定します。
+* ONTAPエクスポートポリシーで、データストアをマウントするすべてのESXiホストからのアクセスが許可されていることを確認してください。
+* すべてのホストでNFSデータストアをマウントする際は、一貫したDNS名またはIPアドレスを使用してください。
+*  `vmkping`を使用して、各ESXiホストからONTAP LIFへの接続をテストします。
+
+
+ネットワーク設計のガイダンスについては、link:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-network.html["ネットワーク設定"^]を参照してください。
+
+
+
+[[nfs-provisioning-best-practices]]
+== NFSプロビジョニングのベストプラクティス
+
+VMware環境のONTAPにNFSデータストアをプロビジョニングする際は、以下のベストプラクティスに従ってください：
+
+* *ONTAP tools for VMware vSphereを使用する*：vSphereとの正しい構成と統合を確実にするために、ONTAP toolsを使用してNFSデータストアをプロビジョニングします。link:vmw-nfs-otv10.html["ONTAP tools for VMware vSphereを使用して vSphere 8 用の NFS データストアを構成する"]を参照してください。
+* *適切なボリュームタイプを選択する*：小規模なワークロードにはFlexVolボリュームを、高い拡張性を必要とする大規模環境にはFlexGroupボリュームを選択します。link:vmw-vvol-nfs-migration-storage-options.html["ストレージオプション"]を参照してください。
+* *エクスポートポリシーの設定*：承認されたESXiホストまたはIP範囲へのアクセスを制限します。
+* *シンプロビジョニングを有効にする*：スペース利用率を最適化し、容量を監視して過剰な割り当てを回避します。
+* *Snapshotリザーブの設定*：保持要件に基づいてSnapshotリザーブのサイズを設定します。
+* *複数のLIFを使用する*：ロード バランシングと高可用性のために、データストアを複数のLIFに分散します。
+* *容量とパフォーマンスの監視*：ボトルネックを回避するために、データストアの使用状況とパフォーマンスの指標を定期的に確認してください。
+
+
+
+
+[[nconnect-recommendations]]
+== nConnect推奨事項
+
+nConnectは、NFSデータストアごとに複数のTCP接続を可能にし、高速ネットワークインターフェイスカードをより有効に活用することでスループットを向上させます。
+
+* ESXi 8.0 Update 1ではNFSv3データストア向けのnConnectが導入され、ESXi 8.0 Update 2で一般提供が開始されました。ESXi 8.0 Update 3ではNFSv4.1向けのnConnectが追加されました。
+* デフォルトでは、データストアごとに1つの接続が設定されています。デフォルトでは、データストアごとに最大4つの接続を設定できますが、 `/NFS/MaxConnectionsPerDatastore`詳細設定を使用して最大値を8に引き上げることができます。デフォルトの最大値を引き上げる必要は通常ありません。
+* ESXiは、マウントされたすべてのデータストア全体でホストあたり最大256のNFS接続をサポートしており、各nConnect接続もその合計に含まれます。
+* vMotionでのパフォーマンスの問題を回避するために、vSphereクラスタ内のすべてのホストで、NFSデータストアに対して同じ数の接続を使用します。
+* 本番環境で大規模な変更を行う前に、お客様の環境でnConnectのパフォーマンスへの影響をテストしてください。
+
+
+詳細については、link:vmw-vsphere8-nfs-nconnect.html["NFS v3 データストアで nConnect を使用してデータストアのパフォーマンスを向上します"]およびBroadcomのKB記事link:https://knowledge.broadcom.com/external/article/313464/support-for-nconnect-feature-added-in-es.html["NFSクライアントでのnConnect機能のサポート - ESXi"^]を参照してください。
+
+
+
+[[security-features]]
+== セキュリティ機能
+
+ONTAPは、VMware環境のNFSデータストア向けに以下のセキュリティ機能を提供します：
+
+* *エクスポートポリシー*：許可するホスト、IPアドレス、またはサブネットを指定することで、NFSボリュームへのアクセスを制御します。
+* *Kerberos認証*：Kerberos（krb5、krb5i、krb5p）を使用したNFSv4.1は、安全な認証、完全性、および機密性を提供します。
+* *ロールベースアクセス制御（RBAC）*：ストレージリソースを管理するためのきめ細かな権限を付与します。
+* *保存データの暗号化*：link:https://docs.netapp.com/us-en/ontap/encryption-at-rest/index.html["保存されているデータを暗号化する"^]ボリュームまたはアグリゲートレベルで。
+* *安全なマルチテナンシー*：SVMを使用してワークロードを分離します。
+* *ランサムウェア対策*：link:https://docs.netapp.com/us-en/ontap/anti-ransomware/index.html["ONTAP自律型ランサムウェア対策"^]不審な活動を検知し、復旧ポイントを作成します。
+
+
+詳細については、link:https://docs.netapp.com/us-en/ontap/nfs-admin/index.html["ONTAP NFS ドキュメント"^]を参照してください。

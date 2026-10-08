@@ -1,0 +1,39 @@
+---
+sidebar: sidebar 
+permalink: vmware/vmw-vvol-nfs-migration-sizing.html 
+keywords: netapp, vmware, nfs, ontap, sizing, capacity, planning, datastore, performance 
+summary: キャパシティプランニング、データストアのサイジング、VM密度、パフォーマンスなど、ONTAPを使用したVMware vSphere環境におけるNFSデータストアのサイジングガイドラインについて説明します。 
+---
+= ONTAPを使用したVMware vSphere環境におけるNFSデータストアのサイジングガイドライン
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAPを使用したVMware vSphere環境におけるNFSデータストアのサイジングガイドライン（容量計画、データストアのサイジング、VMの密度、パフォーマンスなど）について確認し、vVolsからVMを移行する前にターゲットのNFSデータストアの準備が整うようにしてください。
+
+ONTAP を使用する VMware vSphere 環境の NFS データストアのサイズを決定する際は、以下のガイドラインを考慮してください：
+
+* *容量計画*：VMの数、VMのディスクサイズ、増加率、Snapshotの保持期間に基づいて、必要なストレージ容量の合計を推定します。VMのスワップファイルとログのオーバーヘッドを含めます。vVolsデータストアで現在消費されている容量を起点として使用します。
+* *データストアサイズ*：各データストアのサイズは、ご使用のプラットフォームのONTAPボリューム制限内に設定してください。FlexGroupボリュームは、単一のFlexVolボリュームの制限を超えて拡張できます。プラットフォームの制限については、link:https://hwu.netapp.com["NetApp Hardware Universe"^]を参照してください。
+* *VM密度*：ワークロードのパフォーマンス要件、バックアップとリカバリの粒度、および運用上の好みに基づいて、データストアあたりのVM数を計画します。FlexGroupボリュームは、単一のデータストア内に数千ものVMを収容できます。
+* *パフォーマンス*：IOPS、スループット、およびレイテンシの要件を考慮してください。負荷を分散させるために、複数のONTAP LIFを使用し、ノードとアグリゲートにボリュームを分散させます。
+* *Snapshotリザーブ*：バックアップおよびリカバリの保持要件を満たすために、ONTAP Snapshotコピー用に十分なスペースを割り当てます。
+* *シンプロビジョニング*：シンプロビジョニングを有効にしてスペース利用率を最適化し、使用状況を監視して過剰割り当てを回避します。
+* *成長と拡張*：将来の成長を念頭に置いてデータストアを設計します。ダウンタイムなしでFlexVolボリュームとFlexGroupボリュームを拡張できます。
+* *バックアップと災害復旧*：バックアップコピーとレプリケーションのための容量を確保してください。
+
+
+
+
+[[additional-information]]
+== 追加情報
+
+* link:https://configmax.broadcom.com["VMware構成の最大値"^]
+* link:https://hwu.netapp.com["NetApp Hardware Universe"^]
+* link:https://docs.netapp.com/us-en/ontap-apps-dbs/vmware/vmware-vsphere-datastores-nfs.html["VMware vSphere with ONTAP ベストプラクティスガイドのNFSデータストア"^]
+

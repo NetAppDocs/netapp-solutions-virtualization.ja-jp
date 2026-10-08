@@ -14,7 +14,7 @@ summary:
 
 
 [role="lead"]
-ONTAP tools for VMware vSphereは、 NetAppストレージを使用して VM のライフサイクル管理を効率化します。管理者は vCenter Server から直接ストレージを管理できるため、操作が簡素化され、スケーラビリティが向上します。仮想ストレージ コンソール (VSC)、VASA プロバイダー、ストレージ レプリケーション アダプタ (SRA) などの主要コンポーネントは、プロビジョニング、パフォーマンス監視、および災害復旧を最適化します。
+ONTAP tools for VMware vSphereは、NetAppストレージを使用するVMのライフサイクル管理を効率化します。管理者はvCenter Serverから直接ストレージを管理できるため、運用が簡素化され、拡張性が向上します。vSphere Clientプラグイン、VASA Provider、Storage Replication Adapter（SRA）などの主要コンポーネントにより、プロビジョニング、パフォーマンス監視、ディザスタリカバリが最適化されます。
 
 
 
@@ -28,9 +28,13 @@ ONTAP tools for VMware vSphereは、 NetAppストレージを使用して VM の
 [[ontap-tools-components]]
 == ONTAPツールコンポーネント
 
-* *仮想ストレージ コンソール (VSC)* VSC には vSphere クライアントと統合されたインターフェイスが含まれており、ストレージ コントローラの追加、データストアのプロビジョニング、データストアのパフォーマンスの監視、ESXi ホスト設定の表示と更新を行うことができます。
+* *vSphere Clientプラグイン* このプラグインには、vSphere Clientと統合されたインターフェイスが含まれており、ストレージコントローラの追加、データストアのプロビジョニング、データストアのパフォーマンス監視、ESXiホスト設定の表示と更新を行うことができます。ONTAP tools 9.xでは、このコンポーネントはVirtual Storage Console（VSC）と呼ばれます。
 * *VASA プロバイダー* ONTAP用の VMware vSphere APIs for Storage Awareness (VASA) プロバイダーは、VMware vSphere が使用するストレージに関する情報を vCenter Server に送信し、VMware Virtual Volumes (vVols) データストアのプロビジョニング、ストレージ機能プロファイルの作成と使用、コンプライアンス検証、およびパフォーマンス監視を可能にします。
 * *ストレージ レプリケーション アダプタ (SRA)* SRA を有効にして VMware Site Recovery Manager (SRM) と併用すると、障害発生時に vCenter Server データストアと仮想マシンのリカバリが容易になり、災害復旧用の保護サイトとリカバリ サイトを構成できるようになります。
 
 
-VMware向けNetApp ONTAPツールの詳細については、 https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/index.html["ONTAP tools for VMware vSphereのドキュメント"] 。
+詳細については、ご使用のバージョンのONTAP tools for VMware vSphereのドキュメントを参照してください：
+
+* link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere-10/index.html["ONTAP tools for VMware vSphere 10.x ドキュメント"^]（最新リリース）
+* link:https://docs.netapp.com/us-en/ontap-tools-vmware-vsphere/index.html["ONTAP tools for VMware vSphere 9.x ドキュメント"^]
+

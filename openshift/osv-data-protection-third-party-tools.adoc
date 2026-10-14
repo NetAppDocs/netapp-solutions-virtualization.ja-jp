@@ -18,7 +18,7 @@ Velero を使用した OpenShift API for Data Protection (OADP) は、OpenShift 
 
 OpenShift Virtualization 環境の仮想マシンは、OpenShift Container プラットフォームのワーカーノードで実行されるコンテナー化されたアプリケーションです。VM のメタデータと永続ディスクを保護して、それらが失われたり破損したりした場合に回復できるようにすることが重要です。
 
-OpenShift Virtualization VMの永続ディスクは、OpenShift Clusterに統合されたONTAPストレージによってバックアップできます。link:https://docs.netapp.com/us-en/trident/["TridentCSI"] 。このセクションではlink:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/installing/installing-oadp-ocs.html["データ保護のための OpenShift API (OADP)"]データボリュームを含むVMのバックアップを実行する
+OpenShift Virtualization VMの永続ディスクは、link:https://docs.netapp.com/us-en/trident/["TridentCSI"]を使用してOpenShiftクラスターに統合されたONTAPストレージでサポートできます。このセクションでは、link:https://docs.openshift.com/en/documentation/openshift_container_platform/4.14/html/backup_and_restore/backup-restore-overview#application-backup-restore-operations-overview["データ保護のための OpenShift API (OADP)"]を使用してVMとそのデータボリュームをバックアップします
 
 * ONTAPオブジェクトストレージ
 * ストレージグリッド
@@ -60,7 +60,7 @@ Velero とNetApp ONTAP S3 またはStorageGRIDを使用して OpenShift Virtuali
 [[steps-to-create-a-backup-of-a-vm]]
 === VMのバックアップを作成する手順
 
-VM 全体 (VM メタデータと VM ディスク) のオンデマンド バックアップを作成するには、[**バックアップ**] タブをクリックします。これにより、バックアップ カスタム リソース (CR) が作成されます。バックアップ CR を作成するためのサンプル yaml が提供されています。この yaml を使用すると、指定された名前空間内の VM とそのディスクがバックアップされます。追加のパラメータは、link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/oadp-creating-backup-cr.html["ドキュメント"] 。
+VM全体（VMメタデータとVMディスク）のオンデマンドバックアップを作成するには、**Backup**タブをクリックします。これにより、Backup Custom Resource（CR）が作成されます。Backup CRを作成するためのサンプルyamlが提供されています。このyamlを使用すると、指定されたネームスペース内のVMとそのディスクがバックアップされます。追加情報については、link:https://docs.openshift.com/en/documentation/openshift_container_platform/4.14/html/backup_and_restore/backup-restore-overview#application-backup-restore-operations-overview["OpenShift Container Platformドキュメント"]を参照してください。
 
 ディスクをバックアップする永続ボリュームのスナップショットは、CSI によって作成されます。 VM のバックアップとそのディスクのスナップショットが作成され、yaml で指定されたバックアップの場所に保存されます。バックアップは、TTL で指定されたとおり 30 日間システム内に残ります。
 

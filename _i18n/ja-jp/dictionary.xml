@@ -1475,7 +1475,6 @@
   <block id="b5fd692a7ea9558930c2173bc3c46a5e" category="inline-link">Red Hat OpenShift ドキュメント</block>
   <block id="89ac02f553c84b8fc9e61169e79f2c7f" category="list-text"><block ref="89ac02f553c84b8fc9e61169e79f2c7f" category="inline-link-rx"></block></block>
   <block id="b9ccb9a7b6b82d2a5c7f42314d2a7d2a" category="inline-link">Red Hat OpenStack Platform ドキュメント</block>
-  <block id="ed0676f65fd9fcde9ee42fb4fee3ab6b" category="list-text"><block ref="ed0676f65fd9fcde9ee42fb4fee3ab6b" category="inline-link-rx"></block></block>
   <block id="a881011d7c5d5c51ae176f0592eaa6bc" category="inline-link">Red Hat Virtualization ドキュメント</block>
   <block id="f6dd4cc664e64de4d4824ac86c3bfb28" category="list-text"><block ref="f6dd4cc664e64de4d4824ac86c3bfb28" category="inline-link-rx"></block></block>
   <block id="7a32ae1d68cfe1067bd30afa48a7f0ef" category="inline-link">VMware vSphere ドキュメント</block>
@@ -1987,7 +1986,6 @@
   <block id="bdb7ca310f573681391786bf3cb42689" category="paragraph"><block ref="bdb7ca310f573681391786bf3cb42689" category="inline-image-macro-rx" type="image"></block></block>
   <block id="0f2ed001ca108c8ae69e0de13c18a4e2" category="section-title">アプリを作成する</block>
   <block id="0309bfa11ebaa855df6d24af0acfb503" category="example-title">アプリを作成</block>
-  <block id="fdb727d66243e25346b3d13832ab432c" category="paragraph">**VM 用の Trident Protect アプリを作成する**</block>
   <block id="b4558b01953ba19496b47e3314b4c464" category="paragraph">この例では、デモ名前空間には 1 つの VM があり、アプリの作成時に名前空間のすべてのリソースが含まれます。</block>
   <block id="d8c2b35beac411ce0afb9c51a5672d73" category="inline-image-macro">アプリを作成しました</block>
   <block id="42d4770af6ec88890eee6837918615e4" category="paragraph"><block ref="42d4770af6ec88890eee6837918615e4" category="inline-image-macro-rx" type="image"></block></block>
@@ -2113,7 +2111,6 @@
   <block id="4d6fbe9b83d5f0fb3e028f70cf910b17" category="doc">Velero を使用して Red Hat OpenShift Virtualization の VM のオンデマンド バックアップを作成する</block>
   <block id="bc4ce070ed8db68d82ed3da6ba7ac97e" category="paragraph">Velero とNetApp ONTAP S3 またはStorageGRIDを使用して OpenShift Virtualization で VM をバックアップします。この手順には、オンデマンド バックアップ用のバックアップ カスタム リソース (CR) と、スケジュールされたバックアップ用のスケジュール CR の作成が含まれます。各バックアップは VM メタデータと永続ボリュームをキャプチャし、リカバリまたはコンプライアンスの目的で指定されたオブジェクト ストレージの場所に保存します。</block>
   <block id="a35185b73e84533fd73cfb8322fefa9c" category="section-title">VMのバックアップを作成する手順</block>
-  <block id="f4c2b4c588235f6ac7745db472c4d9ab" category="paragraph">VM 全体 (VM メタデータと VM ディスク) のオンデマンド バックアップを作成するには、[**バックアップ**] タブをクリックします。これにより、バックアップ カスタム リソース (CR) が作成されます。バックアップ CR を作成するためのサンプル yaml が提供されています。この yaml を使用すると、指定された名前空間内の VM とそのディスクがバックアップされます。追加のパラメータは、<block ref="45bf4fcb30cb666d5b02b54fb671e73b" category="inline-link-macro-rx"></block> 。</block>
   <block id="f5895613b4fc01023daa64f694a33785" category="paragraph">ディスクをバックアップする永続ボリュームのスナップショットは、CSI によって作成されます。 VM のバックアップとそのディスクのスナップショットが作成され、yaml で指定されたバックアップの場所に保存されます。バックアップは、TTL で指定されたとおり 30 日間システム内に残ります。</block>
   <block id="c04e0f40b83a86fd835680d3df9ce399" category="paragraph">バックアップが完了すると、そのフェーズは完了として表示されます。</block>
   <block id="a2eabcbade98a44462292c4666e62044" category="inline-image-macro">バックアップが完了しました</block>
@@ -7778,7 +7775,6 @@
   <block id="0bb0fe78cec7e68d89f6dbb07d2b8093" category="video-title">Trident Protectを使用したVMのディザスタリカバリ</block>
   <block id="b16acd8ae1ca5e379b2e4aa604f8a2ba" category="section-title">ONTAP S3を使用してAppVaultを作成する</block>
   <block id="472263ee87de0443326619011c98d149" category="paragraph">このセクションでは、ONTAP S3 オブジェクトストレージを使用して Trident Protect で AppVault オブジェクトを設定する方法について説明します。</block>
-  <block id="c1a6380543e106c0301282521b55a3fc" category="paragraph">ocコマンドと以下のyamlファイルを使用してシークレットを作成し、ONTAP s3用のAppVaultカスタムリソースを作成します。必ずtrident protect名前空間内に作成してください。</block>
   <block id="4035a79b3668307381cda3c40c13747d" category="paragraph">ONTAP S3ボールトが作成され、利用可能な状態になっていることを確認してください</block>
   <block id="6cd1f4dd55f2126ac98b438f1fa31844" category="inline-image-macro">trident-protect名前空間内のOCP-v AppVault</block>
   <block id="c047817699debbb2dda60dae4514bd1c" category="paragraph"><block ref="c047817699debbb2dda60dae4514bd1c" category="inline-image-macro-rx" type="image"></block></block>
@@ -8757,24 +8753,12 @@
   <block id="1772d045ac6084e8616a073ae3aa13a2" category="paragraph">**コンプライアンスと監査** 組織がコンプライアンス要件を満たし、データ保護慣行の定期的な監査を実施するのに役立つツールと機能を提供します。</block>
   <block id="04961098dd1c9db5b3eb5179135f1cf1" category="paragraph">**ディザスタリカバリ** ONTAPのレプリケーション機能と統合することで、堅牢なディザスタリカバリソリューションを提供し、壊滅的な事態が発生した場合でも事業継続性を確保します。</block>
   <block id="06452dbfecb9925c362f50b4228f4238" category="paragraph">Trident Protect の詳細については、NetApp Trident Protect <block ref="22119dfffa935338f489f6ce2e67baee" category="inline-link-macro-rx"></block>を参照してください。</block>
-  <block id="2ca92584b9f53c63bf549d4b202a2351" category="section-title">NetApp ONTAPのサポートされているハードウェアモデルとプロトコル</block>
-  <block id="78e3871b51a9a03feeb507b46a55c050" category="paragraph">NetApp ONTAP ソフトウェアは、さまざまなハードウェアモデル上で動作し、それぞれが異なる性能および容量要件に対応するように設計されています。Trident は、All Flash FAS （AFF）、All SAN Array （ASA）、および ASA R2 システムを含むさまざまな NetApp ONTAP システムをサポートする堅牢な機能を拡張します。このサポートにより、組織はコンテナ化された環境においてハイパフォーマンス ストレージ ソリューションの潜在能力を最大限に活用できるようになります。</block>
-  <block id="b8935f18ffe32272a10bdd62b7db4777" category="paragraph">**オールフラッシュ FAS （AFF）システム** AFF システムは優れたパフォーマンスと低レイテンシを実現し、高負荷アプリケーションに最適です。</block>
-  <block id="4393a8e49a1de4f5361d9bdd0fad982c" category="paragraph">**All SAN Array （ASA） システム** ASA システムは専用の SAN 環境向けに設計されており、堅牢なパフォーマンスと信頼性を提供します。</block>
-  <block id="6e2dd8dfcfca0792c36dd5ae66a865aa" category="paragraph">**ASA R2 Systems** ASA R2システムは、SAN環境向けに強化された機能と性能を提供します。</block>
-  <block id="c160a7c3fe76f26a1eb3a7ae8e68161b" category="paragraph">**AFX** NetApp AFX は、エンタープライズ AI ワークロード向けに設計された、目的に即した分散型オールフラッシュ ストレージ アーキテクチャです。ハイパフォーマンス NAS を提供し、コンピューティングと容量を独立してスケーリングできます。NetApp AFX ストレージシステムは、ストレージ レイヤの実装において、他の ONTAP ベースのシステム（ASA、AFF、FAS）とは異なります。AFX は高性能と拡張性を実現する分散ファイルシステムを使用しますが、他の ONTAP ベースのシステムは従来型のストレージ アーキテクチャを使用します。</block>
-  <block id="e7672ad0deaa706df754c867d11571ac" category="list-text">AFF でサポートされているプロトコル：NFS、CIFS/SMB、iSCSI、FC、NVMe/TCP</block>
-  <block id="edfd90336d93ec40b5ed8bca8679b9aa" category="list-text">ASA でサポートされているプロトコル：iSCSI、FC、NVMe/TCP</block>
-  <block id="483886e70fa508c09b938eb1394c50f6" category="list-text">ASA R2 でサポートされているプロトコル：iSCSI、FC、NVMe/TCP</block>
-  <block id="1e22e1f992f7e96e5e55bf2d61e4bf47" category="list-text">AFX でサポートされているプロトコル：Trident 25.10 以降、NFS プロトコルのみがサポートされており、SMB プロトコルはサポートされていません。</block>
   <block id="0dd6128d6f2eb1e95bb7e4597e1d9e01" category="section-title">ONTAP ストレージ向け Trident ドライバー</block>
   <block id="68edc55766f524a48117d68c7aeaf53f" category="paragraph">Tridentには以下のCSIドライバが含まれており、それぞれバックエンドストレージにボリュームをプロビジョニングできます。</block>
-  <block id="985be8f460623f562d2ea84ef63651c6" category="section-title">対応ハードウェアモデルのNASプロトコルについて</block>
   <block id="6f6f242b4caf9e6048b5b75b6a40049c" category="list-text">ontap-nas: 1 つの PVC が 1 つの PV にマッピングされ、これは専用の FlexVolume です</block>
   <block id="8d2475e5fcc85cb7751bf6530341aade" category="list-text">ontap-nas-economy: プロビジョニングされた各 PV は qtree であり、FlexVolume ごとに設定可能な qtree 数（デフォルトは 200、50 ～ 300 の間で設定可能）を持ちます。1 つの PVC は、共有 FlexVolume 上の qtree である 1 つの PV にマッピングされます。</block>
   <block id="6b35b187dc7a6a13097d957a2cc0ca90" category="admonition">仮想マシンのすべてのディスクをqtreeとして、単一のボリューム内に配置できます。ただし、スナップショット、クローン、レプリケーション機能はTridentではサポートされていないことにご注意ください。これらの機能がストレージ管理者によって管理される場合、PVの粒度には対応していません。</block>
   <block id="ad10c066f0a61cd907eb4fc280ac4780" category="list-text">ontap-nas-flexgroup: プロビジョニングされた各 PV は完全な ONTAP FlexGroup であり、SVM に割り当てられたすべてのアグリゲートが使用されます。</block>
-  <block id="03d78dff6642af51896e39c5f5f7c5f7" category="section-title">サポートされているハードウェアモデルにおけるSANプロトコルの場合</block>
   <block id="ee8ff062ef9fb516aaceb92228d88995" category="list-text">ontap-san: 1 つの PVC が 1 つの PV にマッピングされ、これは専用の FlexVolume 上の LUN です。</block>
   <block id="b9d700f45b618e4b31f6fd3bf4882301" category="list-text">ontap-san-economy: 1 つの PVC が、共有 flexvolume 上の LUN である 1 つの PV にマッピングされます。共有 flexvolume には複数の LUN を含めることができます（デフォルトは 100、flexvol ボリュームあたり 50～200 の LUN/PV に設定可能）。</block>
   <block id="c907ece3af5b287acc45d9c2fab7658f" category="admonition">仮想マシンのすべてのディスクをLUNとして、単一のボリューム内に配置できます。ただし、このドライバーはスナップショットとクローンはサポートしていますが、レプリケーションはサポートしていません。ストレージ管理者がレプリケーションを管理する場合、PV単位の粒度はありません。</block>
@@ -9886,4 +9870,16 @@
   <block id="137e4d3e0bc5586af6fc7ca9441511e1" category="sidebar">サイジングガイドライン</block>
   <block id="ec7f55f91b201191775a6197f011f7f7" category="sidebar">ONTAP統合ツール</block>
   <block id="7fb0755110f4a96ae5bd0935a2d5ccbb" category="sidebar">移行オプション</block>
+  <block id="64500b33ac617d44e2ae502732348883" category="list-text"><block ref="64500b33ac617d44e2ae502732348883" category="inline-link-rx"></block></block>
+  <block id="c0ce1b494fcd9e77baa6389056bb4590" category="paragraph">OpenShift Virtualization VMの永続ディスクは、<block ref="d66058559be29002c97cec8314567a26" category="inline-link-macro-rx"></block>を使用してOpenShiftクラスターに統合されたONTAPストレージでサポートできます。このセクションでは、<block ref="c2cd0213dc3e8b35c8b76d6370cfa296" category="inline-link-macro-rx"></block>を使用してVMとそのデータボリュームをバックアップします</block>
+  <block id="5c96fa5ac807ed29b4b0ff068b21de35" category="inline-link-macro">OpenShift Container Platformドキュメント</block>
+  <block id="e71641623e94ea440f0b781184464bd5" category="paragraph">VM全体（VMメタデータとVMディスク）のオンデマンドバックアップを作成するには、**Backup**タブをクリックします。これにより、Backup Custom Resource（CR）が作成されます。Backup CRを作成するためのサンプルyamlが提供されています。このyamlを使用すると、指定されたネームスペース内のVMとそのディスクがバックアップされます。追加情報については、<block ref="658222a07b5db4a220ad3b7826613ed3" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="3d5daa93898f5bf318fa29ecd109d1f3" category="section-title">オーケストレーターとストレージバックエンドのTridentサポート</block>
+  <block id="a555fee6c6587118e36d8dd135df1313" category="inline-link-macro">Tridentの要件</block>
+  <block id="9abe4911730ca9713a3331cf0eba515d" category="paragraph">サポートされているKubernetesディストリビューションとストレージバックエンドについては、<block ref="b842740bc630595775d32ab9da2ba37d" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="a9918024ce651ba38ef3bcc8cade94c3" category="inline-link-macro">ONTAP NAS準備に関するドキュメント</block>
+  <block id="c5e5ae90877fb232973188902e5f45bf" category="admonition">TridentはNetApp <block ref="32e1a1bd45e8cf2cac0c6c03ad06c661" category="inline-link-macro-rx"></block>もサポートしています。AFXのサポート要件については、<block ref="c0260325c7b73c05c3aabbdb7652d210" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="6e2a3b1094b66d679a2f74a8a08c9246" category="section-title">NASプロトコルの場合</block>
+  <block id="5090601a75323a1861526e5add664b7b" category="section-title">SANプロトコルの場合</block>
+  <block id="744a96e9ce909d310b032af09b7da629" category="paragraph">**VM の Trident Protect アプリを作成する**</block>
 </blocks>

@@ -38,7 +38,7 @@ image:redhat-openshift-ocpv-tp-003.png["OCP-v VM が source-ns 名前空間に�
 
 このセクションでは、ONTAP S3 オブジェクトストレージを使用して Trident Protect で AppVault オブジェクトを設定する方法について説明します。
 
-ocコマンドと以下のyamlファイルを使用してシークレットを作成し、ONTAP s3用のAppVaultカスタムリソースを作成します。必ずtrident protect名前空間内に作成してください。
+oc コマンドと以下に示す yaml ファイルを使用して、ONTAP s3 のシークレットと AppVault カスタムリソースを作成します。必ず trident-protect 名前空間内に作成してください。
 
 [source, cli]
 ----

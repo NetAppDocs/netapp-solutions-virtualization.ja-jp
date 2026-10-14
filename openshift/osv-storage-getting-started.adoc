@@ -60,24 +60,13 @@ Trident Protect の詳細については、NetApp Trident Protect link:https://d
 
 
 
-[[netapp-ontap-hardware-models-and-protocols-supported]]
-== NetApp ONTAPのサポートされているハードウェアモデルとプロトコル
+[[trident-support-for-orchestrators-and-storage-backends]]
+== オーケストレーターとストレージバックエンドのTridentサポート
 
-NetApp ONTAP ソフトウェアは、さまざまなハードウェアモデル上で動作し、それぞれが異なる性能および容量要件に対応するように設計されています。Trident は、All Flash FAS （AFF）、All SAN Array （ASA）、および ASA R2 システムを含むさまざまな NetApp ONTAP システムをサポートする堅牢な機能を拡張します。このサポートにより、組織はコンテナ化された環境においてハイパフォーマンス ストレージ ソリューションの潜在能力を最大限に活用できるようになります。
+サポートされているKubernetesディストリビューションとストレージバックエンドについては、link:https://docs.netapp.com/us-en/trident/trident-get-started/requirements.html["Tridentの要件"]を参照してください。
 
-**オールフラッシュ FAS （AFF）システム** AFF システムは優れたパフォーマンスと低レイテンシを実現し、高負荷アプリケーションに最適です。
 
-**All SAN Array （ASA） システム** ASA システムは専用の SAN 環境向けに設計されており、堅牢なパフォーマンスと信頼性を提供します。
-
-**ASA R2 Systems** ASA R2システムは、SAN環境向けに強化された機能と性能を提供します。
-
-**AFX** NetApp AFX は、エンタープライズ AI ワークロード向けに設計された、目的に即した分散型オールフラッシュ ストレージ アーキテクチャです。ハイパフォーマンス NAS を提供し、コンピューティングと容量を独立してスケーリングできます。NetApp AFX ストレージシステムは、ストレージ レイヤの実装において、他の ONTAP ベースのシステム（ASA、AFF、FAS）とは異なります。AFX は高性能と拡張性を実現する分散ファイルシステムを使用しますが、他の ONTAP ベースのシステムは従来型のストレージ アーキテクチャを使用します。
-
-. AFF でサポートされているプロトコル：NFS、CIFS/SMB、iSCSI、FC、NVMe/TCP
-. ASA でサポートされているプロトコル：iSCSI、FC、NVMe/TCP
-. ASA R2 でサポートされているプロトコル：iSCSI、FC、NVMe/TCP
-. AFX でサポートされているプロトコル：Trident 25.10 以降、NFS プロトコルのみがサポートされており、SMB プロトコルはサポートされていません。
-
+NOTE: TridentはNetApp link:https://docs.netapp.com/us-en/ontap-afx/get-started/ontap-afx-storage.html#typical-application-workloads["AFX"]もサポートしています。AFXのサポート要件については、link:https://docs.netapp.com/us-en/trident/trident-use/ontap-nas-prep.html["ONTAP NAS準備に関するドキュメント"]を参照してください。
 
 
 
@@ -88,8 +77,8 @@ Tridentには以下のCSIドライバが含まれており、それぞれバッ�
 
 
 
-[[for-nas-protocols-on-supported-hardware-models]]
-=== 対応ハードウェアモデルのNASプロトコルについて
+[[for-nas-protocols]]
+=== NASプロトコルの場合
 
 . ontap-nas: 1 つの PVC が 1 つの PV にマッピングされ、これは専用の FlexVolume です
 . ontap-nas-economy: プロビジョニングされた各 PV は qtree であり、FlexVolume ごとに設定可能な qtree 数（デフォルトは 200、50 ～ 300 の間で設定可能）を持ちます。1 つの PVC は、共有 FlexVolume 上の qtree である 1 つの PV にマッピングされます。
@@ -103,8 +92,8 @@ NOTE: 仮想マシンのすべてのディスクをqtreeとして、単一のボ
 
 
 
-[[for-san-protocols-on-supported-hardware-models]]
-=== サポートされているハードウェアモデルにおけるSANプロトコルの場合
+[[for-san-protocols]]
+=== SANプロトコルの場合
 
 . ontap-san: 1 つの PVC が 1 つの PV にマッピングされ、これは専用の FlexVolume 上の LUN です。
 . ontap-san-economy: 1 つの PVC が、共有 flexvolume 上の LUN である 1 つの PV にマッピングされます。共有 flexvolume には複数の LUN を含めることができます（デフォルトは 100、flexvol ボリュームあたり 50～200 の LUN/PV に設定可能）。

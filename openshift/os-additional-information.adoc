@@ -19,7 +19,7 @@ summary:
 * https://docs.netapp.com/["NetAppのドキュメント"^]
 * https://docs.netapp.com/us-en/trident/index.html["Tridentのドキュメント"^]
 * https://access.redhat.com/documentation/en-us/openshift_container_platform/4.7/["Red Hat OpenShift ドキュメント"^]
-* https://access.redhat.com/documentation/en-us/red_hat_openstack_platform/16.1/["Red Hat OpenStack Platform ドキュメント"^]
+* https://docs.redhat.com/en/documentation/red_hat_openstack_platform/16.1["Red Hat OpenStack Platform ドキュメント"^]
 * https://access.redhat.com/documentation/en-us/red_hat_virtualization/4.4/["Red Hat Virtualization ドキュメント"^]
 * https://docs.vmware.com["VMware vSphere ドキュメント"^]
 

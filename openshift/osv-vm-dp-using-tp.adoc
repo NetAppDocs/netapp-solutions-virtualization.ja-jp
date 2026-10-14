@@ -140,7 +140,7 @@ image:rh-os-n-use-case-ocpv-tp-dp-007.png["VM、ポッド、PVCが作成され�
 .アプリを作成
 [%collapsible]
 ====
-**VM 用の Trident Protect アプリを作成する**
+**VM の Trident Protect アプリを作成する**
 
 この例では、デモ名前空間には 1 つの VM があり、アプリの作成時に名前空間のすべてのリソースが含まれます。
 

@@ -2,7 +2,7 @@
 sidebar: sidebar 
 permalink: migration/shift-toolkit-migrate-esxi2osvmtv.html 
 keywords: netapp, vmware, esxi, vm, migration, openshift, virtualization, redhat, osv, mtv 
-summary: 仮想化用の Shift Toolkit と Migration Toolkit を使用して、VMware ESXi から Red Hat OpenShift Virtualization に VM を移行します。 
+summary: VMware ESXiからRed Hat OpenShift VirtualizationへのVMの移行は、Migration Toolkit for Virtualization（MTV）とNetApp Shiftツールキットを使用して行います。この手順には、MTVで移行計画を作成し、Shiftツールキットを使用してVMディスクを変換することで、VMを迅速にOpenShift Virtualizationに移行できるようにすることが含まれます。 
 ---
 = Shift ツールキットと Migration Toolkit for Virtualization を使用して、VMware ESXi から Red Hat OpenShift Virtualization に VM を移行する
 :hardbreaks:
@@ -14,7 +14,7 @@ summary: 仮想化用の Shift Toolkit と Migration Toolkit を使用して、V
 
 
 [role="lead"]
-このセクションでは、Migration toolkit for virtualization (MTV) とNetApp Shift Toolkit が Red Hat OpenShift Virtualization にシームレスな移行エクスペリエンスをもたらす方法について説明し、Migration toolkit for virtualization と Shift Toolkit の変換機能を使用して OpenShift Virtualization に移行するためのステップバイステップ ガイドを提供します。
+VMware ESXiからRed Hat OpenShift VirtualizationへのVMの移行は、Migration Toolkit for Virtualization（MTV）とNetApp Shiftツールキットを使用して行います。この手順には、MTVで移行計画を作成し、Shiftツールキットを使用してVMディスクを変換することで、VMを迅速にOpenShift Virtualizationに移行できるようにすることが含まれます。
 
 
 
@@ -55,21 +55,20 @@ NOTE: VMDK が qtree 内に配置されている場合、Shift Toolkit は ONTAP
 
 
 
-[[step-1-create-migration-plans-using-migration-toolkit-for-virtualization]]
-== ステップ1: Migration Toolkit for Virtualizationを使用して移行計画を作成する
+[[step-1-create-migration-plans]]
+== ステップ1：移行計画を作成する
 
-. VMの高速変換を活用するには、まずMTVを使用してVMの移行計画を作成します。link:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.3/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console["ウェブコンソール"]またはlink:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.0/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-virtual-machines-to-virt_mtv#migrating-virtual-machines-cli_mtv["コマンドライン"]。
-+
+VMの高速変換を活用するには、まずlink:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.3/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console["ウェブコンソール"]またはlink:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.0/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-virtual-machines-to-virt_mtv#migrating-virtual-machines-cli_mtv["コマンドライン"]を使用して、MTVでVMの移行計画を作成します。
+
 
 NOTE: 保存 IP 設定が MTV によって確実に構成されるように、事前に計画を作成する必要があります。
 
-+
 .手順
-.. MTV Web コンソールにログインします。
-.. ソースプロバイダーと宛先プロバイダーを追加する
-.. ターゲット名前空間に移行計画を作成する
+. MTV Web コンソールにログインします。
+. ソースプロバイダーと宛先プロバイダーを追加する
+. ターゲット名前空間に移行計画を作成する
 +
-*** プロバイダーを構成したら、移行計画を作成し、ターゲット名前空間内で適切なソースプロバイダーと宛先プロバイダーを選択します。
+** プロバイダーを構成したら、移行計画を作成し、ターゲット名前空間内で適切なソースプロバイダーと宛先プロバイダーを選択します。
 +
 .例を表示
 [%collapsible]
@@ -86,9 +85,9 @@ image::shift-toolkit-401.png[ソースプロバイダーとターゲットプロ
 ====
 
 
-.. 移行するVMを選択する
+. 移行するVMを選択する
 +
-*** 移行に含める仮想マシンを識別して選択します。
+** 移行に含める仮想マシンを識別して選択します。
 +
 .例を表示
 [%collapsible]
@@ -98,9 +97,9 @@ image::shift-toolkit-402.png[VMを選択]
 ====
 
 
-.. ネットワークとストレージのマッピングを構成する
+. ネットワークとストレージのマッピングを構成する
 +
-*** 既存のマッピングを選択するか、新しいマッピングを作成して、ソース ネットワークとストレージを宛先環境に合わせます。
+** 既存のマッピングを選択するか、新しいマッピングを作成して、ソース ネットワークとストレージを宛先環境に合わせます。
 +
 .例を表示
 [%collapsible]
@@ -117,9 +116,9 @@ image::shift-toolkit-404.png[ストレージマップ]
 ====
 
 
-.. 移行タイプを選択
+. 移行タイプを選択
 +
-*** 最初はデフォルトの移行タイプを維持します。これは、移行プロセス中に、変換タイプを反映するように更新されます。
+** 最初はデフォルトの移行タイプを維持します。これは、移行プロセス中に、変換タイプを反映するように更新されます。
 +
 .例を表示
 [%collapsible]
@@ -129,9 +128,9 @@ image::shift-toolkit-405.png[移行タイプ]
 ====
 
 
-.. デフォルトオプションを維持する
+. デフォルトオプションを維持する
 +
-*** デフォルト設定を保持します。さらに、静的 IP を保持するオプションを選択し、移行後の VM の希望する状態を指定します。
+** デフォルト設定を保持します。さらに、静的 IP を保持するオプションを選択し、移行後の VM の希望する状態を指定します。
 +
 .例を表示
 [%collapsible]
@@ -141,9 +140,9 @@ image::shift-toolkit-406.png[追加設定]
 ====
 
 
-.. 確認と最終決定
+. 確認と最終決定
 +
-*** すべての設定を慎重に確認し、「完了」をクリックして移行計画を作成します。
+** すべての設定を慎重に確認し、「完了」をクリックして移行計画を作成します。
 +
 .例を表示
 [%collapsible]
@@ -155,8 +154,16 @@ image::shift-toolkit-407.png[レビューと作成]
 
 
 
-. 移行計画が作成されたら、移行計画の名前をコピーして、Shift ツールキット UI に移動します。
-. ソースおよび宛先ハイパーバイザーを追加します。このリンクをたどってくださいlink:https://docs.netapp.com/us-en/netapp-solutions-virtualization/migration/shift-toolkit-migrate-esxi2osv.html#step-1-add-the-destination-site-openshift["サイトを作成する"]
+
+
+[[step-2-create-a-blueprint-in-shift-toolkit]]
+== ステップ2：Shift toolkitで設計図を作成する
+
+MTVで移行プランを作成したら、ソースサイトと移行先サイトを追加し、ShiftツールキットのUIでそのプランからブループリントを作成します。
+
+.手順
+. 移行プランの名前をコピーして、ShiftツールキットのUIに移動します。
+. ソースハイパーバイザーと宛先ハイパーバイザーを追加します。このリンクをクリックしてください link:https://docs.netapp.com/us-en/netapp-solutions-virtualization/migration/shift-toolkit-migrate-esxi2osv.html#step-1-add-the-destination-site-openshift["サイトを作成する"]。
 +
 
 NOTE: Shift Toolkit で構成されたエンドポイントは、MTV コンソールから追加するときに使用される形式と一致する必要があります。たとえば、ソース エンドポイントまたは宛先エンドポイントが FQDN を使用して追加された場合は、Shift Toolkit でも同じ FQDN を使用する必要があります。
@@ -216,7 +223,17 @@ NOTE: クローンを作成せずにボリュームを直接インポートす�
 image::shift-toolkit-412.png[VM の詳細]
 
 ====
-. 完了したら、ブループリントを作成します。
+. 設計図の設定を確認し、**設計図を作成**を選択して保存します。
+
+
+
+
+[[step-3-run-the-migration]]
+== ステップ3：マイグレーションを実行する
+
+ブループリントを作成したら、Shiftツールキットから移行を開始し、MTVがプラン完了を報告するまで監視します。
+
+.手順
 . ブループリントに対して移行をクリックして、移行をトリガーします。
 +
 
@@ -274,19 +291,30 @@ image::shift-toolkit-418.png[移行後の Linux VM]
 
 NOTE: これは、Shift ツールキットと MTV が移行を非常に速いスピードで簡素化することを示しています。この例では、合計 12 TB の 2 つの VM が移行されました。全体のプロセスは約8〜10分で完了しました。
 
-+
-.舞台裏で何が起こっているのか:
-次のセクションでは、Shift Toolkit API と MTV によってトリガーされ、VMDK ファイルを変換して OpenShift プラットフォーム上に仮想マシンを作成する手順について説明します。このワークフローは、Shift Toolkit UI から開始した場合でも、Shift Toolkit スクリプト ブロック内で提供されるスクリプトから開始した場合でも、一貫性が保たれます。
 
 
 
-.VMDKの変換
+
+[[whats-happening-behind-the-scenes]]
+== 舞台裏で起きていること
+
+以下のセクションでは、Shift Toolkit APIとMTVによってトリガーされ、VMDKファイルを変換してOpenShiftプラットフォーム上に仮想マシンを作成する手順について説明します。このワークフローは、Shift Toolkit UIから開始した場合でも、Shift Toolkit Script Blocks内で提供されるスクリプトを使用した場合でも一貫しています。
+
+
+
+[[convert-vmdk]]
+=== VMDKの変換
+
 Shift ツールキットは、プライマリ ブート ディスクを含む各 VM に関連付けられた VMDK を自動的に検出します。
 
 
 NOTE: VMDK ファイルが複数ある場合は、各 VMDK が変換されます。
 
-.ボリュームのインポートと移行プランの構成
+
+
+[[volume-import-and-migration-plan-configuration]]
+=== ボリュームのインポートと移行プランの構成
+
 Shift Toolkit はTrident CSI を使用して、ボリュームを PVC としてクラスターにインポートします。各 PVC マニフェストには、MTV が認識できるように特定のラベルと注釈が設定されます。
 
 * ラベル
@@ -307,22 +335,25 @@ Shift Toolkit はTrident CSI を使用して、ボリュームを PVC として�
 * "オーナー": { "id": 107 },"グループ": { "id": 107 },"モード": "0655"
 
 
-重要な注意事項:
-
+.重要な注意事項
 * Forklift は PVC 内の vmID と vmUUID をチェックします。
 * Forklift は、forklift.konveyor.io/disk-source のディスク名 (VMDK パス) を使用します。
 * インポートされた PVC の数は、ソース VM に関連付けられているディスクの数と一致する必要があります。たとえば、VM に 3 つの VMDK があるが、一致する ID を持つ 4 つの PVC がインポートされている場合、MTV は移行プランのステータスを「開始準備完了」に更新しません。
 
 
-これらの手順が完了すると、Shift Toolkit は移行計画 YAML にパッチを適用し、MTV がデータポピュレーター ポッド プロセス (通常は時間がかかります) をバイパスして PVC を直接使用する必要があることを理解できるようにします。パッチを適用した YAML には次のものが含まれます。
+これらの手順が完了すると、Shift Toolkit は移行計画の YAML をパッチし、MTV が PVC を直接使用してデータ ポピュレーター ポッド プロセス（通常は時間がかかる）をスキップするようにします。パッチ適用済みのYAMLには以下が含まれます：
 
 * ターゲット名前空間: デフォルト
 * タイプ: 変換
 * ストレージ： {}
 
 
-.移行プロセスを開始する
-構成が完了すると、MTV が呼び出され、移行が開始されます。UI では移行タイプが Cold として表示されますが、変換の YAML 仕様に基づいて、MTV は関連付けられている vmID および vmUUID に対して各 PVC を検証し、それに応じてマッピングしてから、移行を初期化します。.例を表示
+
+
+[[start-migration-process]]
+=== 移行プロセスを開始する
+
+設定が完了すると、MTVが起動され、移行が開始されます。UIには移行タイプが「Cold」と表示されますが、変換用のYAML仕様に基づいて、MTVは各PVCを関連付けられたvmIDおよびvmUUIDに対して検証し、それに応じてマッピングしてから、移行を初期化します。.例を表示
 
 [%collapsible]
 ====
@@ -335,3 +366,10 @@ NOTE: VM は仮想マシンの「Default」プロジェクトの下に作成さ�
 Shift Toolkit は、プロセスを簡素化し、ダウンタイムを最小限に抑え、ESXi ホスト アクセスや VDDK ベースのアプローチの必要性を排除することで、移行を加速します。
 
 移行が完了したら、クローンボリュームを切り離す必要があります。使用する方法は ONTAP バージョンによって異なります。ONTAP 9.17.1 以降では クローン スプリット を使用し、それ以前のバージョンでは vol move を使用してください。提供されている ZIP パッケージ内の「Post migrate」フォルダに、デタッチ処理を開始するためのスクリプトが含まれています。
+
+.次の手順
+移行が完了したら、各クローンボリュームをデタッチする必要があります。デタッチ方法は ONTAP バージョンによって異なります。ONTAP 9.17.1 以降では クローン スプリット を使用し、それ以前のバージョンでは vol move を使用してください。
+
+移行後のPVC分割操作を高速化するには、ソースNFSデータストアのサイズを5 TB以下に抑えてください。より大きなボリュームを使用することもできますが、VM移行のために200～300個のクローンを作成する場合は、分割をより迅速に完了するために、より小さなボリュームが理想的です。
+
+クローン スプリットとボリューム移動はどちらもバックグラウンド操作であり、実行中は本番環境のワークロードに影響を与えません。切り離しプロセスを開始するスクリプトは、NetApp Console Automation Catalog の *Post Migrate Detach* ウィジェット内にあります。

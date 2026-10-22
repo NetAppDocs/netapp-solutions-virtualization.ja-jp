@@ -28,6 +28,14 @@ indexpage:
       url: proxmox-wkld-dp-pbs.html
     - title: Proxmox用Storage Managerの設定と使用
       url: proxmox-smp.html
+  - title: Proxmox VEワークロードの事業継続性
+    links:
+    - title: ソリューションアーキテクチャ
+      url: proxmox-business-continuity.html
+    - title: NASストレージで構成する
+      url: proxmox-active-sync-nas-config.html
+    - title: Proxmox用Storage Managerの設定と使用
+      url: proxmox-smp.html
   - title: その他のリソース
     links:
     - title: Proxmox仮想化環境で画期的なパフォーマンスを実現するNetAppストレージとNVMe-oF

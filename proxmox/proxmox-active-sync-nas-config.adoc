@@ -1,0 +1,468 @@
+---
+sidebar: sidebar 
+permalink: proxmox/proxmox-active-sync-nas-config.html 
+keywords: proxmox ve, snapmirror active sync, configure, stretch cluster, qdevice, nfs shared storage, vip lif, bgp, ontap mediator, ontap cloud mediator, netapp console 
+summary: VMをサイト障害から保護するために、NAS向けのSnapMirrorアクティブ同期、BGPを使用したオプションのVIP LIF、およびQDeviceを備えたProxmox VEストレッチクラスタを設定します。 
+---
+= Proxmox VEのビジネス継続性をNASストレージで構成する
+:hardbreaks:
+:allow-uri-read: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAP SnapMirror active sync for NASとProxmox VEストレッチクラスタを組み合わせることで、Proxmox仮想環境（VE）VMをサイト障害から保護します。NetApp Consoleでメディエーター（ONTAP MediatorまたはONTAP Cloud Mediator）を設定し、NFSストレージVM（SVM）を保護し、必要に応じて仮想IP（VIP）LIFとBorder Gateway Protocol（BGP）を使用してルーティングされたネットワーク全体でNFSアドレスをポータブルにし、QDeviceを使用してストレッチクラスタを構築してから、Storage Manager for Proxmoxを使用して共有ストレージをプロビジョニングし、高可用性（HA）とVMバックアップを構成します。その結果、データ損失はゼロとなり、生存サイトでのVMの自動復旧が実現します。
+
+.このワークフローについて
+始める前に、link:proxmox-business-continuity.html["ソリューション アーキテクチャ、障害時の動作、およびcorosync設計上の考慮事項"]を確認してください。 `<primary_svm>`などの山括弧内の値を、環境に合わせた値に置き換えてください。
+
+.開始する前に
+* サイトAに1つ、サイトBに1つの、計2つのAFF A-SeriesまたはC-Seriesの2ノードクラスタで、ONTAP 9.19.1以降を実行している必要があります。
+* ONTAP Oneに含まれるSnapMirrorおよびSnapMirror同期ライセンスを、両方のクラスタにインストールする必要があります。
+* クラスタはデフォルトのIPspaceでピアリングされている必要があり、クラスタ間の往復時間（RTT）は10 ms未満でなければなりません。
+* 調停者オプションを1つ選択する必要があります。比較については、link:proxmox-business-continuity.html#mediator-options["Mediatorオプション"]を参照してください。
++
+** ONTAP Mediatorの場合、LinuxホストをサイトC、または別の第3の障害ドメインにインストールし、両方のクラスタのクラスタおよびノード管理LIFからアクセスできるようにする必要があります。
+** ONTAP Cloud Mediatorの場合、両方のクラスタからNetApp ConsoleへのアウトバウンドHTTPSアクセス（直接またはプロキシ経由）が必要であり、ping遅延は200ms未満である必要があります。また、NetApp Consoleの組織と、サービスアカウントを作成する権限も必要です。
+
+
+* サイトAのSVMは、Proxmox VEノードにNFSを提供する必要があります。SVMには、LUNを含まないNAS用のFlexVolボリュームのみを含める必要があり、そのエクスポートポリシーではすべてのProxmox VEノードを許可する必要があります。
+* Proxmox VE 9.0以降のノードを偶数個インストールし、サイトAとサイトBに均等に分散させ、すべてのノード間のcorosyncレイテンシを5ms未満にする必要があります。
+* サイトC、または別の第3の場所にあるLinuxホストは、corosync QDeviceデーモンに使用でき、すべてのProxmox VEノードからTCPポート5403でアクセス可能である必要があります。どちらのメディエーターオプションを使用する場合でも、このホストが必要です。
+* NFS VLANは、サイトAとサイトBの間でストレッチする必要があります。ルーテッドレイヤ3ネットワークの場合は、各サイトにBGP対応ルータが必要です。また、BGPを使用するVIP LIFがNAS向けSnapMirrorアクティブ同期でサポートされているかどうかをNetAppに確認する必要があります。
+* ONTAPおよびProxmox VEのバージョンが、link:https://mysupport.netapp.com/matrix/["NetApp Interoperability Matrix Tool（IMT）"^]に一緒に記載されている必要があります。
+* 共有ストレージをプロビジョニングしてVMをバックアップするには、Proxmox VEノードと両方のONTAPクラスタへのネットワーク アクセスが可能な状態でStorage Manager for Proxmoxをインストールする必要があります。
+
+
+
+
+[[step-1-configure-the-mediator]]
+== ステップ1：メディエーターを設定する
+
+SnapMirrorアクティブ同期関係を初期化する前に、クラスタ ピア関係にメディエーターを追加します。ONTAPが計画的および自動フェイルオーバーを実行するには、メディエーターが必要です。メディエーターはどちらのクラスタからでも追加でき、ONTAPがもう一方のクラスタに自動的に追加します。メディエーターのオプションは1つだけ使用し、両方は使用しないでください。
+
+次のいずれかのオプションを選択します。
+
+[role="tabbed-block"]
+====
+.ONTAP Mediator
+--
+サイトCのLinuxホストにメディエーターをインストールする場合は、このオプションを使用してください。インストールについては、link:https://docs.netapp.com/us-en/ontap/mediator/index.html["ONTAPメディエーターをインストールまたはアップグレードする"^]を参照してください。
+
+.手順
+. いずれかのクラスタで、メディエーターを追加します：
++
+[source, cli]
+----
+snapmirror mediator add -peer-cluster <peer_cluster> -type on-prem -mediator-address <mediator_ip> -username <mediator_user>
+----
++
+プロンプトが表示されたら、メディエーターのパスワードを入力してください。
+
+. メディエーターが接続されており、クォーラムのステータスが `true`であることを確認します：
++
+[source, cli]
+----
+snapmirror mediator show
+----
+
+
+--
+.ONTAP Cloud Mediator
+--
+このオプションを使用して、メディエーターをNetApp Consoleのサービスとしてホストすることで、第3のサイトにメディエーターホストを用意する必要がなくなります。
+
+.開始する前に
+* 両サイトのファイアウォールで、両方のクラスタからNetApp Console APIエンドポイントへのHTTPSトラフィックを許可する必要があります。現在のエンドポイントのホスト名については、link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/cloud-mediator-requirements-concept.html["ONTAP Cloud Mediatorの設定準備"^]を参照してください。
+* クラスタがプロキシ サーバを使用している場合は、プロキシのIPアドレス、ポート、およびクレデンシャルを用意してください。各クラスタには異なるプロキシ サーバを使用してください。プロキシのルートCA証明書がONTAPにインストールされている必要があります。
+* ONTAPにはよく知られているルートCA証明書が含まれているため、通常はNetApp Console証明書をインストールする必要はありません。確認するには、次を実行します `security certificate show -common-name Sectigo*|USERTrust*|AAA*`。
+
+
+.手順
+. NetApp Consoleで、組織IDをコピーします。
+. NetApp Consoleで、メンバーサービスアカウントを作成します：
++
+.. 組織を、ONTAP Cloud Mediatorを使用する組織に設定します。
+.. カテゴリを*アプリケーション*に設定します。
+.. 役割を*ONTAP Mediator Setup Role*に設定します。
+.. アカウントを作成する際に、クライアントIDとクライアントシークレットを保存してください。
+
+
+. いずれかのクラスタで、メディエーターを追加します：
++
+[source, cli]
+----
+snapmirror mediator add -peer-cluster <peer_cluster> -type cloud -org-id <console_org_id> -service-account-client-id <client_id> -use-http-proxy-local <true|false> -use-http-proxy-remote <true|false>
+----
++
+プロンプトが表示されたら、クライアントシークレットを入力してください。
+
++
+System Managerを使用することもできます。*保護* > *概要* > *メディエーター* > *追加*を選択し、メディエーターの種類として*クラウド*を選択して、組織ID、クライアントID、およびクライアントシークレットを入力します。
+
+. メディエーターのタイプが `cloud`、接続ステータスが `connected`、クォーラムのステータスが `true`であることを確認します：
++
+[source, cli]
+----
+snapmirror mediator show
+----
+
+
+--
+====
+
+
+[[step-2-protect-the-nfs-svm-with-snapmirror-active-sync]]
+== ステップ2：SnapMirrorアクティブ同期を使用してNFS SVMを保護する
+
+サイトBクラスタ上に休止状態の宛先SVMを作成し、サイトAのSVMをそこに複製します。ONTAPはデータを同期的に複製し、NFS LIFアドレスやエクスポートポリシーを含むSVM構成も複製します。System Managerで、SVMに対して*保護*を選択し、 `AutomatedFailOver`ポリシーを選択することで、この手順を完了することもできます。
+
+.手順
+. サイトBクラスタで、宛先SVMを作成します：
++
+[source, cli]
+----
+vserver create -vserver <secondary_svm> -sub-type dp-destination
+----
+. サイトBクラスタで、プライマリSVMとのSVMピア関係を作成します：
++
+[source, cli]
+----
+vserver peer create -vserver <secondary_svm> -peer-vserver <primary_svm> -peer-cluster <site_a_cluster> -applications snapmirror
+----
+. サイトAクラスタで、SVMピアリクエストを承認します：
++
+[source, cli]
+----
+vserver peer accept -vserver <primary_svm> -peer-vserver <secondary_svm>
+----
+. サイトBクラスタで、SnapMirrorアクティブ同期関係を作成します：
++
+[source, cli]
+----
+snapmirror create -source-path <primary_svm>: -destination-path <secondary_svm>: -policy AutomatedFailOver
+----
+. 関係を初期化します：
++
+[source, cli]
+----
+snapmirror initialize -destination-path <secondary_svm>:
+----
+. 関係が同期していることを確認してください：
++
+[source, cli]
+----
+snapmirror show -destination-path <secondary_svm>:
+----
++
+ `Mirror State`は `Snapmirrored`であり、 `Relationship Status`は `InSync`です。
+
+. 必要に応じて、スクラッチボリュームやテストボリュームなど、保護を必要としないボリュームを除外します：
++
+[source, cli]
+----
+volume modify -vserver <primary_svm> -volume <volume_name> -smas-protection unprotected
+----
+
+
+
+
+[[step-3-configure-a-vip-lif-with-bgp-for-layer-3-networks]]
+== ステップ3：レイヤ3ネットワーク用にBGPを使用したVIP LIFを設定する
+
+
+CAUTION: 出版時点では、NetAppはNAS向けSnapMirrorアクティブ同期の認定構成としてBGPを使用したVIP LIFを文書化していません。この手順を完了する前に、NetAppに現在のサポート状況を確認してください。そうでない場合は、NFS VLANをサイト間で拡張し、この手順をスキップしてください。
+
+NFS VLANがサイトAとサイトBの間で拡張されている場合は、この手順をスキップしてください。サイトがルーティングされたネットワークで接続されている場合は、両方のクラスタのすべてのノードにBGP LIFを作成し、プライマリSVMのVIP LIFにNFSアドレスをホストします。VIPアドレスは、Proxmox VEノードのサブネットに属していてはいけません。
+
+.開始する前に
+* 各ルータは、そのサイトのBGP LIFからのBGPセッションを受け入れ、/32ホストルートを受け入れ、ONTAPにルートアップデートを送信しないように設定する必要があります。
+* 各ONTAPノードと各ルータは一意のプライベートASNを持つ必要があり、各BGP LIFとルータのペアは/31サブネットを持つ必要があります。
+
+
+.手順
+. 各クラスタで、高度な権限レベルに変更します：
++
+[source, cli]
+----
+set -privilege advanced
+----
+. 両方のクラスタの各ノードで、ノードに一意のONTAP ASN、3秒のホールドタイム、およびルータIDとしてのノード管理IPアドレスを指定して、BGP設定を作成します：
++
+[source, cli]
+----
+network bgp config create -node <node_name> -asn <node_asn> -holdtime 3 -routerid <node_mgmt_ip>
+----
+. 必要に応じて、両クラスタの各ノードにおいて、ルータに接続する2つのポートそれぞれにVLANポートを作成します：
++
+[source, cli]
+----
+network port vlan create -node <node_name> -vlan-name <port_name>-<vlan_id>
+----
++
+物理ポート、インターフェースグループ、またはインターフェースグループ上のVLANをBGP LIFホームポートとして使用することもできます。ポートはIPspace内のブロードキャストドメインに属している必要があります。
+
+. 両クラスタの各ノードにおいて、システムSVM内に2つのBGP LIFを作成します。各ポートに1つずつ作成し、そのポート上のルータへのサブネットを/31に設定します：
++
+[source, cli]
+----
+network interface create -vserver <system_svm> -lif <bgp_lif_name> -service-policy default-route-announce -home-node <node_name> -home-port <vlan_or_port> -address <bgp_lif_ip> -netmask-length 31
+----
++
+デフォルトのIPspaceの場合、 `<system_svm>`はクラスタ名です。カスタムIPspaceの場合は、IPspace名です。BGP LIFはノードごとに1回作成され、IPspace内のすべてのデータSVMのVIP LIFにサービスを提供します。
+
+. 各BGP LIFについて、そのルータとのBGPピアグループを作成し、そのルータからデフォルトルートを学習します：
++
+[source, cli]
+----
+network bgp peer-group create -peer-group <peer_group_name> -ipspace <ipspace> -bgp-lif <bgp_lif_name> -peer-address <router_ip> -peer-asn <router_asn> -use-peer-as-next-hop true
+----
+. 各ピアグループが稼働していることを確認してください：
++
+[source, cli]
+----
+network bgp peer-group show -ipspace <ipspace>
+----
+. 各クラスタで、マルチパスルーティングを有効にします：
++
+[source, cli]
+----
+network options multipath-routing modify -is-enabled true
+----
+. サイトAクラスタで、プライマリSVMにNFS VIP LIFを作成します：
++
+[source, cli]
+----
+network interface create -vserver <primary_svm> -lif <vip_lif_name> -role data -data-protocol nfs -home-node <node_name> -address <vip_address> -is-vip true -failover-policy broadcast-domain-wide
+----
+. サイトAのクラスタで、すべてのノードのプライマリSVMのBGPステータスが `up`であることを確認します：
++
+[source, cli]
+----
+network bgp vserver-status show
+----
+. 両方のルーターで、VIPアドレスの/32ルートがクラスタAから学習されていることを確認してください。
+
+
+
+
+[[step-4-create-the-proxmox-ve-stretch-cluster-with-a-qdevice]]
+== ステップ4：QDeviceを使用してProxmox VEストレッチクラスタを作成する
+
+サイトAのノードからクラスタを作成して、サイトAのノードに最小のノードIDが割り当てられるようにし、サイトCにQDeviceを追加します。サイト間リンクに障害が発生した場合、QDeviceはサイトAに投票権を与えます。これは、ONTAPがアクティブに維持するSVMと一致します。
+
+.手順
+. 最初のサイトAノードで、別々のネットワーク上に2つのcorosyncリンクを持つクラスタを作成します：
++
+[source, cli]
+----
+pvecm create <cluster_name> --link0 <node_link0_ip> --link1 <node_link1_ip>
+----
+. 残りの各サイトAノード、そして各サイトBノードで、クラスタに参加します：
++
+[source, cli]
+----
+pvecm add <first_node_ip> --link0 <node_link0_ip> --link1 <node_link1_ip>
+----
+. サイトAのノードのノードIDが最も小さいことを確認してください：
++
+[source, cli]
+----
+pvecm nodes
+----
+. サイトCまたは別の第三の場所にあるQDeviceホストに、QDeviceデーモンをインストールします：
++
+[source, cli]
+----
+apt install corosync-qnetd
+----
+. すべての Proxmox VE ノードに QDevice クライアントをインストールします：
++
+[source, cli]
+----
+apt install corosync-qdevice
+----
+. 1つのProxmox VEノードで、QDeviceをクラスタに追加します：
++
+[source, cli]
+----
+pvecm qdevice setup <qdevice_ip>
+----
+. QDeviceの投票によってクラスタがクォーラムを満たしていることを確認します：
++
+[source, cli]
+----
+pvecm status
+----
++
+4ノードのクラスタの場合、 `Expected votes`は `5`、 `Quorum`は `3`であり、 `Flags`には `Quorate Qdevice`が含まれます。
+
+
+
+
+
+[[step-5-provision-protected-nfs-shared-storage]]
+== ステップ5：保護されたNFS共有ストレージをプロビジョニングする
+
+プライマリSVMにNFSストレージをプロビジョニングし、両方のSVMが共有するNFS LIFまたはVIPアドレスを使用して、両サイトのすべてのProxmox VEノードにマウントします。Storage Manager for Proxmox（SMP）は、ONTAPボリューム、エクスポート ポリシー、およびProxmox VEストレージ定義を1つのワークフローで作成します。SMPを使用しない場合は、ONTAPでボリュームを作成し、Proxmox VE CLIを使用してNFSストレージとして追加します。
+
+ストレージをプロビジョニングするには、以下のいずれかの方法を選択してください。
+
+[role="tabbed-block"]
+====
+.Proxmox用ストレージマネージャー
+--
+ストレージのプロビジョニングにはSMPを使用します。SMPがインストールされており、Proxmox VEクラスタと両方のONTAPクラスタがプランとして追加されている必要があります。詳細については、link:proxmox-smp.html["Proxmox用Storage Managerの設定と使用"]を参照してください。
+
+. SMPで、*プロビジョニング* > *ボリュームの追加*を選択し、次に*NFS*を選択します。
+. *ONTAP詳細* で、プライマリSVMを選択し、ボリューム名とサイズを入力して、優先LIFとしてNFS LIFまたはVIP LIFを選択します。
+. 両方のサイトの Proxmox VE ノードを許可するエクスポート ポリシーを選択するか、新しいポリシーを作成してください。
+. *Proxmoxの詳細*で、クラスタと両サイトのすべてのノードを選択し、NFS v3またはNFS v4.1を選択して、コンテンツタイプを選択します。
+. 「データストアをマウントする」が選択されていることを確認し、「プロビジョニング」を選択します。
+. サイトAのクラスタで、ボリュームがSnapMirrorアクティブ同期保護に含まれていることを確認します：
++
+[source, cli]
+----
+volume show -vserver <primary_svm> -volume <volume_name> -fields smas-protection
+----
+
+
+--
+.CLI
+--
+Proxmox VE CLIを使用して、プライマリSVMに既に存在するボリュームをNFSストレージとして追加します。
+
+. Proxmox VEノードの1つにNFSストレージを追加します：
++
+[source, cli]
+----
+pvesm add nfs <storage_id> --server <nfs_lif_or_vip_address> --export <export_path> --content images,rootdir --options vers=<nfs_version>,nconnect=4
+----
++
+ `3`または `4.1`を `<nfs_version>`に使用してください。 `soft`マウント オプションを追加しないでください。
+
+. すべてのノードでストレージがアクティブになっていることを確認してください：
++
+[source, cli]
+----
+pvesm status --storage <storage_id>
+----
+
+
+--
+====
+
+
+[[set-the-nfs-mount-options]]
+=== NFSマウントオプションを設定します
+
+パフォーマンスと耐障害性を向上させるために、nConnectを使用してNFS LIFまたはVIPアドレスへの複数のTCP接続を開きます。保護対象のSVMに、両方のサイトでクライアントがアクセスできる複数のデータLIFがある場合は、代わりにNFSv4.1セッション トランキングを使用できます。nConnectまたはセッション トランキングのいずれかを使用し、両方は使用しないでください。詳細については、link:proxmox-ontap-nfs.html["Proxmox VEのNFSストレージを構成する"]を参照してください。
+
+.手順
+. SMPを使用して、またはnConnectなしでストレージをプロビジョニングした場合は、1つのProxmox VEノードでマウントオプションを設定します：
++
+[source, cli]
+----
+pvesm set <storage_id> --options vers=<nfs_version>,nconnect=4
+----
++
+代わりにセッション トランキングを使用するには、次を設定します：
+
++
+[source, cli]
+----
+pvesm set <storage_id> --options vers=4.1,trunkdiscovery,max_connect=16
+----
++
+Proxmox VEは、ストレージが次回マウントされる際に、新しいマウントオプションを適用します。VMをそのノードから移行した後、メンテナンス時間中に各ノードでストレージを再マウントしてください。
+
+.  `/etc/pve/storage.cfg`のオプションを確認します。
+. 各Proxmox VEノードで、NFSサーバ アドレスへの複数の接続があることを確認します：
++
+[source, cli]
+----
+ss -an | grep :2049
+----
+
+
+
+
+[[step-6-configure-ha-and-vm-backups]]
+== ステップ6：HAとVMバックアップの設定
+
+プライマリSVMがデータを提供するサイトAを優先するノードアフィニティルールを使用して、VMをHAに追加します。次に、SMPバックアップポリシーを使用して、誤削除やランサムウェアなどの論理的な障害からVMを保護します。SnapMirror active syncはこれらの障害を同期的にレプリケートするため、ポイントインタイム バックアップの代わりにはなりません。
+
+.手順
+. 保護対象の各仮想マシンをHAに追加します：
++
+[source, cli]
+----
+ha-manager add vm:<vm_id> --state started
+----
+. サイトAのノードを優先し、サイトBのノードへのフェイルオーバーを許可するノードアフィニティルールを作成します：
++
+[source, cli]
+----
+ha-manager rules add node-affinity <rule_name> --resources vm:<vm_id>,vm:<vm_id> --nodes "<site_a_node1>:2,<site_a_node2>:2,<site_b_node1>:1,<site_b_node2>:1"
+----
+. 必要に応じて、各ゲストオペレーティングシステムのディスクタイムアウトを、想定されるストレージフェイルオーバー時間よりも長く設定してください。
+. SMPでは、*保護* > *バックアップ* > *リソースグループ*を選択し、各テナントまたはアプリケーションのVMまたはストレージ用のリソースグループを作成します。
+. *保護* > *バックアップ* > *ポリシー* > *追加*を選択し、リソースグループのバックアップ頻度と保持期間を設定したポリシーを作成します。
++
+QEMUゲストエージェントを実行するVMの場合は、*詳細オプション*で*VMの一貫性*を選択してください。
+
+. オンデマンドバックアップを実行し、そこからテストVMを復元してポリシーを検証します。
+
+
+
+
+[[step-7-test-planned-failover]]
+== ステップ7：計画されたフェイルオーバーをテストする
+
+本番環境のVMを共有ストレージに配置する前に、設計を検証してください。計画的なフェイルオーバーでは、データ損失なしでアクティブなSVMをサイトBに移動するため、メンテナンスウィンドウ中にテストして、その後フェイルバックすることができます。
+
+.手順
+. テスト用仮想マシンをサイトBのノードにライブマイグレーションします。
+. フェイルオーバーの前に、HAがVMをサイトAノードに戻さないようにします：
++
+[source, cli]
+----
+ha-manager set vm:<vm_id> --failback 0
+----
+. サイトBのクラスタで、計画的なフェイルオーバーを開始します：
++
+[source, cli]
+----
+snapmirror failover start -destination-path <secondary_svm>:
+----
+. フェイルオーバーが完了するまで監視してください：
++
+[source, cli]
+----
+snapmirror failover show
+----
+. すべてのProxmox VEノードで、VMのI/Oが継続し、ストレージがアクティブな状態を維持していることを確認してください。
+. VIP LIFを使用する場合は、両方のルーターがクラスタBから/32ルートを学習していることを確認してください。
+. SMPで、ONTAPプランの検出を実行してから、オンデマンドバックアップを実行して、SMPがサイトBのSVMからVMを保護していることを確認します。
+. テストが完了したらサイトAにフェイルバックし、テストVMの `failback`を `1`に戻します。
+
+
+.結果
+Proxmox VE VMは、アクティブなSVMがサイト間を移動している間も同じNFS共有ストレージ上で実行され続け、クラスタは計画外のサイト障害から自動的に復旧します。
+
+
+
+[[related-information]]
+== 関連情報
+
+* link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/protect-nas-task.html["ONTAP SnapMirror アクティブ同期で NAS を保護する"^]
+* link:https://docs.netapp.com/us-en/ontap/networking/configure_virtual_ip_vip_lifs.html["ONTAP VIP LIF を設定する"^]
+* link:https://docs.netapp.com/us-en/ontap/mediator/index.html["ONTAPメディエーターのインストール準備"^]
+* link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/cloud-mediator-requirements-concept.html["ONTAP Cloud Mediatorの設定準備"^]
+* link:https://docs.netapp.com/us-en/ontap/snapmirror-active-sync/cloud-mediator-config-task.html["SnapMirror アクティブ同期用に ONTAP Cloud Mediator を設定する"^]
+* link:https://docs.netapp.com/us-en/ontap-cli/snapmirror-mediator-add.html["SnapMirror Mediator add"^]
+* link:proxmox-ontap-nfs.html["Proxmox VEのNFSストレージを構成する"]
+* link:https://pve.proxmox.com/pve-docs/chapter-pvecm.html#_corosync_external_vote_support["Proxmox VE corosync 外部投票サポート"^]
+

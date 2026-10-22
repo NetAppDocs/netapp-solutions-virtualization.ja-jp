@@ -9885,4 +9885,455 @@
   <block id="7dcca1322bff7fc795a0f558658f3ba4" category="list-title">重要な注意事項</block>
   <block id="ae490aa3c145227d57aa6ad8214f727f" category="paragraph">これらの手順が完了すると、Shift Toolkit は移行計画の YAML をパッチし、MTV が PVC を直接使用してデータ ポピュレーター ポッド プロセス（通常は時間がかかる）をスキップするようにします。パッチ適用済みのYAMLには以下が含まれます：</block>
   <block id="a043ab0dad12b229a0a7942ab60824a2" category="paragraph">設定が完了すると、MTVが起動され、移行が開始されます。UIには移行タイプが「Cold」と表示されますが、変換用のYAML仕様に基づいて、MTVは各PVCを関連付けられたvmIDおよびvmUUIDに対して検証し、それに応じてマッピングしてから、移行を初期化します。.例を表示</block>
+  <block id="fd16fae278a95e0a8d6744e38bdfbd4c" category="summary">VMをサイト障害から保護するために、NAS向けのSnapMirrorアクティブ同期、BGPを使用したオプションのVIP LIF、およびQDeviceを備えたProxmox VEストレッチクラスタを設定します。</block>
+  <block id="63ce4c5b54f8a57451337cc887c3c9bc" category="doc">Proxmox VEのビジネス継続性をNASストレージで構成する</block>
+  <block id="7dbc9aa91072229989c1972cf30fd22c" category="paragraph">ONTAP SnapMirror active sync for NASとProxmox VEストレッチクラスタを組み合わせることで、Proxmox仮想環境（VE）VMをサイト障害から保護します。NetApp Consoleでメディエーター（ONTAP MediatorまたはONTAP Cloud Mediator）を設定し、NFSストレージVM（SVM）を保護し、必要に応じて仮想IP（VIP）LIFとBorder Gateway Protocol（BGP）を使用してルーティングされたネットワーク全体でNFSアドレスをポータブルにし、QDeviceを使用してストレッチクラスタを構築してから、Storage Manager for Proxmoxを使用して共有ストレージをプロビジョニングし、高可用性（HA）とVMバックアップを構成します。その結果、データ損失はゼロとなり、生存サイトでのVMの自動復旧が実現します。</block>
+  <block id="a6812db2442ae325a9ccd39373bbd9dd" category="paragraph-title">このワークフローについて</block>
+  <block id="37dc5f00d22bc207b39df99d4100346e" category="inline-link-macro">ソリューション アーキテクチャ、障害時の動作、およびcorosync設計上の考慮事項</block>
+  <block id="b0a4df3033f49d48061c100a3757f40c" category="paragraph">始める前に、<block ref="f3cd19d9a653080deebf27969c1cd7f7" category="inline-link-macro-rx"></block>を確認してください。<block ref="a66306c1cae4f6818f1c28a29a5276e8" prefix=" " category="inline-code"></block>などの山括弧内の値を、環境に合わせた値に置き換えてください。</block>
+  <block id="f4481ba1f14cc0f028f14d9231f7bf7a" category="list-text">サイトAに1つ、サイトBに1つの、計2つのAFF A-SeriesまたはC-Seriesの2ノードクラスタで、ONTAP 9.19.1以降を実行している必要があります。</block>
+  <block id="973c1549935209f4c9e87e016fd2948e" category="list-text">ONTAP Oneに含まれるSnapMirrorおよびSnapMirror同期ライセンスを、両方のクラスタにインストールする必要があります。</block>
+  <block id="37f0bf5d8fd2a27d442b54149d81c646" category="list-text">クラスタはデフォルトのIPspaceでピアリングされている必要があり、クラスタ間の往復時間（RTT）は10 ms未満でなければなりません。</block>
+  <block id="fcfaed2095b189ab3035d0521a73fa96" category="inline-link-macro">Mediatorオプション</block>
+  <block id="e17088013772a00f6a6bb9ed7ee70758" category="list-text">調停者オプションを1つ選択する必要があります。比較については、<block ref="4df41b2f5f2ee29dc81bbee2330d7aa5" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="251feb045692fc94d63c0daa0e9b0d69" category="list-text">ONTAP Mediatorの場合、LinuxホストをサイトC、または別の第3の障害ドメインにインストールし、両方のクラスタのクラスタおよびノード管理LIFからアクセスできるようにする必要があります。</block>
+  <block id="e5f3ed7c294b1bfb1f8012bca5901d25" category="list-text">ONTAP Cloud Mediatorの場合、両方のクラスタからNetApp ConsoleへのアウトバウンドHTTPSアクセス（直接またはプロキシ経由）が必要であり、ping遅延は200ms未満である必要があります。また、NetApp Consoleの組織と、サービスアカウントを作成する権限も必要です。</block>
+  <block id="63a07b09a6f3c29f7be4c8c643bf5192" category="list-text">サイトAのSVMは、Proxmox VEノードにNFSを提供する必要があります。SVMには、LUNを含まないNAS用のFlexVolボリュームのみを含める必要があり、そのエクスポートポリシーではすべてのProxmox VEノードを許可する必要があります。</block>
+  <block id="5facf4c9e560ecc961fc12135e3f74e8" category="list-text">Proxmox VE 9.0以降のノードを偶数個インストールし、サイトAとサイトBに均等に分散させ、すべてのノード間のcorosyncレイテンシを5ms未満にする必要があります。</block>
+  <block id="083dbbb25660ed1c8269609b50f8bad7" category="list-text">サイトC、または別の第3の場所にあるLinuxホストは、corosync QDeviceデーモンに使用でき、すべてのProxmox VEノードからTCPポート5403でアクセス可能である必要があります。どちらのメディエーターオプションを使用する場合でも、このホストが必要です。</block>
+  <block id="835a9e73c228ebc41be80a11b81155d0" category="list-text">NFS VLANは、サイトAとサイトBの間でストレッチする必要があります。ルーテッドレイヤ3ネットワークの場合は、各サイトにBGP対応ルータが必要です。また、BGPを使用するVIP LIFがNAS向けSnapMirrorアクティブ同期でサポートされているかどうかをNetAppに確認する必要があります。</block>
+  <block id="697ea025ecb303d4f40d1bf3a8b4bde0" category="inline-link-macro">NetApp Interoperability Matrix Tool（IMT）</block>
+  <block id="58885c581440f0d1c47e7399c37a4795" category="list-text">ONTAPおよびProxmox VEのバージョンが、<block ref="18e7fcfe606d6d0912191de7fd9eb56a" category="inline-link-macro-rx"></block>に一緒に記載されている必要があります。</block>
+  <block id="c24a1dc702be189f3d31392ac5786e0d" category="list-text">共有ストレージをプロビジョニングしてVMをバックアップするには、Proxmox VEノードと両方のONTAPクラスタへのネットワーク アクセスが可能な状態でStorage Manager for Proxmoxをインストールする必要があります。</block>
+  <block id="bb9ff762e3e9941da0d6de46d1789ade" category="section-title">ステップ1：メディエーターを設定する</block>
+  <block id="2cd977d7d414179f4dc856791a381940" category="paragraph">SnapMirrorアクティブ同期関係を初期化する前に、クラスタ ピア関係にメディエーターを追加します。ONTAPが計画的および自動フェイルオーバーを実行するには、メディエーターが必要です。メディエーターはどちらのクラスタからでも追加でき、ONTAPがもう一方のクラスタに自動的に追加します。メディエーターのオプションは1つだけ使用し、両方は使用しないでください。</block>
+  <block id="477e5bbc0e18c100ae0ba108c5d3ad66" category="paragraph">次のいずれかのオプションを選択します。</block>
+  <block id="58dc7db50a2e11a9de9e6cc092c59d4d" category="open-title">ONTAP Mediator</block>
+  <block id="931e10d7f833f6006078c296b8f49e42" category="inline-link-macro">ONTAPメディエーターをインストールまたはアップグレードする</block>
+  <block id="d56110e7a061df96e370423df3d43607" category="paragraph">サイトCのLinuxホストにメディエーターをインストールする場合は、このオプションを使用してください。インストールについては、<block ref="e4fc8483908a1fd217bb07557b043e20" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="cb21570d48ef9fc55532097c01db4ef9" category="list-text">いずれかのクラスタで、メディエーターを追加します：</block>
+  <block id="f1247effc62154cbe52342e0d0b2745f" category="paragraph">プロンプトが表示されたら、メディエーターのパスワードを入力してください。</block>
+  <block id="e811cc9a5d72db19c7deb1001301d731" category="list-text">メディエーターが接続されており、クォーラムのステータスが<block ref="b326b5062b2f0e69046810717534cb09" prefix=" " category="inline-code"></block>であることを確認します：</block>
+  <block id="b3aa67ea8b077eb2b67ff9a0651b5426" category="open-title">ONTAP Cloud Mediator</block>
+  <block id="71dcc13cb446a96f5cd27c5e29eed593" category="paragraph">このオプションを使用して、メディエーターをNetApp Consoleのサービスとしてホストすることで、第3のサイトにメディエーターホストを用意する必要がなくなります。</block>
+  <block id="d5927552ed1a071257cf8b34bb74bf6e" category="inline-link-macro">ONTAP Cloud Mediatorの設定準備</block>
+  <block id="ccc9b754fe4eba8e6e8083062a8ef6d9" category="list-text">両サイトのファイアウォールで、両方のクラスタからNetApp Console APIエンドポイントへのHTTPSトラフィックを許可する必要があります。現在のエンドポイントのホスト名については、<block ref="0e0a4da7cfa51cc3f1a68945c1691053" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="c68bdd9168ea0578c6e315201afff68e" category="list-text">クラスタがプロキシ サーバを使用している場合は、プロキシのIPアドレス、ポート、およびクレデンシャルを用意してください。各クラスタには異なるプロキシ サーバを使用してください。プロキシのルートCA証明書がONTAPにインストールされている必要があります。</block>
+  <block id="ea4e5a868172ba132c91fc4f4d9d76ee" category="list-text">ONTAPにはよく知られているルートCA証明書が含まれているため、通常はNetApp Console証明書をインストールする必要はありません。確認するには、次を実行します<block ref="ade4c8227a23c6fff12b85bfef2124c8" prefix=" " category="inline-code"></block>。</block>
+  <block id="972162773b750f0eb7946db9bf5a2757" category="list-text">NetApp Consoleで、組織IDをコピーします。</block>
+  <block id="15f26bd3100143af10b4917f2924c5f8" category="list-text">NetApp Consoleで、メンバーサービスアカウントを作成します：</block>
+  <block id="a3be6bc08d95cf8f50e3fe50296b97db" category="list-text">組織を、ONTAP Cloud Mediatorを使用する組織に設定します。</block>
+  <block id="0966b3865a4dd7f6f8e7d500b73dd5c7" category="list-text">カテゴリを*アプリケーション*に設定します。</block>
+  <block id="09e8f20ee9504e21057e03a1e888ad5a" category="list-text">役割を*ONTAP Mediator Setup Role*に設定します。</block>
+  <block id="fca72fdd0b99d0610552886afb09b534" category="list-text">アカウントを作成する際に、クライアントIDとクライアントシークレットを保存してください。</block>
+  <block id="5bee961b9ec71fa3116af85c9b7d03a4" category="paragraph">プロンプトが表示されたら、クライアントシークレットを入力してください。</block>
+  <block id="7f842cd1de1faae8725a1676e74daaab" category="paragraph">System Managerを使用することもできます。*保護* &gt; *概要* &gt; *メディエーター* &gt; *追加*を選択し、メディエーターの種類として*クラウド*を選択して、組織ID、クライアントID、およびクライアントシークレットを入力します。</block>
+  <block id="3c30d611ec12661dd0691f1ca921b10d" category="list-text">メディエーターのタイプが<block ref="a1234b3161b4fbfdfb96dd576b65bbea" prefix=" " category="inline-code"></block>、接続ステータスが<block ref="06aa6fa8bdc2078e7e1bd903e70c8f6a" prefix=" " category="inline-code"></block>、クォーラムのステータスが<block ref="b326b5062b2f0e69046810717534cb09" prefix=" " category="inline-code"></block>であることを確認します：</block>
+  <block id="9be418c6b6aa0c799167282ab51d13d9" category="section-title">ステップ2：SnapMirrorアクティブ同期を使用してNFS SVMを保護する</block>
+  <block id="c570804f036843cc5944cd62a3f47150" category="paragraph">サイトBクラスタ上に休止状態の宛先SVMを作成し、サイトAのSVMをそこに複製します。ONTAPはデータを同期的に複製し、NFS LIFアドレスやエクスポートポリシーを含むSVM構成も複製します。System Managerで、SVMに対して*保護*を選択し、<block ref="19c36032ee0bf25c85ddc3354b352edb" prefix=" " category="inline-code"></block>ポリシーを選択することで、この手順を完了することもできます。</block>
+  <block id="0f54545cb9f7cf314ef9d8e03f67a0be" category="list-text">サイトBクラスタで、宛先SVMを作成します：</block>
+  <block id="cb290351c7ebc85d897fe277c8318b1c" category="list-text">サイトBクラスタで、プライマリSVMとのSVMピア関係を作成します：</block>
+  <block id="d7e96a3a17ed0f23605e502f5546bb23" category="list-text">サイトAクラスタで、SVMピアリクエストを承認します：</block>
+  <block id="820917abbbbc136983691fb12441da2d" category="list-text">サイトBクラスタで、SnapMirrorアクティブ同期関係を作成します：</block>
+  <block id="9d5084cb1856b35d456df89e085156a6" category="list-text">関係を初期化します：</block>
+  <block id="7785c9bfe5e2fab34c3be6bb290ff62f" category="list-text">関係が同期していることを確認してください：</block>
+  <block id="c9b821dbce1ae450792a725c04d84dc1" category="paragraph"><block ref="745bc8ebd877ab173362548d029964e1" prefix=" " category="inline-code"></block>は<block ref="d34e79870b17da17e894ddc837954dcc" prefix=" " category="inline-code"></block>であり、<block ref="8d4394fa557dd60915ffdb1dddc9fa8c" prefix=" " category="inline-code"></block>は<block ref="c2d2dc98c478a5a1743d85e03534f500" prefix=" " category="inline-code"></block>です。</block>
+  <block id="aee895f123dc413520f050412d24108d" category="list-text">必要に応じて、スクラッチボリュームやテストボリュームなど、保護を必要としないボリュームを除外します：</block>
+  <block id="267bf414b12a21e197467bec2f0b75e6" category="section-title">ステップ3：レイヤ3ネットワーク用にBGPを使用したVIP LIFを設定する</block>
+  <block id="48ea32aca209ff432d3c1fcc15619ba7" category="admonition">出版時点では、NetAppはNAS向けSnapMirrorアクティブ同期の認定構成としてBGPを使用したVIP LIFを文書化していません。この手順を完了する前に、NetAppに現在のサポート状況を確認してください。そうでない場合は、NFS VLANをサイト間で拡張し、この手順をスキップしてください。</block>
+  <block id="df868ca91ae5ccb93b8bc1d0338ecba6" category="paragraph">NFS VLANがサイトAとサイトBの間で拡張されている場合は、この手順をスキップしてください。サイトがルーティングされたネットワークで接続されている場合は、両方のクラスタのすべてのノードにBGP LIFを作成し、プライマリSVMのVIP LIFにNFSアドレスをホストします。VIPアドレスは、Proxmox VEノードのサブネットに属していてはいけません。</block>
+  <block id="6e4bc21387e0c0b5374850cd7cebb076" category="list-text">各ルータは、そのサイトのBGP LIFからのBGPセッションを受け入れ、/32ホストルートを受け入れ、ONTAPにルートアップデートを送信しないように設定する必要があります。</block>
+  <block id="9f490f9c1eef1d8af2c54573afcf35d0" category="list-text">各ONTAPノードと各ルータは一意のプライベートASNを持つ必要があり、各BGP LIFとルータのペアは/31サブネットを持つ必要があります。</block>
+  <block id="49dc354a0b0a0273dba39f501283dc5c" category="list-text">各クラスタで、高度な権限レベルに変更します：</block>
+  <block id="2b638bdb1645201eec371915dfee2284" category="list-text">両方のクラスタの各ノードで、ノードに一意のONTAP ASN、3秒のホールドタイム、およびルータIDとしてのノード管理IPアドレスを指定して、BGP設定を作成します：</block>
+  <block id="73984fd72cf3c519c0fe7ae60451efeb" category="list-text">必要に応じて、両クラスタの各ノードにおいて、ルータに接続する2つのポートそれぞれにVLANポートを作成します：</block>
+  <block id="0b6f1f4f46943cb98adde97d27a93176" category="paragraph">物理ポート、インターフェースグループ、またはインターフェースグループ上のVLANをBGP LIFホームポートとして使用することもできます。ポートはIPspace内のブロードキャストドメインに属している必要があります。</block>
+  <block id="94e391d3097547b02f88f8f4820fbdb2" category="list-text">両クラスタの各ノードにおいて、システムSVM内に2つのBGP LIFを作成します。各ポートに1つずつ作成し、そのポート上のルータへのサブネットを/31に設定します：</block>
+  <block id="8a9195b4d619f2a8f4dc2c4af2908648" category="paragraph">デフォルトのIPspaceの場合、<block ref="8f0b734f09abe07669aade0adbc8c5e5" prefix=" " category="inline-code"></block>はクラスタ名です。カスタムIPspaceの場合は、IPspace名です。BGP LIFはノードごとに1回作成され、IPspace内のすべてのデータSVMのVIP LIFにサービスを提供します。</block>
+  <block id="569744f482a560ed96d689e61a24b4f7" category="list-text">各BGP LIFについて、そのルータとのBGPピアグループを作成し、そのルータからデフォルトルートを学習します：</block>
+  <block id="951fc3d575e897666e3492ae7d7b95cf" category="list-text">各ピアグループが稼働していることを確認してください：</block>
+  <block id="30c93782a4a0a3952fe183d275fee109" category="list-text">各クラスタで、マルチパスルーティングを有効にします：</block>
+  <block id="38a383ffc1a954cfc4b2457e60fcf8a2" category="list-text">サイトAクラスタで、プライマリSVMにNFS VIP LIFを作成します：</block>
+  <block id="cbafa8eb786e00ed0c652b0f65cc6d5d" category="list-text">サイトAのクラスタで、すべてのノードのプライマリSVMのBGPステータスが<block ref="46c48bec0d282018b9d167eef7711b2c" prefix=" " category="inline-code"></block>であることを確認します：</block>
+  <block id="5e8e203b109a35e8afeb69d490d2a7d6" category="list-text">両方のルーターで、VIPアドレスの/32ルートがクラスタAから学習されていることを確認してください。</block>
+  <block id="4ac08d9583c5e88a3d7a62c30f31fb9d" category="section-title">ステップ4：QDeviceを使用してProxmox VEストレッチクラスタを作成する</block>
+  <block id="f6f1f7adf03447b21c5756047becff1f" category="paragraph">サイトAのノードからクラスタを作成して、サイトAのノードに最小のノードIDが割り当てられるようにし、サイトCにQDeviceを追加します。サイト間リンクに障害が発生した場合、QDeviceはサイトAに投票権を与えます。これは、ONTAPがアクティブに維持するSVMと一致します。</block>
+  <block id="8467e69fc6c0a87e6e539b2fe9b0bed4" category="list-text">最初のサイトAノードで、別々のネットワーク上に2つのcorosyncリンクを持つクラスタを作成します：</block>
+  <block id="9cbaf5836a09584b824220607e6511e6" category="list-text">残りの各サイトAノード、そして各サイトBノードで、クラスタに参加します：</block>
+  <block id="b13f121980bbac6c60b74663b92e1ef0" category="list-text">サイトAのノードのノードIDが最も小さいことを確認してください：</block>
+  <block id="d526f77a1304eaec6ee8a096e63cf916" category="list-text">サイトCまたは別の第三の場所にあるQDeviceホストに、QDeviceデーモンをインストールします：</block>
+  <block id="91b3877406d17039f0458e8aba6457e2" category="list-text">すべての Proxmox VE ノードに QDevice クライアントをインストールします：</block>
+  <block id="de43aa826cc9ddbb8ce3d6c682a88f8d" category="list-text">1つのProxmox VEノードで、QDeviceをクラスタに追加します：</block>
+  <block id="f3bce0150ebf2f6117591782d062436e" category="list-text">QDeviceの投票によってクラスタがクォーラムを満たしていることを確認します：</block>
+  <block id="9a5449e63bc79ed238bda2a70ac18928" category="paragraph">4ノードのクラスタの場合、<block ref="28b2da24a4fbd1d41106c287acdd9f3f" prefix=" " category="inline-code"></block>は<block ref="e4da3b7fbbce2345d7772b0674a318d5" prefix=" " category="inline-code"></block>、<block ref="29dc0505c3d4b35e6dcf332ddcceeec3" prefix=" " category="inline-code"></block>は<block ref="eccbc87e4b5ce2fe28308fd9f2a7baf3" prefix=" " category="inline-code"></block>であり、<block ref="4ea7801f17a4e5485e8b050c052fb443" prefix=" " category="inline-code"></block>には<block ref="7cd36d43bc9776e9465f5a6060a050d6" prefix=" " category="inline-code"></block>が含まれます。</block>
+  <block id="d105eb1fde020154ed97c0420dc34469" category="section-title">ステップ5：保護されたNFS共有ストレージをプロビジョニングする</block>
+  <block id="8d9635ff0cd2f20186f109f24d8e8ef9" category="paragraph">プライマリSVMにNFSストレージをプロビジョニングし、両方のSVMが共有するNFS LIFまたはVIPアドレスを使用して、両サイトのすべてのProxmox VEノードにマウントします。Storage Manager for Proxmox（SMP）は、ONTAPボリューム、エクスポート ポリシー、およびProxmox VEストレージ定義を1つのワークフローで作成します。SMPを使用しない場合は、ONTAPでボリュームを作成し、Proxmox VE CLIを使用してNFSストレージとして追加します。</block>
+  <block id="40cba18829cd196de18fb933a5f4591d" category="paragraph">ストレージをプロビジョニングするには、以下のいずれかの方法を選択してください。</block>
+  <block id="7e7bde79e152a2ce4e0424ab0d4c090b" category="open-title">Proxmox用ストレージマネージャー</block>
+  <block id="f92a242b9766150a19166842d79cb977" category="paragraph">ストレージのプロビジョニングにはSMPを使用します。SMPがインストールされており、Proxmox VEクラスタと両方のONTAPクラスタがプランとして追加されている必要があります。詳細については、<block ref="9e4d208eddea6bb1add725ba82eaf542" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="a97fc6e4f2d5515e2a94cc2dd0d3aa23" category="list-text">SMPで、*プロビジョニング* &gt; *ボリュームの追加*を選択し、次に*NFS*を選択します。</block>
+  <block id="ce01db25c991553e687b5ef32aa7a3a3" category="list-text">*ONTAP詳細* で、プライマリSVMを選択し、ボリューム名とサイズを入力して、優先LIFとしてNFS LIFまたはVIP LIFを選択します。</block>
+  <block id="04a8d165ec0e19cea48a8a673949e94c" category="list-text">両方のサイトの Proxmox VE ノードを許可するエクスポート ポリシーを選択するか、新しいポリシーを作成してください。</block>
+  <block id="f5ece3c531209959744fbe48e1432f24" category="list-text">*Proxmoxの詳細*で、クラスタと両サイトのすべてのノードを選択し、NFS v3またはNFS v4.1を選択して、コンテンツタイプを選択します。</block>
+  <block id="3f9293a5cd1b24764c9a1557d14777ac" category="list-text">「データストアをマウントする」が選択されていることを確認し、「プロビジョニング」を選択します。</block>
+  <block id="2bf9630a1db4ffe070b70d529e143194" category="list-text">サイトAのクラスタで、ボリュームがSnapMirrorアクティブ同期保護に含まれていることを確認します：</block>
+  <block id="91af5705f16502125e8b2187e64202c0" category="open-title">CLI</block>
+  <block id="b0677c67a463a63efa43c7c2b12073dd" category="paragraph">Proxmox VE CLIを使用して、プライマリSVMに既に存在するボリュームをNFSストレージとして追加します。</block>
+  <block id="16bbe5c282ebc3b5ae7cc8ca0d521d7e" category="list-text">Proxmox VEノードの1つにNFSストレージを追加します：</block>
+  <block id="9488920b8ed70dd95a8c95fc1e7ebeda" category="paragraph"><block ref="eccbc87e4b5ce2fe28308fd9f2a7baf3" prefix=" " category="inline-code"></block>または<block ref="895a074a5b216322121b5f76bc831927" prefix=" " category="inline-code"></block>を<block ref="d3be3d13d07ba47df013ac64c9304c0b" prefix=" " category="inline-code"></block>に使用してください。<block ref="dc58a7971816b41f3cc2b8c0f5f1bf0c" prefix=" " category="inline-code"></block>マウント オプションを追加しないでください。</block>
+  <block id="1ad15ec33a2e7277e94146c8c5bf8c0b" category="list-text">すべてのノードでストレージがアクティブになっていることを確認してください：</block>
+  <block id="77a02ff05550f0c8557e2e48b8cec6b5" category="section-title">NFSマウントオプションを設定します</block>
+  <block id="6781b8923ffc2b3484acf80e69d162c6" category="paragraph">パフォーマンスと耐障害性を向上させるために、nConnectを使用してNFS LIFまたはVIPアドレスへの複数のTCP接続を開きます。保護対象のSVMに、両方のサイトでクライアントがアクセスできる複数のデータLIFがある場合は、代わりにNFSv4.1セッション トランキングを使用できます。nConnectまたはセッション トランキングのいずれかを使用し、両方は使用しないでください。詳細については、<block ref="ff7608fcce5dc1b873f9e65c70c5ca53" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="74dd1ff27b618f117521951ba7928361" category="list-text">SMPを使用して、またはnConnectなしでストレージをプロビジョニングした場合は、1つのProxmox VEノードでマウントオプションを設定します：</block>
+  <block id="d78f0e5131b85009061c81f82bc0929b" category="paragraph">代わりにセッション トランキングを使用するには、次を設定します：</block>
+  <block id="4e19de804e853e3511b50d138cfef043" category="paragraph">Proxmox VEは、ストレージが次回マウントされる際に、新しいマウントオプションを適用します。VMをそのノードから移行した後、メンテナンス時間中に各ノードでストレージを再マウントしてください。</block>
+  <block id="4e33323bed44af4d856ee0bb51b943a1" category="list-text"><block ref="d8672d9b1e50401ec0c3f68efb6273c0" prefix=" " category="inline-code"></block>のオプションを確認します。</block>
+  <block id="d04431d801e638c95ac1011a03806feb" category="list-text">各Proxmox VEノードで、NFSサーバ アドレスへの複数の接続があることを確認します：</block>
+  <block id="19153e44c5318a4fa56edd7ce94fd918" category="section-title">ステップ6：HAとVMバックアップの設定</block>
+  <block id="7fb128aa98a8e8494db6ea3bc77b11b0" category="paragraph">プライマリSVMがデータを提供するサイトAを優先するノードアフィニティルールを使用して、VMをHAに追加します。次に、SMPバックアップポリシーを使用して、誤削除やランサムウェアなどの論理的な障害からVMを保護します。SnapMirror active syncはこれらの障害を同期的にレプリケートするため、ポイントインタイム バックアップの代わりにはなりません。</block>
+  <block id="c372b6054e7942f4d6a520ea92392738" category="list-text">保護対象の各仮想マシンをHAに追加します：</block>
+  <block id="d94115b74abec784cedde501712e87a5" category="list-text">サイトAのノードを優先し、サイトBのノードへのフェイルオーバーを許可するノードアフィニティルールを作成します：</block>
+  <block id="068264a83def64333abfcc4090262fce" category="list-text">必要に応じて、各ゲストオペレーティングシステムのディスクタイムアウトを、想定されるストレージフェイルオーバー時間よりも長く設定してください。</block>
+  <block id="746db6a98c7a48a0a52bcdab0bf4d094" category="list-text">SMPでは、*保護* &gt; *バックアップ* &gt; *リソースグループ*を選択し、各テナントまたはアプリケーションのVMまたはストレージ用のリソースグループを作成します。</block>
+  <block id="80208c53177d205135ab612400644f6a" category="list-text">*保護* &gt; *バックアップ* &gt; *ポリシー* &gt; *追加*を選択し、リソースグループのバックアップ頻度と保持期間を設定したポリシーを作成します。</block>
+  <block id="e104ee80b392c781f478c0bfcd222400" category="paragraph">QEMUゲストエージェントを実行するVMの場合は、*詳細オプション*で*VMの一貫性*を選択してください。</block>
+  <block id="ce66fe5bb51e7e7c8aede70eb6674d66" category="list-text">オンデマンドバックアップを実行し、そこからテストVMを復元してポリシーを検証します。</block>
+  <block id="1625994e9f020ffa5bab6219f62f4c8e" category="section-title">ステップ7：計画されたフェイルオーバーをテストする</block>
+  <block id="425e9050c3e080494a511f43f8561d2f" category="paragraph">本番環境のVMを共有ストレージに配置する前に、設計を検証してください。計画的なフェイルオーバーでは、データ損失なしでアクティブなSVMをサイトBに移動するため、メンテナンスウィンドウ中にテストして、その後フェイルバックすることができます。</block>
+  <block id="e40162d192c0935f481570cb5071f15c" category="list-text">テスト用仮想マシンをサイトBのノードにライブマイグレーションします。</block>
+  <block id="b24fc3235225a7695fe1a19efa2c8305" category="list-text">フェイルオーバーの前に、HAがVMをサイトAノードに戻さないようにします：</block>
+  <block id="958f966b76516ec9ffcf7133ad7c19a6" category="list-text">サイトBのクラスタで、計画的なフェイルオーバーを開始します：</block>
+  <block id="63f4fa22ec51edfa567bdc77287f7dce" category="list-text">フェイルオーバーが完了するまで監視してください：</block>
+  <block id="638536a08a5bf0c1cd14f13aaeb82299" category="list-text">すべてのProxmox VEノードで、VMのI/Oが継続し、ストレージがアクティブな状態を維持していることを確認してください。</block>
+  <block id="7c550044fc9978a76f8ed798c298377a" category="list-text">VIP LIFを使用する場合は、両方のルーターがクラスタBから/32ルートを学習していることを確認してください。</block>
+  <block id="04d5d94d5d3c2c8c83bdd6d2f6ac1674" category="list-text">SMPで、ONTAPプランの検出を実行してから、オンデマンドバックアップを実行して、SMPがサイトBのSVMからVMを保護していることを確認します。</block>
+  <block id="ad25bae07fdd7a7b17ccd87d42a2b62f" category="list-text">テストが完了したらサイトAにフェイルバックし、テストVMの<block ref="a571d3783c8d552371d5e8b486416b18" prefix=" " category="inline-code"></block>を<block ref="c4ca4238a0b923820dcc509a6f75849b" prefix=" " category="inline-code"></block>に戻します。</block>
+  <block id="c89bf420f4f240d32bd9b06c1c216276" category="paragraph">Proxmox VE VMは、アクティブなSVMがサイト間を移動している間も同じNFS共有ストレージ上で実行され続け、クラスタは計画外のサイト障害から自動的に復旧します。</block>
+  <block id="30f60d67f457bb040dffde52197a54da" category="section-title">関連情報</block>
+  <block id="d359aad806cfd9033ebf70235d998444" category="inline-link-macro">ONTAP SnapMirror アクティブ同期で NAS を保護する</block>
+  <block id="27345ed9aef76a934829f04ec76bca49" category="list-text"><block ref="27345ed9aef76a934829f04ec76bca49" category="inline-link-macro-rx"></block></block>
+  <block id="78281e4006a17cd1458a5e79d74a7c38" category="inline-link-macro">ONTAP VIP LIF を設定する</block>
+  <block id="db3e70007f4cd50c4a559e0acaaf57b5" category="list-text"><block ref="db3e70007f4cd50c4a559e0acaaf57b5" category="inline-link-macro-rx"></block></block>
+  <block id="dfcddace895e6d15eaa29a365e239546" category="inline-link-macro">ONTAPメディエーターのインストール準備</block>
+  <block id="936fb2e610c1b745f9dc729608da7055" category="list-text"><block ref="936fb2e610c1b745f9dc729608da7055" category="inline-link-macro-rx"></block></block>
+  <block id="0e0a4da7cfa51cc3f1a68945c1691053" category="list-text"><block ref="0e0a4da7cfa51cc3f1a68945c1691053" category="inline-link-macro-rx"></block></block>
+  <block id="ac03c34e9ffbf9eabc8fb0515ebfc5c0" category="inline-link-macro">SnapMirror アクティブ同期用に ONTAP Cloud Mediator を設定する</block>
+  <block id="3e19c1c86efa58a3fe9ab2efb456f5b6" category="list-text"><block ref="3e19c1c86efa58a3fe9ab2efb456f5b6" category="inline-link-macro-rx"></block></block>
+  <block id="47a733e59a59708c3179837a196fad15" category="inline-link-macro">SnapMirror Mediator add</block>
+  <block id="f320e7fc12684f536ec4a2c6bd95eed6" category="list-text"><block ref="f320e7fc12684f536ec4a2c6bd95eed6" category="inline-link-macro-rx"></block></block>
+  <block id="ff7608fcce5dc1b873f9e65c70c5ca53" category="list-text"><block ref="ff7608fcce5dc1b873f9e65c70c5ca53" category="inline-link-macro-rx"></block></block>
+  <block id="e5ef451696f2f33e7280f81ba7481db1" category="inline-link-macro">Proxmox VE corosync 外部投票サポート</block>
+  <block id="8023e8513d1bb9a323dde7dc0ab7c238" category="list-text"><block ref="8023e8513d1bb9a323dde7dc0ab7c238" category="inline-link-macro-rx"></block></block>
+  <block id="0465e8e5f27412f58a54b8438ff66275" category="summary">Proxmox VEストレッチクラスタでONTAP SnapMirrorアクティブ同期を使用することで、ストレージ障害やサイト障害が発生しても、RPOゼロでProxmox VE VMを稼働させ続けることができます。</block>
+  <block id="304b15c718011445cfb2aaaca766ff31" category="doc">SnapMirror active syncを使用したProxmox VEのビジネス継続性について学ぶ</block>
+  <block id="57afc99fb5620146d75eb79859171390" category="paragraph">Proxmox Virtual Environment（VE）でビジネス クリティカルな仮想マシン（VM）を実行する企業や、Proxmox VEで顧客のVMをホストするサービスプロバイダは、ストレージシステムやデータセンター全体がオフラインになった場合でも、それらのVMを稼働させ続ける必要があります。ONTAP SnapMirror active syncは、2つのサイトに拡張されたProxmox VEクラスタの共有ストレージを同期レプリケーションし、ストレージを自動的に稼働中のサイトにフェイルオーバーします。目標復旧時点（RPO）ゼロ、スクリプトやランブックなしの自動復旧、両サイトでの同一の共有ストレージを実現できるため、Proxmox VEの高可用性（HA）により、ストレージを再構成することなくVMを再起動できます。NFS共有ストレージの場合、このソリューションはNAS向けのSnapMirror active syncを使用します。</block>
+  <block id="d4612e7dc1347f1ccbfd5e470dda2295" category="section-title">顧客の課題</block>
+  <block id="99ade05f06761f36e949a7456102a37e" category="paragraph">Proxmox VEのストレージとサイトの耐障害性をネイティブツールだけで構築するのは困難です：</block>
+  <block id="0d7dc8b5047966efd878ab53ac757e10" category="list-text">*サイト障害後のデータ損失。*Proxmox VEのストレージレプリケーションとProxmox Backup Serverは非同期です。プライマリサイトに障害が発生すると、前回のレプリケーションまたはバックアップ以降に加えられた変更は失われます。</block>
+  <block id="6baffc6d8bf916c438d61233168432d9" category="list-text">*手動による時間のかかるリカバリ。*セカンダリサイトでの復旧は通常、レプリカの昇格、別のアドレスでのストレージのマウント、<block ref="d8672d9b1e50401ec0c3f68efb6273c0" prefix=" " category="inline-code"></block>の更新、およびVMの再起動を伴います。手作業による各手順は、ダウンタイムを増加させ、システム停止中のエラーのリスクを高めます。</block>
+  <block id="6bc7dd2968cc91d61fc6c37fb72111c6" category="list-text">*ホストリソースをめぐってVMと競合するストレッチドストレージ*ハイパーコンバージド・ストレッチド・ストレージ（たとえば、ストレッチモードのCephなど）は、Proxmox VEノード上で動作し、各サイトにすべてのオブジェクトのレプリカを2つ保持します。レプリケーション、リカバリ、およびリバランスのトラフィックは、VMを実行する同じノード上のCPU、メモリ、およびネットワーク リソースを消費します。</block>
+  <block id="5731c165d98436e1d5e5b0584c6ff419" category="list-text">*2つのクォーラムの決定が一致する必要があります。*どのような2サイト設計でも、Proxmox VEクラスタとストレージ用に、第3の障害ドメインにウィットネスが必要です。サイト間リンクの障害後にクラスタとストレージが異なる存続サイトを選択した場合、VMはアクティブなストレージに到達できないノード上で再起動します。</block>
+  <block id="59679edfbb9a6b0b7d8286c58f476fc4" category="list-text">*両方のサイトで有効なストレージアドレス。*ストレージのフェイルオーバー後、Proxmox VEノードは同じアドレスで共有ストレージにアクセスできる必要があります。そのアドレスは両方のサイトからアクセス可能である必要があり、通常はサイト間に拡張されたレイヤ2 VLANを意味します。</block>
+  <block id="edc0b3ce065e0185f69b6311ead4bf01" category="section-title">サービスプロバイダーの課題</block>
+  <block id="fb091770528e13d30c4f1bbdb652ce89" category="paragraph">Proxmox VE上でクラウド サービスを構築するサービスプロバイダーは、テナントのサービスレベル契約（SLA）に加えて、同様の課題に直面します：</block>
+  <block id="e73fb64166742c0a077d3029e5aa3f6c" category="list-text">*ストレージシステムは共通障害点です。*Proxmox VE HAは、テナントVMをホストの障害から保護しますが、VMのディスクをホストするストレージシステムの障害からは保護しません。ストレージの障害が1件発生すると、そのシステムを利用しているすべてのテナントに影響が及びます。</block>
+  <block id="1f5e6b0f96f8aa853b69f3fa5bd37754" category="list-text">*より高い可用性を販売する方法はありません。*同期レプリケーションと自動ストレージフェイルオーバーがなければ、プロバイダーはデータ損失ゼロで稼働率の保証がより強力なプレミアム可用性ティアを提供することはできません。</block>
+  <block id="6a5842e4da0acd8859ed889b508b66cf" category="list-text">*復旧中のテナント分離。*復旧、保守、および災害復旧テストは、プラットフォーム全体ではなく、関係するテナントにのみ影響するようにする必要があります。</block>
+  <block id="220d32b3855dfcbe6715fb3638098c3c" category="section-title">企業の課題</block>
+  <block id="709c30ac29aece2fdc8993fe0a53f728" category="paragraph">ミッションクリティカルなワークロードを他のハイパーバイザーからProxmox VEに移行する企業は、データベースや基幹業務アプリケーションのデータ損失ゼロ、手動の手順書なしでの復旧など、以前と同様のサイトの回復力を期待しています。Proxmox VEのネイティブツールだけでその期待に応えるには、相当な設計、スクリプト作成、および運用上の労力が必要となります。</block>
+  <block id="e354cfd256db9822fcf0d3a3bb056e3a" category="paragraph">このソリューションは、2つのサイトにあるNetApp AFF システム上のSnapMirrorアクティブ同期と、Proxmox VEストレッチクラスタを組み合わせています：</block>
+  <block id="b8177678a9e08cbb23df465f792d4511" category="list-text">*RPOゼロ。*ONTAPは、サイトAのプライマリクラスタからサイトBのセカンダリクラスタへ、共有ストレージへのすべての書き込みを同期的に複製します。</block>
+  <block id="915cc80acc4f61daace60571b57e3f91" category="list-text">*両サイトで同じ共有ストレージ*フェイルオーバー後、セカンダリクラスタはProxmox VEに同じストレージを提供するため、<block ref="d8672d9b1e50401ec0c3f68efb6273c0" prefix=" " category="inline-code"></block>内のストレージ定義は有効なままです。</block>
+  <block id="0cc563dfab0194a1e3d363d824b0cb0a" category="list-text">*自動フェイルオーバー。*メディエーターは、2つのサイトの外部で監視役として機能します。ONTAP Mediatorを3つ目のサイトにインストールするか、NetApp ConsoleでホストされるサービスであるONTAP Cloud Mediatorを使用できます。プライマリ ストレージまたはサイトに障害が発生した場合、ONTAPは手動での介入なしにサイトBにフェイルオーバーします。</block>
+  <block id="637d3854ec0c42496013a97ba63bfa6d" category="list-text">*きめ細かな制御。*保護するワークロードを選択し、サイトのメンテナンスのために1つのテナントやアプリケーションを移動する場合など、ワークロードを個別にフェイルオーバーできます。</block>
+  <block id="cd3dad3ade4e9ddc8dc8bda0cb565701" category="list-text">*セカンダリコピーの使用。*レプリケーションに影響を与えることなく、開発、テスト、またはディザスタリカバリのテスト用にセカンダリコピーのクローンを作成できます。</block>
+  <block id="9f51764ea31b2950515e96c35d330c5a" category="section-title">このソリューションが課題にどのように対処するか</block>
+  <block id="b5f5623b6137a89a1dadf079a5e92266" category="cell">課題</block>
+  <block id="a3f1f209df79e4549d8848676cf57430" category="cell">このソリューションがどのように役立つか</block>
+  <block id="52aa57fd77cfef9ba1e5730b82ada84f" category="cell">まだ計画が必要な事項</block>
+  <block id="7e27b1026ccec43861d470d5a10a37dd" category="cell">データ損失と手動復旧</block>
+  <block id="3fd7482cf8629586a1ab730c4c63a3a7" category="cell">同期レプリケーションではRPOはゼロになります。ONTAPは自動的にフェイルオーバーし、セカンダリSVMは同じNFSアドレスを提示するため、<block ref="d8672d9b1e50401ec0c3f68efb6273c0" prefix=" " category="inline-code"></block>は有効なままです。</block>
+  <block id="a2b9992998cdbc26a5e62311cead8dc4" category="cell">Proxmox VE HAは、引き続き障害が発生したサイトから仮想マシンを再起動します。</block>
+  <block id="077195456e54443d3bae570c6a60d1ac" category="cell">ホスト上の拡張ストレージ</block>
+  <block id="30c9c792cc6138bf559166a979620e9e" category="cell">レプリケーションはProxmox VEノードではなくAFFコントローラ上で実行されるため、ホストCPU、メモリ、ネットワークは引き続きVMで利用できます。ONTAPは各サイトにコピーを1つずつ保持し、ストレージ効率化は両方のコピーに適用されます。</block>
+  <block id="cb1eec542cf7dfde5630230ad0d5360e" category="cell">他の同期レプリケーションと同様に、このソリューションではサイトBに完全な2つ目のコピーが必要であり、レプリケーションによって両方のAFFクラスタに負荷がかかります。レプリケーションのワークロードに合わせて、両方のクラスタのサイジングを行ってください。</block>
+  <block id="33b3498802cbc12875f6b4f67ab3f202" category="cell">定足数に関する2つの決定</block>
+  <block id="5e3bf18413185d4f9d1f06b3e13149e7" category="cell">ONTAP Mediator、またはNetApp ConsoleのサービスであるONTAP Cloud Mediatorは、データ パス外の軽量なウィットネスです。このソリューションは、corosync QDeviceをプライマリクラスタと連携させ、両方が同じサイトを選択するようにする方法を示しています。</block>
+  <block id="5e81b2d585e5bcbee1738bf161caef2d" category="cell">QDeviceには、3つ目の設置場所が引き続き必要です。ONTAP Mediatorにも必要ですが、ONTAP Cloud Mediatorには必要ありません。<block ref="8141d3127ab263fd26ce095bac425e68" category="inline-xref-macro-rx"></block>を参照してください。</block>
+  <block id="e9f627807c303ad870ff4ab22326ab6a" category="cell">両サイトのストレージアドレス</block>
+  <block id="61e9b2b8ac14976b64f5f8079693fde5" category="cell">セカンダリSVMは同じNFS LIFアドレスを引き継ぐため、再マウントやストレージの再構成は必要ありません。</block>
+  <block id="fe6f131eca9b8516be3f82f2c9083683" category="cell">NFSサブネットは両方のサイトからアクセス可能である必要があり、通常は拡張レイヤ2 VLANを使用します。VIP LIFの資格ステータスについては、<block ref="ccd2f57403ff44112d71ec3392b29f2a" category="inline-xref-macro-rx"></block>を参照してください。</block>
+  <block id="31d6e2df69d4c5b2f266236227169ed9" category="paragraph">次の図は、NFS共有ストレージを使用したソリューション アーキテクチャを示しています。</block>
+  <block id="b7a913dbc2c6606f366d7c05953680cc" category="inline-image-macro">NAS向けSnapMirrorアクティブ同期を使用したProxmox VEストレッチクラスタのアーキテクチャ。サイトCのONTAP Mediatorと、NetApp ConsoleのONTAP Cloud Mediatorが、代替のウィットネスオプションとして示されています。各構成要素の説明は図の後に記載されています。</block>
+  <block id="1355fb7589601bd504154261ba5d6f49" category="paragraph"><block ref="1355fb7589601bd504154261ba5d6f49" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="86177105820475f27beb9a8accf08ab3" category="list-text">サイトAとサイトB</block>
+  <block id="9dc5b6d252fc028d4d2b27e8b256a75d" category="list-text">各サイトには、AFF 2ノードクラスタとProxmox VEノードの半分が配置されています。サイトAにあるプライマリクラスタは、すべてのProxmox VEノードに共有ストレージを提供します。サイトBのノードは、サイト間ネットワークを介してプライマリクラスタに接続します。NFSストレージを使用する場合、サイトBのセカンダリSVMはフェイルオーバーが発生するまで休止状態を維持します。</block>
+  <block id="2b7cd6a0278783cfaa972ecd49ba8dad" category="list-text">サイトC</block>
+  <block id="58483f96f551dbd6b9780ff34489d1bb" category="list-text">3番目の障害ドメインは、corosync QDeviceデーモン<block ref="4b26b82f61a525b89662d5e10d5cea6e" prefix="(" category="inline-code"></block>）と、オプション1を選択した場合はONTAP Mediatorをホストします。QDeviceは追加の投票権を提供することで、いずれかのサイトに障害が発生した場合でもProxmox VEクラスタがクォーラムを維持できるようにします。</block>
+  <block id="3c031b939f6ec312ee601d021e7a6644" category="list-text">NetApp Console</block>
+  <block id="7bbb1dec7be75b08d4e2fc4d2b553938" category="list-text">オプション2を選択した場合、ONTAP Cloud Mediatorは、NetAppがホストおよび管理するNetApp Consoleでサービスとして実行されます。両方のAFFクラスタがHTTPS経由で接続するため、メディエーター ホストをインストールしたり保守したりする必要はありません。</block>
+  <block id="cf7f72fb2e3e5a9df104130ba81c194e" category="list-text">メディエーター</block>
+  <block id="7f6ba6ca0a562cbbd9c257fd48984d9a" category="list-text">ONTAP MediatorまたはONTAP Cloud Mediatorは、ONTAPがどのクラスタからデータを提供するかを決定するのに役立ちます。両方ではなく、いずれか一方を使用してください。比較については、<block ref="8141d3127ab263fd26ce095bac425e68" category="inline-xref-macro-rx"></block>を参照してください。</block>
+  <block id="8a011e056cae1898e78c6d59119e67d5" category="list-text">Proxmox VE ストレッチクラスタ</block>
+  <block id="5efbb2766931be0586b727d0d8cc6cb3" category="list-text">すべてのProxmox VEノードは1つのクラスタに属し、同じストレージ定義を共有します。Proxmox VE HAは、障害が発生したサイトのVMを、稼働中のノード上で再起動します。Storage Manager for Proxmox（SMP）は、クラスタ上でHA VMとして動作し、共有ストレージのプロビジョニング、VMのバックアップ、リストア、クローン作成を行います。</block>
+  <block id="16f8aa0e71d045c5de4bc7d875ae835b" category="paragraph">SnapMirrorアクティブ同期は、受動的な監視役としてメディエーターを使用します。ネットワークの分断や1つのクラスタの障害が発生した場合、ONTAPはメディエーターを使用して、どのコピーが引き続きI/Oを処理するかを決定します。メディエーターはデータ パスには存在せず、メディエーター自体がフェイルオーバーを開始することはありません。以下のいずれかのオプションを使用できますが、両方を同時に使用することはできません。</block>
+  <block id="1424e9d02955a063766be77a82c6d273" category="cell">考慮事項</block>
+  <block id="b39593d5340ed09955bf539ed2075fe6" category="cell">オプション1：ONTAP Mediator</block>
+  <block id="bd0a1c9ad3dc3c2394446ea5bed1b098" category="cell">オプション2：ONTAP Cloud Mediator</block>
+  <block id="9f7d8eb79b8e8e6e8a1d1f94da91cc0b" category="cell">稼働場所</block>
+  <block id="c29c10c721f98c1e43f74ab2b8de7f6a" category="cell">独立した電源とネットワーク インフラを備えた、サイトCなどの第3の障害ドメインにインストールして管理するLinuxホスト</block>
+  <block id="ee356cee134aa5b9ebaac92d95fa10e4" category="cell">NetApp Consoleのクラウド サービスです。NetAppがホストおよび管理するため、第3のサイトに仲介ホストを用意する必要はありません。</block>
+  <block id="3b2a75ebc087c7f3c4fa9ac0e2a92ebe" category="cell">ONTAPのバージョン</block>
+  <block id="1eeb6df76cc7c05e31a5c815604589d2" category="cell">NAS向けSnapMirrorアクティブ同期用のONTAP 9.19.1以降。</block>
+  <block id="f629ce1f1ff55e0481a7a3cd12a7f7ca" category="cell">ONTAP Cloud Mediatorは、ONTAP 9.17.1以降で利用可能です。SnapMirrorのNAS向けアクティブ同期には、ONTAP 9.19.1以降が必要です。</block>
+  <block id="44ad9619101b8a07619c995d81024ea9" category="cell">クラスタ接続</block>
+  <block id="76d66d26741e5b9a6cce625a797a5ba8" category="cell">両方のクラスタはメディエータホストに接続します。デフォルトのサービスポートは31784です。</block>
+  <block id="5152dda03d4927edffed66712a49e778" category="cell">どちらのクラスタも、直接またはHTTPプロキシ経由で、HTTPSを使用してNetApp Consoleにアウトバウンド接続します。NetApp Consoleへの推奨pingレイテンシは200 ms未満です。</block>
+  <block id="ad2376beebecdcf7846ba973fa1a005b" category="cell">セットアップ</block>
+  <block id="e2c815f2b1700287d8e39665d926a691" category="cell">パッケージをLinuxホストにインストールし、ホストアドレスとメディエーターユーザを使用してクラスタに追加します。</block>
+  <block id="61bede79a3d8c7bcfa4e4a8a2d4cdfa0" category="cell">*ONTAP Mediator Setup Role*を持つNetApp Consoleサービスアカウントを作成し、組織ID、クライアントID、およびクライアントシークレットを使用して、メディエーターをクラスタに追加します。</block>
+  <block id="456d0deba6a86c9585590550c797502d" category="cell">操作</block>
+  <block id="f4012a269cf7038257245556c00ab349" category="cell">ホストにパッチを適用してアップグレードし、利用可能な状態を維持します。</block>
+  <block id="23b76b5fcf655a6718ccf07a78298d88" category="cell">パッチ適用やアップグレードを行うホストはありません。両方のサイトからのインターネットアクセスと、NetApp Consoleサービスの可用性に依存します。</block>
+  <block id="254c1de7ba59ed71ef57b65cd9c61cfb" category="cell">ベストフィット</block>
+  <block id="40bcefc872516d92434d7f9e65d44a88" category="cell">第三サイトが存在する環境、またはストレージクラスタがインターネットに接続できない環境。</block>
+  <block id="788d9552344477a2b8fcecdb0fefb157" category="cell">メディエーター用の第3サイトがない環境、またはメディエーターの運用を避けたい環境。</block>
+  <block id="3bc6eb0ba33041d8486a69e0c4f40a74" category="paragraph">選択する際には、以下の点に留意してください：</block>
+  <block id="42338592bc2dd713bcc21b51e6212193" category="list-text">*QDeviceには引き続き3つ目の設置場所が必要です。*ONTAP Cloud Mediatorは、corosync QDeviceホストではなく、メディエーターホストを削除します。QDeviceには、すべてのProxmox VEノードがTCPポート5403でアクセスできる小規模なLinuxホストが必要ですが、corosyncの低レイテンシ要件はありません。</block>
+  <block id="52ca185119aacdc9e5b1b37402f99238" category="list-text">*両方のクラスタはNetApp Consoleにアクセスできる必要があります。*クラスタでプロキシを使用する場合は、プロキシのルートCA証明書を両方のクラスタにインストールします。NetAppでは、クラスタごとに異なるプロキシ サーバを使用することを推奨しています。</block>
+  <block id="3c03a521834c4badcc5e9ddfadc64bc1" category="list-text">*どちらのオプションでも同じ障害時の動作を想定して計画してください。*メディエーターが利用できない場合、レプリケーションはデータ損失なく継続されますが、メディエーターが再び利用可能になるまで、自動および計画的なフェイルオーバーは実行できません。ONTAP Cloud Mediatorを使用する場合、これにはクラスタからNetApp Consoleへの接続の喪失が含まれます。</block>
+  <block id="3baa15882d96a89d709c2f32047dd92d" category="admonition">このセクションのメディエーターオプションは、SnapMirrorアクティブ同期に適用されます。MetroClusterの場合、このソリューションではONTAP MediatorまたはMetroCluster Tiebreakerを使用します。デプロイする前に、ご使用のONTAPバージョン、メディエーターオプション、およびProxmox VEバージョンが<block ref="18e7fcfe606d6d0912191de7fd9eb56a" category="inline-link-macro-rx"></block>に一緒に記載されていることを確認してください。</block>
+  <block id="a26fb725134f9b2a4aee8f95dcb8036f" category="section-title">サービスプロバイダにとってのメリット</block>
+  <block id="aae85d419a39db8132afa4a735937249" category="list-text">*ホストHAを超えるVMの可用性。*テナントVMは、ディスクをホストするストレージシステムに障害が発生しても稼働し続けます。ONTAPは2番目のAFFクラスタにフェイルオーバーし、VMは再起動することなく同じ共有ストレージ上でI/Oを再開します。</block>
+  <block id="3f4c6f9874a14dcf9f2406702043395f" category="list-text">*プレミアム可用性ティア*同じクラスタ内の保護されていないストレージ上の標準ティアと並行して、RPOゼロでストレージ耐障害性に優れたVMサービスをアドオンとして提供できます。</block>
+  <block id="3a75bd391f55d0e71cf449dab255125f" category="list-text">*テナントごとの保護とフェイルオーバー*テナントまたはサービス階層ごとに個別の保護ストレージを使用することで、他のテナントに影響を与えることなく、各テナントの保護、フェイルオーバー、およびディザスタリカバリのテストを個別に実行できます。</block>
+  <block id="4d62cb39649c84975c4208cc7f071aa2" category="list-text">*両サイトをより有効活用する。*一部のワークロードをサイトAでプライマリにし、他のワークロードをサイトBでプライマリにすることで、両方のデータセンターがアクティブなワークロードに対応できるようになります。</block>
+  <block id="ff7d8e4f70d9b75af4c017be81a10949" category="section-title">企業にとってのメリット</block>
+  <block id="b642fc4acd1e5b75315b15431f466716" category="list-text">ストレージ障害またはサイト障害の発生時における、*ビジネス クリティカルなVMのデータ損失ゼロ*。</block>
+  <block id="d8bf43b7e1e143eca64d869edc3ecd8a" category="list-text">スクリプト、ストレージの再マウント、または<block ref="d8672d9b1e50401ec0c3f68efb6273c0" prefix=" " category="inline-code"></block>への変更を必要としない*自動リカバリ*。</block>
+  <block id="8936cddddf1a11982058a83dcf16880d" category="list-text">*ONTAPに組み込まれており*、Proxmox VEノード上に追加のソフトウェアレイヤは不要です。</block>
+  <block id="934904c304975b8d86f6cba645ccdcf3" category="list-text">*1つのインターフェイスで日常業務を管理。*Storage Manager for Proxmoxは、保護された共有ストレージをプロビジョニングし、ONTAPスナップショットとFlexCloneテクノロジを使用してVMのバックアップ、リストア、クローン作成を行います。</block>
+  <block id="367c70228b4795c1122c34d2a7f48e3f" category="section-title">ソリューションが障害にどのように対応するか</block>
+  <block id="9bc4fdec13f9c21ad361048341413467" category="paragraph">ONTAPとProxmox VEは、独立してクォーラムの決定を行います。この設計により、両者が同じ存続サイトを選択するように調整されています。</block>
+  <block id="a4ecfc70574394990cf17bd83df499f7" category="cell">イベント</block>
+  <block id="526b67ff510d74c23735ab537209aa6c" category="cell">ONTAPの動作</block>
+  <block id="743e397e785b17c8938d0ea91a65dbcc" category="cell">Proxmox VEの動作</block>
+  <block id="e31093deb0cdd1195f7a62376cd7e2af" category="cell">サイトAに障害が発生</block>
+  <block id="a879b186a949ac782703734855fc72f9" category="cell">メディエーターが障害を確認すると、ONTAPは自動的に共有ストレージをクラスタBにフェイルオーバーします。</block>
+  <block id="0082d33ef55682dd758cce03e54f6751" category="cell">サイトBのノードとQDeviceはクォーラムを維持します。HAはサイトAのノードをフェンスし、サイトBのノード上でそれらのVMを再起動します。ストレージの</block>
+  <block id="518bf7054ba291d040ba9f98a5be4b78" category="cell">AFFクラスタAに障害が発生しても、サイトAのProxmox VEノードは引き続き稼働する</block>
+  <block id="fb9e35e60209a90ea9505775d529ab9f" category="cell">メディエーターはクラスタAに到達できないことを確認し、ONTAPは共有ストレージを自動的にクラスタBにフェイルオーバーします。</block>
+  <block id="1c57f055fce8cdb746e301d2249a358d" category="cell">クォーラムの変更やVMの再起動はありません。ストレージのフェイルオーバー後、すべてのノード上のVMは同じ共有ストレージ上でI/Oを再開し、サイトAのノードはサイト間ネットワークを介してクラスタBに接続します。</block>
+  <block id="3e2f4fced56167b0b6dc1c36c44c8bed" category="cell">サイトAのAFFコントローラ1台に障害が発生する</block>
+  <block id="58f5ba76f78bc894c22814967953f1ca" category="cell">ローカルHAテイクオーバーでは、パートナー コントローラがテイクオーバーします。SnapMirrorアクティブ同期のフェイルオーバーは発生しません。</block>
+  <block id="b816120208777fda84aa0ceafe1e1d0b" category="cell">影響なし。VMはテイクオーバー中にI/Oを一時的に停止します。</block>
+  <block id="a00c59b2da0effbe626f6274da162153" category="cell">サイトBに障害が発生</block>
+  <block id="0af530c4699097654578aab7aa1dac15" category="cell">クラスタAは引き続きデータを提供します。サイトBが復旧すると、レプリケーションが再開されます。</block>
+  <block id="2eb748be0d03d053aadb7214d722ef69" category="cell">サイトAのノードとQDeviceはクォーラムを維持します。HAは、サイトAのノード上でサイトBのVMを再起動します。</block>
+  <block id="e4e8fcc180914aa7b8f0eaf55b70d621" category="cell">サイト間リンクの障害</block>
+  <block id="f4267e2b1294a9f386b77215dc392f3d" category="cell">クラスタAは引き続きデータを提供します。フェイルオーバーは発生しません。</block>
+  <block id="3aee71ef93275916b53dc57bbf7f78f2" category="cell">タイブレーカーがプライマリクラスタと一致した場合、QDeviceはサイトAパーティションに投票します。サイトBのノードはクォーラムを失って自己フェンシングを行い、HAはサイトAでそれらのVMを再起動します。</block>
+  <block id="fb21776ab37c5657116984a8e4cbe8bf" category="cell">サイトCに障害が発生するか、クラスタがNetApp Consoleへのアクセスを失う</block>
+  <block id="f0e0176b8bb0e8cc8480fa6414d3e7bd" category="cell">レプリケーションはデータ損失なしで継続されますが、メディエーターが利用可能になるまでは、自動および計画的なフェイルオーバーは実行できません。ONTAP Cloud Mediatorを使用する場合、サイトCの障害はQDeviceにのみ影響します。</block>
+  <block id="41b63f1dbb2e96d2284abeab8083a9f7" category="cell">クラスターは、4つのノードの投票によってクォーラムを維持します。影響を受けるVMはありません。</block>
+  <block id="396e4d22d7da9c1c3278cb9ae25d5dc8" category="cell">1つのProxmox VEノードで障害が発生</block>
+  <block id="82df947b24b142257e99101fa1c8e6f9" category="cell">影響はありません。</block>
+  <block id="d08c92b421acbdae492949287b1524d6" category="cell">HAは、そのノード上のVMを他のノード上で再起動し、同じサイト内のノードを優先します。</block>
+  <block id="3784559d5087e35dc7372b1c51cf920e" category="section-title">ストレージシステム障害</block>
+  <block id="57e5b6ec8d029bd2e8bd2367e784abf9" category="paragraph">ストレージシステム障害は、ホストレベルのHAだけでは対処できないケースであり、SnapMirrorアクティブ同期がサービスプロバイダに最大の価値をもたらすケースでもあります。次の図は、NFS共有ストレージを使用するすべてのProxmox VEノードがオンライン状態を維持している間にAFFクラスタAに障害が発生したあとの状態を示しています。</block>
+  <block id="398c8b00261d41a1ceb33fb291cf8ebe" category="inline-image-macro">AFFクラスタAの障害発生後の状態。すべてのProxmox VEノードは引き続き稼働し、サイトBのセカンダリSVM上のNFS共有ストレージにアクセスします。図の後に番号付きの項目について説明します。</block>
+  <block id="f4d55aae08d028b22d2c41d6cd425a3a" category="paragraph"><block ref="f4d55aae08d028b22d2c41d6cd425a3a" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="2778da1ce7a212d41b7573073b873006" category="list-text">AFFクラスタAが利用できなくなります。サイトAのProxmox VEノードは稼働し続けるため、クラスタはクォーラムを失わず、HAもどのノードもフェンスしません。</block>
+  <block id="9a536feff9eed2b33f0990517b06a5a1" category="list-text">メディエーター（サイトCのONTAP Mediator、またはNetApp ConsoleのONTAP Cloud Mediator）がクラスタAに到達できないことを確認すると、ONTAPは同じNFS LIFアドレス、ボリューム、エクスポートポリシーを使用してクラスタBのセカンダリSVMをアクティブ化します。</block>
+  <block id="c51386bc3bab9dbf3136c9589fcf34d0" category="list-text">すべてのProxmox VEノードは、同じ共有ストレージ上でI/Oを再開します。サイトBのノードはローカルでクラスターBに接続し、サイトAのノードはサイト間ネットワークを介してクラスターBに接続します。VMはフェイルオーバー中にI/Oを一時停止し、再起動せずに実行を継続します。</block>
+  <block id="aff613fcc54ea3bb6ac1edc28c9792a6" category="paragraph">クラスタAが復旧すると、レプリケーションが再開されます。サイトAのVMが再びローカルストレージにアクセスできるように、メンテナンス期間中にクラスタAへのフェイルバックを計画してください。</block>
+  <block id="1163a74136e40a05bc320e61f567a4df" category="section-title">サイト障害</block>
+  <block id="cba7f2bb6bb2f762f3977c19374b1117" category="paragraph">サイト障害時には、そのサイトのストレージシステムとProxmox VEノードの両方がオフラインになります。ONTAPは共有ストレージを稼働中のクラスタにフェイルオーバーし、Proxmox VE HAは表に示されているように、障害が発生したサイトのVMを稼働中のノードで再起動します。</block>
+  <block id="073b4b51966a0796584619ae83b5164f" category="section-title">SnapMirror active sync と MetroCluster の選択</block>
+  <block id="4627ae007064323945e37577bcebf5cb" category="paragraph">NetApp MetroCluster構成は、Proxmox VEストレッチクラスタに対してRPOゼロと自動リカバリも提供します。この2つのソリューションは、保護する対象が異なります：</block>
+  <block id="ccf184cc1fd0cfd9ae0f7bbc40e1ea85" category="list-text">*MetroClusterはすべてのワークロードを保護します。*MetroClusterは、アレイベースのクラスタリングと同期レプリケーションを組み合わせます。ミラーリングされたすべてのアグリゲート内のデータ、不揮発性メモリ（NVRAM）、および各SVMの構成をパートナーサイトにミラーリングするため、ワークロードごとのセットアップなしでクラスタ上のすべての共有ストレージが保護されます。</block>
+  <block id="ff6bd550cc0d8bc5c08ca68b8052a071" category="list-text">*SnapMirror active syncは、ワークロードの一部を保護します。*保護するSVMまたはボリュームを選択し、それぞれを独立してフェイルオーバーできます。保護されていないワークロードは、同じクラスタを共有できます。</block>
+  <block id="d8d09f57ea21892bc2fb0b88fc96bfef" category="paragraph">どちらのソリューションも、保護対象データの完全なコピーを各サイトに保持し、第3の障害ドメインに監視サーバーを必要とし、ストレージコントローラにレプリケーション負荷を追加します。これらは、保護範囲、フェイルオーバーの粒度、およびクラスタ設計において異なります。</block>
+  <block id="7c7a4e98feba92cb7326b88bc3c468d8" category="admonition">いずれかのソリューションを導入する前に、ONTAPのバージョン、MetroClusterまたはSnapMirrorアクティブ同期構成、およびProxmox VEのバージョンが<block ref="18e7fcfe606d6d0912191de7fd9eb56a" category="inline-link-macro-rx"></block>に一緒に記載されていることを確認してください。</block>
+  <block id="9e940d99f21bef801d8860e9e74ed0b6" category="section-title">Proxmox VEを使用したMetroClusterアーキテクチャ</block>
+  <block id="36f24dbad8f03000d166a514ae6f0229" category="paragraph">次の図は、4ノードのMetroCluster IP構成とNFS共有ストレージを備えたProxmox VEストレッチクラスタを示しています。</block>
+  <block id="8a730b708a1f8df05b4fbaae3aadc83f" category="inline-image-macro">4ノードのMetroCluster IP構成を使用したProxmox VEストレッチ クラスタ。各Proxmox VEノードは、各サイトでアクティブなSVMをマウントします。各サイトには、もう一方のサイトにあるSVMの停止状態のミラーが保持されています。各構成要素の説明は図の後に記載されています。</block>
+  <block id="bddb06dfae9fa46031a02d49e2a2649f" category="paragraph"><block ref="bddb06dfae9fa46031a02d49e2a2649f" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="4cab58b7ea054e5d4cbd738a72b6591f" category="list-text">MetroCluster IPクラスタ</block>
+  <block id="84281162fb70c291a4007e674cf0e2ab" category="list-text">各サイトには、ミラーリングされたアグリゲートを備えたHAペアがあります。MetroCluster IPバックエンドネットワークは、データ（SyncMirror）とNVRAMをパートナーサイトに同期的にミラーリングします。</block>
+  <block id="e0650734b67608098bba60650de0a6eb" category="list-text">両サイトのSVM</block>
+  <block id="d72a0eb7acb8352295fb7b8c8ae70ee8" category="list-text">各サイトは独自のSVMを提供できます。各SVMについて、MetroClusterは、パートナーサイトに同じ構成とLIFアドレスを持つ、<block ref="3d1449d5b8fa3419b1f3a0a85c27d0aa" prefix=" " category="inline-code"></block>サフィックスが付いた停止状態のミラーSVMを保持します。</block>
+  <block id="407a71398144d83652ee124ed43362e3" category="list-text">すべてのノードからのNFSアクセス</block>
+  <block id="3c4e8c0fa92080cc46426f9da757d764" category="list-text">Proxmox VEの各ノードは、アクティブなSVMであるSVM A1とSVM B1の両方の共有ストレージをマウントするため、HA機能によりどのノード上のどのVMでも再起動できます。サイトBのノードはサイト間ネットワークを介してSVM A1に到達し、サイトAのノードはSVM B1に到達します。これは、SnapMirrorアクティブ同期と同じアクセスモデルです。</block>
+  <block id="fbada53248cb254417145f50af659157" category="list-text">スイッチオーバー</block>
+  <block id="6c087ce306888383e28c66daa540e1b9" category="list-text">サイト障害が発生した場合、サイトCのONTAP MediatorまたはMetroCluster Tiebreakerによって自動スイッチオーバーが有効になります。稼働中のサイトのミラーSVMが起動して同じNFSアドレスですべての共有ストレージを提供し、Proxmox VE HAが障害が発生したサイトのVMを再起動します。単一のコントローラ障害は、スイッチオーバーを行わずに、ローカルHAのテイクオーバーによって処理されます。障害が発生したサイトを修復したあと、アグリゲートを修復してスイッチバックします。</block>
+  <block id="4b8a686a18013faf56de2c945c2eb1a0" category="section-title">MetroClusterが障害に対応する仕組み</block>
+  <block id="3fb047288b0153353b721422eaa1d162" category="paragraph">次の表は、MetroCluster IP構成とProxmox VEストレッチクラスタが、<block ref="191187f6482da3b9bea8932c0de09168" category="inline-xref-macro-rx"></block> と同じ障害にどのように対応するかを示しています。この例では、SVM A1はサイトAでアクティブであり、SVM B1はサイトBでアクティブです。</block>
+  <block id="7eba0b588da0b9f77bd2343614afca5d" category="cell">ONTAP MediatorまたはMetroCluster Tiebreakerが障害を確認し、ONTAPがサイトAをスイッチオーバーします。SVM A1-mcは、同じNFS LIFアドレスを使用してサイトBで起動します。SVM B1はデータの提供を継続します。</block>
+  <block id="05d50219ab87f95bb3fe925da0be8da9" category="cell">サイトBのノードとQDeviceはクォーラムを維持します。HAはサイトAのノードをフェンスし、サイトBのノード上でそれらのVMを再起動します。サイトBのノードで既に稼働していたVMは引き続き稼働し、SVM A1上のVMは切り替え後にI/Oを再開します。</block>
+  <block id="3c61f18b0a5a58ff6e29138a7dab8d79" category="cell">MetroCluster IPクラスタAに障害が発生しても、サイトAのProxmox VEノードは引き続き稼働する</block>
+  <block id="8718c564d43148e712ed80e36272db53" category="cell">ONTAP MediatorまたはMetroCluster Tiebreakerは、クラスターAに到達できないことを確認し、ONTAPはサイトAをスイッチオーバーします。SVM A1-mcは、同じNFS LIFアドレスでサイトBで起動します。</block>
+  <block id="d568f2f86d3d6b9f311a24bbaa4fe478" category="cell">クォーラムの変更もVMの再起動もありません。SVM A1上のVMはスイッチオーバー後にI/Oを再開し、サイトAのノードはサイト間ネットワークを介してサイトBに到達します。</block>
+  <block id="2311be00a8c85e8dbdf1913fb039e85c" category="cell">サイトAのコントローラ1台が故障</block>
+  <block id="ad90f608c9b6c7f0599620f23991fab1" category="cell">サイトAのHAパートナーがローカルHAテイクオーバーでテイクオーバーします。スイッチオーバーは発生しません。</block>
+  <block id="461a2c1312d3db8e654970a2579bfed6" category="cell">ONTAPはサイトBをスイッチオーバーします。SVM B1-mcは、同じNFS LIFアドレスを使用してサイトAで起動します。SVM A1はデータの提供を続けます。</block>
+  <block id="8d60a4148e0d24dd9a0ef2be3bcbabc5" category="cell">サイトAのノードとQDeviceはクォーラムを維持します。HAはサイトAノード上でサイトBのVMを再起動し、サイトAにあるSVM B1にアクセスします。</block>
+  <block id="6a97ca1e3c0d6d920474ea2dd88b3249" category="cell">両方のクラスタがまだ稼働しているため、スイッチオーバーは発生しません。各サイトは引き続き独自のSVMを提供し、リンクが復旧するまでパートナーサイトへのミラーリングは一時停止されます。</block>
+  <block id="17397f0e2ec3828a72cda07f22a82178" category="cell">タイブレーカーがサイトAと一致した場合、QDeviceはサイトAパーティションに投票します。サイトBノードはクォーラムを失い、自己フェンス状態になります。HAは、サイトAノード上のSVM A1でVMを再起動します。サイトAのノードがSVM B1に到達できないため、リンクが復旧するまでSVM B1上のVMは再起動できません。</block>
+  <block id="b5a9961eb8eb266967fba9d9953ebdf2" category="cell">サイトCで障害が発生</block>
+  <block id="5c39924e9d126f590c67a59f9e12f60a" category="cell">ミラーリングはデータ損失なしで継続されますが、Witnessが利用可能になるまで自動スイッチオーバーはできません。手動でスイッチオーバーすることは可能です。</block>
+  <block id="b16da8b673f84a385f7d09a8adcc05c4" category="paragraph">サイト間のリンク障害は、プライマリサイトが1つだけの設計との主な違いです。両方のサイトでアクティブなSVMがホストされている場合、MetroClusterまたは2つのSnapMirrorアクティブ同期SVMが反対方向に動作している場合、corosyncタイブレーカーは1つのサイトのみを優先できます。アクティブなSVMが別のサイトにあるVMは、リンクが復旧するまでダウンしたままになります。影響を最小限に抑えるため、冗長なサイト間リンクを別々の物理パスで使用し、最も重要なVMを、タイブレーカーが優先するサイトのSVM上に配置してください。</block>
+  <block id="0161e3d40bdbea6ca6998c8c60165b33" category="section-title">機能比較</block>
+  <block id="4767099b22895a8101a1cba45d8cf6e9" category="cell">MetroCluster IP</block>
+  <block id="75b4d944f79b5c2cc1b2b0a41d3bacf4" category="cell">保護範囲</block>
+  <block id="bb71df7edf46d509bef3ee0521989a94" category="cell">選択されたSVMとボリューム</block>
+  <block id="f935825377eeaac7035ff903e5fa051c" category="cell">構成内のすべてのミラーリングされたアグリゲートとすべてのSVM</block>
+  <block id="eff4580bd61d76daf5cc0a8b9fb3d9fd" category="cell">フェイルオーバーの粒度</block>
+  <block id="10155fda9f7ebeed6ba6fee3e2f1f135" category="cell">各SVMは独立して</block>
+  <block id="a51ffacf758fd9e99d0f8d18316957e0" category="cell">スイッチオーバーによるサイト全体</block>
+  <block id="a2af6a5076e3807126293f652290afbf" category="cell">保護されていないワークロード</block>
+  <block id="42c2dc6d45049b1230318cf06c011db6" category="cell">同じクラスタ内の保護されていないSVM上で実行する</block>
+  <block id="312f0e64995f8f7df4241746b8d84d86" category="cell">ミラーリングされていないアグリゲートを使用できます。これらは切り替え後にオフラインになり、オンラインに戻すまでオフライン状態になります。</block>
+  <block id="a09c4080507bf2aa1c48bb2dd627b314" category="cell">クラスタ設計</block>
+  <block id="5e972b8e78daeb25d5423ae2d7c954c2" category="cell">IPネットワークを介してピアリングされた2つの独立したクラスタ</block>
+  <block id="a18d3480352cbf8100e8803792c539a6" category="cell">専用のMetroCluster IPバックエンド ネットワークを備えた2つのパートナー クラスターの1つの構成</block>
+  <block id="499b2fdc2f413619ae42a2c8f9bb7fee" category="cell">サイトCのWitness</block>
+  <block id="f0b6a0e3407899c93a8a7297d801f958" category="cell">ONTAP MediatorまたはONTAP Cloud Mediator</block>
+  <block id="2dcd02a25aa4e409b9d98d0579dc3f69" category="cell">ONTAP MediatorまたはMetroCluster Tiebreaker</block>
+  <block id="5b913a20fc5bc814d51d96d03fab450e" category="cell">保護されたデータのコピー</block>
+  <block id="88b81a656d54c4919930de266558188b" category="cell">各サイトに1つずつ</block>
+  <block id="1b50cd8d3ce356f39cc71094d5f933df" category="cell">各サイトに1つずつ、ミラーリングされたアグリゲート内</block>
+  <block id="03523fcdc021af0748401e9d716b0615" category="cell">レプリケーションパス</block>
+  <block id="1ea533128a6ded81593f1ffccc3df614" category="cell">クラスタ間LIFを介したSnapMirror同期</block>
+  <block id="8d055084fafdbcd3e564e049781516b1" category="cell">SyncMirror と NVRAM ミラーリング（MetroCluster IP バックエンド ネットワーク経由）</block>
+  <block id="313748137ce23660f3a2f8e66c874577" category="cell">両サイトのNFSアドレス</block>
+  <block id="0d41eb6ed6c1d73e6f8118d0babb068f" category="cell">拡張レイヤ2 VLAN。BGP対応VIP LIF（認定待ち）</block>
+  <block id="a4f28c1114090c48b450a319384be779" category="cell">拡張レイヤー2 VLAN、またはBGPを使用したVIP LIF</block>
+  <block id="b8c7f56c2f49819cd3ad673a11a7a2de" category="cell">サイト障害後のリカバリ</block>
+  <block id="a2d4283106ba914c944dbfc9124dc956" category="cell">各SVMをフェイルバックする</block>
+  <block id="f99bd3a5af46ffaf00d0e0e1006b637f" category="cell">アグリゲートを修復してから、サイトをスイッチバックしてください</block>
+  <block id="e2c366c556a275b2f82dd00a452d1354" category="section-title">選定ガイダンス</block>
+  <block id="55f2b90e72333d4c0ca5555c751b01d4" category="list-text">ストレージ上のすべての、またはほぼすべてのワークロードでRPOをゼロにする必要がある場合は、MetroClusterを選択してください。たとえば、企業がクラスタ上でミッションクリティカルなVMのみを実行している場合や、サービスプロバイダがすべてのテナントに同じ可用性階層を提供している場合などです。ワークロードごとの設定なしで、1つの保護ドメインが提供されます。</block>
+  <block id="98cf0197abafa59b9ca6a7cae708c01a" category="list-text">一部のテナント向けのプレミアム階層など、ワークロードのサブセットのみにRPOゼロが必要な場合、または一度に1つのテナントまたはアプリケーションに対してフェイルオーバーやディザスタリカバリのテストを行う必要がある場合は、SnapMirror active syncを選択してください。</block>
+  <block id="4c921463fcc8c41af2fe6a7ce977fdf3" category="list-text">NAS向けのSnapMirrorアクティブ同期は、MetroCluster構成ではサポートされていません。クラスタの各ペアには、いずれか1つのソリューションを使用してください。</block>
+  <block id="c69e0d37303ea1e976c623584e1f2682" category="list-text">このソリューションにおけるcorosync、QDevice、およびHAに関するガイダンスは、どちらにも適用されます。MetroClusterを使用する場合、サイト間リンクに障害が発生したときにデータの提供を継続するサイトにQDeviceタイブレーカーを合わせ、HAノードアフィニティルールを使用してVMをアクティブなSVMと同じサイトに維持します。</block>
+  <block id="39d6ebd0d8faac36797452ddc0777d23" category="list-text">MetroCluster IPは、サイト間のレイヤ3ネットワーク向けにBGPを使用したVIP LIFもサポートしています。</block>
+  <block id="f6c3f959f7b46d554b962e233161969b" category="section-title">Proxmox VEストレッチクラスターにおけるCorosyncに関する考慮事項</block>
+  <block id="1fffdc906017237efbb441504332975b" category="paragraph">Proxmox VEは、クラスタメンバーシップとクォーラムにcorosyncを使用します。Corosyncは、SnapMirror active syncよりもサイト間ネットワークの影響を受けやすいため、まずクラスタネットワークを計画してください。</block>
+  <block id="9a6a830def0a355e17b140b1caca2f03" category="section-title">レイテンシとネットワーク設計</block>
+  <block id="d7b9d2d16130c3bede536ce71796cff1" category="list-text">SnapMirrorアクティブ同期には、クラスタ間の往復時間（RTT）が10 ms未満である必要があります。Proxmoxは、すべてのノード間のcorosyncレイテンシを5 ms未満にすることを推奨しているため、corosyncの要件がソリューションの距離制限を決定します。</block>
+  <block id="ded8e63c72b4cc5d68600e5a7fc54514" category="list-text">Corosyncは、高い帯域幅よりも、低く安定したレイテンシを必要とします。ストレージのバーストによってcorosyncのタイムアウトが発生しないように、ストレージやライブマイグレーションのトラフィックとは別に、corosync専用のネットワークを使用してください。</block>
+  <block id="f8f36dd1bccd8310a16f56dbec421083" category="list-text">サイト間の別々の物理パス上に、少なくとも2つのcorosyncリンク（例えば、リンク0とリンク1）を設定してください。CorosyncはKronosnetを使用して、いずれかのパスに障害が発生した場合に自動的にリンクを切り替えます。</block>
+  <block id="31f6b03f88cf307ff612e89325af7150" category="section-title">第三サイトのQDeviceとのクォーラム</block>
+  <block id="1d58291c5250f7eb01bb6853fc0a0b95" category="paragraph">Proxmox VEノードをサイトAとサイトBに均等に分散させ、サイトCにQDeviceを追加します。4つのノードと1つのQDeviceでクラスタは5票を持ち、クォーラムには3票が必要となるため、どちらかのサイトで障害が発生してもクォーラムは失われません。QDeviceはTCPポート5403経由でクラスタに接続し、corosyncのような低レイテンシの要件がないため、サイトCをONTAP Mediatorと共有できます。ONTAP Cloud Mediatorを使用する場合でも、QDevice用に3つ目の場所が必要になりますが、Mediatorをホストしない小規模なLinuxホストを使用することもできます。</block>
+  <block id="5d4e57dc148fdfa45df69d21ca674e39" category="section-title">プライマリクラスタとのタイブレーカーアライメント</block>
+  <block id="b3e55304a08018b6e22999734d906493" category="paragraph">サイト間リンクに障害が発生しても、両方のサイトがサイトCに到達できる場合、ONTAPはサイトAのプライマリクラスタでデータの提供を継続します。QDeviceは同じサイトに投票する必要があります。デフォルトでは、QDeviceはノードIDが最も小さいパーティションを選択します。</block>
+  <block id="4a4e4bb9668cc2835612eea5272035fc" category="paragraph">*ベストプラクティス：* サイトAのノードでProxmox VEクラスタを作成し、サイトBのノードを参加させる前に他のサイトAのノードを参加させて、サイトAが最も小さいノードIDを保持するようにします。プライマリストレージが長期間サイトBに移動する場合は、QDevice<block ref="d422ea54402da152cc51add6bdc43853" prefix=" " category="inline-code"></block>の設定をサイトBのノードIDに更新します。</block>
+  <block id="096767c133b040298c52d5ba44e78cca" category="paragraph">QDeviceがサイトBを優先した場合、サイトAのノードは自己フェンスを行い、HAはサイトAのアクティブストレージにアクセスできないサイトBノード上のVMを再起動します。</block>
+  <block id="c54d29fcdcc04b88dab094666bdf3a02" category="section-title">HAの動作とVMの配置</block>
+  <block id="d0dc3a67ffd7a411170fc5ca205d0736" category="list-text">Proxmox VE HAは通常、障害が発生したノードを検出し、60秒のウォッチドッグフェンシングタイムアウトを含めて約2分でVMを復旧します。サイト障害時には、SnapMirror active syncのフェイルオーバーとProxmox VE HAのリカバリが並行して実行されます。</block>
+  <block id="18dcedc2affd6709d85998aa116d5ef9" category="list-text">HA ノードアフィニティルールとノード優先度を使用して VM をプライマリストレージと同じサイトのノードに配置し、別のサイトにフェイルオーバーできるようにします。</block>
+  <block id="9308d326d76e0bfecb7c862fcdf01b7b" category="list-text">サイトのフェイルオーバー後、ストレージをフェイルバックするまで、影響を受けるVMのHA<block ref="a571d3783c8d552371d5e8b486416b18" prefix=" " category="inline-code"></block>プロパティを<block ref="cfcd208495d565ef66e7dff9f98764da" prefix=" " category="inline-code"></block>に設定します。そうしないと、アクティブなストレージがまだサイトBにあるにもかかわらず、サイトAのノードが復旧し次第、HAがVMをサイトAのノードに移行してしまいます。</block>
+  <block id="051ff290ccdca7012fb794f12f9b0bd7" category="list-text">ゲストOSのディスクタイムアウトを、想定されるフェイルオーバー時間よりも長く設定してください。そうすることで、ストレージフェイルオーバー中にゲストOSがI/Oエラーを報告しなくなります。</block>
+  <block id="cd42b973e1ce697f4d6d007ecd62a297" category="section-title">Proxmox用ストレージマネージャーとの統合</block>
+  <block id="cc5e70eb78e630c431c1ec15482635c2" category="paragraph">Storage Manager for Proxmox (SMP) は、Proxmox VE 管理者に、ONTAP 共有ストレージをプロビジョニングし、ONTAP スナップショットと FlexClone テクノロジを使用して VM のバックアップ、リストア、クローン作成を行うための単一のインターフェイスを提供します。SMP は API を介して Proxmox VE クラスタおよび ONTAP に接続するため、Proxmox VE ノードにエージェントを配置する必要はありません。</block>
+  <block id="429d192cf22757b17686f7377bb5d58e" category="paragraph">SMPとSnapMirror active syncは、異なる種類の障害から保護します。SnapMirror active syncは、ストレージ障害やサイト障害が発生してもVMの実行を継続させますが、誤った削除、ゲストの更新失敗、ランサムウェアによって暗号化されたデータなど、すべての書き込みを同期的にレプリケートします。SMPスナップショットは、これらの論理障害からリカバリするためのポイントインタイムコピーを提供します。これらを組み合わせることで、同じONTAPストレージから継続的な可用性と迅速な運用リカバリを提供します。</block>
+  <block id="fca437e3555c66f269fb4967e579b7c0" category="cell">保護層</block>
+  <block id="5cb6602889212283e8d1310c7a0d537f" category="cell">から保護します</block>
+  <block id="8d904b2374a31b7e4cb1f98a0aa20fbd" category="cell">リカバリ ポイント</block>
+  <block id="c39d89ad1b38ee59f19539f3e45cec1e" category="cell">管理元</block>
+  <block id="819f49b5686c89515398c65fe7633a24" category="cell">ストレージシステム障害およびサイト障害</block>
+  <block id="a4e761c78f1dbbbc4b77d200a2d15fc3" category="cell">データ損失ゼロ</block>
+  <block id="253b40ae359ba25b56231803430c4873" category="cell">ONTAP</block>
+  <block id="1e19c3e01fcf49cf529ef390265e7352" category="cell">SMPバックアップ（ONTAPスナップショット）</block>
+  <block id="8dd371d7b7dbfac0e4043c8fd946b3c5" category="cell">誤削除、データ破損、アップデートの失敗、ランサムウェア</block>
+  <block id="3333150caf71c893c9f65c240d344943" category="cell">最後にスケジュールされた、またはオンデマンドのバックアップ</block>
+  <block id="edb3c4d18c4d80ab94156b7df8669c17" category="cell">SMP</block>
+  <block id="ca00142b235d517731879efdb5863269" category="cell">SnapMirror非同期ファンアウトまたはProxmox Backup Server</block>
+  <block id="22cc5144d507c0a738d77150b9c6ae70" category="cell">両サイトの喪失と長期保持</block>
+  <block id="73bf1614832a53f51502d28830f62e81" category="cell">最後のレプリケーションまたはバックアップ</block>
+  <block id="fcac45db1b31ec59e8aa4dd289166e18" category="cell">ONTAPまたはProxmox Backup Server</block>
+  <block id="be062cdcabbb3055334e8f19b4bdf378" category="section-title">バックアップとリカバリ</block>
+  <block id="dc6bac73c73356298062a7f88ba5618d" category="paragraph">SMPは、オンデマンドまたはポリシーに基づいて、ストレージボリュームのONTAPスナップショットとして「crash consistent state（障害など予期しないシャットダウン時と同様）」の状態またはファイル整合性のあるバックアップを作成し、個々のVM、ストレージ、またはリソースグループを復元します：</block>
+  <block id="7ee45f2d4198916a27d0d4e47bd67918" category="list-text">リソースグループとバックアップポリシーを使用して、テナントまたはアプリケーションの仮想マシンに同じスケジュールと保持期間を適用します。</block>
+  <block id="4dddd43db5c606308dcba76f0480822f" category="list-text">QEMUゲストエージェントを実行するVMにはファイル整合性バックアップを使用し、ONTAPがスナップショットを作成する前にゲストファイルシステムが静止されるようにします。</block>
+  <block id="1643209145cfe310a23496f5240367bd" category="list-text">SMPはアクティブなストレージを管理します。SnapMirrorアクティブ同期のフェイルオーバー後、バックアップまたはリストア操作を実行する前に、SMPで検出を実行してストレージをクラスタBにマッピングします。</block>
+  <block id="11d4c80ca29dd0d506da4d5bad065210" category="list-text">2つのサイト以外の3番目のコピー、またはより長い保存期間が必要な場合は、保護対象ボリュームからSnapMirror非同期ファンアウト関係を追加するか、Proxmox Backup Serverを使用してください。</block>
+  <block id="569aaaf444a43671282f06f050a49c4d" category="list-text">改ざん防止スナップショットはSnapMirrorアクティブ同期ではサポートされていないため、保護対象ボリュームのSMPでスナップショットロックを有効にしないでください。</block>
+  <block id="4b6826f4f20a8e7e7a3b42ccb81d514f" category="section-title">VMのクローニング</block>
+  <block id="4b4201ed8bc72ef2a6c98fbdd52822d8" category="paragraph">SMPは、ONTAP FlexCloneテクノロジを使用して、開発、テスト、および迅速なプロビジョニングのためのスペース効率に優れたVMクローンを作成します。保護されたストレージに作成したクローンは、両方のサイトでレプリケーションの帯域幅と容量を消費します。ビジネス継続性を必要としないクローンやテストストレージは、SnapMirrorアクティブ同期保護から除外してください。</block>
+  <block id="2114245d5cf8894ed2cb7ad643189f72" category="section-title">SMPの配置</block>
+  <block id="cc2284f3b900ca3c9a70d89e25b3d7ae" category="list-text">ストレージまたはサイト障害の発生後もSMPを引き続き利用できるように、SnapMirrorアクティブ同期で保護された共有ストレージ上のHAリソースとしてSMP VMを実行します。</block>
+  <block id="6683e0d78a0e8098b41d63309d605d3c" category="list-text">SMPがどちらのサイトのアクティブストレージにもアクセスできるように、SMPにProxmox VEクラスタと両方のONTAPクラスタを登録します。</block>
+  <block id="d9db5c5916f175a7e5ea6cacfbfbb595" category="section-title">NAS向けSnapMirror active syncを備えたNFS共有ストレージ</block>
+  <block id="0ea49bcef68dc3ac5abdd3c83dd33374" category="inline-link-macro">NASの設定ワークフロー</block>
+  <block id="8bc650871d32fa6cfcd8256e2ea134f7" category="paragraph">ONTAP 9.19.1以降、SnapMirrorアクティブ同期はNASワークロードを保護します。以下の考慮事項は、NFS共有ストレージにのみ適用されます。NFSストレージを使用してソリューションを導入するには、<block ref="828a4b8441b810633f9861a825889f60" category="inline-link-macro-rx"></block>に従ってください。</block>
+  <block id="f35786696ed931ffbbeda00743aa1087" category="section-title">SVMレベルの保護とネットワークID</block>
+  <block id="471edb80801a3e97185fe75d1e8ce3ae" category="list-text">SnapMirror active sync for NASは、ストレージVM（SVM）全体を保護します。SVM内のすべてのボリュームを保護することも、選択したボリュームを除外することもできます。サポートされるのはFlexVolボリュームのみであり、SVMにLUNを含めることはできません。</block>
+  <block id="27a951e48c9efb6febed179f65dca6aa" category="list-text">セカンダリSVMは、フェイルオーバーが発生するまで、LIFがダウンした状態で休止状態を維持します。ONTAPは、LIF IPアドレス、エクスポートポリシー、NFS設定などのSVM構成を複製するため、フェイルオーバー後もセカンダリSVMは同じNFSエンドポイントを提供します。</block>
+  <block id="9e8a4f44302c11c52c7c7380f2b9df3a" category="list-text">NFSv3以降では、フェイルオーバーは中断を伴いません。</block>
+  <block id="85d7c859ad7098941571d061357338e2" category="list-text">SnapMirror NASのアクティブ同期はアクティブ / パッシブであるため、サイトBノード上のVMは、サイト間ネットワークを介してプライマリSVMとの間で読み書きを行います。両サイトでアクティブなワークロードを実行する場合は、レプリケーション方向が逆の2つのSVMを使用し、各サイトに1つずつプライマリSVMを配置し、各VMのノードアフィニティルールをプライマリSVMのサイトに合わせます。</block>
+  <block id="cf7f2754d280b30ec1d1edb2fe39d091" category="list-text">NAS向けSnapMirrorアクティブ同期は、AFF AシリーズおよびCシリーズの2ノードクラスタでサポートされています。</block>
+  <block id="27951ac55a2cb257dfc1948339891ef3" category="section-title">NFSクライアント設定</block>
+  <block id="81b409d9c925f3465ebdcc4e5ec44c34" category="paragraph">NFSストレージにはNFSv3またはNFSv4.1を使用してください。デフォルトのハードマウント動作を維持し、フェイルオーバー中にNFS I/Oが失敗する代わりに再試行されるように、<block ref="dc58a7971816b41f3cc2b8c0f5f1bf0c" prefix=" " category="inline-code"></block>マウントオプションは追加しないでください。</block>
+  <block id="c603a3c2ad895621d9d17e6a487ae512" category="paragraph">パフォーマンスと耐障害性を向上させるため、ストレージへのTCP接続を複数使用してください。nConnectまたはセッショントランキングのいずれかを使用し、両方は使用しないでください：</block>
+  <block id="565808c37d704fe74bb1fbaa2c4394cd" category="list-text">*nConnect.*単一の NFS LIF アドレスへの複数の TCP 接続を開きます（例：<block ref="6ad27604f562c1a2600540bd7f1094d4" prefix=" " category="inline-code"></block>）。nConnect は NFSv3 および NFSv4.1 と単一の VIP LIF アドレスで動作するため、レイヤ 3 ネットワークを含む NAS 向け SnapMirror アクティブ同期に推奨されるオプションです。</block>
+  <block id="2042512ad460fc59bd9840e2dbf6204c" category="inline-link-macro">NFSトランキング</block>
+  <block id="51a2ca1029abc1f9bfc0bad136baa9da" category="list-text">*セッショントランキング。*複数のデータLIFを1つのNFSv4.1セッションにグループ化します（たとえば<block ref="55b8848a94663040bcff169fc53962e4" prefix=" " category="inline-code"></block>）。セッショントランキングにはNFSv4.1以降が必要です。保護対象のSVMに、拡張レイヤー2ネットワークなど、クライアントが両方のサイトからアクセスできる複数のデータLIFがある場合にのみ使用してください。詳細については、<block ref="4949b14d37bd9107d0909696d8d04282" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="38f2043bbbde7986b43c0e71c6ff6e35" category="paragraph">マウントオプションのコマンドと検証手順については、<block ref="ff7608fcce5dc1b873f9e65c70c5ca53" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="5bbdd7fd1e82ddd156cf26ebcf1b37ba" category="section-title">SMPを使用したNFSストレージ プロビジョニング</block>
+  <block id="f30d9226724ab04a28dde56524b593f6" category="paragraph">SMPはONTAPボリュームをプロビジョニングし、エクスポートポリシーを作成または選択して、選択したProxmox VEノードにNFS共有ストレージとしてボリュームをマウントします。保護されたSVM内のストレージの場合：</block>
+  <block id="deb5deb7a776fbb16332542b5c3a9595" category="list-text">プライマリSVMにボリュームをプロビジョニングし、NFS LIF、またはレイヤー3ネットワークの場合はVIP LIFを優先LIFとして選択します。セカンダリSVMはフェイルオーバー後も同じアドレスを使用するため、ストレージ定義は有効なまま維持されます。</block>
+  <block id="be21412abb6a9689a94e9a727476650f" category="list-text">HAがどのノードでもVMを再起動できるように、両サイトのすべてのProxmox VEノードにストレージをマウントしてください。</block>
+  <block id="ac107a07e03ec30b3a60f46800bf57c8" category="list-text">エクスポートポリシーで、両サイトのProxmox VEノードが許可されていることを確認してください。ONTAPはエクスポートポリシーをセカンダリSVMに複製します。</block>
+  <block id="0c2e69e0c7bbfba5226b5d892c6bf5c4" category="list-text">プロビジョニング後、ボリュームがSnapMirrorアクティブ同期保護に含まれていることを確認します。</block>
+  <block id="3fb50416a6d0ce54144bf9b9232b15e0" category="section-title">VIP LIFとBGPを備えたレイヤ3ネットワーク</block>
+  <block id="a73772ff83a942383515066309f738da" category="paragraph">SnapMirrorのNAS向けアクティブ同期には、プライマリSVMとセカンダリSVMで同じIPアドレスが必要です。NFS VLANがサイト間で拡張されている場合、LIF IPアドレスはSVMとともに移動します。サイトがルーティングされたレイヤ3ネットワークで接続されている場合、サイトAのLIFのサブネットはサイトBには存在しません。</block>
+  <block id="6d315f23909c8daf7f5049b45048a477" category="admonition">発行時点では、NetApp は NAS 向け SnapMirror アクティブ同期の認定構成として、BGP を使用した VIP LIF を文書化していません。レイヤ 3 設計を計画する前に、NetApp に現在のサポート状況を確認してください。それ以外の場合は、サイト間で NFS VLAN を拡張してください。MetroCluster IP 構成は、BGP を使用した VIP LIF をサポートしています。</block>
+  <block id="b56f5228684361ab9f3149522a561c7c" category="paragraph">ONTAP仮想IP（VIP）LIFはこの問題を解決します。VIP LIFはどのサブネットにも属しません。ONTAPは、ボーダーゲートウェイプロトコル（BGP）を使用してVIPアドレスを/32ホストルートとしてピアルータにアドバタイズするため、VLANを拡張することなくアドレスをサイト間で移動させることができます。</block>
+  <block id="f8d5789f6960a5a50be3c1abbe18176b" category="inline-image-macro">レイヤー3ネットワークにおいて、アクティブサイトからBGP経由でアドバタイズされるNFS共有ストレージ用のVIP LIF。図の後に、番号の付いた項目について説明します。</block>
+  <block id="f820d03ef509641a4e63ddd15db75def" category="paragraph"><block ref="f820d03ef509641a4e63ddd15db75def" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="54c52b4bad30d5f1205915e15968cdf8" category="list-text">両サイトの各ノードは、システムSVM内にBGP LIFを持ち、それぞれのサイトのルーターとピアリング接続を確立しています。BGP LIFはノード固有のものであり、複製されないため、両方のクラスタで設定する必要があります。</block>
+  <block id="8e4f64d19bf08ef1734513634b6c6dee" category="list-text">プライマリSVMはNFS VIP LIFをホストします。クラスターAは/32ホストルートをアドバタイズし、両サイトのProxmox VEノードはルーティングされたネットワークを介してストレージにアクセスします。</block>
+  <block id="e4b2bd9c59da2b6f140a86fa3e95a3dc" category="list-text">SnapMirrorアクティブ同期フェイルオーバーが発生したあと、セカンダリSVM上でVIP LIFが起動し、クラスタBがホストルートをアドバタイズし、ルーターがサイトBに収束します。</block>
+  <block id="52ee21d9094e34510e59eae007375582" category="paragraph">ONTAPで初めてBGPを計画する際、どのSVMが各LIFを所有しているかを知っておくと役立ちます。BGP LIFは、データSVMではなく、IPspaceのシステムSVMに属します。各クラスタ上の1組のBGP LIFが、そのIPspace内のすべてのデータSVMのVIP LIFを処理するため、テナントごとにBGP LIFを作成する必要はありません。次の図は、VLANポート上にBGP LIFが配置された、1つのクラスタにおけるLIFとポートのレイアウトを示しています。</block>
+  <block id="f7082ded5d457e7250cbf01da509f766" category="inline-image-macro">IPspaceのシステムSVM内のBGP LIFは、VLANポートにホームされており、そのIPspace内のすべてのデータSVMのVIP LIFにサービスを提供します。図の後に、番号の付いた項目について説明します。</block>
+  <block id="5bf44eedd2176b633da23b6f2be2aec6" category="paragraph"><block ref="5bf44eedd2176b633da23b6f2be2aec6" category="inline-image-macro-rx" type="image"></block></block>
+  <block id="fd8051fc39402e606b4a472ffd406c0c" category="list-text">各ノードにはBGP用のポートが2つあります。この例ではVLANポート<block ref="e3c0e2e7713c1b4eef5f60bb3685d6bc" prefix=" " category="inline-code"></block>および<block ref="ce9b8d475671d1a0e75802f168663e29" prefix=" " category="inline-code"></block>です。各ポートはそれぞれ異なるルーターに直接接続されます。</block>
+  <block id="c409f9fbcdc4365c091b014ebe3d100b" category="list-text">各ノードはシステムSVM内に2つのBGP LIFを持ち、各ポートに1つずつ配置され、/31サブネットと1つのルータへのBGPピアグループが設定されています。デフォルトのIPspaceの場合、システムSVMはクラスタSVMです。カスタムIPspaceの場合、IPspaceと同じ名前のSVMです。</block>
+  <block id="215e1612696a26401e5fb6ebc1a0e711" category="list-text">同じIPspace内のデータSVMはVIP LIFをホストし、独自のBGP LIFは必要ありません。BGPピアグループは、IPspace内のすべてのSVMに対してVIPルートをアドバタイズします。</block>
+  <block id="baf18ecdec327b66262f20d559b813ed" category="list-text">最初のBGPピアグループを作成すると、ONTAPは各ノードにVIPポート（たとえば<block ref="3dc5b961f4ca98b2676f527e321840a8" prefix=" " category="inline-code"></block>など）を作成します。VIP LIFはVIPポートでホストされ、IPspace内でBGP LIFをホストするノード上のすべてのポートからアクセスできます。</block>
+  <block id="a98df894b323e82c4b809ae5dd0cc6e7" category="paragraph">BGP LIFのホームポートは、物理ポート、VLANポート、インターフェースグループ、またはインターフェースグループ上のVLANのいずれかになります。インターフェースグループは必須ではありません。NetApp技術報告書TR-4949では、各IPspaceに対して2つの別々のポートに2つのBGP LIFを設定し、それぞれを異なるファーストホップルータに直接接続することを推奨しています。</block>
+  <block id="1184c4177555dbbc2053615ac9e93d43" category="paragraph">次のガイドラインに注意してください。</block>
+  <block id="ef0b903e038861e9d2190da4e708a379" category="list-text">BGP LIFはフェイルオーバーしません。冗長性は、ノードごとに2つのBGP LIFが存在し、それぞれが異なるルーターとピアリングすることで実現されます。ノードがSVMのすべてのBGPセッションを失った場合、ONTAPはVIP LIFを、そのSVMに対してアクティブなBGPセッションを持つ別のノードに移動します。</block>
+  <block id="0063bfdc71e1ba94c7a935070b55248d" category="list-text">各ONTAPノードと各ルーターに、固有のプライベート自律システム番号（ASN）を持つ外部BGP（eBGP）を使用します。</block>
+  <block id="d84cc606ab808229d1bc9a97e3a4e5e3" category="list-text">各BGP LIFとそのルーターには、/31サブネット（ネットマスク255.255.255.254）を使用してください。奇数番のアドレスをBGP LIFに、偶数番のアドレスをルーターに割り当ててください。</block>
+  <block id="a1dd9e1dc984fc722e987a7f0363d60c" category="list-text">ONTAPはルーターからのルートを処理しません。ONTAPからの/32ホストルートを受け入れ、クラスタにルート更新を送信しないようにルーターを設定します。</block>
+  <block id="792deb5dfb95ccb81c2fe9921065b6c7" category="list-text">Proxmox VEノードは、VIPアドレスと同じサブネットを共有してはなりません。ノードとストレージ間の経路には、例えばVRRPやHSRPを備えた冗長なレイヤー3ルーターを設置する必要があります。</block>
+  <block id="ef90771cfcb9d51de8841e2e1d7636b8" category="list-text">各クラスタがローカルルータからデフォルトルートを学習するように、<block ref="03c106aaf4719af41376007c9ee1482e" prefix=" " category="inline-code"></block>を使用してBGPピアグループを設定します。サイトAのゲートウェイを指すルートは、フェイルオーバー後のサイトBでは無効になります。</block>
+  <block id="41d4e3001b4c526aa2c567d67144ddfb" category="list-text">マルチパスルーティングを有効にして、送信VIPトラフィックが利用可能なすべてのBGP LIFポートを使用するようにします。</block>
+  <block id="9faedc00a2b3d1b09efd43c02609b792" category="list-text">BGPのホールド時間をデフォルトの180秒から短縮します。TR-4949では、3秒のホールド時間を推奨しています。ルーターが障害の発生したクラスターからルートを取り消すのは、ホールドタイマーが満了したときのみであり、ストレージシステム障害の発生中もサイトAのルーターはオンライン状態を維持します。</block>
+  <block id="6b0096a280c04de21fb5d2ef96df1cb7" category="inline-link-macro">ONTAP SnapMirror アクティブ同期アーキテクチャ</block>
+  <block id="2dfb829fe1e40af1cb9ddc839717eb0e" category="list-text"><block ref="2dfb829fe1e40af1cb9ddc839717eb0e" category="inline-link-macro-rx"></block></block>
+  <block id="59cdd5a932a86ccfe106d9d224aa5a2b" category="inline-link-macro">ONTAP SnapMirror Active Syncの前提条件</block>
+  <block id="a55a3b9f6e5927a79dab8934dd8ffe77" category="list-text"><block ref="a55a3b9f6e5927a79dab8934dd8ffe77" category="inline-link-macro-rx"></block></block>
+  <block id="5af358fa734bf66107b5e0f599f51d45" category="inline-link-macro">ONTAP MetroCluster仮想IPとBGPに関する考慮事項</block>
+  <block id="a63fcdbaf493520c78859af2ce7f4131" category="list-text"><block ref="a63fcdbaf493520c78859af2ce7f4131" category="inline-link-macro-rx"></block></block>
+  <block id="84f5ebf9b3c2ee531cc7bff9814a5313" category="inline-link-macro">MetroClusterデータ保護と災害復旧</block>
+  <block id="223aed3cad24ee06eb1a1758feeb27c0" category="list-text"><block ref="223aed3cad24ee06eb1a1758feeb27c0" category="inline-link-macro-rx"></block></block>
+  <block id="9e4d208eddea6bb1add725ba82eaf542" category="list-text"><block ref="9e4d208eddea6bb1add725ba82eaf542" category="inline-link-macro-rx"></block></block>
+  <block id="b5035a2b2da0391f4ca096afc9a3207a" category="inline-link-macro">TR-4949：データセンターにおけるONTAPでのBGP/VIP</block>
+  <block id="8aadede52d3b4cac5a9857c363821b2c" category="list-text"><block ref="8aadede52d3b4cac5a9857c363821b2c" category="inline-link-macro-rx"></block></block>
+  <block id="430e0f26153fc08d5064456a63dd7d84" category="inline-link-macro">Proxmox VEクラスタ マネージャ</block>
+  <block id="d6405e5d5ec6aebf79309244812c9f50" category="list-text"><block ref="d6405e5d5ec6aebf79309244812c9f50" category="inline-link-macro-rx"></block></block>
+  <block id="0e47570de34d34f503e569132e73b40c" category="inline-link-macro">Proxmox VEの高可用性</block>
+  <block id="95ff68ea490d91143431d474341e6917" category="list-text"><block ref="95ff68ea490d91143431d474341e6917" category="inline-link-macro-rx"></block></block>
+  <block id="f535eb1278ad100b4d323539a7942781" category="section-title">2026年10月14日</block>
+  <block id="9c6fb696da0cdd15c87ef7016fe4f6ef" category="list-text">ONTAP SnapMirror アクティブ同期を使用したProxmox VE向けのビジネス継続性ソリューションを追加しました。</block>
+  <block id="2f8480a0bd37c11da2dff9d9b62c37ea" category="list-text"><block ref="2f8480a0bd37c11da2dff9d9b62c37ea" category="inline-link-macro-rx"></block></block>
+  <block id="b9509c2be2f49b59c9f2d64393ee8d8a" category="paragraph">NAS向けSnapMirror active syncを備えたProxmox VEストレッチクラスタが、ストレージ障害やサイト障害が発生してもRPOゼロでVMを稼働し続ける仕組みについて説明します。corosyncおよびQDeviceの設計上の考慮事項、ONTAP MediatorおよびONTAP Cloud Mediatorのオプション、レイヤ3ネットワーク向けのBGPを使用したVIP LIF、およびMetroClusterとの比較が含まれます。</block>
+  <block id="f79744208db864a6c7f8beb3bb598635" category="list-text"><block ref="f79744208db864a6c7f8beb3bb598635" category="inline-link-macro-rx"></block></block>
+  <block id="1bc5e6d2348849b5c1c0bab88934bc0f" category="paragraph">メディエーターの設定、NFS SVMの保護、QDeviceを使用したストレッチクラスタの構築、NFS共有ストレージのプロビジョニング、およびStorage Manager for Proxmoxを使用したHAとVMバックアップの設定を行います。</block>
+  <block id="5177be93f9cdfe3b7df558b63f798e77" category="sidebar">Proxmox VEワークロードの事業継続性</block>
+  <block id="274fe65c32318cf5c48e4591b8045f37" category="sidebar">NASストレージで構成する</block>
 </blocks>

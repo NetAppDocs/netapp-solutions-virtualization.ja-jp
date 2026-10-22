@@ -15,6 +15,25 @@ summary: NetApp仮想化ソリューション資料への最近の変更のロ�
 
 
 
+[[14-october-2026]]
+== 2026年10月14日
+
+* ONTAP SnapMirror アクティブ同期を使用したProxmox VE向けのビジネス継続性ソリューションを追加しました。
++
+** link:proxmox/proxmox-business-continuity.html["SnapMirror active syncを使用したProxmox VEのビジネス継続性について学ぶ"]
++
+NAS向けSnapMirror active syncを備えたProxmox VEストレッチクラスタが、ストレージ障害やサイト障害が発生してもRPOゼロでVMを稼働し続ける仕組みについて説明します。corosyncおよびQDeviceの設計上の考慮事項、ONTAP MediatorおよびONTAP Cloud Mediatorのオプション、レイヤ3ネットワーク向けのBGPを使用したVIP LIF、およびMetroClusterとの比較が含まれます。
+
+** link:proxmox/proxmox-active-sync-nas-config.html["Proxmox VEのビジネス継続性をNASストレージで構成する"]
++
+メディエーターの設定、NFS SVMの保護、QDeviceを使用したストレッチクラスタの構築、NFS共有ストレージのプロビジョニング、およびStorage Manager for Proxmoxを使用したHAとVMバックアップの設定を行います。
+
+
+
+
+
+
+
 [[21-august-2026]]
 == 2026年8月21日
 

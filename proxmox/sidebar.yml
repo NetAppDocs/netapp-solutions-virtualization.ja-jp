@@ -40,5 +40,14 @@ entries:
     url: "/proxmox/proxmox-pbs-requirements.html"
   - title: Proxmoxバックアップサーバーでデータ保護を構成する
     url: "/proxmox/proxmox-wkld-dp-pbs.html"
-- title: Proxmox用Storage Managerの設定と使用
-  url: "/proxmox/proxmox-smp.html"
+  - title: Proxmox用Storage Managerの設定と使用
+    url: "/proxmox/proxmox-smp.html"
+- title: Proxmox VEワークロードの事業継続性
+  pdf-filename: Proxmox VEワークロードの事業継続性
+  entries:
+  - title: ソリューションアーキテクチャ
+    url: "/proxmox/proxmox-business-continuity.html"
+  - title: NASストレージで構成する
+    url: "/proxmox/proxmox-active-sync-nas-config.html"
+  - title: Proxmox用Storage Managerの設定と使用
+    url: "/proxmox/proxmox-smp.html"

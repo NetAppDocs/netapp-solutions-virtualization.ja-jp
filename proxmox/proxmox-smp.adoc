@@ -152,7 +152,7 @@ image::proxmox-smp-image2.png[SMPインストールウィザード]
 
 
 
-. ウェブブラウザを開き、 `http://<IP address specified during installation>:4001`を入力してSMP UIにアクセスします
+. ウェブブラウザを開き、 `https://<IP address specified during installation>:4001`を入力してSMP UIにアクセスします
 +
 .SMPログイン画面を表示
 [%collapsible]
@@ -160,6 +160,10 @@ image::proxmox-smp-image2.png[SMPインストールウィザード]
 image::proxmox-smp-image4.png[SMPログイン画面]
 
 ====
+. デフォルトのユーザー名 `admin`とパスワード `admin`を使用してSMPにログインします。
++
+指示が表示されたら、デフォルトのパスワードを変更してください。Shiftツールキットを使用してSMPをインストールする場合も、同じデフォルトの認証情報が適用されます。
+
 +
 .SMPホーム画面を表示
 [%collapsible]

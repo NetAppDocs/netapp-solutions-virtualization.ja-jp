@@ -15,8 +15,13 @@ summary: NetApp仮想化ソリューション資料への最近の変更のロ�
 
 
 
-[[14-october-2026]]
-== 2026年10月14日
+[[22-october-2026]]
+== 2026年10月22日
+
+* Proxmox VEで使用されるNVMeネームスペース、NVMeサブシステム、LUN、およびigroupに推奨されるONTAP OSタイプを追加しました。
++
+** link:proxmox/proxmox-ontap.html["Proxmox仮想環境用のONTAPストレージのプロビジョニング"] == 2026年10月14日
+
 
 * ONTAP SnapMirror アクティブ同期を使用したProxmox VE向けのビジネス継続性ソリューションを追加しました。
 +

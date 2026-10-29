@@ -57,8 +57,25 @@ ONTAPを初めて使用する場合は、System Manager を使用すると使い
 +
 image:proxmox-ontap-fc-001.png["FCインターフェースの詳細"]
 
-. igroup を作成し、ホスト FC イニシエーターを追加します。
-. SVM 上に希望のサイズの LUN を作成し、前の手順で作成した igroup に提示します。ASAシステムのセキュリティ タブとAFF/ FASシステムのボリューム セキュリティ タブで、ランサムウェア対策保護が有効になっていることを確認します。
+. OSタイプを `linux`に設定したigroupを作成し、ホストFCイニシエータを追加します。
++
+Proxmox VEはDebian Linuxをベースにしているため、Proxmox VEホストイニシエータを含むigroupには `linux` OSタイプを使用します。System Managerで、ホストオペレーティングシステムとして*Linux*を選択します。ONTAP CLIを使用する場合は、次のコマンドを実行します。
+
++
+[source, cli]
+----
+lun igroup create -vserver <svm_name> -igroup <igroup_name> -protocol fcp -ostype linux -initiator <wwpn_1>,<wwpn_2>
+----
+. SVM上で、OSタイプを `linux`に設定し、目的のサイズでLUNを作成して、前の手順で作成したigroupに提示します。ASAシステムの場合はセキュリティタブで、AFF/FASシステムの場合はボリュームのセキュリティタブで、ランサムウェア対策保護が有効になっていることを確認します。
++
+System Managerで、ホストオペレーティングシステムとして*Linux*を選択します。ONTAP CLIを使用する場合は、以下のコマンドを実行してください。
+
++
+[source, cli]
+----
+lun create -vserver <svm_name> -path /vol/<volume_name>/<lun_name> -size <size> -ostype linux
+lun mapping create -vserver <svm_name> -path /vol/<volume_name>/<lun_name> -igroup <igroup_name>
+----
 +
 image:proxmox-ontap-fc-002.png["lunの詳細"]
 

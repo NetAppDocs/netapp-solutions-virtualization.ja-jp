@@ -1,0 +1,146 @@
+---
+sidebar: sidebar 
+permalink: nutanix/nutanix-connectivity.html 
+keywords: nutanix, ahv, ontap, nfs, netapp, network, vswitch, lacp, jumbo frames, prerequisites 
+summary: 環境を準備し、Nutanix AHVコンピューティング専用ホストとONTAPストレージコントローラ間のネットワーク接続を計画します。 
+---
+= ONTAPストレージを使用したNutanix Cloud Platformのデプロイの準備
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Nutanix AHVコンピューティング専用ホストをONTAPストレージに接続するための前提条件と推奨ネットワーク アーキテクチャを確認してください。この設計により、コンピューティングとは独立してストレージ容量とパフォーマンスを拡張できるため、ストレージの拡張のみを目的としてNutanixノードを追加する必要がなくなります。
+
+この設計では、Nutanix AHVコンピューティング専用ホストとONTAPストレージコントローラ間に専用のストレージネットワークを使用します。ストレージトラフィックは、専用の仮想スイッチ（vswitch1）と外部ストレージVLANを介して、管理トラフィックおよびアプリケーショントラフィックから分離されます。ONTAPは、専用のSVMデータLIFを介してNFSv3ストレージサービスを提供し、SVM管理LIFはストレージの管理と統合のためにREST APIとともに使用されます。
+
+回復力とパフォーマンスを向上させるため、Nutanixのコンピューティング専用ホストとONTAPコントローラは、冗長ネットワークパス全体でLACP（アクティブ / アクティブ）を使用します。LACPが利用できない場合、MACピンニングを使用したアクティブ / アクティブ構成により、仮想スイッチレイヤでロード バランシングが提供されます。ストレージトラフィックは専用の非ルーティングVLAN上に配置する必要がありますが、管理、ライブマイグレーション、災害復旧レプリケーション、およびアプリケーションのトラフィックは、引き続き標準のルーティングネットワークを使用します。
+
+
+
+[[prerequisites]]
+== 前提条件
+
+ONTAPストレージをNutanix Cloud Infrastructureと統合する前に、以下の要件が満たされていることを確認してください。
+
+*Nutanixクラスター*
+
+AHVを実行するNutanixクラスタがデプロイされて稼働しており、以下の要件を満たしています：
+
+* 最低3つのノードが必要です。
+* コンピューティングノードは、CPU、メモリ、ネットワーク、およびブートデバイスに関して、Nutanixの最小要件を満たしています。詳細については、最小コンピューティング要件を参照してください。
+* ハードウェアとソフトウェアについては、該当するNutanix互換性マトリックスに記載されています。link:https://portal.nutanix.com/page/compatibility-interoperability-matrix/platform-compatibility/compute-platforms["コンピューティングプラットフォームの互換性および相互運用性マトリックス"^] を参照してください。
+
+
+*NetApp ONTAPストレージ*
+
+NetApp ONTAPストレージはNFSサービスが有効化された状態で展開および構成されており、以下の要件を満たしている必要があります：
+
+* サポート対象ONTAPプラットフォーム：AFF Aシリーズ（オールフラッシュ）、AFF Cシリーズ（オールフラッシュ）、およびFAS（ハイブリッド フラッシュ）。
+* ONTAPがサポートされているリリースを実行していること：9.15.1P18以降、9.16.1P16以降、9.17.1P8以降、9.18.1P4以降、または9.19.1P2以降。
+* ONTAP Oneライセンス。
+* ONTAPストレージ仮想マシン（SVM）は、Nutanixコンピュートクラスタにストレージを提供するように構成されています。
+* 1つ以上のFlexVolボリュームがNFS共有としてエクスポートされます。NutanixクラスターはNFSエクスポートをマウントし、ワークロード用の共有ストレージとして提供します。
+* NetAppは、NFS LIFのホームポートとしてインターフェイスグループを使用することを強く推奨します。詳細については、link:https://docs.netapp.com/us-en/ontap/networking/combine_physical_ports_to_create_interface_groups.html["物理ポートを組み合わせてONTAPインターフェースグループを作成する"^]を参照してください。
+
+
+*ネットワーキング*
+
+* 専用ストレージ ネットワークは、最低10 GbEで利用可能です。25 GbE以上を推奨します。
+* ストレージトラフィック用に個別のインターフェースが用意されています。
+* ジャンボフレーム（MTU 9000）は、サポートされている場合、ストレージ ネットワーク全体で一貫して設定されます。
+
+
+[NOTE]
+====
+* 専用の仮想スイッチを使用してONTAPストレージトラフィックを処理し、MTUを9000バイト（ジャンボフレーム）に設定します。
+* ONTAPプライベートネットワークでネットワークセグメンテーションを有効にしたあとは、無効にすることはできません。ネットワークセグメンテーションを無効にすると、ストレージのプライベートIPにアクセスできなくなり、クラスタサービスの重大な障害が発生する可能性があります。
+
+
+====
+
+
+[[network-architecture]]
+== ネットワーク アーキテクチャ
+
+次の図は、Nutanix AHVノードとONTAPクラスタ間の接続を示しています。
+
+image:nutanix-connectivity-001.png["vswitch0とvswitch1を備え、2つの外部スイッチを介してONTAP 9クラスタに接続されたNutanix AHVノードを示すネットワーク図"]
+
+以下の表では、各ネットワークコンポーネント、その構成、および目的について説明します。
+
+[cols="25,45,30"]
+|===
+| コンポーネント | 構成 | 目的 
+
+
+| Nutanix コンピュートノード | 管理およびユーザVMネットワーク（ルーティングVLAN）とストレージ ネットワーク（非ルーティングVLAN）用のボンディングNIC。NICのボンディングが不可能な場合は、仮想スイッチにアクティブ / アクティブのアップリンクを使用します。 | 管理トラフィック、VMトラフィック、ストレージトラフィックを分離しながら、ネットワークの冗長性を提供します。 
+
+
+| ONTAPストレージコントローラー | SVM管理LIFとSVMデータLIF。可能な限り、耐障害性とロード バランシングのためにインターフェイス グループを使用します。 | 管理LIFは、ONTAPの管理に使用されます。データLIFは、NutanixクラスタへのNFSv3ストレージ アクセスを提供します。 
+
+
+| 管理用およびユーザー用VMネットワーク（ルーティングされたVLAN） | Prism管理、CVMトラフィック、ライブマイグレーション、およびレプリケーショントラフィック | クラスタ管理と仮想マシンのトラフィックを処理します。 
+
+
+| 内部ストレージ ネットワーク（ルーティングなし） | CVM間通信、AHVサービス、クラスタノード間トラフィック | ストレージおよびクラスタサービス専用のネットワークです。ユーザーのトラフィックから隔離されています。 
+
+
+| 外部のストレージ ネットワーク（ルーティングされないVLAN） | AHV/CVMsとONTAP間のNFSv3ストレージトラフィック | ONTAPストレージへの低レイテンシでハイパフォーマンスなアクセスを提供します。 
+
+
+| vswitch0を使用したチャンク アップロード署名要求がサポートされるようになりました。 | Nutanixの管理、アプリケーショントラフィック、ライブマイグレーション、およびレプリケーション | 管理および仮想マシンネットワーク用のプライマリ仮想スイッチ。 
+
+
+| vswitch1を使用したチャンク アップロード署名要求がサポートされるようになりました。 | 専用のNFSv3ストレージトラフィック。最低2つの物理的なアップリンクが必要です。LACP（アクティブ / アクティブ）推奨。MTU 9000。 | ONTAP接続に最適なパフォーマンス、耐障害性、トラフィック分離を提供する専用ストレージスイッチ。 
+|===
+
+
+[[high-level-deployment-steps]]
+== 導入手順の概要
+
+ONTAPを準備し、ストレージ ネットワークを構成して、NutanixホストをONTAPストレージに接続するには、以下の概要手順を実行します。
+
+. ONTAPをデプロイして構成します。
++
+.. link:https://docs.netapp.com/us-en/ontap/quick-start.html["ONTAPのクイック スタート"^]を参照してください。
+.. 可能な限りインターフェイスグループを作成してください。link:https://docs.netapp.com/us-en/ontap/networking/combine_physical_ports_to_create_interface_groups.html["物理ポートを組み合わせてONTAPインターフェースグループを作成する"^] を参照してください。
+.. ONTAPネットワーク用のSVMを作成します。link:https://docs.netapp.com/us-en/ontap/networking/create_svms.html["ONTAPネットワーク用のSVMを作成する"^]を参照してください。
+.. 管理およびNFSデータ用のONTAP LIFを作成します。link:https://docs.netapp.com/us-en/ontap/networking/create_a_lif.html["ONTAP LIFを作成する"^] を参照してください。
+.. ONTAP System Managerを使用してボリュームを追加します。NFSv3データを提供するには、ボリュームでUNIXセキュリティ形式を使用する必要があります。link:https://docs.netapp.com/us-en/ontap/task_admin_add_a_volume.html["ONTAP System Manager でボリュームを追加する"^]およびlink:https://docs.netapp.com/us-en/ontap/nfs-admin/create-volumes-specified-junction-task.html["指定されたジャンクションポイントを持つONTAP NASボリュームを作成する"^]を参照してください。
+.. Nutanixのコンピューティング専用ホストからのアクセスを許可するようにエクスポートポリシーを設定します。link:https://docs.netapp.com/us-en/ontap/nfs-admin/export-policies-client-access-volumes-concept.html["エクスポート ポリシーが ONTAP NFS ボリュームまたは qtree へのクライアント アクセスを制御する方法"^]を参照してください。
+
+
+. ストレージ ネットワークを設定します。
++
+.. NFSストレージトラフィック専用の、ルーティングされないVLANを作成します。link:https://docs.netapp.com/us-en/ontap/networking/configure_vlans_over_physical_ports.html["専用の非ルーティングVLANを作成する"^]を参照してください。
+.. 冗長なスイッチングインフラストラクチャを構成します。
+.. エンドツーエンドでジャンボフレーム（MTU 9000）を有効にします。ONTAPについては、link:https://docs.netapp.com/us-en/ontap/networking/change_the_mtu_value_for_ports_in_a_broadcast_domain.html["ONTAPブロードキャストドメイン内のポートのMTU値を変更する"^]を参照してください。
+
+
+. NutanixホストをプロビジョニングしてONTAPに接続します。
++
+.. ONTAP NFSデータLIFへの接続を検証します。
+.. ロード バランシングとパスの冗長性を確認します。
+
+
+. 専用のストレージ仮想スイッチを作成します。
++
+.. Nutanix AHV上にvswitch1を作成します。
+.. 少なくとも2つの専用物理NICを割り当ててください。
+.. サポートされている場合は、LACP（アクティブ / アクティブ）を設定します。
+
+
+. 回復力を検証します。
++
+.. ストレージパスのフェイルオーバーをテストします。
+.. AHVがリンクまたはスイッチの障害発生時に、実行中のVMに影響を与えることなくストレージトラフィックを自動的に再ルーティングすることを確認してください。
+
+
+
+
+このアーキテクチャは、コンピューティングリソースとストレージリソースを個別に拡張できるようにしながら、Nutanix環境向けにハイパフォーマンスで可用性の高いストレージ ファブリックを提供します。Nutanixのコンピューティング専用ノードを追加することなく、ONTAPの拡張によってストレージの増加に対応できるため、エンタープライズクラスのパフォーマンスと可用性を維持しながらインフラストラクチャのコストを削減できます。

@@ -1,0 +1,66 @@
+---
+sidebar: sidebar 
+permalink: nutanix/nutanix-data-protection.html 
+keywords: nutanix, ontap, data protection, disaster recovery, snapshot, snapmirror, migration, nutanix move, limitations, ga 
+summary: ONTAP外部ストレージを使用するNutanixでのデータ保護、災害復旧、VM移行の仕組みと、一般提供時点でサポートされていない機能について説明します。 
+---
+= ONTAP環境のNutanixにおけるデータ保護、災害復旧、移行、および制限事項
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+Nutanixコンピューティングクラスタの外部ストレージとしてONTAPを使用する場合のデータ保護、災害復旧、VM移行の仕組みを理解し、一般提供（GA）でサポートされていない機能を確認します。
+
+
+
+[[data-protection]]
+== データ保護
+
+Prismで管理されるVMスナップショットは、ONTAPボリューム スナップショットではなく、VMディスクのONTAPファイルレベルのクローンを使用します。Prismはスナップショットのライフサイクルを管理し、ONTAPは基盤となるファイル クローン機能を提供します。
+
+ファイル クローンは、アクティブ ファイル システム内の書き込み可能なコピーです。単体では削除されないようにロックすることはできず、ARPリカバリ ポイントでもありません。また、SnapMirrorやSnapVaultを介して独立して保持または保管されることもありません。各ディスクは個別にクローンされるため、調整が行われない限り、ディスク間のリカバリ ポイントは単一の共有時点ではキャプチャされません。ONTAPボリューム スナップショットは、これらの保護機能をネイティブに提供します。不変でランサムウェアに対する耐性があり、長期保持されるリカバリ ポイントを必要とするお客様は、ONTAPスナップショットの統合を待つことをご検討ください。
+
+
+NOTE: ONTAPスナップショットのサポートに関するGAの制限は、今後のリリースで対応予定です。
+
+
+
+[[disaster-recovery]]
+== ディザスタ リカバリ
+
+Nutanixの非同期DRは、GAリリース期間中にサポートされている唯一のレプリケーション方法です。ONTAP SnapMirrorは利用できません。
+
+SnapMirrorは、サイト間でONTAPデータをレプリケートするための確立された選択肢です。変更されたブロックのみをレプリケートし、転送中およびデスティネーションでの重複排除と圧縮による削減効果を維持し、セカンダリ システムに複数のリカバリポイントを保持できます。レプリケーションはストレージシステム上で実行されるため、ホスト側でデータをコピーする必要はありません。ONTAPを外部ストレージとして使用しているお客様にとって、これはDRがONTAP環境の他の部分と同じレプリケーション、保持、およびリカバリプロセスを使用することを意味します。
+
+
+NOTE: SnapMirror統合は今後のリリースで予定されています。ONTAPレプリケーションによるDRの標準化をご希望のお客様は、SnapMirrorの統合をお待ちいただくことをご検討ください。
+
+
+
+[[vm-migrations]]
+== VM移行
+
+今回のリリースでは、VM移行にNutanix Moveを使用します。NetApp Shiftツールキットはサポートされていません。ShiftツールキットとNutanix Moveの統合は、今後のリリースで予定されています。ONTAPのクローニングと割り当て済みブロックのマッピングを使用して、データの完全なコピーを回避し、移行を高速化します。
+
+
+
+[[features-not-supported-at-ga]]
+== 一般提供開始時点ではサポートされていない機能
+
+NetAppとNutanixの統合では、GA時点において以下の構成、機能、および統合はサポートされていません：
+
+* 複数のNetAppアレイ、Nutanixクラスタごとに複数のストレージ仮想マシン（SVM）、または複数の論理インターフェース（LIF）を使用する構成
+* NetApp MetroCluster
+* ONTAPスナップショットおよびそれに依存する機能
+* SnapMirrorアクティブ同期
+* ONTAP Select
+* NetApp Trident Nutanix Kubernetes Platform（NKP）向け
+* NFSv4.1
+* FlexGroupボリューム
+* NetApp Shift ツールキット
+

@@ -1,0 +1,28 @@
+---
+indexpage:
+  title: NetApp Nutanixの仮想化ソリューション
+  summary: NetApp Nutanix仮想化ソリューションは、NetApp ONTAPをNutanix Cloud Platformの外部NFSストレージとして使用する方法を示しており、これによりコンピューティングとストレージを個別に拡張できます。
+  lead: NetApp Nutanix仮想化ソリューションは、NetApp ONTAPをNutanix Cloud Platformの外部NFSストレージとして使用する方法を示しており、これによりコンピューティングとストレージを個別に拡張できます。
+  tiles:
+  - title: 始めましょう
+    links:
+    - title: ONTAPストレージを使用したNutanixについて学ぶ
+      url: nutanix-overview.html
+    - title: Nutanix Cloud Platformドキュメント
+      url: https://portal.nutanix.com/
+  - title: ONTAPを使用したNutanixのデプロイ
+    links:
+    - title: 展開の準備
+      url: nutanix-connectivity.html
+    - title: Nutanixコンピューティングクラスタをデプロイする
+      url: nutanix-deploy-cluster.html
+    - title: ONTAPボリュームと権限を設定する
+      url: nutanix-ontap-storage.html
+    - title: ONTAP NFSストレージのアタッチ
+      url: nutanix-attach-storage.html
+  - title: 計画して保護する
+    links:
+    - title: データ保護、災害復旧、および制限事項
+      url: nutanix-data-protection.html
+    - title: Nutanix AHV移行用のONTAPストレージのサイジング
+      url: nutanix-sizing.html

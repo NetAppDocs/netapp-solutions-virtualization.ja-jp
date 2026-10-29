@@ -1,0 +1,155 @@
+---
+sidebar: sidebar 
+permalink: nutanix/nutanix-deploy-cluster.html 
+keywords: nutanix, ahv, aos, foundation central, cluster, deploy, ontap, netapp 
+summary: Foundation Centralを使用してNutanixコンピューティングクラスタをデプロイし、NetApp ONTAPストレージに接続します。 
+---
+= ONTAPストレージを使用してNutanixコンピューティングクラスタをデプロイする
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+NetApp ONTAPのストレージを利用するNutanixコンピューティングクラスタを導入します。AOSおよびAHVインストールパッケージをダウンロードし、Foundation Centralをセットアップし、コンピューティングノードのイメージ作成とオンボーディングを行い、クラスタを作成してから、そこにONTAPストレージを接続します。
+
+.手順
+. *AOSおよびAHVのインストールパッケージをダウンロードしてください。*
++
+詳細については、link:https://portal.nutanix.com/page/documents/details?targetId=AHV-Admin-Guide-v11_2:ahv-ahv-installer-download-t.html["AOSおよびAHVインストールパッケージのダウンロード"^]を参照してください。
+
+. *Foundation Centralをセットアップします。*
++
+Nutanix Foundation Central（FCA）は、サポートされている OEM サーバーのイメージを作成し、Nutanix コンピュート クラスターを作成するための推奨されるデプロイ ツールです。
+
++
+.. Foundationインストーラーバンドルをダウンロードし、Foundation VMをデプロイします。
+.. link:https://portal.nutanix.com/page/documents/details?targetId=Foundation-Central-Appliance-v1_11:v1-setup-fca-t.html["Foundation Central の設定"^] を完了します。
+.. 必要に応じて、管理用IPアドレスとネットワーク設定を更新してください。
+.. 設定されたIPアドレスを使用して、Foundation CentralのWeb UIにアクセスしてください。
++
+
+NOTE: Foundation Centralのデプロイが失敗した場合は、FCA VMにログインして `k3d cluster delete fccluster`を実行し、セットアッププロセスを再実行してください。
+
++
+詳細については、link:https://portal.nutanix.com/page/documents/details?targetId=Field-Installation-Guide:fie-foundation-vm-install-on-workstation-t.html["Foundation VMのインストール"^]を参照してください。
+
+
+
+. *AOSおよびAHVのインストールイメージをアップロードしてください。*
++
+Foundation Centralのイメージ管理機能を使用して、以下の操作を実行してください：
+
++
+.. AOSおよびAHVのイメージをFoundation Centralにアップロードします。
+.. イメージが展開可能になっていることを確認してください。
+
+
+. *計算ノードを検出してイメージを作成します。*
++
+次のいずれかのオプションを選択します。
+
++
+*オプションA：ハードウェアプロバイダー（推奨）*
+
++
+link:https://portal.nutanix.com/page/documents/details?targetId=Foundation-Central-Appliance-v2_3_0_1:v2-bare-metal-install-workflow-c.html["ハードウェアプロバイダー"^] を使用して、ノードのイメージングとオンボーディングを自動化します。
+
++
+.. HPE iLOまたはDell iDRACを使用して、ハードウェアプロバイダとの接続を設定します。
+.. 対象サーバーを自動的に検出します。
+.. アップロード済みのAOSおよびAHVイメージを選択します。
+.. Foundation Centralから直接ノードのイメージを作成します。
++
+*オプションB：手動イメージング*
+
++
+ハードウェアプロバイダの検出が利用できない場合は、link:https://portal.nutanix.com/page/documents/details?targetId=Foundation-Central-Appliance-v2_3_0_1:v2-manual-workflow-c.html["手動イメージング"^]を使用します。
+
++
+始める前に、以下の前提条件を満たしていることを確認してください：
+
++
+*** UEFIブートモードが有効になっています。
+*** セキュアブートは無効になっています。
+*** 帯域外（OOB）ネットワークおよびデータネットワークに接続可能です。
+*** ホストとFoundation Centralの間には時間的なずれはありません。
+*** 各ホストで1つのAHV IPアドレスが利用できます。
++
+
+NOTE: デフォルトVLAN上の192.168.5.0/24アドレス空間と重複するサブネットからIPアドレスを割り当てないでください。
+
+
+
+.. 安全なクレームトークンを作成します。
+.. 各コンピュートノードにAHVインストールISOをマウントします。
+.. AHVを起動して手動でインストールしてください。
+
+
+. *ノードをオンボーディングします。*
++
+オンボーディングでは、検出されたサーバーをFoundation Central Applianceに登録し、イメージングまたはクラスタ作成ワークフローの準備を行います。
+
++
+.. 検出されたAHVホストを選択してください。
+.. オンボーディングプロセスを開始します。
+.. ノード一覧にすべてのノードが表示されていることを確認してください。
++
+オンボーディングが完了すると、ホストはクラスタ作成の準備が整います。
+
+
+
+. *Nutanixクラスターを作成します。*
++
+.. オンボーディング済みのノードを選択してください。
+.. *クラスターの作成*をクリックします。
+.. クラスタ構成情報を提供してください。
+.. プロンプトが表示されたら、コントローラーVM（CVM）のIPアドレスを入力してください。
++
+クラスター作成ワークフローでは、以下の処理が行われます：
+
++
+*** CVMをデプロイします。
+*** AOSをインストールします。
+*** クラスタサービスを設定します。
+*** 検証チェックを実行します。
++
+image:nutanix-deploy-001.png["AHVを実行している新規作成のNutanixクラスターのPrism Elementホームページ"]
+
++
+
+NOTE: ノード間で時刻のずれがないことを確認してください。クロック同期の失敗は、クラスタのデプロイ失敗の原因となり、プロセスの再起動が必要になる場合があります。
+
+
+
+
+
+. *ONTAPストレージをNutanixコンピューティングクラスタに接続します。*
++
+Nutanixクラスターが稼働状態になったら、以下の手順を実行してください：
+
++
+.. すべてのAHVホストとONTAP NFSデータLIF間の接続を確認します。
+.. ONTAPのNFSエクスポートをNutanixクラスタに追加します。
+.. エクスポートされたFlexVol NFS共有をマウントします。
+.. 読み取り / 書き込みアクセスを検証します。
+.. データストアの可視性と可用性を確認します。
++
+マウントされたNFSストレージは、以下の用途に使用できます：
+
++
+*** 仮想マシンのワークロード
+*** イメージリポジトリ
+*** テンプレート
+*** アプリケーションデータ
++
+詳細な手順については、link:nutanix-attach-storage.html["ONTAP NFSストレージをNutanixコンピュートクラスタに接続する"]を参照してください。
+
+
+
+
+
+

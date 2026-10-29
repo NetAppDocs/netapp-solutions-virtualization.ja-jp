@@ -1,0 +1,24 @@
+---
+section: nutanix
+title: Nutanix仮想化
+url: "/nutanix/index.html"
+entries:
+- title: ONTAPストレージを使用したNutanixについて
+  url: "/nutanix/nutanix-overview.html"
+- title: ONTAPストレージを使用したNutanixのデプロイ
+  pdf-filename: NetApp ONTAPを使用したNutanix Cloud Platformのデプロイ
+  entries:
+  - title: 展開の準備
+    url: "/nutanix/nutanix-connectivity.html"
+  - title: Nutanixコンピューティングクラスタをデプロイする
+    url: "/nutanix/nutanix-deploy-cluster.html"
+  - title: ONTAPボリュームと権限を設定する
+    url: "/nutanix/nutanix-ontap-storage.html"
+- title: ONTAP NFSストレージのアタッチ
+  url: "/nutanix/nutanix-attach-storage.html"
+- title: データ保護、災害復旧、および制限事項
+  pdf-filename: ONTAP環境におけるNutanixのデータ保護、災害復旧、および制限事項
+  url: "/nutanix/nutanix-data-protection.html"
+- title: AHV移行のためのONTAPストレージのサイジング
+  pdf-filename: Nutanix AHV移行用のONTAPストレージのサイジング
+  url: "/nutanix/nutanix-sizing.html"

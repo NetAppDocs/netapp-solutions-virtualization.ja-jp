@@ -1,0 +1,246 @@
+---
+sidebar: sidebar 
+permalink: nutanix/nutanix-ontap-storage.html 
+keywords: nutanix, ontap, flexvol, nfs, export policy, rest api, role, service account, netapp 
+summary: ONTAP FlexVolボリュームを作成し、エクスポートポリシーを設定して、Nutanixに必要な最小限のREST API権限を持つSVMロールとサービスアカウントを作成します。 
+---
+= Nutanix用のONTAPボリューム、エクスポートポリシー、および権限を設定する
+:hardbreaks:
+:allow-uri-read: 
+:nofooter: 
+:icons: font
+:linkattrs: 
+:imagesdir: ../media/
+
+
+[role="lead"]
+ONTAPストレージボリュームを作成および構成し、エクスポートポリシーを構成して、NutanixがONTAPストレージを管理するために使用するSVMロールとサービスアカウントを定義します。これらのタスクを完了すると、仮想マシンのワークロード用の共有ストレージとして、FlexVolエクスポートをNutanixクラスタにアタッチできます。
+
+プロセスは、ONTAP FlexVolボリュームを作成し、NFSエクスポートポリシーを設定することから始まります。次に、必要なSVMロールとREST API権限を定義し、最後にONTAPストレージをNutanixコンピューティングクラスタに接続します。
+
+
+
+[[create-ontap-flexvol-volumes]]
+== ONTAP FlexVolボリュームの作成
+
+必要なFlexVolボリュームを作成し、推奨されるONTAP設定を適用して、Nutanixワークロードの容量利用率、ストレージ効率、およびパフォーマンスを最適化します。
+
+.手順
+. 以下の設定でFlexVol volumeを作成します：
++
+[cols="40,60"]
+|===
+| 設定 | 構成 
+
+
+| ボリューム ギャランティ | なし（シンプロビジョニング） 
+
+
+| `fractional_reserve` | 0% 
+
+
+| `snap_reserve` | 0% 
+
+
+| 自動サイズ調整 | オン 
+
+
+| ストレージ効率 | 有効 
+
+
+| 自動削除 | `volume` / `oldest_first` 
+
+
+| ボリューム階層化ポリシー | Snapshot のみ 
+
+
+| `try_first` | 自動拡張 
+
+
+| Snapshot ポリシー | なし 
+|===
+
+
+[NOTE]
+====
+* 複数のFlexVolボリュームをプロビジョニングし、ストレージコンテナとして追加します。
+* 仮想マシンのデータを格納するために、最低でも4～8個のNFSv3ボリュームを作成してください。
+* Nutanixサービスまたはメタデータボリュームには、専用のボリュームを使用してください。サービスデータはデータボリュームを共有できますが、専用のボリュームを使用することをお勧めします。
+* デフォルトでは、FlexVolエクスポートパスを使用します。qtreeを使用する場合は、ストレージコンテナを接続する際にqtreeのエクスポートパスを指定します。
+* ONTAPノード全体にボリュームを均等に分散し、交互のノードにボリュームを配置して、クラスタ全体でワークロードの配置とリソース利用率のバランスを取ります。
+
+
+====
+
+
+[[calculate-the-service-volume-size]]
+=== サービスボリュームサイズを計算する
+
+クラスタノードごとに最低1 TiB（N × 1 TiB）を割り当てることで、メタデータ（サービス）ボリュームのサイズを計算します。たとえば、8ノードのクラスタには、少なくとも8 TiBの利用可能な容量が必要です。
+
+[NOTE]
+====
+* Nutanixメタデータ用に単一のシンプロビジョニングFlexVol volumeを作成します。
+* サービスボリュームに専用のエクスポートパスが指定されていない場合、システムはクラスタサービス（メタデータ）ボリューム用に構成された最初のエクスポートパスを自動的に使用し、そのパスに*クラスタサービス*タグを適用します。
+* デプロイ後に、選択したFlexVolボリュームや関連するエクスポートパスの名前を変更しないでください。名前を変更すると、仮想マシンのI/O操作が中断され、ワークロードのアクセスに影響を及ぼす可能性があります。
+* サービスボリュームに使用されるFlexVol volumeは、シンプロビジョニングを使用して構成できます。
+
+
+====
+
+
+[[calculate-the-data-volume-size]]
+=== データボリュームサイズを計算する
+
+データボリュームのサイズ設定は、データストアのサイズ設定と似ています。仮想マシンの想定数、必要な容量、および将来の成長予測に基づいて、ストレージコンテナボリュームのサイズを決定します。仮想マシンのプロビジョニング、スナップショット、および運用上のオーバーヘッドに対応できる十分な空き容量を確保しつつ、ワークロードを複数のボリュームに分散させることで、拡張性とリソース利用のバランスを維持します。
+
+
+
+[[configure-ontap-export-policies]]
+== ONTAPエクスポートポリシーを設定する
+
+Nutanix CVMのみがNFSボリュームにアクセスできるように、エクスポートポリシーを設定してください。
+
+*データ ボリューム*
+
+. CVMのIPアドレスまたはサブネット範囲を許可するボリュームレベルのエクスポートポリシーを作成します。
+. 以下のルールを設定してください：
++
+.. 読み取り専用ルール(`rorule`）： `sys`
+.. 読み書きルール(`rwrule`）： `sys`
+.. スーパーユーザー： `sys`
+
+
+. qtreeを使用する場合は、qtreeごとに同じ権限を持つ専用のエクスポートポリシールールを作成します。
+
+
+*サービスまたはメタデータのボリューム*
+
+. CVMのIPアドレスまたはサブネット範囲を許可するボリュームレベルのエクスポートポリシーを作成します。
+. 以下のルールを設定してください：
++
+.. 読み取り専用ルール(`rorule`）： `sys`
+.. 読み書きルール(`rwrule`）： `sys`
+.. スーパーユーザー： `sys`
+
+
+
+
+[NOTE]
+====
+* すべてのONTAP NFSエクスポートでは、Nutanix CVMのIPアドレスまたは指定されたCVMサブネットからのアクセスのみを許可する必要があります。
+* Prism APIまたは `ncli`を使用して、エクスポートポリシーを更新するためのCVMホストIPアドレスのリストを確認します。
+
+
+====
+
+
+[[configure-ontap-roles-and-permissions]]
+== ONTAPのロールと権限を設定する
+
+ONTAPストレージをNutanixコンピューティング クラスターに接続するために、Nutanixはコントロール プレーン処理（VMプロビジョニング、クローニング、スナップショット、ストレージ管理）にONTAP REST APIを使用し、データ パスにNFSv3を使用します。
+
+Nutanixのコンピューティング専用クラスタで操作を実行するためにONTAP `admin`ロールを使用する必要がないように、最小限の権限を持つONTAPロールを作成します。これらの最小限のロールは、ONTAPストレージ側のSVMレベルで必要です。
+
+[NOTE]
+====
+* デフォルトのONTAP NFS構成設定を使用します。
+* また、 `vsadmin` ロールを使用することもできます。
+
+
+====
+
+
+[[minimum-rest-api-permissions]]
+=== 最小REST API権限
+
+Nutanixストレージの検出、プロビジョニング、クローニング、および管理操作を有効にするために、最低限必要なREST API権限を持つカスタムONTAP SVMロールを作成します。
+
+[cols="35,15,50"]
+|===
+| REST APIエンドポイント | アクセス | 目的 
+
+
+| `/api/cluster` | 読み取り専用 | クラスタ認証とバージョン検証 
+
+
+| `/api/cluster/jobs` | 読み取り専用 | 非同期ストレージ操作を監視する 
+
+
+| `/api/network/ip/interfaces` | 読み取り専用 | ONTAPデータLIFの検出 
+
+
+| `/api/storage/file/clone` | 読み取り/作成 | VMのクローン作成、スナップショット作成、およびバックアップ操作 
+
+
+| `/api/storage/volumes` | 読み取り専用 | ボリュームの検出と管理 
+
+
+| `/api/storage/volumes/*/files` | フルアクセス | Nutanixで管理されているファイルの作成、変更、読み取り、削除 
+|===
+
+
+[[configure-the-service-account]]
+=== サービスアカウントを設定する
+
+ONTAP System ManagerまたはONTAP CLIを使用して、ロールとユーザーを作成できます。
+
+[role="tabbed-block"]
+====
+.System Manager
+--
+.手順
+. SVMレベルでカスタムロールを作成します。
++
+.. *ストレージ > ストレージVM > _指定されたSVM_ > 設定 > ユーザーと役割* を選択します。
+.. *ユーザーと役割*の横にある矢印アイコン（→）を選択します。
+.. *役割*の下で、*+追加*を選択します。
+.. ロールのルールを定義し、*保存*をクリックします。
++
+image:nutanix-storage-001.png["NutanixロールのREST APIパスとアクセスレベルを一覧表示するONTAP System Managerのロール属性ページ"]
+
+
+
+. Nutanix管理者ユーザーに役割をマッピングします。
++
+.. 「ユーザーと役割」ページで、「ユーザー」の下にある「+追加」を選択します。
+.. 必要なユーザー名を選択し、*Role*ドロップダウンメニューから前の手順で作成したロールを選択します。
+.. ユーザーのログイン方法には、*HTTP*を選択します。
+.. *保存*をクリックします。
++
+image:nutanix-storage-002.png["カスタムロールにマッピングされたNutanixユーザーを表示するONTAP System Managerのユーザーとロールページ"]
+
++
+image:nutanix-storage-003.png["SVMのユーザーとロールのアクセスレベルを示すONTAP System Managerのユーザーとロールのページ"]
+
+
+
+
+
+--
+.CLI
+--
+.手順
+. 以下のコマンドを実行してロールを作成します。 `ntnx-svm`および `nim-ntnx-role`を、ご使用のSVM名とロール名に置き換えます。
++
+[source, cli]
+----
+security login rest-role create -vserver ntnx-svm -role nim-ntnx-role -api "/api/cluster" -access readonly
+security login rest-role create -vserver ntnx-svm -role nim-ntnx-role -api "/api/cluster/jobs" -access readonly
+security login rest-role create -vserver ntnx-svm -role nim-ntnx-role -api "/api/network/ip/interfaces" -access readonly
+security login rest-role create -vserver ntnx-svm -role nim-ntnx-role -api "/api/storage/file/clone" -access read_create
+security login rest-role create -vserver ntnx-svm -role nim-ntnx-role -api "/api/storage/volumes" -access readonly
+security login rest-role create -vserver ntnx-svm -role nim-ntnx-role -api "/api/storage/volumes/*/files" -access all
+----
+. ユーザーを作成し、ロールにマッピングします。
++
+[source, cli]
+----
+security login create -vserver ntnx-svm -user-or-group-name nim-ntnx-user -application http -authentication-method password -role nim-ntnx-role
+----
+
+
+--
+====
+
+NOTE: ONTAPアレイをNutanixクラスタに追加する際には、ONTAPサービスアカウントのユーザー名とパスワードが必要です。Prism ElementまたはPrism CentralでONTAPストレージSVMを設定する際に、このユーザーを使用します。

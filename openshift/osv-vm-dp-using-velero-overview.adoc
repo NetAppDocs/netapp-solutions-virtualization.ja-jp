@@ -18,7 +18,7 @@ Velero を使用した OpenShift API for Data Protection (OADP) は、OpenShift 
 
 OpenShift Virtualization 環境の仮想マシンは、OpenShift Container プラットフォームのワーカーノードで実行されるコンテナー化されたアプリケーションです。VM のメタデータと永続ディスクを保護して、それらが失われたり破損したりした場合に回復できるようにすることが重要です。
 
-OpenShift Virtualization VMの永続ディスクは、OpenShift Clusterに統合されたONTAPストレージによってバックアップできます。link:https://docs.netapp.com/us-en/trident/["TridentCSI"] 。このセクションではlink:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/installing/installing-oadp-ocs.html["データ保護のための OpenShift API (OADP)"]データボリュームを含むVMのバックアップを実行する
+OpenShift Virtualization VMの永続ディスクは、link:https://docs.netapp.com/us-en/trident/["TridentCSI"]を使用してOpenShiftクラスターに統合されたONTAPストレージをバックエンドとして使用できます。このセクションでは、link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.14/html/backup_and_restore/oadp-application-backup-and-restore#installing-oadp["データ保護のための OpenShift API (OADP)"]を使用して、データボリュームを含むVMのバックアップを次へ実行します
 
 * ONTAPオブジェクトストレージ
 * ストレージグリッド
@@ -46,4 +46,4 @@ OADP 1.3 は、OpenShift クラスター 4.12 以降のオペレーター ハブ
 * ONTAP 9.12
 
 
-link:https://docs.netapp.com/us-en/trident/["TridentCSI"] link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/installing/installing-oadp-ocs.html["データ保護のための OpenShift API (OADP)"] link:https://velero.io/["ベレロ"]
+link:https://docs.netapp.com/us-en/trident/["TridentCSI"] link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.14/html/backup_and_restore/oadp-application-backup-and-restore#installing-oadp["データ保護のための OpenShift API (OADP)"] link:https://velero.io/["ベレロ"]

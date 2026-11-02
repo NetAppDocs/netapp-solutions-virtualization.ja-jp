@@ -37,7 +37,7 @@ VM ディスクに選択するストレージの種類は、次の要因によ�
 [[high-availability-of-vm-workloads]]
 == VMワークロードの高可用性
 
-OpenShift Virtualization は、VM のライブ マイグレーションをサポートします。ライブ マイグレーションを使用すると、実行中の仮想マシン インスタンス (VMI) をワークロードを中断せずに別のノードに移動できます。移行は、クラスターのアップグレード中や、メンテナンスや構成の変更のためにノードをドレインする必要がある場合に、スムーズな移行を行うのに役立ちます。ライブ マイグレーションでは、ReadWriteMany (RWX) アクセス モードを提供する共有ストレージ ソリューションを使用する必要があります。  VM ディスクは、RWX アクセス モードを提供するストレージ オプションによってバックアップされる必要があります。 OpenShift Virtualization は VMI が **ライブ マイグレーション可能** かどうかを確認し、可能であれば **evictionStrategy** を **LiveMigrate** に設定されます。見るlink:https://docs.openshift.com/container-platform/latest/virt/live_migration/virt-about-live-migration.html["Red Hatドキュメントのライブマイグレーションセクションについて"]詳細については。
+OpenShift仮想化は、仮想マシンのライブマイグレーションをサポートします。ライブマイグレーションを使用すると、実行中の仮想マシンインスタンス（VMI）をワークロードを中断することなく別のノードに移動できます。マイグレーションは、クラスタのアップグレード時や、メンテナンスや構成変更のためにノードをドレインする必要がある場合など、スムーズな移行に役立ちます。ライブマイグレーションには、ReadWriteMany（RWX）アクセスモードを提供する共有ストレージソリューションを使用する必要があります。VMディスクは、RWXアクセスモードを提供するストレージオプションでバッキングされている必要があります。OpenShift仮想化は、VMIが**ライブ移行可能**であるかを確認し、可能な場合は**evictionStrategy**が**LiveMigrate**に設定されます。詳細については、link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/virtualization/live-migration#virt-about-live-migration["Red Hatドキュメントのライブマイグレーションセクションについて"]を参照してください。
 
 **RWX** アクセス モードをサポートするドライバーを使用することが重要です。  RWX アクセス モードをサポートするONTAPドライバーの詳細については、以下のストレージ構成セクションを参照してください。
 

@@ -30,7 +30,7 @@ ROSA (Red Hat OpenShift Service on AWS) クラスターのデフォルトの Sto
 * link:https://console.redhat.com/openshift/downloads["ローザCLI"]
 * link:https://console.redhat.com/openshift/downloads["OpenShift コマンドラインインターフェース"]（oc）
 * link:https://docs.aws.amazon.com/eks/latest/userguide/helm.html["Helm 3 ドキュメント"]
-* link:https://docs.openshift.com/rosa/rosa_hcp/rosa-hcp-sts-creating-a-cluster-quickly.html["HCP ROSAクラスター"]（少なくとも 3 つのベアメタル ワーカー ノードを含む）
+* link:https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws_classic_architecture/4["HCP ROSAクラスター"] （少なくとも3つのベアメタルワーカーノード）
 * link:https://console.redhat.com/openshift/overview["Red Hat OpenShift Webコンソールへのアクセス"]
 * Trident 25.02以降 上記のTridentの前提条件については、link:osv-trident-install.html["Trident設置部"]詳細については。
 * link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.17/html/virtualization/installing#virt-aws-bm_preparing-cluster-for-virt["ROSA クラスターにインストールされた OpenShift Virtualization"]

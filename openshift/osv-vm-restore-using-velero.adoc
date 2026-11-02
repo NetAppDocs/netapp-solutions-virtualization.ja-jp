@@ -26,7 +26,7 @@ Velero と OpenShift API for Data Protection (OADP) を使用して、OpenShift 
 .同じ名前空間に復元する
 [%collapsible%open]
 ====
-作成したバックアップから復元するには、復元カスタム リソース (CR) を作成する必要があります。名前を付け、復元元のバックアップの名前を指定して、restorePVs を true に設定する必要があります。追加のパラメータは、link:https://docs.openshift.com/container-platform/4.14/backup_and_restore/application_backup_and_restore/backing_up_and_restoring/restoring-applications.html["ドキュメント"] 。「作成」ボタンをクリックします。
+先ほど作成したバックアップから復元するには、復元カスタムリソース（CR）を作成する必要があります。名前を付け、復元元のバックアップの名前を指定し、restorePVsをtrueに設定する必要があります。追加のパラメータは、link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.14/html/backup_and_restore/oadp-application-backup-and-restore#oadp-backing-up["ドキュメント"]に示すように設定できます。「作成」ボタンをクリックします。
 
 image:redhat-openshift-oadp-restore-001.png["復元CRの作成"]
 

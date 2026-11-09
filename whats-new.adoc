@@ -15,6 +15,18 @@ summary: NetApp仮想化ソリューション資料への最近の変更のロ�
 
 
 
+[[5-november-2026]]
+== 2026年11月5日
+
+* Proxmox VE NFSストレージにおいて、NFS v4.2のスパースファイル操作を無効にしておくためのガイダンスを追加しました。
++
+** link:proxmox/proxmox-ontap-nfs.html["Proxmox VEのNFSストレージを構成する"]
+
+
+
+
+
+
 [[22-october-2026]]
 == 2026年10月22日
 

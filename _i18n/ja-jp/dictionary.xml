@@ -7151,7 +7151,6 @@
   <block id="832db4bde43bc86202aac28903f6ad92" category="paragraph"><block ref="832db4bde43bc86202aac28903f6ad92" category="inline-image-macro-rx" type="image"></block></block>
   <block id="b1444c57e983d7ad5d6a4e77d854a17d" category="list-text">以下に、iSCSI を使用する LVM のサンプル ストレージ構成ファイルを示します。</block>
   <block id="a528f7490023ea29b4669401b45ee9ac" category="paragraph"><block ref="a528f7490023ea29b4669401b45ee9ac" category="inline-image-macro-rx" type="image"></block></block>
-  <block id="64ccc22e2bdf3bbf557cb20759f28938" category="summary">ONTAPを使用して Proxmox 仮想環境用の NFS ストレージを構成します。この手順には、SVM の有効化、LIF の作成、エクスポート ポリシーの設定、ボリュームの作成、フォールト トレランスとパフォーマンスのための nConnect またはセッション トトランキングのセットアップが含まれます。</block>
   <block id="5408a39bf56f122d960a359ee9d6e87c" category="doc">Proxmox VEのNFSストレージを構成する</block>
   <block id="a12cea73407c9f25953e7a79a87c4cee" category="paragraph">NetApp ONTAPを使用して Proxmox 仮想環境 (VE) の NFS ストレージを構成します。ストレージ システムへの複数のネットワーク接続によるフォールト トレランスとパフォーマンス強化を実現するには、NFS v4.1 以降でセッショントランキングを使用します。</block>
   <block id="ffe16d29c4eb0209e7b18407a1993121" category="paragraph">ONTAP は、Proxmox VE でサポートされているすべての NFS バージョンをサポートします。使用 <block ref="be091303111d9932d160becb02a7fe79" category="inline-link-macro-rx"></block> フォールトトレランスとパフォーマンスの向上を実現します。セッショントランキングには NFS v4.1 以降が必要です。</block>
@@ -10749,4 +10748,13 @@
   <block id="64b7d46f4fbb3bbfb1f7fe9b3b41e958" category="list-text"><block ref="cb3802d1a7bf739e4b3a6ba1da19e7c0" category="inline-link-macro-rx"></block> （少なくとも3つのベアメタルワーカーノード）</block>
   <block id="7756da238192f285286f6b39ec23f1e9" category="list-text">選択したオペレーティングシステムにブートソースが設定されていない場合は、設定する必要があります。<block ref="2838fc2c11fc0022e7b301427416401f" category="inline-link-macro-rx"></block>に示されている手順の詳細を確認できます。</block>
   <block id="dd1834cc6cc47e63e9bdb87a7a824cb1" category="paragraph">OpenShift Virtualization VMの永続ディスクは、<block ref="d66058559be29002c97cec8314567a26" category="inline-link-macro-rx"></block>を使用してOpenShiftクラスターに統合されたONTAPストレージをバックエンドとして使用できます。このセクションでは、<block ref="8ef32fe2e3840cfa4e43d46337bc9c59" category="inline-link-macro-rx"></block>を使用して、データボリュームを含むVMのバックアップを次へ実行します</block>
+  <block id="d78d26040992473a66e62c0861d86500" category="list-text">Proxmox VEにNFSストレージを提供するSVMでは、NFS v4.2のスパースファイル操作<block ref="03af1c977606f959df9a8906087d8f89" prefix="(" category="inline-code"></block>) を無効のままにしてください。ONTAPはファイル全体に対するDEALLOCATE操作のみをサポートしており、部分的なファイルの割り当て解除要求はゲストVMでI/Oエラーやデータ破損を引き起こす可能性があります。詳細については、<block ref="ff7608fcce5dc1b873f9e65c70c5ca53" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="77036880ace751a72129c1e871c2f418" category="summary">SVM、LIF、エクスポートポリシー、ボリューム、およびnConnectまたはセッショントランキングの設定を含め、ONTAPを使用してProxmox VE用のNFSストレージを構成します。</block>
+  <block id="c9b774560c7aca40e0ff69a271a0a0ad" category="inline-link-macro">NetApp NFS v4.2のスパースファイル操作に関するナレッジベース記事</block>
+  <block id="f67b4c62ba4a50c476386e729cd3b8f8" category="admonition">Proxmox VEにNFSストレージを提供するSVMで、NFS v4.2のスパースファイル操作<block ref="03af1c977606f959df9a8906087d8f89" prefix="(" category="inline-code"></block>、ONTAP 9.12.1以降で利用可能）を有効にしないでください。ONTAPは、ファイル全体に対するNFS v4.2のDEALLOCATE操作のみをサポートします。Proxmox VEがファイルの一部の割り当て解除を要求した場合（たとえば、ゲストOSがシンプロビジョニングディスクにdiscardまたはTRIMコマンドを発行した場合など）、ONTAPはNFS4ERR_IOエラーを返します。I/OエラーはQEMUを介してゲストOSに渡され、データ破損を引き起こす可能性があります。このオプションはデフォルトでは無効になっています。無効のままにしておいてください。詳細については、<block ref="520d032564875407d97e9bdaa1bdd4c2" category="inline-link-macro-rx"></block>を参照してください。</block>
+  <block id="095108a49b3393e2c38c3f21a340e412" category="list-text">SVMでNFS v4.2のスパースファイル操作が無効になっていることを確認します。次のコマンドを実行し、値が<block ref="075ae3d2fc31640504f814f60e5ef713" prefix=" " category="inline-code"></block>であることを確認します：</block>
+  <block id="e9d5382ebf5fca460dcc4c5e771275a0" category="paragraph">値が<block ref="a10311459433adf322f2590a4987c423" prefix=" " category="inline-code"></block>の場合は、次のコマンドを実行して無効にします：</block>
+  <block id="c48b251f1a0e09db59e345d9c01e941c" category="section-title">2026年11月5日</block>
+  <block id="94940fc5e3ed7709a1802b0f6c8c0da3" category="list-text">Proxmox VE NFSストレージにおいて、NFS v4.2のスパースファイル操作を無効にしておくためのガイダンスを追加しました。</block>
+  <block id="92a08e70da607bac4fc002495ff52b6b" category="list-text"><block ref="92a08e70da607bac4fc002495ff52b6b" category="inline-link-macro-rx"></block></block>
 </blocks>

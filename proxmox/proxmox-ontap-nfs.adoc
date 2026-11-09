@@ -1,8 +1,8 @@
 ---
 sidebar: sidebar 
 permalink: proxmox/proxmox-ontap-nfs.html 
-keywords: netapp, proxmox, proxmox ve, nfs, ontap, storage, nconnect, session trunking 
-summary: ONTAPを使用して Proxmox 仮想環境用の NFS ストレージを構成します。この手順には、SVM の有効化、LIF の作成、エクスポート ポリシーの設定、ボリュームの作成、フォールト トレランスとパフォーマンスのための nConnect またはセッション トトランキングのセットアップが含まれます。 
+keywords: netapp, proxmox, proxmox ve, nfs, ontap, storage, nconnect, session trunking, sparse file operations 
+summary: SVM、LIF、エクスポートポリシー、ボリューム、およびnConnectまたはセッショントランキングの設定を含め、ONTAPを使用してProxmox VE用のNFSストレージを構成します。 
 ---
 = Proxmox VEのNFSストレージを構成する
 :hardbreaks:
@@ -20,6 +20,9 @@ ONTAP は、Proxmox VE でサポートされているすべての NFS バージ�
 
 ONTAPを初めて使用する場合は、System Manager インターフェイスを使用してこれらのタスクを完了してください。
 
+
+CAUTION: Proxmox VEにNFSストレージを提供するSVMで、NFS v4.2のスパースファイル操作(`-v4.2-sparsefile-ops`、ONTAP 9.12.1以降で利用可能）を有効にしないでください。ONTAPは、ファイル全体に対するNFS v4.2のDEALLOCATE操作のみをサポートします。Proxmox VEがファイルの一部の割り当て解除を要求した場合（たとえば、ゲストOSがシンプロビジョニングディスクにdiscardまたはTRIMコマンドを発行した場合など）、ONTAPはNFS4ERR_IOエラーを返します。I/OエラーはQEMUを介してゲストOSに渡され、データ破損を引き起こす可能性があります。このオプションはデフォルトでは無効になっています。無効のままにしておいてください。詳細については、link:https://kb.netapp.com/on-prem/ontap/da/NAS/NAS-KBs/Does_this_v4.2-sparsefile-ops_perform_ALLOCATE_DEALLOCATE%3F["NetApp NFS v4.2のスパースファイル操作に関するナレッジベース記事"^]を参照してください。
+
 .ONTAPの NFS nconnect オプション
 video::f6c9aba3-b070-45d6-8048-b22e001acfd4[panopto,width=360]
 
@@ -30,6 +33,20 @@ video::f6c9aba3-b070-45d6-8048-b22e001acfd4[panopto,width=360]
 Proxmox VE で使用するためにONTAP上の NFS ストレージをプロビジョニングするには、これらのタスクを完了します。
 
 . NFS 用に SVM を有効にします。参照 link:https://docs.netapp.com/us-en/ontap/nfs-config/verify-protocol-enabled-svm-task.html["ONTAP 9 ドキュメント"]。
+. SVMでNFS v4.2のスパースファイル操作が無効になっていることを確認します。次のコマンドを実行し、値が `disabled`であることを確認します：
++
+[source, cli]
+----
+vserver nfs show -vserver <svm_name> -fields v4.2-sparsefile-ops
+----
++
+値が `enabled`の場合は、次のコマンドを実行して無効にします：
+
++
+[source, cli]
+----
+vserver nfs modify -vserver <svm_name> -v4.2-sparsefile-ops disabled
+----
 . コントローラごとに少なくとも 2 つの LIF を作成します。ドキュメントの手順に従ってください。参考までに、ラボで使用されている LIF のスクリーンショットを以下に示します。
 +
 .例を表示

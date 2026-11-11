@@ -13,7 +13,7 @@ ONTAPデータストアでホストされている VM は、 SnapCenter Plugin f
 お客様は、 ONTAP Tools vCenter Plug-in またはその API を使用してデータストアを簡単にプロビジョニングでき、電源がオンの状態でも VM をONTAPデータストアに移行できます。
 
 
-NOTE: VCF Automation などの外部管理ツールを使用してデプロイされた VM や、vSphere Supervisor（またはその他の Kubernetes の派生版）は、通常 VM ストレージポリシーに依存します。同じ VM ストレージポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなるはずです。アプリケーションの所有者に確認し、それらの VM を新しいデータストアに適切に移行してください。vSphere 8 では、vMotion に向けてアプリケーションを準備するための機能が https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management/migrating-virtual-machines-host-management/migration-with-vmotion-host-management/virtual-machine-conditions-and-limitation-for-vmotion-host-management/how-to-prepare-an-application-for-vsphere-vmotion-host-management.html["遅延に敏感なアプリケーション向けの vSphere vMotion 通知"]導入されました。
+NOTE: VCF Automation などの外部管理ツールを使用してデプロイされた VM や、vSphere Supervisor（またはその他の Kubernetes の派生版）は、通常 VM ストレージポリシーに依存します。同じ VM ストレージポリシー内のデータストア間で移行する場合、アプリケーションへの影響は少なくなるはずです。アプリケーションの所有者に確認し、それらの VM を新しいデータストアに適切に移行してください。vSphere 8 では、vMotion に向けてアプリケーションを準備するための機能が https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management/migrating-virtual-machines/migration-with-vmotion/virtual-machine-conditions-and-limitation-for-vmotion/how-to-prepare-an-application-for-vsphere-vmotion.html["遅延に敏感なアプリケーション向けの vSphere vMotion 通知"]導入されました。
 
 
 
@@ -45,7 +45,7 @@ TIP: vMotion および Provisioning VMkernel インターフェイスで使用�
 vMotion は、電源状態に関係なく VM を移行するためによく使用されます。特定のシナリオに関する追加の考慮事項と移行手順については、以下を参照してください。
 
 
-NOTE: 理解する https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/migration-with-vmotion-host-management/virtual-machine-conditions-and-limitation-for-vmotion-host-management.html["vSphere vMotion の VM の条件と制限"]VM 移行オプションに進む前に。
+NOTE: VM移行オプションを進める前に、理解しておいてください https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines/migration-with-vmotion/virtual-machine-conditions-and-limitation-for-vmotion.html["vSphere vMotion の VM の条件と制限"]。
 
 .特定の vSphere データストアからの VM の移行
 [%collapsible%open]
@@ -160,7 +160,7 @@ TIP: データストア クラスターが完全に自動化されたストレ�
 [%collapsible%open]
 ====
 
-NOTE: 参照する https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/cpu-compatibility-and-evc-host-management.html["CPU 互換性と vSphere Enhanced vMotion 互換性"]ソース ホストとターゲット ホストの CPU ファミリまたはモデルが異なる場合。
+NOTE: ソースホストとターゲットホストのCPUファミリーまたはモデルが異なる場合は、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines/cpu-compatibility-and-evc.html["CPU 互換性と vSphere Enhanced vMotion 互換性"]を参照してください。
 
 UI を使用して VM を新しいデータストアに移行するには、以下の手順に従います。
 
@@ -233,7 +233,7 @@ $vm, $vmdisk | Get-SPBMEntityConfiguration
 以下の手順に従って、同じ vSphere Client UI にリストされている新しい vCenter サーバーに VM を移行します。
 
 
-NOTE: ソースおよびターゲットのvCenterバージョンなどの追加要件については、以下を確認してください。 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/vmotion-across-vcenter-server-systems-host-management/requirements-for-migration-across-vcenter-servers-host-management.html["vCenter Server インスタンス間の vMotion の要件に関する vSphere ドキュメント"]
+NOTE: ソースおよびターゲットのvCenterバージョンなどの追加要件については、次を確認してください https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines/vmotion-across-vcenter-server-systems/requirements-for-migration-across-vcenter-servers.html["vCenter Server インスタンス間の vMotion の要件に関する vSphere ドキュメント"]
 
 . vSphere Web Client で、ホストおよびクラスタ インベントリからクラスタを選択し、VM タブをクリックします。
 +
@@ -320,7 +320,7 @@ image:migrate-vms-to-ontap-011.png["vCenter Server間のエクスポート"]
 
 +
 
-TIP: VM はターゲットの vCenter サーバーからインポートすることもできます。その手順については、 https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/vmotion-across-vcenter-server-systems-host-management/migrate-a-virtual-machine-from-an-external-vcenter-server-instance-host-management.html["高度な Cross vCenter vMotion を使用して仮想マシンをインポートまたはクローンする"]
+TIP: VMはターゲットのvCenterサーバからインポートすることもできます。その手順については、次を確認してください https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines/vmotion-across-vcenter-server-systems/migrate-a-virtual-machine-from-an-external-vcenter-server-instance.html["高度な Cross vCenter vMotion を使用して仮想マシンをインポートまたはクローンする"]
 
 . vCenter 資格情報の詳細を入力し、「ログイン」をクリックします。
 +
@@ -513,7 +513,7 @@ NOTE: コンテンツライブラリのVMテンプレートの詳細について
 * インプレース アップグレードが不可能な場合は、新しい環境を立ち上げて上記の移行オプションを使用できます。
 +
 
-TIP: クロス vCenter 移行オプションでは、ソースでエクスポート オプションが使用できない場合はターゲットからインポートします。その手順については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/vmotion-across-vcenter-server-systems-host-management/migrate-a-virtual-machine-from-an-external-vcenter-server-instance-host-management.html["高度な Cross vCenter vMotion を使用して仮想マシンをインポートまたはクローンする"]
+TIP: クロスvCenter移行オプションでは、ソースでエクスポートオプションが利用できない場合、ターゲットからインポートします。その手順については、link:https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines/vmotion-across-vcenter-server-systems/migrate-a-virtual-machine-from-an-external-vcenter-server-instance.html["高度な Cross vCenter vMotion を使用して仮想マシンをインポートまたはクローンする"]を確認してください。
 
 
 
@@ -534,8 +534,8 @@ NOTE: ソース vCenter 上の他のクラスタにある既存の VM とのネ�
 [[additional-resources]]
 == 参考資料
 
-* https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management.html["vSphere 仮想マシンの移行"]
-* https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines-host-management/migration-with-vmotion-host-management.html["vSphere vMotion を使用した仮想マシンの移行"]
+* https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines.html["vSphere 仮想マシンの移行"]
+* https://techdocs.broadcom.com/us/en/vmware-cis/vsphere/vsphere/8-0/vcenter-and-host-management-8-0/migrating-virtual-machines/migration-with-vmotion.html["vSphere vMotion を使用した仮想マシンの移行"]
 * https://techdocs.broadcom.com/us/en/vmware-cis/nsx/vmware-nsx/4-2/administration-guide/managing-nsx-t-in-multiple-locations/nsx-t-federation/networking-topologies-in-nsx-federation/tier-0-in-federation.html["NSXフェデレーションにおけるTier-0ゲートウェイ構成"]
 * https://techdocs.broadcom.com/us/en/vmware-cis/hcx/vmware-hcx/4-11/vmware-hcx-user-guide-4-11.html["HCX 4.8 ユーザーガイド"]
 * https://techdocs.broadcom.com/us/en/vmware-cis/live-recovery.html["VMware Live Recovery ドキュメント"]

@@ -102,7 +102,7 @@ MTV をインストールする前に、次のインストールが完了して�
 [[install-mtv]]
 === MTVをインストールする
 
-これで Migration Toolkit for Virtualization （MTV）をインストールできます。インストールのサポートについては、link:https://access.redhat.com/documentation/en-us/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/installing-the-operator["ここをクリックしてください。"]に記載されている手順を参照してください。
+これで Migration Toolkit for Virtualization （MTV）をインストールできます。インストールのサポートについては、link:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console#mtv-ui_mtv["ここをクリックしてください。"]に記載されている手順を参照してください。
 
 Migration Toolkit for Virtualization（MTV）のユーザーインターフェースは、OpenShift Webコンソールに統合されています。さまざまなタスクにユーザーインターフェースを使い始めるには、link:https://access.redhat.com/documentation/en-us/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console#mtv-ui_mtv["ここをクリックしてください。"]を参照してください。
 
@@ -127,7 +127,7 @@ image:rh-os-n-use-case-vm-migration-source-provider.png["入出力ダイアロ�
 
 NOTE: Migration Toolkit for Virtualization (MTV) は、VMware Virtual Disk Development Kit (VDDK) SDK を使用して、VMware vSphere からの仮想ディスクの転送を高速化します。したがって、オプションではありますが、VDDK イメージを作成することを強くお勧めします。この機能を利用するには、VMware 仮想ディスク開発キット (VDDK) をダウンロードし、VDDK イメージを構築して、VDDK イメージをイメージ レジストリにプッシュします。
 
-提供された指示に従ってくださいlink:https://access.redhat.com/documentation/en-us/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/prerequisites#creating-vddk-image_mtv["ここをクリックしてください。"]VDDK イメージを作成し、OpenShift クラスターからアクセス可能なレジストリにプッシュします。
+link:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/prerequisites#creating-vddk-image_mtv["ここをクリックしてください。"]の指示に従ってVDDKイメージを作成し、OpenShiftクラスタからアクセス可能なレジストリにプッシュしてください。
 
 
 
@@ -139,7 +139,7 @@ NOTE: Migration Toolkit for Virtualization (MTV) は、VMware Virtual Disk Devel
 
 ==== 移行計画を作成する
 
-提供された指示に従ってくださいlink:https://access.redhat.com/documentation/en-us/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console#creating-migration-plan_mtv["ここをクリックしてください。"]移行計画を作成します。
+移行計画を作成するには、提供されている指示 link:https://docs.redhat.com/en/documentation/migration_toolkit_for_virtualization/2.5/html/installing_and_using_the_migration_toolkit_for_virtualization/migrating-vms-web-console#creating-migration-plan_mtv["ここをクリックしてください。"] に従ってください。
 
 プランを作成するときに、まだ作成されていない場合は以下を作成する必要があります。
 
